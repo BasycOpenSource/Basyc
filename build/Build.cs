@@ -83,7 +83,7 @@ class Build : NukeBuild
             .SetProject(Solution)
             .SetOutputDirectory(OutputPackagesDirectory));
 
-        var nugetPackages = OutputDirectory.GlobFiles("*.nupkg");
+        var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
 
         DotNetNuGetPush(_ => _
             .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
