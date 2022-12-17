@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basyc.DependencyInjection",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{0B5769DC-AD48-4827-82BD-5C2691481299}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{1D46A651-8545-4700-B044-902E33B9732D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "buildFolder", "buildFolder", "{1D46A651-8545-4700-B044-902E33B9732D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
