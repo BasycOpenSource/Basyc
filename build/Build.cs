@@ -22,9 +22,6 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
     InvokedTargets = new[] { nameof(NugetPush) })]
 class Build : NukeBuild
 {
-
-    [Parameter][Secret] readonly string NuGetApiKey;
-
     [GitRepository] readonly GitRepository Repository;
     [Solution(GenerateProjects = true)] readonly Solution Solution;
     [GitVersion] readonly GitVersion GitVersion;
@@ -81,16 +78,16 @@ class Build : NukeBuild
     .Executes(() =>
     {
         DotNetPack(_ => _
-            .DisableNoRestore()
-            .DisableNoBuild()
+            .EnableNoRestore()
+            .EnableNoBuild()
             .SetProject(Solution)
             .SetOutputDirectory(OutputPackagesDirectory));
 
         var nugetPackages = OutputDirectory.GlobFiles("*.nupkg");
 
         DotNetNuGetPush(_ => _
-            .SetSource("")
-            .SetApiKey(NuGetApiKey)
+            .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
+            .SetApiKey(GitHubActions.Token)
             .CombineWith(nugetPackages, (_, nugetPackage) => _
                 .SetTargetPath(nugetPackage)));
 
