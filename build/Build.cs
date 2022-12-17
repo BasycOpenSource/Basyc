@@ -28,7 +28,7 @@ class Build : NukeBuild
 
     GitHubActions GitHubActions => GitHubActions.Instance;
     AbsolutePath OutputDirectory => RootDirectory / "output";
-    AbsolutePath OutputPackagesDirectory => OutputDirectory / "output" / "nugetPackages";
+    AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
 
     public static int Main() => Execute<Build>(x => x.NugetPush);
 
@@ -86,10 +86,11 @@ class Build : NukeBuild
         var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
 
         DotNetNuGetPush(_ => _
-            .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
-            .SetApiKey(GitHubActions.Token)
+            //.SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
+
             .CombineWith(nugetPackages, (_, nugetPackage) => _
-                .SetTargetPath(nugetPackage)));
+                .SetTargetPath(nugetPackage)
+                .SetApiKey(GitHubActions.Token)));
 
     });
 
