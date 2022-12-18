@@ -81,6 +81,7 @@ class Build : NukeBuild
         {
             DotNetPack(_ => _
                 .EnableNoRestore()
+                .SetVersion(GitVersion.NuGetVersionV2)
                 .EnableNoBuild()
                 .SetProject(Solution)
                 .SetOutputDirectory(OutputPackagesDirectory));
