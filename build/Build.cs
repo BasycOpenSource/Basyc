@@ -7,7 +7,6 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using System.Linq;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 /// Support plugins are available for:
@@ -20,7 +19,8 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
     "continuous",
     GitHubActionsImage.UbuntuLatest,
     On = new[] { GitHubActionsTrigger.Push },
-    InvokedTargets = new[] { nameof(NugetPush) })]
+    InvokedTargets = new[] { nameof(NugetPush) },
+    EnableGitHubToken = true)]
 class Build : NukeBuild
 {
     [GitRepository] readonly GitRepository Repository;
@@ -86,19 +86,12 @@ class Build : NukeBuild
 
         var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
 
-        //DotNetNuGetPush(_ => _
-        //    .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
-        //    .SetApiKey(GitHubActions.Token)
-        //    .CombineWith(nugetPackages, (_, nugetPackage) => _
-        //        .SetTargetPath(nugetPackage)
-        //        ));
-
-        Assert.NotNullOrWhiteSpace(GitHubActions.Token);
-
         DotNetNuGetPush(_ => _
-        .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
-        .SetApiKey(GitHubActions.Token)
-        .SetTargetPath(nugetPackages.First()));
+            .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
+            .SetApiKey(GitHubActions.Token)
+            .CombineWith(nugetPackages, (_, nugetPackage) => _
+                .SetTargetPath(nugetPackage)
+                ));
 
     });
 

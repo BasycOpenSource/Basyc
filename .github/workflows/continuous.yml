@@ -33,3 +33,5 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
       - name: Run './build.cmd NugetPush'
         run: ./build.cmd NugetPush
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
