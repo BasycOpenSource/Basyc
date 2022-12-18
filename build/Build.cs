@@ -20,7 +20,8 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
     GitHubActionsImage.UbuntuLatest,
     On = new[] { GitHubActionsTrigger.Push },
     InvokedTargets = new[] { nameof(NugetPush) },
-    EnableGitHubToken = true)]
+    EnableGitHubToken = true,
+    FetchDepth = 0)]
 class Build : NukeBuild
 {
     [GitRepository] readonly GitRepository Repository;
@@ -75,24 +76,24 @@ class Build : NukeBuild
         });
 
     Target NugetPush => _ => _
-    .DependsOn(UnitTest)
-    .Executes(() =>
-    {
-        DotNetPack(_ => _
-            .EnableNoRestore()
-            .EnableNoBuild()
-            .SetProject(Solution)
-            .SetOutputDirectory(OutputPackagesDirectory));
+        .DependsOn(UnitTest)
+        .Executes(() =>
+        {
+            DotNetPack(_ => _
+                .EnableNoRestore()
+                .EnableNoBuild()
+                .SetProject(Solution)
+                .SetOutputDirectory(OutputPackagesDirectory));
 
-        var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
+            var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
 
-        DotNetNuGetPush(_ => _
-            .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
-            .SetApiKey(GitHubActions.Token)
-            .CombineWith(nugetPackages, (_, nugetPackage) => _
-                .SetTargetPath(nugetPackage)
-                ));
+            DotNetNuGetPush(_ => _
+                .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
+                .SetApiKey(GitHubActions.Token)
+                .CombineWith(nugetPackages, (_, nugetPackage) => _
+                    .SetTargetPath(nugetPackage)
+                    ));
 
-    });
+        });
 
 }
