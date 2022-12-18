@@ -93,9 +93,11 @@ class Build : NukeBuild
         //        .SetTargetPath(nugetPackage)
         //        ));
 
+        Assert.NotNullOrWhiteSpace(GitHubActions.Token);
+
         DotNetNuGetPush(_ => _
         .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
-        .SetApiKey("GitHubActions.Token")
+        .SetApiKey(GitHubActions.Token)
         .SetTargetPath(nugetPackages.First()));
 
     });
