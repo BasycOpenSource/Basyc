@@ -2,5 +2,5 @@
 
 namespace Basyc.Diagnostics.Receiving.Abstractions
 {
-	public record LogsReceivedArgs(LogEntry[] LogEntries);
+    public record LogsReceivedArgs(LogEntry[] LogEntries);
 }

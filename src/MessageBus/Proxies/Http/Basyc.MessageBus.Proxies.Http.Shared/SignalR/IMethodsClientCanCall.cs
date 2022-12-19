@@ -2,8 +2,8 @@
 
 namespace Basyc.MessageBus.HttpProxy.Shared.SignalR
 {
-	public interface IMethodsClientCanCall
-	{
-		Task Request(RequestSignalRDTO proxyRequest);
-	}
+    public interface IMethodsClientCanCall
+    {
+        Task Request(RequestSignalRDTO proxyRequest);
+    }
 }

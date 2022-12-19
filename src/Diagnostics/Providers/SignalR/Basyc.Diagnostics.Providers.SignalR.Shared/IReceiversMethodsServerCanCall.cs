@@ -2,8 +2,8 @@
 
 namespace Basyc.Diagnostics.SignalR.Shared
 {
-	public interface IReceiversMethodsServerCanCall
-	{
-		Task ReceiveChangesFromServer(ChangesSignalRDTO changes);
-	}
+    public interface IReceiversMethodsServerCanCall
+    {
+        Task ReceiveChangesFromServer(ChangesSignalRDTO changes);
+    }
 }

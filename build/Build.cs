@@ -7,6 +7,7 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using static _build.DotNetTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 /// Support plugins are available for:
@@ -18,24 +19,39 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 [GitHubActions(
     "continuous",
     GitHubActionsImage.UbuntuLatest,
-    On = new[] { GitHubActionsTrigger.Push },
-    InvokedTargets = new[] { nameof(UnitTest) },
+    OnPushBranches = new[] { "develop" },
+    InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest) },
+    EnableGitHubToken = true,
+    FetchDepth = 0)]
+[GitHubActions(
+    "release",
+    GitHubActionsImage.UbuntuLatest,
+    OnPullRequestBranches = new[] { "main" },
+    InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest), nameof(NugetPush) },
     EnableGitHubToken = true,
     FetchDepth = 0)]
 class Build : NukeBuild
 {
-    [GitRepository] readonly GitRepository Repository;
-    [Solution(GenerateProjects = true)] readonly Solution Solution;
-    [GitVersion] readonly GitVersion GitVersion;
+    [GitRepository] readonly GitRepository? Repository;
+    [Solution(GenerateProjects = true)] readonly Solution? Solution;
+    [GitVersion] readonly GitVersion? GitVersion;
 
     GitHubActions GitHubActions => GitHubActions.Instance;
     AbsolutePath OutputDirectory => RootDirectory / "output";
     AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
 
-    public static int Main() => Execute<Build>(x => x.UnitTest);
+    public static int Main() => Execute<Build>(x => x.StaticCodeAnalysis, x => x.UnitTest);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
+    Target StaticCodeAnalysis => _ => _
+        .Before(Compile)
+        .Executes(() =>
+        {
+            DotnetFormatVerifyNoChanges(Solution, out var _);
+        });
+
 
     Target Clean => _ => _
         .Before(Restore)
@@ -67,7 +83,7 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
-            var unitTestProjects = Solution.GetProjects("*.UnitTests");
+            var unitTestProjects = Solution!.GetProjects("*.UnitTests");
             DotNetTest(_ => _
                 .EnableNoRestore()
                 .CombineWith(unitTestProjects,
@@ -82,7 +98,7 @@ class Build : NukeBuild
         {
             DotNetPack(_ => _
                 .EnableNoRestore()
-                .SetVersion(GitVersion.NuGetVersionV2)
+                .SetVersion(GitVersion!.NuGetVersionV2)
                 .EnableNoBuild()
                 .SetProject(Solution)
                 .SetOutputDirectory(OutputPackagesDirectory));

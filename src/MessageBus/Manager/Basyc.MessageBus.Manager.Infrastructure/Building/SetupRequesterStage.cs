@@ -6,17 +6,17 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building
 {
-	public class SetupRequesterStage : BuilderStageBase
-	{
-		public SetupRequesterStage(IServiceCollection services) : base(services)
-		{
-		}
+    public class SetupRequesterStage : BuilderStageBase
+    {
+        public SetupRequesterStage(IServiceCollection services) : base(services)
+        {
+        }
 
-		public SetupTypeFormattingStage UseBasycTypedMessageBusRequester()
-		{
-			services.TryAddSingleton<IRequester, BasycTypedMessageBusRequester>();
-			return new SetupTypeFormattingStage(services);
-		}
+        public SetupTypeFormattingStage UseBasycTypedMessageBusRequester()
+        {
+            services.TryAddSingleton<IRequester, BasycTypedMessageBusRequester>();
+            return new SetupTypeFormattingStage(services);
+        }
 
-	}
+    }
 }

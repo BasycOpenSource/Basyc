@@ -198,11 +198,30 @@ window.addEventListener("load",function(){e.contentLoaded()},!1)}).call(e,n(9))}
 
     <script>
 $(document).ready(function() {
+  $("#StaticCodeAnalysis").addClass('highlight');
   $("#Restore").addClass('highlight');
   $("#Compile").addClass('highlight');
   $("#UnitTest").addClass('highlight');
+  $("#StaticCodeAnalysis").hover(
+    function() {
+        $("#StaticCodeAnalysis").removeClass('highlight');
+        $("#Clean").removeClass('highlight');
+        $("#Restore").removeClass('highlight');
+        $("#Compile").removeClass('highlight');
+        $("#UnitTest").removeClass('highlight');
+        $("#NugetPush").removeClass('highlight');
+        $("#StaticCodeAnalysis").addClass('highlight');
+    },
+    function() {
+        $("#StaticCodeAnalysis").removeClass('highlight');
+        $("#StaticCodeAnalysis").addClass('highlight');
+        $("#Restore").addClass('highlight');
+        $("#Compile").addClass('highlight');
+        $("#UnitTest").addClass('highlight');
+    });
   $("#Clean").hover(
     function() {
+        $("#StaticCodeAnalysis").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -212,12 +231,14 @@ $(document).ready(function() {
     },
     function() {
         $("#Clean").removeClass('highlight');
+        $("#StaticCodeAnalysis").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
     });
   $("#Restore").hover(
     function() {
+        $("#StaticCodeAnalysis").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -227,12 +248,14 @@ $(document).ready(function() {
     },
     function() {
         $("#Restore").removeClass('highlight');
+        $("#StaticCodeAnalysis").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
     });
   $("#Compile").hover(
     function() {
+        $("#StaticCodeAnalysis").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -244,12 +267,14 @@ $(document).ready(function() {
     function() {
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
+        $("#StaticCodeAnalysis").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
     });
   $("#UnitTest").hover(
     function() {
+        $("#StaticCodeAnalysis").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -263,12 +288,14 @@ $(document).ready(function() {
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
         $("#UnitTest").removeClass('highlight');
+        $("#StaticCodeAnalysis").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
     });
   $("#NugetPush").hover(
     function() {
+        $("#StaticCodeAnalysis").removeClass('highlight');
         $("#Clean").removeClass('highlight');
         $("#Restore").removeClass('highlight');
         $("#Compile").removeClass('highlight');
@@ -284,6 +311,7 @@ $(document).ready(function() {
         $("#Compile").removeClass('highlight');
         $("#UnitTest").removeClass('highlight');
         $("#NugetPush").removeClass('highlight');
+        $("#StaticCodeAnalysis").addClass('highlight');
         $("#Restore").addClass('highlight');
         $("#Compile").addClass('highlight');
         $("#UnitTest").addClass('highlight');
@@ -332,6 +360,7 @@ $(document).ready(function() {
     
     <div class="mermaid">
 graph LR
+StaticCodeAnalysis -.-> Compile
 Clean -.-> Restore
 Restore --> Compile
 Compile --> UnitTest

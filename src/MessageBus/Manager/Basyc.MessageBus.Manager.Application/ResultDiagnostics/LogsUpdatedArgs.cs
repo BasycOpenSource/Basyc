@@ -2,5 +2,5 @@
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics
 {
-	public record class LogsUpdatedArgs(LogEntry[] NewLogEntries);
+    public record class LogsUpdatedArgs(LogEntry[] NewLogEntries);
 }

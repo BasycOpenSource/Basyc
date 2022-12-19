@@ -2,12 +2,12 @@
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-	public static class IServiceCollectionDiagnosticsExtensions
-	{
-		public static SelectReceiverProviderStage AddBasycDiagnosticReceiving(this IServiceCollection services)
-		{
-			return new SelectReceiverProviderStage(services);
-		}
+    public static class IServiceCollectionDiagnosticsExtensions
+    {
+        public static SelectReceiverProviderStage AddBasycDiagnosticReceiving(this IServiceCollection services)
+        {
+            return new SelectReceiverProviderStage(services);
+        }
 
-	}
+    }
 }

@@ -4,14 +4,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-	public static class IServiceCollectionDiagnosicsServerExtensions
-	{
-		public static SelectDiagnosticsServerStage AddBasycDiagnosticsServer(this IServiceCollection services)
-		{
-			services.AddSingleton<DiagnosticServer>();
-			services.TryAddSingleton<InMemoryServerDiagnosticReceiver>();
+    public static class IServiceCollectionDiagnosicsServerExtensions
+    {
+        public static SelectDiagnosticsServerStage AddBasycDiagnosticsServer(this IServiceCollection services)
+        {
+            services.AddSingleton<DiagnosticServer>();
+            services.TryAddSingleton<InMemoryServerDiagnosticReceiver>();
 
-			return new SelectDiagnosticsServerStage(services);
-		}
-	}
+            return new SelectDiagnosticsServerStage(services);
+        }
+    }
 }

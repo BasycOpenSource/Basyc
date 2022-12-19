@@ -5,14 +5,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-	public static class BusManagerApplicationBuilderBasycMessageBusExtensions
-	{
-		public static void RegisterBasycMessageBusRequester(this BusManagerApplicationBuilder parent)
-		{
-			parent.services.TryAddSingleton<IRequester, BasycTypedMessageBusRequester>();
+    public static class BusManagerApplicationBuilderBasycMessageBusExtensions
+    {
+        public static void RegisterBasycMessageBusRequester(this BusManagerApplicationBuilder parent)
+        {
+            parent.services.TryAddSingleton<IRequester, BasycTypedMessageBusRequester>();
 
-		}
+        }
 
 
-	}
+    }
 }

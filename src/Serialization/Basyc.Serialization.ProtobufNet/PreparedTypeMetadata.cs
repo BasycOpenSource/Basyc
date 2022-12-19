@@ -2,5 +2,5 @@
 
 namespace Basyc.Serialization.ProtobufNet
 {
-	public record PreparedTypeMetadata(bool HasZeroProperties, PropertyInfo[] PublicProperties);
+    public record PreparedTypeMetadata(bool HasZeroProperties, PropertyInfo[] PublicProperties);
 }

@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Basyc.MessageBus.NetMQ.Shared.Cases
 {
-	public enum MessageCase
-	{
-		CheckIn,
-		Request,
-		Response,
-		Event,
+    public enum MessageCase
+    {
+        CheckIn,
+        Request,
+        Response,
+        Event,
 
-	}
+    }
 }

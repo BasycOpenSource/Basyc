@@ -4,7 +4,7 @@ using System;
 
 namespace Basyc.MessageBus.Manager.Infrastructure
 {
-	public class TypedProviderBuilder
+    public class TypedProviderBuilder
     {
         public IServiceCollection services;
 

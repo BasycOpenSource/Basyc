@@ -12,7 +12,7 @@ namespace Basyc.Repositories.EF.Tests.Repositories
 {
     public class PersonEFCrudRepository : EFInstantCrudRepositoryBase<PersonEntity, int, PersonModel>
     {
-        public PersonEFCrudRepository(DbContext dbContext, ILogger<PersonEFCrudRepository> logger) : base(dbContext, x => x.Id, x => x.Id,logger)
+        public PersonEFCrudRepository(DbContext dbContext, ILogger<PersonEFCrudRepository> logger) : base(dbContext, x => x.Id, x => x.Id, logger)
         {
         }
 

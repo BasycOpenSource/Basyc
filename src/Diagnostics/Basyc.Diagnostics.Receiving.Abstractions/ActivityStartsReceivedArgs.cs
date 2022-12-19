@@ -2,5 +2,5 @@
 
 namespace Basyc.Diagnostics.Receiving.Abstractions
 {
-	public record ActivityStartsReceivedArgs(ActivityStart[] ActivityStarts);
+    public record ActivityStartsReceivedArgs(ActivityStart[] ActivityStarts);
 }

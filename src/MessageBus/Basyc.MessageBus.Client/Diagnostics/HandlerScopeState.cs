@@ -1,4 +1,4 @@
 ﻿namespace Basyc.MessageBus.Client.Diagnostics
 {
-	public record HandlerScopeState(int SessionId);
+    public record HandlerScopeState(int SessionId);
 }

@@ -8,9 +8,9 @@ namespace Microsoft.AspNetCore.Builder;
 
 public static class IServiceProviderMessageBusClientExtensions
 {
-	public static Task StartBasycMessageBusClient(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
-	{
-		var busClient = serviceProvider.GetRequiredService<IObjectMessageBusClient>();
-		return busClient.StartAsync(cancellationToken);
-	}
+    public static Task StartBasycMessageBusClient(this IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    {
+        var busClient = serviceProvider.GetRequiredService<IObjectMessageBusClient>();
+        return busClient.StartAsync(cancellationToken);
+    }
 }

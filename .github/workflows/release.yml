@@ -9,17 +9,17 @@
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_continuous --host GitHubActions
+#         nuke --generate-configuration GitHubActions_release --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: continuous
+name: release
 
 on:
-  push:
+  pull_request:
     branches:
-      - develop
+      - main
 
 jobs:
   ubuntu-latest:
@@ -36,7 +36,7 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
-      - name: Run './build.cmd StaticCodeAnalysis UnitTest'
-        run: ./build.cmd StaticCodeAnalysis UnitTest
+      - name: Run './build.cmd StaticCodeAnalysis UnitTest NugetPush'
+        run: ./build.cmd StaticCodeAnalysis UnitTest NugetPush
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

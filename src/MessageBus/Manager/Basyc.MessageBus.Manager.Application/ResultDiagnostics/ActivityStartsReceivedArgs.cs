@@ -2,5 +2,5 @@
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics
 {
-	public record class ActivityStartsReceivedArgs(ActivityStart[] ActivityStarts);
+    public record class ActivityStartsReceivedArgs(ActivityStart[] ActivityStarts);
 }

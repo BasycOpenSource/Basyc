@@ -76,6 +76,7 @@
               "Compile",
               "NugetPush",
               "Restore",
+              "StaticCodeAnalysis",
               "UnitTest"
             ]
           }
@@ -94,6 +95,7 @@
               "Compile",
               "NugetPush",
               "Restore",
+              "StaticCodeAnalysis",
               "UnitTest"
             ]
           }

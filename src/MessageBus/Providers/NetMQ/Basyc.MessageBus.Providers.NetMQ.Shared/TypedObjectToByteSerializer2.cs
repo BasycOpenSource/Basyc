@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Runtime.Serialization;
-using Basyc.Shared.Helpers;
+﻿using Basyc.Shared.Helpers;
 using ProtoBuf;
 using ProtoBuf.Meta;
+using System;
+using System.IO;
+using System.Runtime.Serialization;
 
 namespace Basyc.MessageBus.NetMQ.Shared;
 
@@ -11,7 +11,7 @@ public static class TypedObjectToByteSerializer2
 {
     static TypedObjectToByteSerializer2()
     {
-        Serializer.PrepareSerializer<ProtoMessageWrapper>();        
+        Serializer.PrepareSerializer<ProtoMessageWrapper>();
     }
 
     public static byte[] Serialize(object objectData, Type objectType)
@@ -40,7 +40,7 @@ public static class TypedObjectToByteSerializer2
             }
         }
     }
-    
+
 
     public static T Deserialize<T>(byte[] objectData)
     {
@@ -55,7 +55,7 @@ public static class TypedObjectToByteSerializer2
             return objectClrType.GetDefaultValue();
 
         if (objectData.Length == 0)
-        { 
+        {
             try
             {
                 return Activator.CreateInstance(objectClrType)!;
@@ -65,7 +65,7 @@ public static class TypedObjectToByteSerializer2
                 throw new Exception("Cannot deserialize message. Message data is empty and message does not have empty constructor.");
             }
         }
-            
+
 
         using var stream = new MemoryStream();
         stream.Write(objectData, 0, objectData.Length);

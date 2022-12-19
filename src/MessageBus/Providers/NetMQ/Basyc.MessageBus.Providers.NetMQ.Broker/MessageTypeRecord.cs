@@ -20,5 +20,3 @@ namespace Basyc.MessageBus.Broker.NetMQ
         public int LastUsedWorkerId { get; set; }
     }
 }
-
-
