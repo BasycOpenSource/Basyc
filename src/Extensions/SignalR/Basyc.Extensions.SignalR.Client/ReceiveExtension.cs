@@ -3,37 +3,39 @@ using System.Reflection;
 
 namespace Basyc.Extensions.SignalR.Client
 {
-    public static class ReceiveExtension_old
+    public static class ReceiveExtension
     {
-        private static readonly Dictionary<object, IDisposable> actionToSubscriptionMap = new();
-        //private static readonly Dictionary<object, IDisposable> actionToSubscriptionMap = new();
+        private static readonly Dictionary<(IStrongTypedHubConnectionBase connection, object id), IDisposable> actionToSubscriptionMap = new();
         public static Task Receive<TServerCanCall, TMethodToWait>(IStrongTypedHubConnectionReceiver<TServerCanCall> strongTypedHubConnection, Expression<Func<TServerCanCall, TMethodToWait>> methodSelector, TMethodToWait handler)
             where TServerCanCall : notnull
             where TMethodToWait : Delegate
         {
-            var unsubscribeAction = (object id) =>
-            {
-                actionToSubscriptionMap[id].Dispose();
-                actionToSubscriptionMap.Remove(id);
-            };
-
+            var unsubscribeAction = GetUnsubscribeAction;
             var methodInfo = GetMethodFromSelector(methodSelector);
             var taskCompletionSource = new TaskCompletionSource();
             Type[] parameterTypes = methodInfo.GetParameters().Select(x => x.ParameterType).ToArray();
+
             var subscription = strongTypedHubConnection.UnderlyingHubConnection.On(
             methodInfo.Name,
             parameterTypes,
             (arguments, state) =>
             {
-                var unsubscribeAction = (Action<object>)state;
-                unsubscribeAction.Invoke(state);
+                var unsubscribeAction = (Action<IStrongTypedHubConnectionBase, object>)state;
+                unsubscribeAction.Invoke(strongTypedHubConnection, state);
                 InvokeDelegate(handler, arguments);
                 taskCompletionSource.SetResult();
                 return Task.CompletedTask;
             },
             unsubscribeAction);
-            actionToSubscriptionMap.Add(unsubscribeAction, subscription);
+            actionToSubscriptionMap.Add((strongTypedHubConnection, unsubscribeAction), subscription);
             return taskCompletionSource.Task;
+        }
+
+        private static void GetUnsubscribeAction(IStrongTypedHubConnectionBase connection, object id)
+        {
+            var subscriptionId = (connection, id);
+            actionToSubscriptionMap[subscriptionId].Dispose();
+            actionToSubscriptionMap.Remove(subscriptionId);
         }
 
         private static MethodInfo GetMethodFromSelector<TServerCanCall, TMethodToWait>(Expression<Func<TServerCanCall, TMethodToWait>> methodSelector) where TServerCanCall : notnull
