@@ -13,7 +13,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 ///   - JetBrains ReSharper        https://nuke.build/resharper
 ///   - JetBrains Rider            https://nuke.build/rider
 ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-///   - Microsoft VSCode           https://nuke.build/vscode
+///   - Microsoft VSCode           https://nuke.build/vscode 
 
 [GitHubActions(
     "continuous",
