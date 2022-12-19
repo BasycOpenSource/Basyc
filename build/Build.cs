@@ -19,7 +19,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
     "continuous",
     GitHubActionsImage.UbuntuLatest,
     On = new[] { GitHubActionsTrigger.Push },
-    InvokedTargets = new[] { nameof(NugetPush) },
+    InvokedTargets = new[] { nameof(UnitTest) },
     EnableGitHubToken = true,
     FetchDepth = 0)]
 class Build : NukeBuild
@@ -32,7 +32,7 @@ class Build : NukeBuild
     AbsolutePath OutputDirectory => RootDirectory / "output";
     AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
 
-    public static int Main() => Execute<Build>(x => x.NugetPush);
+    public static int Main() => Execute<Build>(x => x.UnitTest);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
@@ -67,12 +67,13 @@ class Build : NukeBuild
         .DependsOn(Compile)
         .Executes(() =>
         {
+            var unitTestProjects = Solution.GetProjects("*.UnitTests");
             DotNetTest(_ => _
                 .EnableNoRestore()
-                .CombineWith(
-                    Solution.GetProjects("*.UnitTests"),
+                .CombineWith(unitTestProjects,
                     (settings, unitTestProject) => settings
-                        .SetProjectFile(unitTestProject)));
+                        .SetProjectFile(unitTestProject)),
+                        degreeOfParallelism: 5);
         });
 
     Target NugetPush => _ => _
@@ -94,7 +95,6 @@ class Build : NukeBuild
                 .CombineWith(nugetPackages, (_, nugetPackage) => _
                     .SetTargetPath(nugetPackage)
                     ));
-
         });
 
 }

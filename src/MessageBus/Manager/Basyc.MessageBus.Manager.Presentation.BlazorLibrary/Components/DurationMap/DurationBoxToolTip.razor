@@ -1,0 +1,19 @@
+﻿@using Basyc.Diagnostics.Shared.Durations
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html
+
+<toolTipDurationName>
+    @Service.ServiceName: @Name
+</toolTipDurationName>
+<toolTipDurationDuration>
+    started: @Html.Time(StartTime);
+    <br />
+    lasted: @Html.Time(Duration);
+</toolTipDurationDuration>
+
+@code {
+    [Parameter] public string Name { get; set; }
+    [Parameter] public DateTimeOffset StartTime { get; set; }
+    [Parameter] public TimeSpan Duration { get; set; }
+    [Parameter] public ServiceIdentity Service { get; set; }
+}

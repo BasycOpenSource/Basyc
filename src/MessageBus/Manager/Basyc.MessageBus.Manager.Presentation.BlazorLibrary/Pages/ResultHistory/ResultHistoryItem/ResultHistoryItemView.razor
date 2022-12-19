@@ -1,0 +1,158 @@
+﻿@using Basyc.MessageBus.Manager.Application
+@using System.Text
+@using Basyc.MessageBus.Manager.Application.ResultDiagnostics
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers
+
+@implements IDisposable
+
+@{
+    string historyItemClass = $"historyItem--state--{RequestContext.State.ToString()}";
+    string historyItemIsSelected = $"historyItem--isSelected--{IsSelected.ToString()}";
+}
+
+<historyItem class="@historyItemClass @historyItemIsSelected">
+    @if (RequestContext is not null && RequestContext.Diagnostics is not null)
+    {
+        if (IsSelected)
+        {
+            <ResultHistoryItemExpandedView RequestContext="RequestContext" />
+        }
+        else
+        {
+            <collapsedGrid>
+                <basicTable>
+                    <id>
+                        #@OrderIndex
+                    </id>
+                    <status>
+                        <LatencyView RequestContext="RequestContext" />
+                    </status>
+                </basicTable>
+                <dataSubSection>
+                    <inputBorder>
+                        <textValue>
+                            @ResponseResultConverter.CreateInputOverview(RequestContext.Request.Parameters)
+                        </textValue>
+                    </inputBorder>
+                    <arrow>
+                        <MudIcon Icon="@Icons.Material.Rounded.Forward" />
+                    </arrow>
+                    <outputBorder>
+                        @if (RequestContext.State == RequestResultState.Started)
+                        {
+                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
+                        }
+                        else
+                        {
+                            <textValue>
+                                @if (RequestContext.State == RequestResultState.Completed)
+                                {
+                                    if (RequestContext.Request.RequestInfo.HasResponse)
+                                    {
+                                        @RequestContext.Response
+                                    }
+                                    else
+                                    {
+                                        <ghostLabel>
+                                            Result does not have an output
+                                        </ghostLabel>
+                                    }
+                                }
+                                @if (RequestContext.State == RequestResultState.Failed)
+                                {
+                                    @RequestContext.ErrorMessage
+                                }
+                            </textValue>
+                        }
+                    </outputBorder>
+                </dataSubSection>
+
+            </collapsedGrid>
+        }
+
+    }
+    else
+    {
+        @:null
+    }
+
+    <button @onclick="ItemClick" class="buttonExpand">
+        <MudIcon Icon="@(IsSelected ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" Title="Expand/Collapse" />
+    </button>
+</historyItem>
+
+
+
+@code {
+
+    [Parameter]
+    public RequestContext RequestContext { get; set; }
+
+    private bool isSelected;
+    [Parameter]
+    public bool IsSelected
+    {
+        get => isSelected;
+        set
+        {
+            if (isSelected == value) return;
+            isSelected = value;
+            IsSelectedChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> IsSelectedChanged { get; set; }
+
+    [Parameter]
+    public int OrderIndex { get; set; }
+
+
+
+    protected override void OnParametersSet()
+    {
+        RequestContext.StateChanged += ReqeustContextResultStateChanged;
+        isSelected = false;
+        base.OnParametersSet();
+    }
+
+    private void ReqeustContextResultStateChanged(object sender, EventArgs eventArgs)
+    {
+        this.StateHasChanged();
+    }
+
+    //private static string CreateInputOverviewJson(IEnumerable<Parameter> parameters)
+    //{
+    //    StringBuilder stringBuilder = new StringBuilder();
+    //    stringBuilder.Append("{");
+    //    foreach (var parameter in parameters)
+    //    {
+    //        stringBuilder.Append("\"");
+    //        stringBuilder.Append(parameter.ParameterInfo.ParameterDisplayName);
+    //        stringBuilder.Append("\"");
+    //        stringBuilder.Append(":");
+    //        stringBuilder.Append("\"");
+    //        var paramterValueString = parameter.Value is null ? "null" : parameter.Value.ToString();
+    //        stringBuilder.Append(paramterValueString);
+    //        stringBuilder.Append("\"");
+    //        stringBuilder.Append(",");
+
+    //    }
+    //    stringBuilder.Remove(stringBuilder.Length - 1, 1);
+    //    stringBuilder.Append("}");
+    //    return stringBuilder.ToString();
+    //}
+
+
+
+    private void ItemClick()
+    {
+        IsSelected = !IsSelected;
+    }
+
+    public void Dispose()
+    {
+        RequestContext.StateChanged -= ReqeustContextResultStateChanged;
+    }
+}

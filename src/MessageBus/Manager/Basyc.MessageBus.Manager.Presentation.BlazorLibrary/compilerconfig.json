@@ -1,0 +1,110 @@
+﻿[
+  {
+    "outputFile": "Pages/Requests/SideBar/RequestsSideMenu.razor.css",
+    "inputFile": "Pages/Requests/SideBar/RequestsSideMenu.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/SideBar/SideBarRequestItem.razor.css",
+    "inputFile": "Pages/Requests/SideBar/SideBarRequestItem.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/BusManager.razor.css",
+    "inputFile": "Pages/Requests/BusManager.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/RequestSideBar/RequestSideBarView.razor.css",
+    "inputFile": "Pages/Requests/RequestSideBar/RequestSideBarView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/RequestHistory/RequestHistoryItemView.razor.css",
+    "inputFile": "Pages/Requests/RequestHistory/RequestHistoryItemView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/ResultDetail/ResultDetailView.razor.css",
+    "inputFile": "Pages/Requests/ResultDetail/ResultDetailView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/ResultHistory/ResultHistoryView.razor.css",
+    "inputFile": "Pages/Requests/ResultHistory/ResultHistoryView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/ResultHistory/ResultHistoryItemView.razor.css",
+    "inputFile": "Pages/Requests/ResultHistory/ResultHistoryItemView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/LatencyView.razor.css",
+    "inputFile": "Pages/Requests/LatencyView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/DurationMapView.razor.css",
+    "inputFile": "Pages/Requests/DurationMapView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/DurationMap/DurationBoxView.razor.css",
+    "inputFile": "Pages/Requests/DurationMap/DurationBoxView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Requests/DurationMap/DurationMapView.razor.css",
+    "inputFile": "Pages/Requests/DurationMap/DurationMapView.razor.scss"
+  },
+  {
+    "outputFile": "Components/LogWindow/LogEntryView.razor.css",
+    "inputFile": "Components/LogWindow/LogEntryView.razor.scss"
+  },
+  {
+    "outputFile": "Components/LogWindow/LogWindowView.razor.css",
+    "inputFile": "Components/LogWindow/LogWindowView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/ResultDetail/ResultDetailView.razor.css",
+    "inputFile": "Pages/ResultDetail/ResultDetailView.razor.scss"
+  },
+  {
+    "outputFile": "Components/DurationMap/DurationBoxView.razor.css",
+    "inputFile": "Components/DurationMap/DurationBoxView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/ResultHistory/ResultHistoryItemView.razor.css",
+    "inputFile": "Pages/ResultHistory/ResultHistoryItemView.razor.scss"
+  },
+  {
+    "outputFile": "Components/DurationMap/DurationUnknownBoxView.razor.css",
+    "inputFile": "Components/DurationMap/DurationUnknownBoxView.razor.scss"
+  },
+  {
+    "outputFile": "Components/DurationMap/DurationBoxToolTip.razor.css",
+    "inputFile": "Components/DurationMap/DurationBoxToolTip.razor.scss"
+  },
+  {
+    "outputFile": "Pages/ResultHistory/ResultHistoryView.razor.css",
+    "inputFile": "Pages/ResultHistory/ResultHistoryView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/ResultHistory/ResultHistoryItem/ResultHistoryItemExpandedView.razor.css",
+    "inputFile": "Pages/ResultHistory/ResultHistoryItem/ResultHistoryItemExpandedView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/ResultHistory/ResultHistoryItem/ResultHistoryItemView.razor.css",
+    "inputFile": "Pages/ResultHistory/ResultHistoryItem/ResultHistoryItemView.razor.scss"
+  },
+  {
+    "outputFile": "Components/DurationMap/Horizontal/HorizontalDurationMapView.razor.css",
+    "inputFile": "Components/DurationMap/Horizontal/HorizontalDurationMapView.razor.scss"
+  },
+  {
+    "outputFile": "Components/DurationMap/Horizontal/HorizontalDurationBoxView.razor.css",
+    "inputFile": "Components/DurationMap/Horizontal/HorizontalDurationBoxView.razor.scss"
+  },
+  {
+    "outputFile": "Components/DurationMap/Horizontal/HorizontalUnknownDurationBoxView.razor.css",
+    "inputFile": "Components/DurationMap/Horizontal/HorizontalUnknownDurationBoxView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/BusManager.razor.css",
+    "inputFile": "Pages/BusManager.razor.scss"
+  },
+  {
+    "outputFile": "Components/LogWindow/TableFilter.razor.css",
+    "inputFile": "Components/LogWindow/TableFilter.razor.scss"
+  }
+]

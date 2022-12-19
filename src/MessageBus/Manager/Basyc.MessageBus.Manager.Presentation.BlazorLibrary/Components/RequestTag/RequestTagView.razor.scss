@@ -1,0 +1,17 @@
+﻿@import "../../Shared/Colors.scss";
+
+requestTag {
+    font-size: 16px;
+}
+
+.requestTag-query {
+    color: $Request-Tag-Query-Foreground;
+}
+
+.requestTag-command {
+    color: $Request-Tag-Command-Foreground;
+}
+
+.requestTag-generic {
+    color: $Request-Tag-Generic-Foreground;
+}

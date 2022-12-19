@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Basyc.MessageBus.HttpProxy.Server.Asp.Tests": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:59697;http://localhost:59698"
+    }
+  }
+}

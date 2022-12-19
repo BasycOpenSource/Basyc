@@ -1,0 +1,19 @@
+﻿<toolTippedTextView class="@RootClass" style="@RootStyle">
+    <text class="@TextClass" style="@TextStyle">
+        @Text
+    </text>
+    <tooltipPositioner>
+        <tooltip>
+            @Text
+        </tooltip>
+    </tooltipPositioner>
+</toolTippedTextView>
+
+@code {
+    [Parameter] public string? RootStyle { get; set; }
+    [Parameter] public string? RootClass { get; set; }
+    [Parameter] public string? TextStyle { get; set; }
+    [Parameter] public string? TextClass { get; set; }
+    [Parameter] public string? Text { get; set; }
+
+}

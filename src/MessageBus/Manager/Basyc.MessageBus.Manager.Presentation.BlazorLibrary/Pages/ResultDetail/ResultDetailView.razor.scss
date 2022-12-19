@@ -1,0 +1,111 @@
+﻿@import "../../Shared/Colors.scss";
+
+parameterRow {
+    display: block;
+}
+
+requestDetailView {
+    background-color: $Information-Background;
+    display: block;
+    height: 100%;
+    /*padding: 1.5rem 2rem;*/
+    padding-top: 1rem;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+ghostLabel {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    color: #628E8E;
+    opacity: 0.75;
+}
+
+paddedSection {
+    padding: 0px 2rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+inputOutputBase {
+    display: block;
+    padding: 1rem;
+    border-radius: 4px;
+    min-height: 6rem;
+}
+
+inputs {
+    @extend inputOutputBase;
+    border: 2.5px solid $Information-Background;
+}
+
+outputs {
+    @extend inputOutputBase;
+    background-color: $Information-Background;
+    word-break: break-all;
+    word-wrap: anywhere;
+}
+
+durationMap {
+    @extend inputOutputBase;
+    background-color: $Information-Background;
+    max-height: 22rem;
+    overflow-x: auto;
+    overflow-y: scroll;
+}
+
+parameterName {
+    color: #979797;
+}
+
+parameterValue {
+    /*font-size: 1.1rem;*/
+}
+
+label {
+    color: #628e8e;
+    text-indent: 0.6rem;
+    margin-bottom: 0.3rem;
+}
+
+requestName {
+    margin-left: 0.35rem;
+}
+
+heading {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.requestDetailViewClass--state--Started {
+}
+
+.requestDetailViewClass--state--Completed {
+    background-color: $Success-Background;
+}
+
+.requestDetailViewClass--state--Failed {
+    background-color: $Error-Background;
+}
+
+status {
+    float: right;
+    clear: right;
+}
+
+outputGhostLabel {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    color: #628E8E;
+    opacity: 0.55;
+}
+
+requestDetailNotEmpty {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}

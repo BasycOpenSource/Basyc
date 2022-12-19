@@ -1,0 +1,15 @@
+﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.RequestTag
+
+<requestItem class="selected--@RequestViewModel.IsSelected">
+    <requestName>
+        @RequestViewModel.RequestInfo.RequestDisplayName
+    </requestName>
+    <tag>
+        <RequestTagView RequestType="@RequestTagTypeHelper.FromRequestType(RequestViewModel.RequestInfo.RequestType)" TagStyle="TagStyle.Icon"/> 
+    </tag>
+</requestItem>
+
+@code {
+    [Parameter]
+    public RequestItemViewModel RequestViewModel { get; set; }
+}

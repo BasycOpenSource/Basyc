@@ -1,0 +1,32 @@
+﻿
+<requestTag class="requestTag-@RequestType.ToString().ToLower()">
+
+    @if (this.TagStyle is TagStyle.Word)
+    {
+        @WordContent
+    }
+
+    @if (this.TagStyle is TagStyle.Icon)
+    {
+        <b>
+        @switch (RequestType)
+        {
+            case RequestTagType.Command:
+                @:!
+                break;
+
+            case RequestTagType.Generic:
+                @:G
+                break;
+
+            case RequestTagType.Query:
+                @:?
+                break;
+
+            case RequestTagType.Response:
+                @:R
+                break;
+        }
+        </b>
+    }
+</requestTag>

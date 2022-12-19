@@ -1,0 +1,106 @@
+﻿@import "../../../Shared/Colors.scss";
+
+resultHistoryItemExpandedView {
+    display: block;
+}
+
+sectionLabel {
+    display: block;
+    text-align: left;
+    /*font-weight: bold;*/
+    color: #7b9595;
+    color: #a1a1a1;
+    padding: 0.75rem 1.75rem;
+}
+
+section {
+    display: block;
+    overflow: hidden;
+}
+
+basicSection {
+    @extend section;
+    padding: 0rem 1rem;
+    margin-right: 1.5rem; //Space for collapse arrow
+    display: flex;
+
+}
+
+activityMapSecion {
+    @extend section;
+    background-color: #00000011;
+}
+
+logsSection {
+    @extend section;
+    background-color: #000000a6;
+}
+
+formLabel {
+    color: #979797;
+    height: 1rem;
+    display: block;
+}
+
+formValue {
+    height: 1rem;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+basicTable {
+    display: block;
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-bottom: 1.25rem;
+    width: 25%;
+}
+
+.sectionLabel--logs {
+    color: #E3E3E3;
+}
+
+dataBox {
+    display: flex;
+    border-radius: 5px;
+    /*padding: 0.75rem;*/
+    overflow: hidden;
+    word-break: break-all;
+    flex-grow: 1;
+}
+
+responseBox {
+    @extend dataBox;
+    width: 50%;
+    background-color: $Information-Background;
+}
+
+requestBox {
+    @extend dataBox;
+    border: 2px solid $Information-Background;
+    width: 50%;
+}
+
+dataSubSection {
+    margin: 0.75rem;
+    margin-right: 0rem;
+    display: flex;
+    flex-grow: 1;
+}
+
+arrow {
+    color: $Information-Background;
+    display: flex;
+    align-items: center;
+}
+
+textValue {
+    display: block;
+    padding: 0.5rem;
+}
+
+tabs{
+    color: white !important;
+}

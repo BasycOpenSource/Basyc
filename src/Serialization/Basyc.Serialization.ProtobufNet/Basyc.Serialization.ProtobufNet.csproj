@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="protobuf-net" Version="3.1.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Basyc.Shared\Basyc.Shared.csproj" />
+    <ProjectReference Include="..\Basyc.Serialization.Abstraction\Basyc.Serialization.Abstraction.csproj" />
+  </ItemGroup>
+
+</Project>

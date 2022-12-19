@@ -1,0 +1,36 @@
+﻿toolTippedTextView {
+  min-height: 0px;
+  min-width: 0px;
+  display: flex;
+  flex-direction: column;
+  position: static;
+}
+
+text {
+  min-height: 0px;
+  min-width: 0px;
+  flex: 1;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+tooltipPositioner {
+  display: block;
+}
+
+toolTippedTextView:hover tooltip {
+  display: block !important;
+}
+
+tooltip {
+  color: #e4e4e4;
+  font-weight: normal;
+  border-radius: 2px;
+  padding: 0.2rem 0.6rem;
+  background-color: #414141df;
+  position: absolute;
+  display: none;
+  writing-mode: horizontal-tb;
+}

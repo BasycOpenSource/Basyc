@@ -1,0 +1,141 @@
+﻿@using Basyc.MessageBus.Manager.Application.ResultDiagnostics
+@using Basyc.MessageBus.Manager.Application
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogWindow
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.RequestTag
+
+@{
+    string requestDetailViewClass = "";
+    if (RequestResult is not null)
+    {
+        requestDetailViewClass = $"requestDetailViewClass--state--{RequestResult.State.ToString()}";
+    }
+}
+
+@inject IRequestDiagnosticsManager resultLoggingManager;
+
+<requestDetailView class="@requestDetailViewClass">
+    @if (RequestResult is null)
+    {
+        <ghostLabel>
+            Select result to see details.
+        </ghostLabel>
+    }
+    else
+    {
+        <requestDetailNotEmpty>
+            @*            <paddedSection>
+        <heading>
+        <requestName>
+        @RequestResult.Request.RequestInfo.RequestDisplayName
+        </requestName>
+        <RequestTagView RequestType="@RequestTagTypeHelper.FromRequestType(RequestResult.Request.RequestInfo.RequestType)" TagStyle="TagStyle.Icon" />
+        <id>
+        #@RequestResult.Id
+        </id>
+        <status>
+        <LatencyView RequestResult="RequestResult" />
+        </status>
+        </heading>
+        </paddedSection>*@
+
+            <paddedSection>
+                <label>
+                    Input
+                </label>
+                <inputs>
+                    @foreach (var parameter in RequestResult.Request.Parameters)
+                    {
+                        <parameterRow>
+                            <parameterName>
+                                @parameter.ParameterInfo.ParameterDisplayName:
+                            </parameterName>
+                            <parameterValue>
+                                @(parameter.Value == null ? "null" : parameter.Value)
+                            </parameterValue>
+                        </parameterRow>
+                    }
+                </inputs>
+            </paddedSection>
+
+            <paddedSection>
+                <label>
+                    Output
+                </label>
+                <outputs>
+                    @if (RequestResult.State == RequestResultState.Started)
+                    {
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" />
+                    }
+                    @if (RequestResult.State == RequestResultState.Completed)
+                    {
+                        @if (RequestResult.Request.RequestInfo.HasResponse)
+                        {
+                            @RequestResult.Response
+                        }
+                        else
+                        {
+                            <MudContainer>
+
+                            </MudContainer>
+                            <outputGhostLabel>
+                                Result does not have an output
+                            </outputGhostLabel>
+                        }
+                    }
+                    @if (RequestResult.State == RequestResultState.Failed)
+                    {
+                        @RequestResult.ErrorMessage
+                    }
+                </outputs>
+            </paddedSection>
+
+            <paddedSection>
+                <label>
+                    Duration
+                    <LatencyView RequestResult="RequestResult" />
+                </label>
+                <durationMap>
+                    @if (RequestResult.State == RequestResultState.Started)
+                    {
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" />
+                    }
+                    else
+                    {
+                        @*<DurationMapView DurationMap="RequestResult.DurationMap" />*@
+                        @:not implemented
+                    }
+                </durationMap>
+            </paddedSection>
+            <label>
+                Log
+            </label>
+            <LogWindowView LoggingContext="loggingContext" />
+        </requestDetailNotEmpty>
+    }
+
+</requestDetailView>
+
+@code {
+    private RequestContext requestResult;
+    [Parameter]
+    public RequestContext RequestResult
+    {
+        get => requestResult;
+        set
+        {
+            if (requestResult is not null)
+            {
+                requestResult.StateChanged -= ResultStateChanged;
+            }
+            requestResult = value;
+            requestResult.StateChanged += ResultStateChanged;
+        }
+    }
+
+    private void ResultStateChanged(object sender, EventArgs eventArgs)
+    {
+        this.StateHasChanged();
+    }
+}

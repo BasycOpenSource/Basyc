@@ -1,0 +1,35 @@
+﻿@{
+    var duration = EndTime - StartTime;
+    string unknownStyle = $"width: {DurationViewHelper.GetCssDurationValue(duration, PixelsPerMs)};";
+}
+<horizontalUnknownDurationBoxView style="@unknownStyle">
+    <MudTooltip Arrow="true" RootStyle="height: 100%; width: 100%; display: block;">
+        <ChildContent>
+            <unknownDurationLineContainer>
+                <unknownDurationLine />
+            </unknownDurationLineContainer>
+        </ChildContent>
+        <TooltipContent>
+            <toolTipContent>
+                name: unknown duration
+                <br />
+                start: @StartTime.ToString("hh:mm:ss:fff")
+                <br />
+                end: @EndTime.ToString("hh:mm:ss:fff")
+                <br />
+                dur: @duration.TotalMilliseconds ms
+            </toolTipContent>
+        </TooltipContent>
+    </MudTooltip>
+</horizontalUnknownDurationBoxView>
+
+
+@code {
+    [Parameter, EditorRequired] public DateTimeOffset StartTime { get; init; }
+    [Parameter, EditorRequired] public DateTimeOffset EndTime { get; init; }
+    [Parameter, EditorRequired] public double PixelsPerMs { get; set; }
+    /// <summary>
+    ///Hexadecimal string
+    /// </summary>
+    [Parameter, EditorRequired] public Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors.Color Color { get; set; }
+}

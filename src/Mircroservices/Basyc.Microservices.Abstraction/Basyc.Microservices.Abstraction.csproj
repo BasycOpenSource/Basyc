@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<OutputType>Library</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FluentAssertions" Version="6.7.0" />
+		<PackageReference Include="MassTransit" Version="8.0.6" />
+		<PackageReference Include="MediatR" Version="10.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Basyc.Asp\Basyc.Asp.csproj" />
+		<ProjectReference Include="..\..\Basyc.DependencyInjection\Basyc.DependencyInjection.csproj" />
+		<ProjectReference Include="..\..\Basyc.Shared\Basyc.Shared.csproj" />
+		<ProjectReference Include="..\..\MessageBus\Basyc.MessageBus.Client\Basyc.MessageBus.Client.csproj" />
+	</ItemGroup>
+</Project>

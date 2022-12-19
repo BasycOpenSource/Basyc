@@ -1,0 +1,15 @@
+﻿@using Basyc.Diagnostics.Shared.Durations
+<unknownDurationContainer style="height: @(DurationViewHelper.GetCssDurationValue(Duration, Scale));">
+    <unknownDurationLine />
+    <div class="tooltiptext">
+        <DurationBoxToolTip Name="Unknown duration" StartTime="StartTime" Duration="Duration" Service="Service" />
+    </div>
+</unknownDurationContainer>
+
+@code {
+    [Parameter] public DateTimeOffset StartTime { get; set; }
+    [Parameter] public TimeSpan Duration { get; set; }
+    [Parameter] public double Scale { get; set; }
+    [Parameter] public ServiceIdentity Service { get; set; }
+
+}

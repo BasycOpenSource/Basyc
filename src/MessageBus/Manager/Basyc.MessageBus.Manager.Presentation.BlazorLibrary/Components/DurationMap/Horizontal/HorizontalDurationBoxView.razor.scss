@@ -1,0 +1,171 @@
+﻿@import "../../../Shared/Colors.scss";
+
+
+horizontalDurationBoxView {
+    display: grid;
+    grid-template-rows: min-content min-content;
+}
+
+
+durationBox {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    align-items: end;
+    box-sizing: border-box;
+    height: 1.4rem;
+    overflow: hidden;
+    grid-row: 1;
+    float: left;
+    position: relative;
+    border-radius: 2px;
+}
+
+durationBoxBorder {
+    grid-row: 1;
+    grid-column: 1;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+    border: 1px solid #292d4b62;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+nestedDurationBoxes {
+    display: flex;
+    flex-direction: column;
+    grid-row: 2;
+    min-height: 0px;
+    gap: 0px;
+    margin-top: -0.85px; //Merging parent border. Shoudl be a half of the duratiob box border
+}
+
+spinner {
+    display: flex;
+    align-items: center;
+    justify-items: right;
+    width: 100%;
+    justify-content: right;
+}
+
+acitvityName {
+    position: absolute;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 0.3rem;
+    line-height: 0.8rem;
+    top: 0;
+    left: 0;
+    color: #e7ecefbf;
+    color: #c7c7c7bf;
+}
+
+toolTipContent {
+    display: block;
+    width: 100%;
+    text-align: left;
+}
+
+
+durationBoxBorder:hover {
+    background-color: #436b74a8;
+}
+
+nestedRows {
+    display: flex;
+    position: relative;
+}
+
+nestedRow {
+    display: inline-flex;
+    flex-direction: row;
+}
+
+unknownAndKnowGroup {
+    display: flex;
+    flex-direction: row;
+}
+
+treeLeg {
+    display: flex;
+    width: 5px;
+    position: absolute;
+    /*margin-left: -5px;*/
+}
+
+treeHorizontalLine {
+    display: block;
+    height: calc(0.7rem + 1px);
+    border-bottom: 2px solid #3c3c3c;
+    border-left: 2px solid #3c3c3c;
+    width: 100%;
+}
+
+logs {
+    grid-row: 1;
+    grid-column: 1;
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    width: 100%;
+    height: 100%;
+}
+
+log {
+    display: block;    
+    height: 33%;
+    grid-column: 1;
+    grid-row: 1;
+    z-index: 100;
+    opacity: 0.75;
+}
+
+::deep .logContentToolTip {
+    display: flex !important;
+    align-items: end;
+    height: 100%;
+    width: 100%;
+    overflow: visible;
+}
+
+logContent {
+    opacity: 0.5;
+    display: block;
+    width: 100%;
+    height: 33%;
+    height: 100%;
+}
+
+.logContent--Debug {
+    background-color: $Log-Debug-Foreground;
+}
+
+.logContent--Information {
+    background-color: $Log-Information-Foreground;
+}
+
+.logContent--Warning {
+    background-color: $Log-Warning-Background;
+}
+
+.logContent--Error {
+    background-color: $Log-Error-Background;
+}
+
+
+
+logContent:hover {
+    background-color: red;
+}
+
+rowSplitter {
+    height: 0.5rem;
+    width: 1rem;
+}

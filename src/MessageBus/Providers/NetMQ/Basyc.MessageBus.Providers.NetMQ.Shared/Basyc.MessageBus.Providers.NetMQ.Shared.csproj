@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OneOf" Version="3.0.223" />
+    <PackageReference Include="protobuf-net" Version="3.1.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Basyc.Shared\Basyc.Shared.csproj" />
+    <ProjectReference Include="..\..\..\..\Serialization\Basyc.Serialization.Abstraction\Basyc.Serialization.Abstraction.csproj" />
+    <ProjectReference Include="..\..\..\..\Serialization\Basyc.Serialization.ProtobufNet\Basyc.Serialization.ProtobufNet.csproj" />
+    <ProjectReference Include="..\..\..\Basyc.MessageBus.Shared\Basyc.MessageBus.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

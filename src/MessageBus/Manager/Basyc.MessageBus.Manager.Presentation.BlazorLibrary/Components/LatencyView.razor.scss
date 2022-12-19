@@ -1,0 +1,21 @@
+﻿@import "../Shared/Colors.scss";
+
+latency {
+    display: inline-block;
+
+}
+
+.latency--state--Completed {
+    color: $Success-Foreground;
+}
+
+.latency--state--Failed {
+    color: $Error-Foreground;
+}
+
+spinner {
+    display: flex;
+    align-items: center;
+    align-content: center;
+    float: right;
+}

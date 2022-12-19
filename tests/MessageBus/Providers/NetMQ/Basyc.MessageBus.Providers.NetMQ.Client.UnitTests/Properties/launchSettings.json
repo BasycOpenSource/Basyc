@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Basyc.MessageBus.Client.NetMQ.Tests": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:59699;http://localhost:59700"
+    }
+  }
+}

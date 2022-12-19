@@ -1,0 +1,42 @@
+﻿@import "../Shared/Colors.scss";
+
+domainHeading {
+    display: flex;
+    padding: 0rem 3rem 0rem 4rem;
+    align-items: center;
+}
+
+headingDivider {
+    height: 1px;
+    background-color: #CECECE;
+    display: block;
+    width: 100%;
+}
+
+domainHeadingText {
+    font-size: 1.60rem;
+    font-style: italic;
+    color: #6D6D6D;
+    margin-right: 1.3rem;
+}
+
+requestCounter {
+    font-size: 17px;
+    margin-right: 0.8rem;
+    margin-left: 0.8rem;
+}
+
+queriesCount {
+    @extend requestCounter;
+    color: $Request-Tag-Query-Foreground;
+}
+
+commandCount {
+    @extend requestCounter;
+    color: $Request-Tag-Command-Foreground;
+}
+
+genericCount {
+    @extend requestCounter;
+    color: $Request-Tag-Generic-Foreground;
+}

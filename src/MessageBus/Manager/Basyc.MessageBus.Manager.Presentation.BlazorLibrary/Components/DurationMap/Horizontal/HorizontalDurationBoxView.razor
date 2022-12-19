@@ -1,0 +1,288 @@
+﻿@using Basyc.Blazor.Controls.TooltippedText
+@using Basyc.Diagnostics.Shared.Logging
+@using Basyc.MessageBus.Manager.Application.ResultDiagnostics
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogWindow
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html
+
+@implements IDisposable
+@{
+    string width = "5rem";
+    if (Activity.HasEnded)
+    {
+        width = DurationViewHelper.GetCssDurationValue(Activity.EndTime - Activity.StartTime, PixelsPerMs, out var remNumber);
+        if (remNumber < 0.2)
+        {
+            width = "0.1px";
+        }
+    }
+    //var opacity = Color.Opacity - (((double)NestingLevel / 5) * Color.Opacity);
+    //string durationBoxStyle = $"min-width: {width}; background-color: {Color.Edit(opacity: opacity)};";
+    var darkPercentage = (double)NestingLevel / 5;
+    if (darkPercentage > 1)
+        darkPercentage = 1;
+    //string durationBoxStyle = $"min-width: {width}; background-color: {Color.Darker(darkPercentage)};";
+    string durationBoxStyle = $"width: {width}; background-color: {Color.Darker(1)};";
+    string mudTooltipBoxStyle = $"display: block; width: 100%; height: 100%; grid-row: 1; grid-column: 1;";
+}
+
+<horizontalDurationBoxView>
+    <durationBox style="@durationBoxStyle">
+        <MudTooltip RootStyle="@mudTooltipBoxStyle" Arrow="true">
+            <ChildContent>
+                <durationBoxBorder>
+                    <acitvityName>
+                        @Activity.DisplayName
+                    </acitvityName>
+                    @if (Activity.HasEnded is false)
+                    {
+                        <spinner>
+                            <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
+                        </spinner>
+                    }
+                </durationBoxBorder>
+            </ChildContent>
+            <TooltipContent>
+                <toolTipContent>
+                    service: @Activity.Service.ServiceName
+                    <br />
+                    name: @Activity.DisplayName
+                    <br />
+                    id: @Activity.Id
+                    <br />
+                    start: @Activity.StartTime.ToString("hh:mm:ss:fff")
+                    <br />
+                    end: @Activity.EndTime.ToString("hh:mm:ss:fff")
+                    <br />
+                    dur: @((Activity.EndTime - Activity.StartTime).TotalMilliseconds) ms
+                    <br />
+                    Parent: @(Activity.HasParent ? Activity.ParentActivity?.DisplayName : "(none)")
+                    <br />
+                    hasEnded: @Activity.HasEnded
+                    <br />
+                    logs: @Activity.Logs.Count
+
+                </toolTipContent>
+            </TooltipContent>
+        </MudTooltip>
+        @*@foreach (var log in Activity.Logs)
+        {
+            var logStartPosition = DurationViewHelper.GetCssDurationValue(log.Time - Activity.StartTime, Scale, out var logStartPixels, "px");
+            var logWidth = Math.Max(Math.Min(4 * Scale, 10), 5);
+            var logStyle = $"margin-left: {logStartPosition}; width: {logWidth}px";
+            var logContentClass = $"logContent--{log.LogLevel}";
+            var legMarginLeft = -(logWidth / 2);
+            if (logStartPixels < legMarginLeft)
+            {
+                legMarginLeft = 0;
+            }
+            if (logStartPixels > logWidth)
+            {
+                legMarginLeft = -logWidth;
+            }
+
+            var logContentStyle = $"margin-left: {Html.Number(legMarginLeft)}px;";
+
+
+            <log style="@logStyle">
+                <MudTooltip RootClass="logContentToolTip">
+                    <ChildContent>
+                        <logContent class="@logContentClass" style="@logContentStyle" />
+                    </ChildContent>
+                    <TooltipContent>
+                        <toolTipContent>
+                            <LogEntryView Activity="@Activity" LogEntry="@log" />
+                        </toolTipContent>
+                    </TooltipContent>
+                </MudTooltip>
+            </log>
+        }
+        *@
+
+        @foreach (var aggregatedLog in LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier))
+        {
+            var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime, PixelsPerMs, out var logStartPixels, "px");
+            var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
+            var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
+            var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
+            var legMarginLeft = -(logWidth / 2);
+            if (logStartPixels < legMarginLeft)
+            {
+                legMarginLeft = 0;
+            }
+            if (logStartPixels > logWidth)
+            {
+                legMarginLeft = -logWidth;
+            }
+
+            var logContentStyle = $"margin-left: {Html.Number(legMarginLeft)}px;";
+
+            <log style="@logStyle">
+                <MudTooltip RootClass="logContentToolTip">
+                    <ChildContent>
+                        <logContent class="@logContentClass" style="@logContentStyle" />
+                    </ChildContent>
+                    <TooltipContent>
+                        <toolTipContent>
+                           @* <LogEntryView Activity="@Activity" 
+                                ServiceName="@aggregatedLog.Service.ServiceName" 
+                                LogTime="@aggregatedLog.Time" 
+                                LogLevel="@aggregatedLog.WorstLogLevel"
+                                LogMessage="@string.Join(", ",aggregatedLog.Logs.Select(x=>x.Message))" />
+                                *@
+                            @string.Join(", ",aggregatedLog.Logs.Select(x=>x.Message))
+                        </toolTipContent>
+                    </TooltipContent>
+                </MudTooltip>
+            </log>
+        }
+    </durationBox>
+
+
+    <nestedDurationBoxes>
+        @{
+            List<RowViewModel> rows = new();
+            rows.Add(new RowViewModel());
+            foreach (var nestedActivity in Activity.NestedActivities.OrderBy(x => x.StartTime))
+            {
+                var nestedActivityLatestEndTime = GetRecursiveLatestEndTime(nestedActivity); ;
+                var lastRow = rows.Last();
+                if (lastRow.LastEndTime == default)
+                {
+                    lastRow.Activities.Add(nestedActivity);
+                    lastRow.LastEndTime = nestedActivityLatestEndTime;
+                    lastRow.StartTime = nestedActivity.StartTime;
+                    continue;
+                }
+                var previousActivityInRow = lastRow.Activities.First();
+                var diff = Math.Ceiling((nestedActivity.StartTime - lastRow.LastEndTime).TotalMilliseconds);
+                var canFitOnSameRow = diff >= 0;
+                var startsTheSameAndPreviousHas0Duration = ((lastRow.LastEndTime - nestedActivity.StartTime).TotalMilliseconds == 0 && previousActivityInRow.Duration.Ticks == 0);
+                if (canFitOnSameRow || startsTheSameAndPreviousHas0Duration)
+                {
+                    lastRow.Activities.Add(nestedActivity);
+                    lastRow.LastEndTime = nestedActivityLatestEndTime;
+                }
+                else
+                {
+                    var newRow = new RowViewModel();
+                    newRow.LastEndTime = nestedActivityLatestEndTime;
+                    newRow.Activities.Add(nestedActivity);
+                    newRow.StartTime = nestedActivity.StartTime;
+                    rows.Add(newRow);
+                }
+            }
+
+            RowViewModel previousRow = null;
+            foreach (var row in rows)
+            {
+                ActivityContext previousRowActivity = null;
+                if (previousRow != null)
+                {
+                    <rowSplitter />
+                }
+                <nestedRows>
+                    @if (rows.Count > 1)
+                    {
+                        <treeLeg>
+                            <treeHorizontalLine />
+                        </treeLeg>
+                    }
+                    @foreach (var nestedActivity in row.Activities)
+                    {
+                        <nestedRow>
+                            @{
+                                var isFirstNested = previousRowActivity is null;
+                                if (isFirstNested)
+                                {
+                                    var lateStartDuration = nestedActivity.StartTime - Activity.StartTime;
+                                    if (lateStartDuration > TimeSpan.FromMilliseconds(0))
+                                    {
+                                        <HorizontalUnknownDurationBoxView StartTime="Activity.StartTime" EndTime="nestedActivity.StartTime" PixelsPerMs="PixelsPerMs" Color="@Color" />
+                                    }
+                                }
+
+
+                                var isGapBetweenPreviousNested = previousRowActivity is not null && previousRowActivity.EndTime != nestedActivity.StartTime;
+                                if (isGapBetweenPreviousNested)
+                                {
+                                    <HorizontalUnknownDurationBoxView StartTime="previousRowActivity.EndTime" EndTime="nestedActivity.StartTime" PixelsPerMs="PixelsPerMs" Color="@Color" />
+                                }
+                                <HorizontalDurationBoxView Activity="nestedActivity" PixelsPerMs="PixelsPerMs" Color="@Color" NestingLevel="NestingLevel+1" />
+
+                                previousRowActivity = nestedActivity;
+
+                            }
+                        </nestedRow>
+                    }
+                </nestedRows>
+                previousRow = row;
+            }
+
+        }
+    </nestedDurationBoxes>
+
+
+</horizontalDurationBoxView>
+
+
+@code {
+    private class RowViewModel
+    {
+        public RowViewModel()
+        {
+
+        }
+        public DateTimeOffset StartTime { get; set; } = default;
+        public DateTimeOffset LastEndTime { get; set; } = default;
+        public List<ActivityContext> Activities { get; } = new();
+    }
+
+
+    [Parameter, EditorRequired] public ActivityContext Activity { get; set; }
+    [Parameter, EditorRequired] public double PixelsPerMs { get; set; }
+    /// <summary>
+    ///Hexadecimal string
+    /// </summary>
+    [Parameter, EditorRequired] public Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors.Color Color { get; set; }
+    [Parameter, EditorRequired] public int NestingLevel { get; set; }
+    private const double logWidthMultiplier = 4;
+    private const double logMinWidthPixels = 5;
+    private const double logMaxWidthPixels = 10;
+
+    protected override Task OnParametersSetAsync()
+    {
+    Activity.ActivityEnded += OnActivityEnded;
+    Activity.NestedActivityEnded += OnNestedActivityEnded;
+    return base.OnParametersSetAsync();
+    }
+
+    private void OnActivityEnded(object sender, EventArgs e)
+    {
+    StateHasChanged();
+    }
+
+    private void OnNestedActivityEnded(object sender, EventArgs e)
+    {
+    StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+    Activity.ActivityEnded -= OnActivityEnded;
+    Activity.NestedActivityEnded -= OnNestedActivityEnded;
+    }
+
+    private static DateTimeOffset GetRecursiveLatestEndTime(ActivityContext activity)
+    {
+    var latestEndTime = activity.EndTime;
+    foreach (var nestedActivity in activity.NestedActivities)
+    {
+        var nestedLatestEndTime = GetRecursiveLatestEndTime(nestedActivity);
+        latestEndTime = latestEndTime > nestedLatestEndTime ? latestEndTime : nestedLatestEndTime;
+    }
+    return latestEndTime;
+    }
+}

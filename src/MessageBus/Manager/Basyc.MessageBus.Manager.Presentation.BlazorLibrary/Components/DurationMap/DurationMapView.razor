@@ -1,0 +1,43 @@
+﻿@using Basyc.Diagnostics.Shared.Durations
+
+<durationMapView>
+
+    @if (DurationMap is null || DurationMap.Segments.Length == 0)
+    {
+        @:Nothing to show
+    }
+    else
+    {
+        DurationSegment previousSegment = null;
+        foreach (var segment in DurationMap.Segments)
+        {
+            servicesMap.TryAdd(segment.Service, servicesMap.Count);
+            string serviceIndent = $"margin-left: {servicesMap[segment.Service]*2}rem";
+            <serviceIndent style="@serviceIndent">
+                @if (previousSegment is not null)
+                {
+                    if (previousSegment.EndTime > segment.StartTime)
+                    {
+                        <DurationUnknownBoxView StartTime="previousSegment.EndTime" Duration="previousSegment.EndTime - segment.StartTime" Scale="Scale" Service="previousSegment.Service" />
+                    }
+                    else
+                    {
+
+                    }
+                }
+                <DurationBoxView DurationSegment="segment" Scale="Scale" />
+            </serviceIndent>
+            previousSegment = segment;
+        }
+    }
+
+
+</durationMapView>
+
+
+
+@code {
+    [Parameter] public DurationMap DurationMap { get; set; }
+    [Parameter] public double Scale { get; set; } = 20;
+    private Dictionary<ServiceIdentity, int> servicesMap = new();
+}

@@ -1,0 +1,17 @@
+﻿.resultHistoryItemViewButton {
+    margin-bottom: 0.5rem;
+    display: block;
+    min-height: 0px;
+}
+
+item {
+    margin-bottom: 0.5rem;
+    display: flex;
+    min-height: 0px;
+}
+
+historyView {
+    display: flex;    
+    flex-direction: column-reverse;
+    overflow: scroll;
+}
