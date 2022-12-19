@@ -8,7 +8,7 @@ public static partial class DotNetTasks
     {
         try
         {
-            DotNet($"format {project} --verify-no-changes");
+            DotNet($"format {project} --verify-no-changes --no-restore --report");
             errorMessage = null;
             return true;
         }
