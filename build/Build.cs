@@ -55,7 +55,8 @@ class Build : NukeBuild
         .Before(Compile)
         .Executes(() =>
         {
-            var changedProjects = GitGetChangedProjects(Repository!.LocalDirectory, "develop");
+            var branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
+            var changedProjects = GitGetChangedProjects(Repository!.LocalDirectory, branchToComapre);
             DotnetFormatVerifyNoChanges(changedProjects, out var _, false);
         });
 
