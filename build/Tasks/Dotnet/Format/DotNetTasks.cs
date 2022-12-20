@@ -9,10 +9,10 @@ namespace _build;
 
 public static partial class DotNetTasks
 {
-    public static bool DotnetFormatVerifyNoChanges(string projectOrSolutionPath, [NotNullWhen(false)] out string? outputMessage, bool throwOnNotFormatted = true)
+    public static bool DotnetFormatVerifyNoChanges(string projectOrSolutionPath, [NotNullWhen(false)] out string? outputMessage, bool throwIfNotFormatted = true)
     {
         var isSolution = projectOrSolutionPath.EndsWith(".sln");
-        var formatReportFilePath = Path.GetTempPath() + $"dotnetFormatReport-{DateTime.UtcNow.ToString("dd-MM-hh-mm")}.json";
+        var formatReportFilePath = Path.GetTempPath() + $"dotnetFormatReport-{DateTime.UtcNow.ToString("dd-MM-hh-mm-ss-fff")}.json";
         bool canBeFormated = false;
         try
         {
@@ -42,7 +42,7 @@ public static partial class DotNetTasks
             outputMessage = CreateOutputMessage(aggregatedReport);
             Log.Error(outputMessage);
 
-            if (throwOnNotFormatted)
+            if (throwIfNotFormatted)
             {
                 throw;
             }
@@ -55,6 +55,24 @@ public static partial class DotNetTasks
 
         return canBeFormated;
     }
+
+    public static bool DotnetFormatVerifyNoChanges(IEnumerable<string> projectsOrSolutions, [NotNullWhen(false)] out string? outputMessage, bool throwIfNotFormatted = true)
+    {
+        bool needsFormating = false;
+        List<string?> outputs = new();
+        foreach (var project in projectsOrSolutions)
+        {
+            needsFormating |= DotnetFormatVerifyNoChanges(project, out var innerOutputMessage, false);
+            outputs.Add(innerOutputMessage);
+        }
+
+        if (throwIfNotFormatted)
+            throw new Exception("One of the items needs fomrating. See ouput");
+
+        outputMessage = string.Join("\n", outputs);
+        return needsFormating;
+    }
+
 
     private static string CreateOutputMessage(AggregatedDotnetFormatReport report)
     {

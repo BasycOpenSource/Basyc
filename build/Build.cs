@@ -8,6 +8,7 @@ using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using static _build.DotNetTasks;
+using static _build.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 /// Support plugins are available for:
@@ -54,7 +55,8 @@ class Build : NukeBuild
         .Before(Compile)
         .Executes(() =>
         {
-            DotnetFormatVerifyNoChanges(Solution, out var _);
+            var changedProjects = GitGetChangedProjects(Repository!.LocalDirectory, "develop");
+            DotnetFormatVerifyNoChanges(changedProjects, out var _, false);
         });
 
 
