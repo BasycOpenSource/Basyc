@@ -40,7 +40,12 @@ class Build : NukeBuild
     AbsolutePath OutputDirectory => RootDirectory / "output";
     AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
 
-    public static int Main() => Execute<Build>(x => x.StaticCodeAnalysis, x => x.UnitTest);
+    public static int Main()
+    {
+        //ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
+
+        return Execute<Build>(x => x.StaticCodeAnalysis);
+    }
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
