@@ -7,11 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.Asp
+namespace Basyc.Asp;
+
+public interface IStartupClass
 {
-    public interface IStartupClass
-    {
-        void ConfigureServices(IServiceCollection services);
-        void Configure(IApplicationBuilder app, IWebHostEnvironment env);
-    }
+    void ConfigureServices(IServiceCollection services);
+    void Configure(IApplicationBuilder app, IWebHostEnvironment env);
 }

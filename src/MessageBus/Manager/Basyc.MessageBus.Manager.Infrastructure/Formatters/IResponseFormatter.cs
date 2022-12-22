@@ -1,7 +1,6 @@
-﻿namespace Basyc.MessageBus.Manager.Infrastructure.Formatters
+﻿namespace Basyc.MessageBus.Manager.Infrastructure.Formatters;
+
+public interface IResponseFormatter
 {
-    public interface IResponseFormatter
-    {
-        string Format(object response);
-    }
+    string Format(object response);
 }

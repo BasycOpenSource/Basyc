@@ -5,12 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MessageBus.Client.NetMQ
+namespace Basyc.MessageBus.Client.NetMQ;
+
+public class NetMQMessageBusClientOptions
 {
-    public class NetMQMessageBusClientOptions
-    {
-        public int BrokerServerPort { get; set; }
-        public string? BrokerServerAddress { get; set; }
-        public string? WorkerId { get; set; }
-    }
+    public int BrokerServerPort { get; set; }
+    public string? BrokerServerAddress { get; set; }
+    public string? WorkerId { get; set; }
 }

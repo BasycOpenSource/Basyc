@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Basyc.MessageBus.Manager.Application.Initialization
+namespace Basyc.MessageBus.Manager.Application.Initialization;
+
+public interface IDomainInfoProvider
 {
-    public interface IDomainInfoProvider
-    {
-        List<DomainInfo> GenerateDomainInfos();
-    }
+    List<DomainInfo> GenerateDomainInfos();
 }

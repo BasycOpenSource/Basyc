@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Basyc.MessageBus.Manager.Application
+namespace Basyc.MessageBus.Manager.Application;
+
+public interface ITypedParameterNameFormatter
 {
-    public interface ITypedParameterNameFormatter
-    {
-        string GetCustomTypeName(Type type);
-    }
+    string GetCustomTypeName(Type type);
 }

@@ -3,57 +3,56 @@ using Microsoft.AspNetCore.Http.Features;
 using System.Collections;
 using System.IO.Pipelines;
 
-namespace Basyc.Extensions.SignalR.Client.Tests.Mocks
+namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
+
+internal class ConnectionContextMock : ConnectionContext
 {
-    internal class ConnectionContextMock : ConnectionContext
+
+    public ConnectionContextMock(Pipe pipe)
     {
+        Transport = new DuplexPipeMock(pipe);
+    }
+    public override IDuplexPipe Transport { get; set; }
+    public override string ConnectionId { get; set; } = "-1";
 
-        public ConnectionContextMock(Pipe pipe)
+    public override IFeatureCollection Features { get; } = new FeatureCollectionMock();
+
+    public override IDictionary<object, object?> Items { get; set; } = new Dictionary<object, object?>();
+
+    private class FeatureCollectionMock : IFeatureCollection
+    {
+        private readonly Dictionary<Type, object?> map = new Dictionary<Type, object?>();
+
+        public object? this[Type key]
         {
-            Transport = new DuplexPipeMock(pipe);
+            get => map[key];
+
+            set => map[key] = value;
         }
-        public override IDuplexPipe Transport { get; set; }
-        public override string ConnectionId { get; set; } = "-1";
 
-        public override IFeatureCollection Features { get; } = new FeatureCollectionMock();
+        public bool IsReadOnly => true;
 
-        public override IDictionary<object, object?> Items { get; set; } = new Dictionary<object, object?>();
+        public int Revision => 1;
 
-        private class FeatureCollectionMock : IFeatureCollection
+        public TFeature? Get<TFeature>()
         {
-            private readonly Dictionary<Type, object?> map = new Dictionary<Type, object?>();
+            map.TryGetValue(typeof(TFeature), out var value);
+            return (TFeature?)value;
+        }
 
-            public object? this[Type key]
-            {
-                get => map[key];
+        public IEnumerator<KeyValuePair<Type, object>> GetEnumerator()
+        {
+            return map.GetEnumerator();
+        }
 
-                set => map[key] = value;
-            }
+        public void Set<TFeature>(TFeature? instance)
+        {
+            map[typeof(TFeature)] = instance;
+        }
 
-            public bool IsReadOnly => true;
-
-            public int Revision => 1;
-
-            public TFeature? Get<TFeature>()
-            {
-                map.TryGetValue(typeof(TFeature), out var value);
-                return (TFeature?)value;
-            }
-
-            public IEnumerator<KeyValuePair<Type, object>> GetEnumerator()
-            {
-                return map.GetEnumerator();
-            }
-
-            public void Set<TFeature>(TFeature? instance)
-            {
-                map[typeof(TFeature)] = instance;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return map.GetEnumerator();
-            }
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return map.GetEnumerator();
         }
     }
 }

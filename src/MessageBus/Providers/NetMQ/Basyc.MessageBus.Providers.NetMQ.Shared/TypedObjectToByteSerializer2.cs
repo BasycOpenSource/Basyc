@@ -41,7 +41,6 @@ public static class TypedObjectToByteSerializer2
         }
     }
 
-
     public static T Deserialize<T>(byte[] objectData)
     {
         return (T)Deserialize(objectData, typeof(T));
@@ -65,7 +64,6 @@ public static class TypedObjectToByteSerializer2
                 throw new Exception("Cannot deserialize message. Message data is empty and message does not have empty constructor.");
             }
         }
-
 
         using var stream = new MemoryStream();
         stream.Write(objectData, 0, objectData.Length);

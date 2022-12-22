@@ -1,7 +1,6 @@
-﻿namespace Basyc.MessageBus.Manager.Infrastructure.Building
+﻿namespace Basyc.MessageBus.Manager.Infrastructure.Building;
+
+public interface IBasycDiagnosticsReceiverTraceIdMapper
 {
-    public interface IBasycDiagnosticsReceiverTraceIdMapper
-    {
-        string GetTraceId(string traceId);
-    }
+    string GetTraceId(string traceId);
 }

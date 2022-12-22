@@ -6,14 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class BuildingProtobufSerializationExtensions
 {
-    public static class BuildingProtobufSerializationExtensions
+    public static void SelectProtobufNet(this SelectSerializationStage selectSerializationStage)
     {
-        public static void SelectProtobufNet(this SelectSerializationStage selectSerializationStage)
-        {
-            selectSerializationStage.services.AddSingleton<ITypedByteSerializer, ProtobufByteSerializer>();
-            selectSerializationStage.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
-        }
+        selectSerializationStage.services.AddSingleton<ITypedByteSerializer, ProtobufByteSerializer>();
+        selectSerializationStage.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
     }
 }

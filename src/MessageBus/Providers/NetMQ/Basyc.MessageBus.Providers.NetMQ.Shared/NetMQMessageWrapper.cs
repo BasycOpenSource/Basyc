@@ -26,7 +26,6 @@ public class NetMQMessageWrapper : INetMQMessageWrapper
         return objectToByteSerializer.Serialize(wrapperMessageData, wrapperMessageType);
     }
 
-
     public OneOf<CheckInMessage, RequestCase, ResponseCase, EventCase, DeserializationFailureCase> ReadWrapperMessage(byte[] wrapperBytes)
     {
         ProtoMessageWrapper? wrapper = (ProtoMessageWrapper?)objectToByteSerializer.Deserialize(wrapperBytes, wrapperMessageType);

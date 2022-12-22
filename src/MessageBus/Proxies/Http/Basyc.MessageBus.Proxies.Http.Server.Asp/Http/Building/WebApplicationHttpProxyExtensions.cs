@@ -1,14 +1,13 @@
 ﻿using Basyc.MessageBus.HttpProxy.Server.Asp.Http;
 
-namespace Microsoft.AspNetCore.Builder
+namespace Microsoft.AspNetCore.Builder;
+
+public static class WebApplicationHttpProxyExtensions
 {
-    public static class WebApplicationHttpProxyExtensions
+    public static WebApplication MapBasycHttpMessageBusProxy(this WebApplication app) => MapBasycHttpMessageBusProxy(app, "");
+    public static WebApplication MapBasycHttpMessageBusProxy(this WebApplication app, string pattern)
     {
-        public static WebApplication MapBasycHttpMessageBusProxy(this WebApplication app) => MapBasycHttpMessageBusProxy(app, "");
-        public static WebApplication MapBasycHttpMessageBusProxy(this WebApplication app, string pattern)
-        {
-            app.MapPost(pattern, HttpProxyConstants.ProxyHandler);
-            return app;
-        }
+        app.MapPost(pattern, HttpProxyConstants.ProxyHandler);
+        return app;
     }
 }

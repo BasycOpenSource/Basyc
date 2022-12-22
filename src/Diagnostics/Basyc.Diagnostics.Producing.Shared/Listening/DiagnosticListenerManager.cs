@@ -1,51 +1,49 @@
-﻿namespace Basyc.Diagnostics.Producing.Shared.Listening
+﻿namespace Basyc.Diagnostics.Producing.Shared.Listening;
+
+public class DiagnosticListenerManager
 {
-    public class DiagnosticListenerManager
+    private readonly IDiagnosticsExporter[] exporters;
+    private readonly IDiagnosticListener[] listeners;
+
+    public DiagnosticListenerManager(IEnumerable<IDiagnosticsExporter> exporters, IEnumerable<IDiagnosticListener> listeners)
     {
-        private readonly IDiagnosticsExporter[] exporters;
-        private readonly IDiagnosticListener[] listeners;
+        this.exporters = exporters.ToArray();
+        this.listeners = listeners.ToArray();
 
-        public DiagnosticListenerManager(IEnumerable<IDiagnosticsExporter> exporters, IEnumerable<IDiagnosticListener> listeners)
+    }
+
+    public async Task Start()
+    {
+        foreach (var listener in listeners)
         {
-            this.exporters = exporters.ToArray();
-            this.listeners = listeners.ToArray();
-
-
+            listener.LogsReceived += Listener_LogsReceived;
+            listener.ActivityStartsReceived += Listener_ActivityStartsReceived;
+            listener.ActivityEndsReceived += Listener_ActivityEndsReceived;
+            await listener.Start();
         }
+    }
 
-        public async Task Start()
+    private void Listener_ActivityEndsReceived(object? sender, Diagnostics.Shared.Logging.ActivityEnd e)
+    {
+        foreach (var exporter in exporters)
         {
-            foreach (var listener in listeners)
-            {
-                listener.LogsReceived += Listener_LogsReceived;
-                listener.ActivityStartsReceived += Listener_ActivityStartsReceived;
-                listener.ActivityEndsReceived += Listener_ActivityEndsReceived;
-                await listener.Start();
-            }
+            exporter.EndActivity(e);
         }
+    }
 
-        private void Listener_ActivityEndsReceived(object? sender, Diagnostics.Shared.Logging.ActivityEnd e)
+    private void Listener_ActivityStartsReceived(object? sender, Diagnostics.Shared.Logging.ActivityStart e)
+    {
+        foreach (var exporter in exporters)
         {
-            foreach (var exporter in exporters)
-            {
-                exporter.EndActivity(e);
-            }
+            exporter.StartActivity(e);
         }
+    }
 
-        private void Listener_ActivityStartsReceived(object? sender, Diagnostics.Shared.Logging.ActivityStart e)
+    private void Listener_LogsReceived(object? sender, Diagnostics.Shared.Logging.LogEntry e)
+    {
+        foreach (var exporter in exporters)
         {
-            foreach (var exporter in exporters)
-            {
-                exporter.StartActivity(e);
-            }
-        }
-
-        private void Listener_LogsReceived(object? sender, Diagnostics.Shared.Logging.LogEntry e)
-        {
-            foreach (var exporter in exporters)
-            {
-                exporter.ProduceLog(e);
-            }
+            exporter.ProduceLog(e);
         }
     }
 }

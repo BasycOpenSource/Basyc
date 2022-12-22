@@ -1,9 +1,8 @@
-﻿namespace Basyc.MessageBus.Manager.Application
+﻿namespace Basyc.MessageBus.Manager.Application;
+
+public enum RequestResultState
 {
-    public enum RequestResultState
-    {
-        Started,
-        Completed,
-        Failed,
-    }
+    Started,
+    Completed,
+    Failed,
 }

@@ -5,26 +5,25 @@ using Microsoft.AspNetCore.Routing;
 using System;
 using System.IO;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class IEnpointBuilderHttpProxyServerExtensions
-    {
+namespace Microsoft.Extensions.DependencyInjection;
 
-        public static void MapHttpMessageBusProxyServer(this IEndpointRouteBuilder endpoints)
+public static class IEnpointBuilderHttpProxyServerExtensions
+{
+
+    public static void MapHttpMessageBusProxyServer(this IEndpointRouteBuilder endpoints)
+    {
+        endpoints.MapPost("", async (HttpContext context) =>
         {
-            endpoints.MapPost("", async (HttpContext context) =>
+            var httpHandler = context.RequestServices.GetRequiredService<ProxyHttpRequestHandler>();
+            try
             {
-                var httpHandler = context.RequestServices.GetRequiredService<ProxyHttpRequestHandler>();
-                try
-                {
-                    await httpHandler.Handle(context);
-                }
-                catch (Exception ex)
-                {
-                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    await context.Response.WriteAsync(ex.Message);
-                }
-            });
-        }
+                await httpHandler.Handle(context);
+            }
+            catch (Exception ex)
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                await context.Response.WriteAsync(ex.Message);
+            }
+        });
     }
 }

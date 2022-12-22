@@ -7,13 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class BasycSerializerSelectSerializersStageProtobufNetExtensions
 {
-    public static class BasycSerializerSelectSerializersStageProtobufNetExtensions
+    public static ProtobufByteSerializer ProtobufNet(this SerializersSelectSerializerStage basycSerializers)
     {
-        public static ProtobufByteSerializer ProtobufNet(this SerializersSelectSerializerStage basycSerializers)
-        {
-            return ProtobufByteSerializer.Singlenton;
-        }
+        return ProtobufByteSerializer.Singlenton;
     }
 }

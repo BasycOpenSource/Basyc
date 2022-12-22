@@ -6,21 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.DomainDrivenDesign.DependencyInjection
+namespace Basyc.DomainDrivenDesign.DependencyInjection;
+
+public class ApplicationBuilder<TParentBuilder, TInfraBuilder> : DependencyBuilderBase<TParentBuilder>
+    where TInfraBuilder : InfrastructureBuilderBase<ApplicationBuilder<TParentBuilder, TInfraBuilder>>
 {
-    public class ApplicationBuilder<TParentBuilder, TInfraBuilder> : DependencyBuilderBase<TParentBuilder>
-        where TInfraBuilder : InfrastructureBuilderBase<ApplicationBuilder<TParentBuilder, TInfraBuilder>>
+    private readonly TInfraBuilder infraBuilder;
+
+    public ApplicationBuilder(IServiceCollection services, TParentBuilder parentBuilder, TInfraBuilder infraBuilder) : base(services, parentBuilder)
     {
-        private readonly TInfraBuilder infraBuilder;
+        this.infraBuilder = infraBuilder;
+    }
 
-        public ApplicationBuilder(IServiceCollection services, TParentBuilder parentBuilder, TInfraBuilder infraBuilder) : base(services, parentBuilder)
-        {
-            this.infraBuilder = infraBuilder;
-        }
-
-        public TInfraBuilder UseInfrastructure()
-        {
-            return infraBuilder;
-        }
+    public TInfraBuilder UseInfrastructure()
+    {
+        return infraBuilder;
     }
 }

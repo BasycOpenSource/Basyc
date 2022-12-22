@@ -5,27 +5,25 @@ using Moq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Basyc.MessageBus.InMemory.Tests
+namespace Basyc.MessageBus.InMemory.Tests;
+
+public class NetMQMessageBusClientTests
 {
-    public class NetMQMessageBusClientTests
+    //private readonly ITypedMessageBusClient client;
+
+    public NetMQMessageBusClientTests()
     {
-        //private readonly ITypedMessageBusClient client;
-
-
-        public NetMQMessageBusClientTests()
-        {
-            var mock = new Mock<ILogger<NetMQByteMessageBusClient>>();
-            ILogger<NetMQByteMessageBusClient> logger = mock.Object;
-            //client = new NetMQByteMessageBusClient(,logger);
-        }
-
-        [Fact]
-        public async Task Work()
-        {
-            //var res = await client.RequestAsync<TestRequest, Customer>();
-        }
+        var mock = new Mock<ILogger<NetMQByteMessageBusClient>>();
+        ILogger<NetMQByteMessageBusClient> logger = mock.Object;
+        //client = new NetMQByteMessageBusClient(,logger);
     }
 
-    public record TestRequest : IMessage<Customer>;
-    public record Customer;
+    [Fact]
+    public async Task Work()
+    {
+        //var res = await client.RequestAsync<TestRequest, Customer>();
+    }
 }
+
+public record TestRequest : IMessage<Customer>;
+public record Customer;

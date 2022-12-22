@@ -10,29 +10,26 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MessageBus.Client.MasstTransit
+namespace Basyc.MessageBus.Client.MasstTransit;
+
+public static class MessageBusBuilderMassTransitExtensions
 {
-    public static class MessageBusBuilderMassTransitExtensions
+    /// <summary>
+    /// Takes registered Basyc IRequestHandlers and wraps them with MassTransit IConsumers, Hosted by RabbitMQ
+    /// </summary>
+    public static BusClientSetupProviderStage UseMassTransitProvider(this BusClientSetupProviderStage builder)
     {
-        /// <summary>
-        /// Takes registered Basyc IRequestHandlers and wraps them with MassTransit IConsumers, Hosted by RabbitMQ
-        /// </summary>
-        public static BusClientSetupProviderStage UseMassTransitProvider(this BusClientSetupProviderStage builder)
+        var services = builder.services;
+        services.AddSingleton<ITypedMessageBusClient, MassTransitMessageBusClient>();
+        services.AddHealthChecks();
+        services.AddMassTransit(x =>
         {
-            var services = builder.services;
-            services.AddSingleton<ITypedMessageBusClient, MassTransitMessageBusClient>();
-            services.AddHealthChecks();
-            services.AddMassTransit(x =>
+            x.RegisterBasycHandlersAsMassTransitConsumers();
+            x.UsingRabbitMq((transitContext, rabbitConfig) =>
             {
-                x.RegisterBasycHandlersAsMassTransitConsumers();
-                x.UsingRabbitMq((transitContext, rabbitConfig) =>
-                {
-                    rabbitConfig.ConfigureEndpoints(transitContext);
-                });
+                rabbitConfig.ConfigureEndpoints(transitContext);
             });
-            return builder;
-        }
-
-
+        });
+        return builder;
     }
 }

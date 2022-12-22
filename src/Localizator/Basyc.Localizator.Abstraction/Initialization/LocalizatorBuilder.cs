@@ -5,20 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.Localizator.Abstraction.Initialization
+namespace Basyc.Localizator.Abstraction.Initialization;
+
+public class LocalizatorBuilder
 {
-    public class LocalizatorBuilder
+    private readonly IServiceCollection services;
+
+    public LocalizatorBuilder(IServiceCollection services)
     {
-        private readonly IServiceCollection services;
+        this.services = services;
+    }
 
-        public LocalizatorBuilder(IServiceCollection services)
-        {
-            this.services = services;
-        }
-
-        public void AddStorage<TLocalizatorStorage>() where TLocalizatorStorage : class, ILocalizatorStorage
-        {
-            services.AddSingleton<ILocalizatorStorage, TLocalizatorStorage>();
-        }
+    public void AddStorage<TLocalizatorStorage>() where TLocalizatorStorage : class, ILocalizatorStorage
+    {
+        services.AddSingleton<ILocalizatorStorage, TLocalizatorStorage>();
     }
 }

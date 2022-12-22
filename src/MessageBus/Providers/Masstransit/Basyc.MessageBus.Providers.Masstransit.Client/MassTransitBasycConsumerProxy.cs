@@ -7,40 +7,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MessageBus.Client.MasstTransit
+namespace Basyc.MessageBus.Client.MasstTransit;
+
+public class MassTransitBasycConsumerProxy<TRequest> : IConsumer<TRequest>
+    where TRequest : class, IMessage
 {
-    public class MassTransitBasycConsumerProxy<TRequest> : IConsumer<TRequest>
-        where TRequest : class, IMessage
+    private readonly IMessageHandler<TRequest> requestHandler;
+
+    public MassTransitBasycConsumerProxy(IMessageHandler<TRequest> requestHandler)
     {
-        private readonly IMessageHandler<TRequest> requestHandler;
-
-        public MassTransitBasycConsumerProxy(IMessageHandler<TRequest> requestHandler)
-        {
-            this.requestHandler = requestHandler;
-        }
-
-        public async Task Consume(ConsumeContext<TRequest> context)
-        {
-            await requestHandler.Handle(context.Message, context.CancellationToken);
-            await context.RespondAsync(new VoidCommandResult());
-        }
+        this.requestHandler = requestHandler;
     }
 
-    public class MassTransitBasycConsumerProxy<TRequest, TResponse> : IConsumer<TRequest>
-     where TRequest : class, IMessage<TResponse>
-     where TResponse : class
+    public async Task Consume(ConsumeContext<TRequest> context)
     {
-        private readonly IMessageHandler<TRequest, TResponse> requestHandler;
+        await requestHandler.Handle(context.Message, context.CancellationToken);
+        await context.RespondAsync(new VoidCommandResult());
+    }
+}
 
-        public MassTransitBasycConsumerProxy(IMessageHandler<TRequest, TResponse> requestHandler)
-        {
-            this.requestHandler = requestHandler;
-        }
+public class MassTransitBasycConsumerProxy<TRequest, TResponse> : IConsumer<TRequest>
+ where TRequest : class, IMessage<TResponse>
+ where TResponse : class
+{
+    private readonly IMessageHandler<TRequest, TResponse> requestHandler;
 
-        public async Task Consume(ConsumeContext<TRequest> context)
-        {
-            var response = await requestHandler.Handle(context.Message, context.CancellationToken);
-            await context.RespondAsync(response);
-        }
+    public MassTransitBasycConsumerProxy(IMessageHandler<TRequest, TResponse> requestHandler)
+    {
+        this.requestHandler = requestHandler;
+    }
+
+    public async Task Consume(ConsumeContext<TRequest> context)
+    {
+        var response = await requestHandler.Handle(context.Message, context.CancellationToken);
+        await context.RespondAsync(response);
     }
 }

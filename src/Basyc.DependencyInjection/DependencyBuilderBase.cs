@@ -1,36 +1,35 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Basyc.DependencyInjection
+namespace Basyc.DependencyInjection;
+
+public abstract class DependencyBuilderBase<TParentBuilder>
 {
-    public abstract class DependencyBuilderBase<TParentBuilder>
+    public readonly IServiceCollection services;
+    private readonly TParentBuilder parentBuilder;
+
+    public DependencyBuilderBase(IServiceCollection services, TParentBuilder parentBuilder)
     {
-        public readonly IServiceCollection services;
-        private readonly TParentBuilder parentBuilder;
-
-        public DependencyBuilderBase(IServiceCollection services, TParentBuilder parentBuilder)
-        {
-            this.services = services;
-            this.parentBuilder = parentBuilder;
-        }
-
-        /// <summary>
-        /// Allows continuing configuring previous builder
-        /// </summary>
-        /// <returns></returns>
-        public TParentBuilder Back()
-        {
-            return parentBuilder;
-        }
+        this.services = services;
+        this.parentBuilder = parentBuilder;
     }
 
-    public abstract class DependencyBuilderBase
+    /// <summary>
+    /// Allows continuing configuring previous builder
+    /// </summary>
+    /// <returns></returns>
+    public TParentBuilder Back()
     {
-        public readonly IServiceCollection services;
+        return parentBuilder;
+    }
+}
 
-        public DependencyBuilderBase(IServiceCollection services)
-        {
-            this.services = services;
-        }
+public abstract class DependencyBuilderBase
+{
+    public readonly IServiceCollection services;
+
+    public DependencyBuilderBase(IServiceCollection services)
+    {
+        this.services = services;
     }
 }

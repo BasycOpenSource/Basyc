@@ -139,6 +139,7 @@ public class NetMQMessageBrokerServer : IMessageBrokerServer
                     {
                         logger.LogInformation($"No worker for {@event.EventType} checked in");
                     }
+
                     eventStartActivity.Stop();
                 },
                 failure =>
@@ -163,8 +164,6 @@ public class NetMQMessageBrokerServer : IMessageBrokerServer
 
         poller.Add(brokerSocket);
     }
-
-
 
     public void Start()
     {

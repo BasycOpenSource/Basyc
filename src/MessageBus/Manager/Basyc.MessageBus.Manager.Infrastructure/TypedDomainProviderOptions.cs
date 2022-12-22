@@ -3,10 +3,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MessageBus.Manager.Infrastructure
+namespace Basyc.MessageBus.Manager.Infrastructure;
+
+public class TypedDomainProviderOptions
 {
-    public class TypedDomainProviderOptions
-    {
-        public List<TypedDomainSettings> TypedDomainOptions { get; set; } = new List<TypedDomainSettings>();
-    }
+    public List<TypedDomainSettings> TypedDomainOptions { get; set; } = new List<TypedDomainSettings>();
 }

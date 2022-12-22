@@ -36,5 +36,4 @@ public abstract class ConverterBase<TSource, TTarget> : IConverter<TSource, TTar
 
     public abstract TTarget ToTarget(TSource source);
 
-
 }

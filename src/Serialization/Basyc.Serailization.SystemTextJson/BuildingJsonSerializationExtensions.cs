@@ -6,14 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class BuildingJsonSerializationExtensions
 {
-    public static class BuildingJsonSerializationExtensions
+    public static void SelectSytemTextJson(this SelectSerializationStage selectSerializationStage)
     {
-        public static void SelectSytemTextJson(this SelectSerializationStage selectSerializationStage)
-        {
-            selectSerializationStage.services.AddSingleton<ITypedByteSerializer, JsonByteSerializer>();
-            selectSerializationStage.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
-        }
+        selectSerializationStage.services.AddSingleton<ITypedByteSerializer, JsonByteSerializer>();
+        selectSerializationStage.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
     }
 }

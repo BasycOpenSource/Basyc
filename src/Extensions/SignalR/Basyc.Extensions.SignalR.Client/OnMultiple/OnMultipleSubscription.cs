@@ -1,28 +1,27 @@
-﻿namespace Basyc.Extensions.SignalR.Client.OnMultiple
+﻿namespace Basyc.Extensions.SignalR.Client.OnMultiple;
+
+public class OnMultipleSubscription : IDisposable
 {
-    public class OnMultipleSubscription : IDisposable
+    private readonly IDisposable[] innerSubscriptions;
+
+    public OnMultipleSubscription(IDisposable[] innerSubscriptions)
     {
-        private readonly IDisposable[] innerSubscriptions;
+        this.innerSubscriptions = innerSubscriptions;
+    }
 
-        public OnMultipleSubscription(IDisposable[] innerSubscriptions)
+    /// <summary>
+    /// Unsubscribes all methods from connection
+    /// </summary>
+    public void UnsubscribeAll()
+    {
+        foreach (var innerSubscription in innerSubscriptions)
         {
-            this.innerSubscriptions = innerSubscriptions;
+            innerSubscription.Dispose();
         }
+    }
 
-        /// <summary>
-        /// Unsubscribes all methods from connection
-        /// </summary>
-        public void UnsubscribeAll()
-        {
-            foreach (var innerSubscription in innerSubscriptions)
-            {
-                innerSubscription.Dispose();
-            }
-        }
-
-        public void Dispose()
-        {
-            UnsubscribeAll();
-        }
+    public void Dispose()
+    {
+        UnsubscribeAll();
     }
 }

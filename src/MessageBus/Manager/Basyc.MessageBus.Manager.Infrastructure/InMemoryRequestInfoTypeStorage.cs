@@ -5,20 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MessageBus.Manager.Infrastructure
+namespace Basyc.MessageBus.Manager.Infrastructure;
+
+public class InMemoryRequestInfoTypeStorage : IRequestInfoTypeStorage
 {
-    public class InMemoryRequestInfoTypeStorage : IRequestInfoTypeStorage
+    private readonly Dictionary<RequestInfo, Type> storage = new Dictionary<RequestInfo, Type>();
+
+    public void AddRequest(RequestInfo requestInfo, Type requestType)
     {
-        private readonly Dictionary<RequestInfo, Type> storage = new Dictionary<RequestInfo, Type>();
+        storage.Add(requestInfo, requestType);
+    }
 
-        public void AddRequest(RequestInfo requestInfo, Type requestType)
-        {
-            storage.Add(requestInfo, requestType);
-        }
-
-        public Type GetRequestType(RequestInfo requestInfo)
-        {
-            return storage[requestInfo];
-        }
+    public Type GetRequestType(RequestInfo requestInfo)
+    {
+        return storage[requestInfo];
     }
 }

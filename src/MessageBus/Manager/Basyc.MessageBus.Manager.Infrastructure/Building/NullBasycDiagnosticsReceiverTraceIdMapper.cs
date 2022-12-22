@@ -1,10 +1,9 @@
-﻿namespace Basyc.MessageBus.Manager.Infrastructure.Building
+﻿namespace Basyc.MessageBus.Manager.Infrastructure.Building;
+
+public class NullBasycDiagnosticsReceiverTraceIdMapper : IBasycDiagnosticsReceiverTraceIdMapper
 {
-    public class NullBasycDiagnosticsReceiverTraceIdMapper : IBasycDiagnosticsReceiverTraceIdMapper
+    public string GetTraceId(string traceId)
     {
-        public string GetTraceId(string traceId)
-        {
-            return traceId;
-        }
+        return traceId;
     }
 }

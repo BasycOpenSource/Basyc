@@ -1,9 +1,8 @@
 ﻿using System.Reflection;
 
-namespace Basyc.MessageBus.Manager.Application
+namespace Basyc.MessageBus.Manager.Application;
+
+public interface ITypedDomainNameFormatter
 {
-    public interface ITypedDomainNameFormatter
-    {
-        string GetFormattedName(Assembly assembly);
-    }
+    string GetFormattedName(Assembly assembly);
 }

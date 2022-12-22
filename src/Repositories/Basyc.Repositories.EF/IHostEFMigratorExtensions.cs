@@ -8,21 +8,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.Repositories.EF
-{
-    public static class IHostEFMigratorExtensions
-    {
-        public static IHostBuilder MigrateDatabaseOnStart<TDbContext>(this IHostBuilder host)
-            where TDbContext : DbContext
-        {
-            host.ConfigureServices(ConfigureMigartionServices<TDbContext>);
-            return host;
-        }
+namespace Basyc.Repositories.EF;
 
-        private static void ConfigureMigartionServices<TDBContext>(HostBuilderContext context, IServiceCollection services)
-            where TDBContext : DbContext
-        {
-            services.AddTransient<IStartupFilter, EFMigrationStartupFilter<TDBContext>>();
-        }
+public static class IHostEFMigratorExtensions
+{
+    public static IHostBuilder MigrateDatabaseOnStart<TDbContext>(this IHostBuilder host)
+        where TDbContext : DbContext
+    {
+        host.ConfigureServices(ConfigureMigartionServices<TDbContext>);
+        return host;
+    }
+
+    private static void ConfigureMigartionServices<TDBContext>(HostBuilderContext context, IServiceCollection services)
+        where TDBContext : DbContext
+    {
+        services.AddTransient<IStartupFilter, EFMigrationStartupFilter<TDBContext>>();
     }
 }

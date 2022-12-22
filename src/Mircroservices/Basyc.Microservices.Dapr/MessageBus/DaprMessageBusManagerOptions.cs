@@ -1,7 +1,6 @@
-﻿namespace Basyc.MicroService.Dapr.MessageBus
+﻿namespace Basyc.MicroService.Dapr.MessageBus;
+
+public class DaprMessageBusManagerOptions
 {
-    public class DaprMessageBusManagerOptions
-    {
-        public string PubSubName { get; set; }
-    }
+    public string PubSubName { get; set; }
 }

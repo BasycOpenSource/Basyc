@@ -12,16 +12,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MicroService.Asp.Dapr
+namespace Basyc.MicroService.Asp.Dapr;
+
+public static class MicroserviceBuilderDaprExtensions
 {
-    public static class MicroserviceBuilderDaprExtensions
+    public static MicroserviceBuilder<TParentBuilder> AddDaprProvider<TParentBuilder>(this MicroserviceBuilder<TParentBuilder> builder)
     {
-        public static MicroserviceBuilder<TParentBuilder> AddDaprProvider<TParentBuilder>(this MicroserviceBuilder<TParentBuilder> builder)
-        {
-            //var provider = new DaprMicroserviceProvider(builder.webBuilder);
-            //builder.AddProvider(provider);
-            //TODO
-            return builder;
-        }
+        //var provider = new DaprMicroserviceProvider(builder.webBuilder);
+        //builder.AddProvider(provider);
+        //TODO
+        return builder;
     }
 }

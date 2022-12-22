@@ -5,13 +5,12 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Basyc.MessageBus.Manager.Infrastructure.Formatters
+namespace Basyc.MessageBus.Manager.Infrastructure.Formatters;
+
+public class JsonResponseFormatter : IResponseFormatter
 {
-    public class JsonResponseFormatter : IResponseFormatter
+    public string Format(object response)
     {
-        public string Format(object response)
-        {
-            return JsonSerializer.Serialize(response);
-        }
+        return JsonSerializer.Serialize(response);
     }
 }

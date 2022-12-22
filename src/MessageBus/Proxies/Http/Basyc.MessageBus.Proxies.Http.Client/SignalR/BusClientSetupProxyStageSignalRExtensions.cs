@@ -4,24 +4,23 @@ using Basyc.MessageBus.HttpProxy.Client.Http;
 using Basyc.MessageBus.HttpProxy.Shared.SignalR;
 using Basyc.Serialization.Abstraction;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class BusClientSetupProxyStageSignalRExtensions
 {
-    public static class BusClientSetupProxyStageSignalRExtensions
+    public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent, string signalRServerUri, string hubPattern = SignalRConstants.ProxyClientHubPattern)
     {
-        public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent, string signalRServerUri, string hubPattern = SignalRConstants.ProxyClientHubPattern)
+        parent.services.AddBasycSerialization()
+            .SelectProtobufNet();
+        parent.services.AddSingleton<IObjectMessageBusClient, SignalRProxyObjectMessageBusClient>();
+        parent.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
+
+        parent.services.Configure<SignalROptions>(options =>
         {
-            parent.services.AddBasycSerialization()
-                .SelectProtobufNet();
-            parent.services.AddSingleton<IObjectMessageBusClient, SignalRProxyObjectMessageBusClient>();
-            parent.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
+            options.SignalRServerUri = signalRServerUri;
+            options.ProxyClientHubPattern = hubPattern;
+        });
 
-            parent.services.Configure<SignalROptions>(options =>
-            {
-                options.SignalRServerUri = signalRServerUri;
-                options.ProxyClientHubPattern = hubPattern;
-            });
-
-            return new BusClientUseDiagnosticsStage(parent.services);
-        }
+        return new BusClientUseDiagnosticsStage(parent.services);
     }
 }

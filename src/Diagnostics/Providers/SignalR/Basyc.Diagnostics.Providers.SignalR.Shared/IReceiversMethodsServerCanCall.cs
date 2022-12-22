@@ -1,9 +1,8 @@
 ﻿using Basyc.Diagnostics.SignalR.Shared.DTOs;
 
-namespace Basyc.Diagnostics.SignalR.Shared
+namespace Basyc.Diagnostics.SignalR.Shared;
+
+public interface IReceiversMethodsServerCanCall
 {
-    public interface IReceiversMethodsServerCanCall
-    {
-        Task ReceiveChangesFromServer(ChangesSignalRDTO changes);
-    }
+    Task ReceiveChangesFromServer(ChangesSignalRDTO changes);
 }

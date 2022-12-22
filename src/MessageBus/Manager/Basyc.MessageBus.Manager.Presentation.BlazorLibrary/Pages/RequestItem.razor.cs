@@ -47,6 +47,7 @@ public partial class RequestItem
             var defaultValue = GetDefaultValueString(RequestItemViewModel.RequestInfo.Parameters[paramIndex].Type);
             RequestItemViewModel.ParameterValues[paramIndex] = defaultValue;
         }
+
         base.OnInitialized();
     }
 

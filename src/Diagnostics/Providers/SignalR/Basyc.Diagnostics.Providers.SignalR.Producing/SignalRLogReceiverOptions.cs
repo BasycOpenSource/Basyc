@@ -1,7 +1,6 @@
-﻿namespace Basyc.Diagnostics.Receiving.SignalR
+﻿namespace Basyc.Diagnostics.Receiving.SignalR;
+
+public class SignalRLogReceiverOptions
 {
-    public class SignalRLogReceiverOptions
-    {
-        public string? SignalRServerUri { get; set; }
-    }
+    public string? SignalRServerUri { get; set; }
 }

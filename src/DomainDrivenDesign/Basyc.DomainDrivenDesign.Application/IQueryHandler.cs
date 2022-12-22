@@ -6,11 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.DomainDrivenDesign.Application
+namespace Basyc.DomainDrivenDesign.Application;
+
+public interface IQueryHandler<TQuery, TReponse> : IMessageHandler<TQuery, TReponse>
+  where TQuery : class, IQuery<TReponse>
+  where TReponse : class
 {
-    public interface IQueryHandler<TQuery, TReponse> : IMessageHandler<TQuery, TReponse>
-      where TQuery : class, IQuery<TReponse>
-      where TReponse : class
-    {
-    }
 }

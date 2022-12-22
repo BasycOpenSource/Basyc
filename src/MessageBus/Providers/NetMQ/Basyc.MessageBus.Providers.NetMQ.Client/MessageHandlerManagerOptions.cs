@@ -1,8 +1,7 @@
-﻿namespace Basyc.MessageBus.Client.NetMQ
+﻿namespace Basyc.MessageBus.Client.NetMQ;
+
+public class MessageHandlerManagerOptions
 {
-    public class MessageHandlerManagerOptions
-    {
-        public bool IsDiagnosticLoggingEnabled { get; set; }
-        public List<NetMQMessageHandlerInfo> HandlerInfos { get; } = new List<NetMQMessageHandlerInfo>();
-    }
+    public bool IsDiagnosticLoggingEnabled { get; set; }
+    public List<NetMQMessageHandlerInfo> HandlerInfos { get; } = new List<NetMQMessageHandlerInfo>();
 }

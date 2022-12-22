@@ -34,11 +34,13 @@ public partial class BusManager
             {
                 selectedRequestViewModel.IsSelected = false;
             }
+
             selectedRequestViewModel = value;
             if (value is null)
             {
                 return;
             }
+
             selectedRequestViewModel.IsSelected = true;
             resultHistory.TryAdd(value, new List<RequestContext>());
         }
@@ -73,6 +75,7 @@ public partial class BusManager
         {
             await BusManagerJSInterop.ApplyChangesToIndexHtml();
         }
+
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -87,6 +90,7 @@ public partial class BusManager
             var castedParamValue = ParseParamInputValue(paramStringValue, paramInfo);
             parameters.Add(new Parameter(paramInfo, castedParamValue));
         }
+
         Request request = new Request(requestInfo, parameters);
         var requestResult = RequestClient.StartRequest(request);
         requestItem.LastResult = requestResult;
@@ -143,8 +147,6 @@ public partial class BusManager
         castedParam = JsonSerializer.Deserialize(paramStringValue, parameterInfo.Type);
         return castedParam;
     }
-
-
 
     private void OnSelectedRequestMenuItemChanged(RequestItemViewModel newSelectedRequest)
     {

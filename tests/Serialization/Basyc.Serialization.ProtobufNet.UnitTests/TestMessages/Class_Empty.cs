@@ -1,6 +1,5 @@
-﻿namespace Basyc.Serialization.ProtobufNet.Tests.TestMessages
+﻿namespace Basyc.Serialization.ProtobufNet.Tests.TestMessages;
+
+public class Class_Empty
 {
-    public class Class_Empty
-    {
-    }
 }

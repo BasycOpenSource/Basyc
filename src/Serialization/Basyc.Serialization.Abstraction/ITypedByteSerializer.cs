@@ -1,48 +1,46 @@
-﻿namespace Basyc.Serialization.Abstraction
+﻿namespace Basyc.Serialization.Abstraction;
+
+public interface ITypedByteSerializer : ISerializer<object?, byte[], Type>
 {
-    public interface ITypedByteSerializer : ISerializer<object?, byte[], Type>
+
+    public bool TrySerialize<T>(T deserializedObject, out byte[]? serializedObject, out SerializationFailure? error)
     {
-
-        public bool TrySerialize<T>(T deserializedObject, out byte[]? serializedObject, out SerializationFailure? error)
+        try
         {
-            try
-            {
-                serializedObject = Serialize(deserializedObject, typeof(T));
-                error = null;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                serializedObject = default;
-                error = new SerializationFailure(ex);
-                return false;
-            }
+            serializedObject = Serialize(deserializedObject, typeof(T));
+            error = null;
+            return true;
         }
-        public bool TryDeserialize<T>(byte[] serializedObject, out T? deserializedObject, out SerializationFailure? error)
+        catch (Exception ex)
         {
-            try
-            {
-                deserializedObject = (T?)Deserialize(serializedObject, typeof(T));
-                error = null;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                deserializedObject = default;
-                error = new SerializationFailure(ex);
-                return false;
-            }
+            serializedObject = default;
+            error = new SerializationFailure(ex);
+            return false;
         }
-
-        public byte[] Serialize<T>(object? deserializedObject)
+    }
+    public bool TryDeserialize<T>(byte[] serializedObject, out T? deserializedObject, out SerializationFailure? error)
+    {
+        try
         {
-            return Serialize(deserializedObject, typeof(T));
+            deserializedObject = (T?)Deserialize(serializedObject, typeof(T));
+            error = null;
+            return true;
         }
-
-        public object? Deserialize<T>(byte[] serializedObject)
+        catch (Exception ex)
         {
-            return Deserialize(serializedObject, typeof(T));
+            deserializedObject = default;
+            error = new SerializationFailure(ex);
+            return false;
         }
+    }
 
+    public byte[] Serialize<T>(object? deserializedObject)
+    {
+        return Serialize(deserializedObject, typeof(T));
+    }
+
+    public object? Deserialize<T>(byte[] serializedObject)
+    {
+        return Deserialize(serializedObject, typeof(T));
     }
 }

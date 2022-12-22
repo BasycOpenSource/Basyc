@@ -1,9 +1,8 @@
 ﻿using Basyc.Diagnostics.Shared.Logging;
 
-namespace Basyc.Diagnostics.Server.Abstractions
+namespace Basyc.Diagnostics.Server.Abstractions;
+
+public interface IServerDiagnosticPusher
 {
-    public interface IServerDiagnosticPusher
-    {
-        Task PushChangesToReceivers(DiagnosticChanges changes);
-    }
+    Task PushChangesToReceivers(DiagnosticChanges changes);
 }

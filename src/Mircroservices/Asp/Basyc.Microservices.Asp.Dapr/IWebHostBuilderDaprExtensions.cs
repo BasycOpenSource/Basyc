@@ -15,35 +15,34 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Basyc.MicroService.Asp.Dapr
+namespace Basyc.MicroService.Asp.Dapr;
+
+public static class IWebHostBuilderDaprExtensions
 {
-    public static class IWebHostBuilderDaprExtensions
+    public static IWebHostBuilder ConfigureDaprServices(this IWebHostBuilder webBuilder)
     {
-        public static IWebHostBuilder ConfigureDaprServices(this IWebHostBuilder webBuilder)
+        webBuilder.ConfigureServices((context, services) =>
         {
-            webBuilder.ConfigureServices((context, services) =>
+            services.AddTransient<IStartupFilter, DaprStartupFilter>();
+            services.AddDaprClient();
+            services.AddSingleton(new JsonSerializerOptions()
             {
-                services.AddTransient<IStartupFilter, DaprStartupFilter>();
-                services.AddDaprClient();
-                services.AddSingleton(new JsonSerializerOptions()
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    PropertyNameCaseInsensitive = true,
-                });
-
-                services.AddControllers().FixJsonSerialization().AddDapr();
-
-                services.Configure<DaprMessageBusManagerOptions>(options =>
-                {
-                    options.PubSubName = MessageBusConstants.MessageBusName;
-                });
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
             });
 
-            //var serviceBuilder = new MicroserviceBuilder(webBuilder,IHostBuilder).AddDaprProvider();
-            //throw new Exception();
-            //configure(serviceBuilder);
+            services.AddControllers().FixJsonSerialization().AddDapr();
 
-            return webBuilder;
-        }
+            services.Configure<DaprMessageBusManagerOptions>(options =>
+            {
+                options.PubSubName = MessageBusConstants.MessageBusName;
+            });
+        });
+
+        //var serviceBuilder = new MicroserviceBuilder(webBuilder,IHostBuilder).AddDaprProvider();
+        //throw new Exception();
+        //configure(serviceBuilder);
+
+        return webBuilder;
     }
 }

@@ -34,6 +34,7 @@ public static class TypeExtensions
         {
             return Activator.CreateInstance(type);
         }
+
         return null;
     }
 
@@ -63,6 +64,4 @@ public static class TypeExtensions
 
         return methods.ToArray();
     }
-
-
 }

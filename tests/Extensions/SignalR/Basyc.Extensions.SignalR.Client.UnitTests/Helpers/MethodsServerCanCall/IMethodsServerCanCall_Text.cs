@@ -1,7 +1,6 @@
-﻿namespace Basyc.Extensions.SignalR.Client.Tests.MethodsServerCanCall
+﻿namespace Basyc.Extensions.SignalR.Client.Tests.MethodsServerCanCall;
+
+public interface IMethodsServerCanCall_Text
 {
-    public interface IMethodsServerCanCall_Text
-    {
-        public void ReceiveText(string text);
-    }
+    public void ReceiveText(string text);
 }

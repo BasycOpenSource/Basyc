@@ -1,12 +1,11 @@
 ﻿using System;
 
-namespace Basyc.MessageBus.Manager.Infrastructure
+namespace Basyc.MessageBus.Manager.Infrastructure;
+
+public record TypedReqeustResponseTypePair(Type RequestType, Type ResponseType)
 {
-    public record TypedReqeustResponseTypePair(Type RequestType, Type ResponseType)
+    public static implicit operator TypedReqeustResponseTypePair(Type[] types)
     {
-        public static implicit operator TypedReqeustResponseTypePair(Type[] types)
-        {
-            return new TypedReqeustResponseTypePair(types[0], types[1]);
-        }
+        return new TypedReqeustResponseTypePair(types[0], types[1]);
     }
 }

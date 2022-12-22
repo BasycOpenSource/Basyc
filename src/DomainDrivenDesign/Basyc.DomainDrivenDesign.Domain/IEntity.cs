@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace Basyc.DomainDrivenDesign.Domain
+namespace Basyc.DomainDrivenDesign.Domain;
+
+public interface IEntity
 {
-    public interface IEntity
-    {
-        int Id { get; }
-    }
+    int Id { get; }
 }

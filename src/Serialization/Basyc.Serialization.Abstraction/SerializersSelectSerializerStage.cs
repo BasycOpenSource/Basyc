@@ -1,6 +1,5 @@
-﻿namespace Basyc.Serialization
+﻿namespace Basyc.Serialization;
+
+public class SerializersSelectSerializerStage
 {
-    public class SerializersSelectSerializerStage
-    {
-    }
 }

@@ -1,8 +1,7 @@
-﻿namespace Basyc.MessageBus.Client
+﻿namespace Basyc.MessageBus.Client;
+
+public interface ISharedRequestIdCounter
 {
-    public interface ISharedRequestIdCounter
-    {
-        int GetLastId();
-        int GetNextId();
-    }
+    int GetLastId();
+    int GetNextId();
 }

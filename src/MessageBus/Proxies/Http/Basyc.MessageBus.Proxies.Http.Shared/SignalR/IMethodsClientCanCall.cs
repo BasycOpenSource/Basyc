@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace Basyc.MessageBus.HttpProxy.Shared.SignalR
+namespace Basyc.MessageBus.HttpProxy.Shared.SignalR;
+
+public interface IMethodsClientCanCall
 {
-    public interface IMethodsClientCanCall
-    {
-        Task Request(RequestSignalRDTO proxyRequest);
-    }
+    Task Request(RequestSignalRDTO proxyRequest);
 }

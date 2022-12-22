@@ -3,100 +3,97 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers
+namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
+
+public class RequestToTypeBinder<TMessage>
 {
-    public class RequestToTypeBinder<TMessage>
+    private static readonly Type messageRuntimeType;
+    private static Type[] requestParameterTypes;
+    private static readonly PropertyInfo[] messageClassProperties;
+
+    static RequestToTypeBinder()
     {
-        private static readonly Type messageRuntimeType;
-        private static Type[] requestParameterTypes;
-        private static readonly PropertyInfo[] messageClassProperties;
+        messageRuntimeType = typeof(TMessage);
+        messageClassProperties = messageRuntimeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+    }
 
-        static RequestToTypeBinder()
+    public TMessage CreateMessage(Request request)
+    {
+
+        if (TryCreateMessageWithCtor(request, out var messageInstance))
         {
-            messageRuntimeType = typeof(TMessage);
-            messageClassProperties = messageRuntimeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            return messageInstance!;
         }
 
-        public TMessage CreateMessage(Request request)
+        if (TryCreateMessageWithSetters(request, out messageInstance))
         {
-            TMessage? messageInstance;
-
-            if (TryCreateMessageWithCtor(request, out messageInstance))
-            {
-                return messageInstance!;
-            }
-
-            if (TryCreateMessageWithSetters(request, out messageInstance))
-            {
-                return messageInstance!;
-            }
-
-            throw new Exception("Failed to create instance of message");
+            return messageInstance!;
         }
 
-        public bool TryCreateMessageWithCtor(Request request, out TMessage? message)
+        throw new Exception("Failed to create instance of message");
+    }
+
+    public bool TryCreateMessageWithCtor(Request request, out TMessage? message)
+    {
+        EnsureRequestTypeParameterTypesAreCached(request);
+
+        var promisingCtor = messageRuntimeType.GetConstructor(requestParameterTypes!);
+
+        if (promisingCtor is null)
         {
-            EnsureRequestTypeParameterTypesAreCached(request);
-
-            var promisingCtor = messageRuntimeType.GetConstructor(requestParameterTypes!);
-
-            if (promisingCtor is null)
-            {
-                message = default;
-                return false;
-            }
-            var requestParameterValues = request.Parameters.Select(x => x.Value).ToArray();
-            try
-            {
-                var messageInstance = (TMessage)promisingCtor.Invoke(requestParameterValues);
-                message = messageInstance;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                message = default;
-                return false;
-            }
+            message = default;
+            return false;
         }
 
-
-        private bool TryCreateMessageWithSetters(Request request, out TMessage? message)
+        var requestParameterValues = request.Parameters.Select(x => x.Value).ToArray();
+        try
         {
-            EnsureRequestTypeParameterTypesAreCached(request);
-
-            if (messageClassProperties.Length != requestParameterTypes!.Length)
-            {
-                message = default;
-                return false;
-            }
-
-            if (messageClassProperties.Select(x => x.PropertyType).SequenceEqual(requestParameterTypes))
-            {
-                message = default;
-                return false;
-            }
-
-            TMessage messageInstance = Activator.CreateInstance<TMessage>();
-            for (int parameterIndex = 0; parameterIndex < requestParameterTypes.Length; parameterIndex++)
-            {
-                var requestParameterType = requestParameterTypes[parameterIndex];
-                var messagePropertyInfo = messageClassProperties[parameterIndex];
-                var requestParameter = request.Parameters.ElementAt(parameterIndex);
-
-                messagePropertyInfo.SetValue(messageInstance, requestParameter.Value);
-            }
-
+            var messageInstance = (TMessage)promisingCtor.Invoke(requestParameterValues);
             message = messageInstance;
             return true;
         }
-
-        private static void EnsureRequestTypeParameterTypesAreCached(Request request)
+        catch (Exception ex)
         {
-            if (requestParameterTypes is null)
-            {
-                requestParameterTypes = request.RequestInfo.Parameters.Select(x => x.Type).ToArray();
-            }
+            message = default;
+            return false;
+        }
+    }
 
+    private bool TryCreateMessageWithSetters(Request request, out TMessage? message)
+    {
+        EnsureRequestTypeParameterTypesAreCached(request);
+
+        if (messageClassProperties.Length != requestParameterTypes!.Length)
+        {
+            message = default;
+            return false;
+        }
+
+        if (messageClassProperties.Select(x => x.PropertyType).SequenceEqual(requestParameterTypes))
+        {
+            message = default;
+            return false;
+        }
+
+        TMessage messageInstance = Activator.CreateInstance<TMessage>();
+        for (int parameterIndex = 0; parameterIndex < requestParameterTypes.Length; parameterIndex++)
+        {
+            var requestParameterType = requestParameterTypes[parameterIndex];
+            var messagePropertyInfo = messageClassProperties[parameterIndex];
+            var requestParameter = request.Parameters.ElementAt(parameterIndex);
+
+            messagePropertyInfo.SetValue(messageInstance, requestParameter.Value);
+        }
+
+        message = messageInstance;
+        return true;
+    }
+
+    private static void EnsureRequestTypeParameterTypesAreCached(Request request)
+    {
+        if (requestParameterTypes is null)
+        {
+            requestParameterTypes = request.RequestInfo.Parameters.Select(x => x.Type).ToArray();
         }
     }
 }

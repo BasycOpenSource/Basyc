@@ -9,17 +9,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MicroService.Asp.Bootstrapper
-{
-    public static class MicroserviceBootstrapper
-    {
-        public static MicroserviceBuilder<IHostBuilder> CreateBuilder<TStartup>(string[] args)
-            where TStartup : class, IStartupClass
-        {
-            var microserviceBuilder = Host.CreateDefaultBuilder()
-                .CreateMicroserviceBuilder<TStartup>();
+namespace Basyc.MicroService.Asp.Bootstrapper;
 
-            return microserviceBuilder;
-        }
+public static class MicroserviceBootstrapper
+{
+    public static MicroserviceBuilder<IHostBuilder> CreateBuilder<TStartup>(string[] args)
+        where TStartup : class, IStartupClass
+    {
+        var microserviceBuilder = Host.CreateDefaultBuilder()
+            .CreateMicroserviceBuilder<TStartup>();
+
+        return microserviceBuilder;
     }
 }

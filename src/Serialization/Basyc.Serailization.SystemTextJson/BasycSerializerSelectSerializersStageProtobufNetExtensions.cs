@@ -7,13 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class BasycSerializerSelectSerializersStageProtobufNetExtensions
 {
-    public static class BasycSerializerSelectSerializersStageProtobufNetExtensions
+    public static JsonByteSerializer SystemTextJson(this SerializersSelectSerializerStage basycSerializers)
     {
-        public static JsonByteSerializer SystemTextJson(this SerializersSelectSerializerStage basycSerializers)
-        {
-            return JsonByteSerializer.Singlenton;
-        }
+        return JsonByteSerializer.Singlenton;
     }
 }

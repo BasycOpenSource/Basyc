@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Basyc.Shared.Tests.Models.Pricing
+namespace Basyc.Shared.Tests.Models.Pricing;
+
+public class PricingSettingGroupTests
 {
-    public class PricingSettingGroupTests
-    {
-    }
 }

@@ -1,8 +1,7 @@
-﻿namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.RequestTag
+﻿namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.RequestTag;
+
+public enum TagStyle
 {
-    public enum TagStyle
-    {
-        Word,
-        Icon
-    }
+    Word,
+    Icon
 }

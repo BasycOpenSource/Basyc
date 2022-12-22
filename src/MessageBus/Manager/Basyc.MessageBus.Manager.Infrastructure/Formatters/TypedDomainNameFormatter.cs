@@ -6,13 +6,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MessageBus.Manager.Infrastructure
+namespace Basyc.MessageBus.Manager.Infrastructure;
+
+public class TypedDomainNameFormatter : ITypedDomainNameFormatter
 {
-    public class TypedDomainNameFormatter : ITypedDomainNameFormatter
+    public string GetFormattedName(Assembly assembly)
     {
-        public string GetFormattedName(Assembly assembly)
-        {
-            return assembly.GetName().Name;
-        }
+        return assembly.GetName().Name;
     }
 }

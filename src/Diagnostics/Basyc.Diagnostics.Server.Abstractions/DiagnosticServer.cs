@@ -1,31 +1,30 @@
 ﻿using Basyc.Diagnostics.Shared.Logging;
 
-namespace Basyc.Diagnostics.Server.Abstractions
+namespace Basyc.Diagnostics.Server.Abstractions;
+
+public class DiagnosticServer
 {
-    public class DiagnosticServer
+    private readonly IEnumerable<IServerDiagnosticPusher> pushers;
+
+    public DiagnosticServer(IEnumerable<IServerDiagnosticReceiver> receivers, IEnumerable<IServerDiagnosticPusher> pushers)
     {
-        private readonly IEnumerable<IServerDiagnosticPusher> pushers;
-
-        public DiagnosticServer(IEnumerable<IServerDiagnosticReceiver> receivers, IEnumerable<IServerDiagnosticPusher> pushers)
+        this.pushers = pushers;
+        foreach (var receiver in receivers)
         {
-            this.pushers = pushers;
-            foreach (var receiver in receivers)
-            {
-                receiver.ChangesReceived += Receiver_ChangesReceived;
-            }
+            receiver.ChangesReceived += Receiver_ChangesReceived;
         }
+    }
 
-        public Task Start()
-        {
-            return Task.CompletedTask;
-        }
+    public Task Start()
+    {
+        return Task.CompletedTask;
+    }
 
-        private async void Receiver_ChangesReceived(object? sender, DiagnosticChanges changes)
+    private async void Receiver_ChangesReceived(object? sender, DiagnosticChanges changes)
+    {
+        foreach (var pusher in pushers)
         {
-            foreach (var pusher in pushers)
-            {
-                await pusher.PushChangesToReceivers(changes);
-            }
+            await pusher.PushChangesToReceivers(changes);
         }
     }
 }

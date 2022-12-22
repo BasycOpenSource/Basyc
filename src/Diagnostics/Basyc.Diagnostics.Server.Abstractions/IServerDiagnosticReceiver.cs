@@ -1,9 +1,8 @@
 ﻿using Basyc.Diagnostics.Shared.Logging;
 
-namespace Basyc.Diagnostics.Server.Abstractions
+namespace Basyc.Diagnostics.Server.Abstractions;
+
+public interface IServerDiagnosticReceiver
 {
-    public interface IServerDiagnosticReceiver
-    {
-        event EventHandler<DiagnosticChanges> ChangesReceived;
-    }
+    event EventHandler<DiagnosticChanges> ChangesReceived;
 }

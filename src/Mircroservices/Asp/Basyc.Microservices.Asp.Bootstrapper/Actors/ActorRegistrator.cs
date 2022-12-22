@@ -7,34 +7,33 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.MicroService.Asp.Bootstrapper.Actors
+namespace Basyc.MicroService.Asp.Bootstrapper.Actors;
+
+public class ActorRegistrator
 {
-    public class ActorRegistrator
+    private readonly IMicroserviceProvider microserviceProvider;
+
+    public ActorRegistrator(IMicroserviceProvider microserviceProvider)
     {
-        private readonly IMicroserviceProvider microserviceProvider;
+        this.microserviceProvider = microserviceProvider;
+    }
 
-        public ActorRegistrator(IMicroserviceProvider microserviceProvider)
+    /// <summary>
+    /// <typeparamref name="TStartup"/> must be in default namespace besides Actors folder
+    /// </summary>
+    /// <typeparam name="TStartup"></typeparam>
+    public void RegisterActors<TStartup>()
+    {
+        RegisterActors(typeof(TStartup).Namespace + "/Actors");
+    }
+
+    public void RegisterActors(string actorsNamespace)
+    {
+
+        var actorTypes = Assembly.GetEntryAssembly().DefinedTypes.Where(x => x.IsClass && x.ImplementedInterfaces.Contains(typeof(IActor)) && x.Namespace.StartsWith(actorsNamespace));
+        foreach (var actor in actorTypes)
         {
-            this.microserviceProvider = microserviceProvider;
-        }
-
-        /// <summary>
-        /// <typeparamref name="TStartup"/> must be in default namespace besides Actors folder
-        /// </summary>
-        /// <typeparam name="TStartup"></typeparam>
-        public void RegisterActors<TStartup>()
-        {
-            RegisterActors(typeof(TStartup).Namespace + "/Actors");
-        }
-
-        public void RegisterActors(string actorsNamespace)
-        {
-
-            var actorTypes = Assembly.GetEntryAssembly().DefinedTypes.Where(x => x.IsClass && x.ImplementedInterfaces.Contains(typeof(IActor)) && x.Namespace.StartsWith(actorsNamespace));
-            foreach (var actor in actorTypes)
-            {
-                microserviceProvider.RegisterActor(actor);
-            }
+            microserviceProvider.RegisterActor(actor);
         }
     }
 }

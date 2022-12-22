@@ -18,18 +18,13 @@ public static partial class DotNetTasks
         bool isFormated = DotnetWrapper.FormatVerifyNoChanges(workingDirectory, projectOrSolutionPath, filesTocheck, out var report, out processException);
         if (isFormated)
         {
-            if (filesTocheck is null || filesTocheck.Any() is false)
-            {
-                Log.Information($"Project '{projectOrSolutionPath}' is formatted.");
-            }
-            else
-            {
-                string filesToCheckString = string.Join("\n", filesTocheck);
-                Log.Information($"These files or directories were checked are formatted correctly:\n{filesToCheckString}");
-            }
-
+            Log.Information($"Files formatted correctly");
             aggregatedReport = null;
             return true;
+        }
+        else
+        {
+            Log.Information($"Not formatted file(s) found");
         }
 
         bool isSolution = projectOrSolutionPath.EndsWith(".sln");
@@ -77,41 +72,6 @@ public static partial class DotNetTasks
         var batchedReport = CreateBatchedReport(gitChangesReport);
         int totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Select(x => x.Length).Sum();
         Log.Information($"Solution to check: {gitChangesReport.SolutionChanges.Length}, projects to check: {gitChangesReport.SolutionChanges.Select(x => x.ProjectChanges.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
-        //return DotnetFormatVerifyNoChanges(_ => _
-        //    .SetProcessWorkingDirectory(gitChangesReport.GitRepoLocalDirectory)
-        //    .CombineWith(gitChangesReport.SolutionChanges,
-        // (_, solutionChange) => _
-        //     .SetProject(solutionChange.SolutionFullPath)
-        //     .When(solutionChange.IsSolutionChanged, _ => _
-        //        .AddInclude(solutionChange.SolutionFullPath))
-        //      .CombineWith(solutionChange.ProjectChanges, (_, projectChange) => _
-        //              .When(projectChange.IsProjectChanged, _ => _
-        //                  .AddInclude(projectChange.ProjectFullPath))
-        //            .AddInclude(projectChange.GetAllChangedFiles()))), completeOnFailure: true);
-
-        //return DotnetFormatVerifyNoChanges(_ => _
-        //  .SetProcessWorkingDirectory(gitChangesReport.GitRepoLocalDirectory)
-        //  .CombineWith(reports, (_, report) => _
-        //    .CombineWith(report.SolutionChanges, (_, solution) => _
-        //        .SetProject(solution.SolutionFullPath)
-        //             .SetProject(solution.SolutionFullPath)
-        //             .When(solution.IsSolutionChanged, _ => _
-        //                .AddInclude(solution.SolutionFullPath))
-        //              .CombineWith(solution.ProjectChanges, (_, projectChange) => _
-        //                      .When(projectChange.IsProjectChanged, _ => _
-        //                          .AddInclude(projectChange.ProjectFullPath))
-        //                    .AddInclude(projectChange.GetAllChangedFiles())))), completeOnFailure: true);
-
-        //  return DotnetFormatVerifyNoChanges(_ => _
-        //.SetProcessWorkingDirectory(gitChangesReport.GitRepoLocalDirectory)
-        //.CombineWith(reports, (_, report) => _
-        //  .CombineWith(report.SolutionChanges, (_, solution) => _
-        //      .SetProject(solution.SolutionFullPath)
-        //           .SetProject(solution.SolutionFullPath)
-        //           .When(solution.IsSolutionChanged, _ => _
-        //              .AddInclude(solution.SolutionFullPath))
-        //            .AddInclude(solution.ProjectChanges.SelectMany(x => x.GetAllChangedFiles())))),
-        //            completeOnFailure: true);
 
         return DotnetFormatVerifyNoChanges(_ => _
       .SetProcessWorkingDirectory(gitChangesReport.GitRepoLocalDirectory)
@@ -120,21 +80,6 @@ public static partial class DotNetTasks
                   .AddInclude(batch.FilesToInclude)),
                   completeOnFailure: true);
     }
-
-    //private static GitChangesReport[] ChunkReport(GitChangesReport report)
-    //{
-    //    List<GitChangesReport> reports = new List<GitChangesReport>();
-
-    //    foreach (var solution in report.SolutionChanges)
-    //    {
-    //        var chunks = ChunkBy(solution.ProjectChanges.ToList(), 20);
-    //        reports.AddRange(chunks.Select(x => new GitChangesReport(
-    //            report.GitRepoLocalDirectory,
-    //            new[] { new SolutionChanges(solution.SolutionFullPath, solution.IsSolutionChanged, x.ToArray()) })));
-    //    }
-
-    //    return reports.ToArray();
-    //}
 
     private static BatchedReport CreateBatchedReport(GitChangesReport report)
     {
@@ -147,7 +92,7 @@ public static partial class DotNetTasks
                             .Concat(solution.IsSolutionChanged ? new[] { solution.SolutionFullPath } : Enumerable.Empty<string>())
                             .ToArray();
 
-            var chunks = ChunkBy(changedFilesInSolution, 150);
+            var chunks = ChunkBy(changedFilesInSolution, 250);
             batches.AddRange(chunks.Select(x => new ReportBatch(solution.SolutionFullPath, x.ToArray())));
         }
 

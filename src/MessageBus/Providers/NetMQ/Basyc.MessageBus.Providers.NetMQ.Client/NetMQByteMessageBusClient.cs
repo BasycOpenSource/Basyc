@@ -110,12 +110,10 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
                     if (consumeResult.Value is Exception ex)
                         logger.LogCritical($"Message handler throwed exception. {ex.Message}");
 
-
                     using var seriActivity = DiagnosticHelper.Start("Serializating repsonse");
                     string responseType = TypedToSimpleConverter.ConvertTypeToSimple(connsumerResultData.GetType());
                     byte[] wrapperMessageBytes = netMQMessageWrapper.CreateWrapperMessage(connsumerResultData, responseType, requestCase.SessionId, requestCase.TraceId, requestCase.ParentSpanId, MessageCase.Response);
                     seriActivity.Stop();
-
 
                     var messageToBroker = new NetMQMessage();
                     messageToBroker.AppendEmptyFrame();
@@ -129,6 +127,7 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
                         dealerSocket.SendMultipartMessage(messageToBroker);
                     }
                 }
+
                 logger.LogInformation($"Response message sent");
             },
             responseCase =>
@@ -150,7 +149,6 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
                     var eventRequest = objectToByteSerailizer.Deserialize(eventCase.EventBytes, eventCase.EventType);
                     var responseData = await handlerManager.ConsumeMessage(eventCase.EventType, eventRequest, cancellationToken, eventCase.TraceId, requestCaseActivity.Activity?.SpanId.ToString());
                 }
-
             },
             failureCase =>
             {
@@ -165,6 +163,7 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
                     default:
                         throw new NotImplementedException();
                 }
+
                 return Task.CompletedTask;
 
             });
@@ -208,7 +207,6 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
             }
         }
         //var publishActivity = DiagnosticHelper.Start("NetMQByteMessageBusClient.PublishAsync", traceId, requesterSpanId);
-
 
         var newSession = sessionManager.CreateSession(eventType, traceId);
 
@@ -287,7 +285,6 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
                 {
                     dealerSocket.SendMultipartMessage(messageToBroker);
                 }
-
             }
             catch (Exception ex)
             {
@@ -353,8 +350,8 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
             var typeName = clrType.Slice(lastDotIndex);
             return typeName.ToString();
 
-
         }
+
         return messageType;
     }
     public void Dispose()
@@ -362,5 +359,4 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
         dealerSocket.Dispose();
         poller.Dispose();
     }
-
 }

@@ -16,30 +16,29 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Basyc.MicroService.Asp.Dapr
+namespace Basyc.MicroService.Asp.Dapr;
+
+public class DaprMicroserviceProvider : IMicroserviceProvider
 {
-    public class DaprMicroserviceProvider : IMicroserviceProvider
+    private readonly IWebHostBuilder webBuilder;
+
+    public DaprMicroserviceProvider(IWebHostBuilder webBuilder)
     {
-        private readonly IWebHostBuilder webBuilder;
+        this.webBuilder = webBuilder;
+    }
 
-        public DaprMicroserviceProvider(IWebHostBuilder webBuilder)
-        {
-            this.webBuilder = webBuilder;
-        }
+    public void RegisterActor<TActor>()
+    {
+        RegisterActor(typeof(TActor));
+    }
 
-        public void RegisterActor<TActor>()
-        {
-            RegisterActor(typeof(TActor));
-        }
-
-        public void RegisterActor(Type actorType)
-        {
-            //webBuilder.UseActors(x =>
-            //{
-            //    ActorTypeInformation actorTypeInfo = ActorTypeInformation.Get(actorType);
-            //    var registration = new ActorRegistration(actorTypeInfo);
-            //    x.Actors.Add(registration);
-            //});
-        }
+    public void RegisterActor(Type actorType)
+    {
+        //webBuilder.UseActors(x =>
+        //{
+        //    ActorTypeInformation actorTypeInfo = ActorTypeInformation.Get(actorType);
+        //    var registration = new ActorRegistration(actorTypeInfo);
+        //    x.Actors.Add(registration);
+        //});
     }
 }
