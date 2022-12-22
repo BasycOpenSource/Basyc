@@ -11,7 +11,7 @@ using static _build.DotNetTasks;
 using static _build.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-/// Support plugins are available for:
+///Nuke support plugins are available for:
 ///   - JetBrains ReSharper        https://nuke.build/resharper
 ///   - JetBrains Rider            https://nuke.build/rider
 ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
