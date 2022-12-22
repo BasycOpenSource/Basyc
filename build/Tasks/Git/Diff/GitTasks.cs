@@ -41,7 +41,8 @@ public static partial class GitTasks
                     continue;
                 }
 
-                string changeFullPath = $"{localGitFolder}\\{change.Path.Replace("/", "\\")}";
+                //string changeFullPath = $"{localGitFolder}\\{change.Path.Replace("/", "\\")}";
+                string changeFullPath = Path.Combine(localGitFolder, change.Path);
 
                 if (change.Path.EndsWith(".sln"))
                 {
@@ -132,7 +133,7 @@ public static partial class GitTasks
 
                 if (TryGetSolution(changeFullPath, out string? solFullPath2) is false)
                 {
-                    throw new Exception($"Soltion for proejct '{changeFullPath}' not found");
+                    throw new Exception($"Soltion for project '{changeFullPath}' not found");
                 }
 
                 if (solutionChanges.Any() && solutionChanges.Last().solutionPath == solFullPath2)
@@ -256,7 +257,7 @@ public static partial class GitTasks
             }
             else
             {
-                throw new ArgumentException($"Path '{path}'. Path is not file or directory path", nameof(path));
+                throw new ArgumentException($"Path '{path}' is not valid file or directory path", nameof(path));
             }
         }
     }
