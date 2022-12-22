@@ -19,14 +19,14 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [GitHubActions(
     "continuous",
-    GitHubActionsImage.UbuntuLatest,
+    GitHubActionsImage.Ubuntu1804,
     OnPushBranches = new[] { "develop" },
     InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest) },
     EnableGitHubToken = true,
     FetchDepth = 0)]
 [GitHubActions(
     "release",
-    GitHubActionsImage.UbuntuLatest,
+    GitHubActionsImage.Ubuntu1804,
     OnPullRequestBranches = new[] { "main" },
     InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest), nameof(NugetPush) },
     EnableGitHubToken = true,
@@ -53,7 +53,7 @@ internal class Build : NukeBuild
     private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
     private Target StaticCodeAnalysis => _ => _
-        .After(Compile)
+        .Before(Compile)
         .Executes(() =>
         {
             if (GitHubActions is not null && GitHubActions.IsPullRequest)
