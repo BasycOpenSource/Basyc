@@ -1,5 +1,4 @@
-﻿
-using GlobExpressions;
+﻿using GlobExpressions;
 using LibGit2Sharp;
 using System.Diagnostics.CodeAnalysis;
 using Tasks.Git.Diff;
@@ -32,7 +31,7 @@ public static partial class GitTasks
             string? solutionDirectoryRelativePath = null;
             bool solutionAlreadyFound = false;
 
-            string? lastCheckedDirectory = null;
+            string? lastCheckedDirectoryGitRelativePath = null;
 
             foreach (var change in changes)
             {
@@ -41,7 +40,6 @@ public static partial class GitTasks
                     continue;
                 }
 
-                //string changeFullPath = $"{localGitFolder}\\{change.Path.Replace("/", "\\")}";
                 string changeFullPath = Path.Combine(localGitFolder, change.Path);
 
                 if (change.Path.EndsWith(".sln"))
@@ -55,14 +53,14 @@ public static partial class GitTasks
                     }
 
                     solutionChanges.Add((changeFullPath, true, new(), new()));
-                    solutionDirectoryRelativePath = GetParentDirectoryRelativePath(change.Path);
+                    solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(change.Path);
                     solutionAlreadyFound = true;
                     continue;
                 }
 
                 if (change.Path.EndsWith(".csproj"))
                 {
-                    if (projectDirectoryRelativePath == GetParentDirectoryRelativePath(change.Path))
+                    if (projectDirectoryRelativePath == GetGitParentDirectoryRelativePath(change.Path))
                     {
                         var (projectPath, projectChanged, fileChanges) = solutionChanges.Last().projectChanges.Last();
                         projectChanged = true;
@@ -76,25 +74,21 @@ public static partial class GitTasks
 
                     string solRelativePath = GetGitRelativePath(solFullPath!, localGitFolder);
                     bool solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == ".\\" && solRelativePath.IndexOf("/") == -1;
-                    if ((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) || solRelativePath == solutionDirectoryRelativePath)
-                    {
-
-                    }
-                    else
+                    if (!((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) || GetGitParentDirectoryRelativePath(solRelativePath) == solutionDirectoryRelativePath))
                     {
                         solutionChanges.Add((solFullPath!, false, new(), new()));
-                        solutionDirectoryRelativePath = GetParentDirectoryRelativePath(GetGitRelativePath(solFullPath!, localGitFolder));
+                        solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solFullPath!, localGitFolder));
                         solutionAlreadyFound = true;
                     }
 
                     solutionChanges.Last().projectChanges.Add((changeFullPath, true, new()));
-                    projectDirectoryRelativePath = GetParentDirectoryRelativePath(change.Path);
+                    projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(change.Path);
                     projectAlreadyFound = true;
-                    lastCheckedDirectory = projectDirectoryRelativePath;
+                    lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
                     continue;
                 }
 
-                if (lastCheckedDirectory is not null)
+                if (lastCheckedDirectoryGitRelativePath is not null)
                 {
                     if (solutionAlreadyFound is false)
                     {
@@ -106,16 +100,16 @@ public static partial class GitTasks
                         if (TryGetProject(changeFullPath, out string? projectFullPath2))
                         {
                             solutionChanges.Last().projectChanges.Add((projectFullPath2, false, new()));
-                            projectDirectoryRelativePath = GetParentDirectoryRelativePath(change.Path);
+                            projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(change.Path);
                             projectAlreadyFound = true;
-                            lastCheckedDirectory = projectDirectoryRelativePath;
+                            lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
                         }
                         else
                         {
                             solutionChanges.Last().solutionItems.Add(changeFullPath);
                             projectDirectoryRelativePath = null;
                             projectAlreadyFound = false;
-                            lastCheckedDirectory = solutionDirectoryRelativePath;
+                            lastCheckedDirectoryGitRelativePath = solutionDirectoryRelativePath;
                             continue;
                         }
                     }
@@ -127,7 +121,7 @@ public static partial class GitTasks
                     }
                     else
                     {
-                        lastCheckedDirectory = null;
+                        lastCheckedDirectoryGitRelativePath = null;
                     }
                 }
 
@@ -136,14 +130,10 @@ public static partial class GitTasks
                     throw new Exception($"Soltion for project '{changeFullPath}' not found");
                 }
 
-                if (solutionChanges.Any() && solutionChanges.Last().solutionPath == solFullPath2)
-                {
-
-                }
-                else
+                if (!solutionChanges.Any() || solutionChanges.Last().solutionPath != solFullPath2)
                 {
                     solutionChanges.Add((solFullPath2!, false, new(), new()));
-                    solutionDirectoryRelativePath = GetParentDirectoryRelativePath(GetGitRelativePath(solFullPath2!, localGitFolder));
+                    solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solFullPath2!, localGitFolder));
                     solutionAlreadyFound = true;
                 }
 
@@ -151,16 +141,16 @@ public static partial class GitTasks
                 {
                     solutionChanges.Last().projectChanges.Add((projectFullPath, false, new()));
                     solutionChanges.Last().projectChanges.Last().fileChanges.Add(changeFullPath);
-                    projectDirectoryRelativePath = GetParentDirectoryRelativePath(change.Path);
+                    projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(change.Path);
                     projectAlreadyFound = true;
-                    lastCheckedDirectory = projectDirectoryRelativePath;
+                    lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
                 }
                 else
                 {
                     solutionChanges.Last().solutionItems.Add(changeFullPath);
                     projectDirectoryRelativePath = null;
                     projectAlreadyFound = false;
-                    lastCheckedDirectory = solutionDirectoryRelativePath;
+                    lastCheckedDirectoryGitRelativePath = solutionDirectoryRelativePath;
                 }
             }
 
@@ -172,21 +162,23 @@ public static partial class GitTasks
                             .ToArray()))
                         .ToArray()))
                 .ToArray();
+            //Serilog.Log.Information("Git changes report created. Changes solutions");
+
             return new(localGitFolder, projectChanges);
         }
     }
 
-    private static string GetParentDirectoryRelativePath(string relativePath)
+    private static string GetGitParentDirectoryRelativePath(string gitRelativePath)
     {
         string? directoryToSkip;
-        var relativPathSpan = relativePath.AsSpan();
-        int lastPathSeparator = relativPathSpan.LastIndexOf('/');
+        var gitRelativePathSpan = gitRelativePath.AsSpan();
+        int lastPathSeparator = gitRelativePathSpan.LastIndexOf('/');
         if (lastPathSeparator is -1)
         {
             return ".\\";
         }
 
-        directoryToSkip = relativPathSpan[..lastPathSeparator].ToString();
+        directoryToSkip = gitRelativePathSpan[..lastPathSeparator].ToString();
         return directoryToSkip;
     }
 

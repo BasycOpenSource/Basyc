@@ -71,7 +71,7 @@ public static partial class DotNetTasks
     {
         var batchedReport = CreateBatchedReport(gitChangesReport);
         int totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Select(x => x.Length).Sum();
-        Log.Information($"Solution to check: {gitChangesReport.SolutionChanges.Length}, projects to check: {gitChangesReport.SolutionChanges.Select(x => x.ProjectChanges.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
+        Log.Information($"Solutions to check: {gitChangesReport.SolutionChanges.Length}, projects to check: {gitChangesReport.SolutionChanges.Select(x => x.ProjectChanges.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
 
         return DotnetFormatVerifyNoChanges(_ => _
       .SetProcessWorkingDirectory(gitChangesReport.GitRepoLocalDirectory)
