@@ -2,6 +2,7 @@
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.HttpProxy.Client.Http;
 using Basyc.MessageBus.HttpProxy.Shared.SignalR;
+using Basyc.Serialization.Abstraction;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

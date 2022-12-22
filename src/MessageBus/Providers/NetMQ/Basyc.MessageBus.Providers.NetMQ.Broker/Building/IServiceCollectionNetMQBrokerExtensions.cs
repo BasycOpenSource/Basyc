@@ -2,6 +2,7 @@
 using Basyc.MessageBus.Broker.NetMQ;
 using Basyc.MessageBus.Broker.NetMQ.Building;
 using Basyc.MessageBus.NetMQ.Shared;
+using Basyc.Serialization.Abstraction;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

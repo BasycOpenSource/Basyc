@@ -1,6 +1,7 @@
 ﻿using Basyc.MessageBus.Client;
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.HttpProxy.Client.Http;
+using Basyc.Serialization.Abstraction;
 using System.Net.Http;
 
 namespace Microsoft.Extensions.DependencyInjection

@@ -31,78 +31,78 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
     InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest), nameof(NugetPush) },
     EnableGitHubToken = true,
     FetchDepth = 0)]
-class Build : NukeBuild
+internal class Build : NukeBuild
 {
-    [GitRepository] readonly GitRepository? Repository;
-    [Solution(GenerateProjects = true)] readonly Solution? Solution;
-    [GitVersion] readonly GitVersion? GitVersion;
+    [GitRepository] private readonly GitRepository? Repository;
+    [Solution(GenerateProjects = true)] private readonly Solution? Solution;
+    [GitVersion] private readonly GitVersion? GitVersion;
 
-    GitHubActions GitHubActions => GitHubActions.Instance;
-    AbsolutePath OutputDirectory => RootDirectory / "output";
-    AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
+    private GitHubActions GitHubActions => GitHubActions.Instance;
+
+    private AbsolutePath OutputDirectory => RootDirectory / "output";
+
+    private AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
 
     public static int Main()
     {
         //ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
-
         return Execute<Build>(x => x.StaticCodeAnalysis);
     }
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    Target StaticCodeAnalysis => _ => _
-        .Before(Compile)
+    private Target StaticCodeAnalysis => _ => _
+        .After(Compile)
         .Executes(() =>
         {
             if (GitHubActions is not null && GitHubActions.IsPullRequest)
             {
-                var branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
+                string branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
                 var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
-                DotnetFormatVerifyNoChanges(gitChanges);
+                var unused = DotnetFormatVerifyNoChanges(gitChanges);
             }
             else
             {
-                var branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
+                string branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
                 var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
-                DotnetFormatVerifyNoChanges(gitChanges);
+                _ = (ITargetDefinition)DotnetFormatVerifyNoChanges(gitChanges);
             }
 
         });
 
-
-    Target Clean => _ => _
+    private Target Clean => _ => _
         .Before(Restore)
         .Executes(() =>
         {
-            DotNetClean(_ => _
+            _ = (ITargetDefinition)DotNetClean(_ => _
                 .SetProject(Solution));
         });
 
-    Target Restore => _ => _
+    private Target Restore => _ => _
         .Before(Compile)
         .Executes(() =>
         {
-            DotNetRestore(_ => _
+            _ = (ITargetDefinition)DotNetRestore(_ => _
                 .SetProjectFile(Solution));
         });
 
-    Target Compile => _ => _
+    private Target Compile => _ => _
         .After(Restore)
         .DependsOn(Restore)
         .Executes(() =>
         {
-            DotNetBuild(_ => _
+            _ = (ITargetDefinition)DotNetBuild(_ => _
                 .EnableNoRestore()
                 .SetProjectFile(Solution));
         });
 
-    Target UnitTest => _ => _
+    private Target UnitTest => _ => _
         .DependsOn(Compile)
         .Executes(() =>
         {
             var unitTestProjects = Solution!.GetProjects("*.UnitTests");
-            DotNetTest(_ => _
+            _ = (ITargetDefinition)DotNetTest(_ => _
                 .EnableNoRestore()
                 .CombineWith(unitTestProjects,
                     (settings, unitTestProject) => settings
@@ -110,11 +110,11 @@ class Build : NukeBuild
                         degreeOfParallelism: 5);
         });
 
-    Target NugetPush => _ => _
+    private Target NugetPush => _ => _
         .DependsOn(UnitTest)
         .Executes(() =>
         {
-            DotNetPack(_ => _
+            _ = (ITargetDefinition)DotNetPack(_ => _
                 .EnableNoRestore()
                 .SetVersion(GitVersion!.NuGetVersionV2)
                 .EnableNoBuild()
@@ -123,7 +123,7 @@ class Build : NukeBuild
 
             var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
 
-            DotNetNuGetPush(_ => _
+            _ = (ITargetDefinition)DotNetNuGetPush(_ => _
                 .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
                 .SetApiKey(GitHubActions.Token)
                 .CombineWith(nugetPackages, (_, nugetPackage) => _

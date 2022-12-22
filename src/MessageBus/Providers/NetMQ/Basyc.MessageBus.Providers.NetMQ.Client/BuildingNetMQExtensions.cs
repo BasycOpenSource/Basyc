@@ -5,6 +5,7 @@ using Basyc.MessageBus.Client.NetMQ.Sessions;
 using Basyc.MessageBus.Client.RequestResponse;
 using Basyc.MessageBus.NetMQ.Shared;
 using Basyc.MessageBus.Shared;
+using Basyc.Serialization.Abstraction;
 using Basyc.Serializaton.Abstraction;
 using Basyc.Shared.Helpers;
 using System.Reflection;
