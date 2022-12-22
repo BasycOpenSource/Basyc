@@ -6,100 +6,44 @@ using System.Reflection;
 using System.Text;
 using LogLevel = Nuke.Common.LogLevel;
 
-namespace Tasks.Dotnet.Format
+namespace Tasks.Dotnet.Format;
+
+public static class ProcessExceptionHelper
 {
-    public static class ProcessExceptionHelper
+    public static void Throw(ProcessException processException, params string[] errors)
     {
-        //public static void Throw(IProcess process, params string[] errors)
-        //{
-        //    var processOutputs = (BlockingCollection<Output>)process.Output;
-        //    processOutputs.ForEach(x => processOutputs.Take());
-        //    foreach (var error in errors)
-        //    {
-        //        processOutputs.Add(new Output() { Text = error, Type = OutputType.Err });
-        //    }
-        //    var dummyProcess = new DummyProcess(process.FileName, process.Arguments, process.WorkingDirectory, processOutputs, -1);
-        //    var exception = new ProcessException(dummyProcess);
-        //    throw exception;
-
-        //}
-
-        //public static void Throw(IProcess process, IReadOnlyCollection<Output> output)
-        //{
-        //    Throw(process, output.Select(x => x.Text).ToArray());
-        //}
-
-        //public static void Throw(ProcessException processException, IReadOnlyCollection<Output> output)
-        //{
-        //    var process = (IProcess)processException!.GetType().GetProperty("Process", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(processException)!;
-        //    Throw(process, output);
-        //}
-
-        public static void Throw(ProcessException processException, params string[] errors)
+        var process = (IProcess)processException!.GetType().GetProperty("Process", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(processException)!;
+        var processOutputs = (BlockingCollection<Output>)process.Output;
+        processOutputs.ForEach(x => processOutputs.Take());
+        foreach (string error in errors)
         {
-            var process = (IProcess)processException!.GetType().GetProperty("Process", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(processException)!;
-            var processOutputs = (BlockingCollection<Output>)process.Output;
-            processOutputs.ForEach(x => processOutputs.Take());
-            foreach (var error in errors)
-            {
-                processOutputs.Add(new Output() { Text = error, Type = OutputType.Err });
-            }
-            var messageField = processException!.GetType().GetField("_message", BindingFlags.Instance | BindingFlags.NonPublic)!;
-            messageField.SetValue(processException, FormatMessage(errors));
-            throw processException;
+            processOutputs.Add(new Output() { Text = error, Type = OutputType.Err });
         }
 
-        private static string FormatMessage(params string[] errors)
-        {
-            const string indentation = "   ";
-
-            var messageBuilder = new StringBuilder()
-                .AppendLine($"Task throwed exception.");
-
-            var errorOutput = errors;
-            if (errorOutput.Length > 0)
-            {
-                messageBuilder.AppendLine("Error output:");
-                errorOutput.ForEach(x => messageBuilder.Append(indentation).AppendLine(x));
-            }
-            else if (Logger.LogLevel <= LogLevel.Trace)
-            {
-                messageBuilder.AppendLine("Error output:");
-                errorOutput.ForEach(x => messageBuilder.Append(indentation).AppendLine(x));
-            }
-
-            return messageBuilder.ToString();
-        }
-
+        var messageField = processException!.GetType().GetField("_message", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        messageField.SetValue(processException, FormatMessage(errors));
+        throw processException;
     }
 
-    file class DummyProcess : IProcess
+    private static string FormatMessage(params string[] errors)
     {
-        public DummyProcess(string fileName, string arguments, string workingDirectory, IReadOnlyCollection<Output> output, int exitCode)
+        const string indentation = "   ";
+
+        var messageBuilder = new StringBuilder()
+            .AppendLine($"Task throwed exception.");
+
+        string[] errorOutput = errors;
+        if (errorOutput.Length > 0)
         {
-            FileName = fileName;
-            Arguments = arguments;
-            WorkingDirectory = workingDirectory;
-            Output = output;
-            ExitCode = exitCode;
+            messageBuilder.AppendLine("Error output:");
+            errorOutput.ForEach(x => messageBuilder.Append(indentation).AppendLine(x));
+        }
+        else if (Logger.LogLevel <= LogLevel.Trace)
+        {
+            messageBuilder.AppendLine("Error output:");
+            errorOutput.ForEach(x => messageBuilder.Append(indentation).AppendLine(x));
         }
 
-        public string FileName { get; }
-
-        public string Arguments { get; }
-
-        public string WorkingDirectory { get; }
-
-        public IReadOnlyCollection<Output> Output { get; }
-
-        public int ExitCode { get; }
-
-        public bool HasExited => throw new NotImplementedException();
-
-        public int Id => throw new NotImplementedException();
-
-        public void Dispose() => throw new NotImplementedException();
-        public void Kill() => throw new NotImplementedException();
-        public bool WaitForExit() => throw new NotImplementedException();
+        return messageBuilder.ToString();
     }
 }
