@@ -68,7 +68,6 @@ internal class Build : NukeBuild
                 var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
                 DotnetFormatVerifyNoChanges(gitChanges);
             }
-
         });
 
     private Target Clean => _ => _
@@ -131,3 +130,4 @@ internal class Build : NukeBuild
         });
 
 }
+
