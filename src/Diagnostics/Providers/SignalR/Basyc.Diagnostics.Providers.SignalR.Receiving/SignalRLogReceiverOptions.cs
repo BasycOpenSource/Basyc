@@ -2,5 +2,5 @@
 
 public class SignalRLogReceiverOptions
 {
-    public string? SignalRServerReceiverHubUri { get; set; }
+	public string? SignalRServerReceiverHubUri { get; set; }
 }

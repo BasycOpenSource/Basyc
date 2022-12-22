@@ -9,139 +9,139 @@ namespace Basyc.Localizator.Abstraction;
 
 public class LocalizationManager : ILocalizationManager
 {
-    private readonly ILocalizatorStorage _storage;
-    private readonly LocalizationOptions _localizationOptions;
-    private readonly IOptions<LocalizationManagerOptions> _managerOptions;
-    private readonly Dictionary<string, ILocalizatedSection> sections;
-    private CultureInfo defaultCulture;
-    public CultureInfo DefaultCulture
-    {
-        get => defaultCulture;
-        set
-        {
-            defaultCulture = value;
-            //_localizationOptions.DefaultCulture = value;
-            foreach (KeyValuePair<string, ILocalizatedSection> sectionPair in sections)
-            {
-                ILocalizatedSection section = sectionPair.Value;
-                if (section.InheritsDefaultCulture == true)
-                {
-                    section.DefaultCulture = value;
-                }
-            }
-        }
-    }
+	private readonly ILocalizatorStorage _storage;
+	private readonly LocalizationOptions _localizationOptions;
+	private readonly IOptions<LocalizationManagerOptions> _managerOptions;
+	private readonly Dictionary<string, ILocalizatedSection> sections;
+	private CultureInfo defaultCulture;
+	public CultureInfo DefaultCulture
+	{
+		get => defaultCulture;
+		set
+		{
+			defaultCulture = value;
+			//_localizationOptions.DefaultCulture = value;
+			foreach (KeyValuePair<string, ILocalizatedSection> sectionPair in sections)
+			{
+				ILocalizatedSection section = sectionPair.Value;
+				if (section.InheritsDefaultCulture == true)
+				{
+					section.DefaultCulture = value;
+				}
+			}
+		}
+	}
 
-    public event EventHandler<SectionCultureChangedArgs> SectionCultureChanged;
+	public event EventHandler<SectionCultureChangedArgs> SectionCultureChanged;
 
-    public LocalizationManager(IOptions<LocalizationOptions> localizationOptions, IOptions<LocalizationManagerOptions> managerOptions, ILocalizatorStorage storage)
-    {
-        _storage = storage;
-        _localizationOptions = localizationOptions.Value;
-        _managerOptions = managerOptions;
-        DefaultCulture = _localizationOptions.SharedDefaultCulture;
+	public LocalizationManager(IOptions<LocalizationOptions> localizationOptions, IOptions<LocalizationManagerOptions> managerOptions, ILocalizatorStorage storage)
+	{
+		_storage = storage;
+		_localizationOptions = localizationOptions.Value;
+		_managerOptions = managerOptions;
+		DefaultCulture = _localizationOptions.SharedDefaultCulture;
 
-        sections = new Dictionary<string, ILocalizatedSection>();
-        foreach (var storageSection in storage.GetSectionsAsync().GetAwaiter().GetResult().Values)
-        {
-            sections.Add(storageSection.SectionUniqueName, storageSection);
-            storageSection.SectionCultureChanged += SectionCultureChangedHandler;
-        }
+		sections = new Dictionary<string, ILocalizatedSection>();
+		foreach (var storageSection in storage.GetSectionsAsync().GetAwaiter().GetResult().Values)
+		{
+			sections.Add(storageSection.SectionUniqueName, storageSection);
+			storageSection.SectionCultureChanged += SectionCultureChangedHandler;
+		}
 
-        _storage.StorageChanged += (s, a) =>
-        {
-            foreach (string changedSectionName in a.ChangedSectionUniqueNames)
-            {
-                bool oldSectionExists = sections.TryGetValue(changedSectionName, out ILocalizatedSection oldSection);
+		_storage.StorageChanged += (s, a) =>
+		{
+			foreach (string changedSectionName in a.ChangedSectionUniqueNames)
+			{
+				bool oldSectionExists = sections.TryGetValue(changedSectionName, out ILocalizatedSection oldSection);
 
-                if (oldSectionExists)
-                {
-                    //oldSection.SectionCultureChanged -= SectionCultureChangedHandler;
-                    //sections.Remove(oldSection.SectionUniqueName);
-                }
-                else
-                {
-                    var newSection = _storage.GetSectionAsync(changedSectionName).GetAwaiter().GetResult();
-                    newSection.SectionCultureChanged += SectionCultureChangedHandler;
-                    sections.Add(newSection.SectionUniqueName, newSection);
-                }
-            }
-        };
+				if (oldSectionExists)
+				{
+					//oldSection.SectionCultureChanged -= SectionCultureChangedHandler;
+					//sections.Remove(oldSection.SectionUniqueName);
+				}
+				else
+				{
+					var newSection = _storage.GetSectionAsync(changedSectionName).GetAwaiter().GetResult();
+					newSection.SectionCultureChanged += SectionCultureChangedHandler;
+					sections.Add(newSection.SectionUniqueName, newSection);
+				}
+			}
+		};
 
-        SaveOrUpdateLocalizators(_managerOptions.Value.LocalizatorsToSave.ToArray());
-    }
+		SaveOrUpdateLocalizators(_managerOptions.Value.LocalizatorsToSave.ToArray());
+	}
 
-    private void SectionCultureChangedHandler(object sender, SectionCultureChangedArgs a)
-    {
-        var section = (ILocalizatedSection)sender;
-        OnSectionCultureChanged(section.SectionUniqueName, a.OldCulture, a.NewCulture);
-    }
+	private void SectionCultureChangedHandler(object sender, SectionCultureChangedArgs a)
+	{
+		var section = (ILocalizatedSection)sender;
+		OnSectionCultureChanged(section.SectionUniqueName, a.OldCulture, a.NewCulture);
+	}
 
-    public IDictionary<string, ILocalizatedSection> GetSections()
-    {
-        return sections;
-    }
+	public IDictionary<string, ILocalizatedSection> GetSections()
+	{
+		return sections;
+	}
 
-    public ILocalizatedSection GetSection(string sectionName)
-    {
-        var sectionFound = TryGetSection(sectionName, out var section);
-        if (sectionFound == false)
-        {
-            throw new Exception($"Section with key \"{sectionName}\" does not exist");
-        }
+	public ILocalizatedSection GetSection(string sectionName)
+	{
+		var sectionFound = TryGetSection(sectionName, out var section);
+		if (sectionFound == false)
+		{
+			throw new Exception($"Section with key \"{sectionName}\" does not exist");
+		}
 
-        return section;
+		return section;
 
-    }
+	}
 
-    public bool TryGetSection(string sectionName, out ILocalizatedSection localizatedSection)
-    {
+	public bool TryGetSection(string sectionName, out ILocalizatedSection localizatedSection)
+	{
 
-        if (string.IsNullOrWhiteSpace(sectionName))
-        {
-            throw new ArgumentNullException(nameof(sectionName));
-        }
+		if (string.IsNullOrWhiteSpace(sectionName))
+		{
+			throw new ArgumentNullException(nameof(sectionName));
+		}
 
-        var sectionExists = sections.TryGetValue(sectionName, out localizatedSection);
-        if (sectionExists)
-        {
+		var sectionExists = sections.TryGetValue(sectionName, out localizatedSection);
+		if (sectionExists)
+		{
 
-            return true;
-        }
-        else
-        {
-            localizatedSection = null;
-            return false;
-        }
-    }
+			return true;
+		}
+		else
+		{
+			localizatedSection = null;
+			return false;
+		}
+	}
 
-    public Task SaveOrUpdateLocalizators(params ILocalizator[] localizators)
-    {
-        return _storage.SaveOrUpdateLocalizatorsAsync(localizators);
-    }
+	public Task SaveOrUpdateLocalizators(params ILocalizator[] localizators)
+	{
+		return _storage.SaveOrUpdateLocalizatorsAsync(localizators);
+	}
 
-    public void ChangeDefaultSectionCulture(string sectionName, CultureInfo newCulture)
-    {
-        if (string.IsNullOrWhiteSpace(sectionName))
-        {
-            throw new ArgumentNullException(nameof(sectionName));
-        }
+	public void ChangeDefaultSectionCulture(string sectionName, CultureInfo newCulture)
+	{
+		if (string.IsNullOrWhiteSpace(sectionName))
+		{
+			throw new ArgumentNullException(nameof(sectionName));
+		}
 
-        var oldSectionExists = sections.TryGetValue(sectionName, out ILocalizatedSection section);
-        if (oldSectionExists)
-        {
-            CultureInfo oldCulture = section.DefaultCulture;
-            section.DefaultCulture = newCulture;
+		var oldSectionExists = sections.TryGetValue(sectionName, out ILocalizatedSection section);
+		if (oldSectionExists)
+		{
+			CultureInfo oldCulture = section.DefaultCulture;
+			section.DefaultCulture = newCulture;
 
-        }
-        else
-        {
-            throw new Exception($"Can't change section default culture. Section with name {sectionName} does not exists");
-        }
-    }
+		}
+		else
+		{
+			throw new Exception($"Can't change section default culture. Section with name {sectionName} does not exists");
+		}
+	}
 
-    private void OnSectionCultureChanged(string sectionName, CultureInfo oldCulture, CultureInfo newCulture)
-    {
-        SectionCultureChanged?.Invoke(this, new SectionCultureChangedArgs(sectionName, oldCulture, newCulture));
-    }
+	private void OnSectionCultureChanged(string sectionName, CultureInfo oldCulture, CultureInfo newCulture)
+	{
+		SectionCultureChanged?.Invoke(this, new SectionCultureChangedArgs(sectionName, oldCulture, newCulture));
+	}
 }

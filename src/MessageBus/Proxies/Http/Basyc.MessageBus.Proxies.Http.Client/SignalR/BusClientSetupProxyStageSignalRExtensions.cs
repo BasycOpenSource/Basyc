@@ -8,19 +8,19 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class BusClientSetupProxyStageSignalRExtensions
 {
-    public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent, string signalRServerUri, string hubPattern = SignalRConstants.ProxyClientHubPattern)
-    {
-        parent.services.AddBasycSerialization()
-            .SelectProtobufNet();
-        parent.services.AddSingleton<IObjectMessageBusClient, SignalRProxyObjectMessageBusClient>();
-        parent.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
+	public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent, string signalRServerUri, string hubPattern = SignalRConstants.ProxyClientHubPattern)
+	{
+		parent.services.AddBasycSerialization()
+			.SelectProtobufNet();
+		parent.services.AddSingleton<IObjectMessageBusClient, SignalRProxyObjectMessageBusClient>();
+		parent.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
 
-        parent.services.Configure<SignalROptions>(options =>
-        {
-            options.SignalRServerUri = signalRServerUri;
-            options.ProxyClientHubPattern = hubPattern;
-        });
+		parent.services.Configure<SignalROptions>(options =>
+		{
+			options.SignalRServerUri = signalRServerUri;
+			options.ProxyClientHubPattern = hubPattern;
+		});
 
-        return new BusClientUseDiagnosticsStage(parent.services);
-    }
+		return new BusClientUseDiagnosticsStage(parent.services);
+	}
 }

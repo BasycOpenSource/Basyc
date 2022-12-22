@@ -12,5 +12,5 @@ namespace Basyc.Repositories;
 /// <typeparam name="TKey"></typeparam>
 public interface ITrackingChangesRepository<TModel, TKey>
 {
-    List<RepositoryAction<TModel, TKey>> Actions { get; }
+	List<RepositoryAction<TModel, TKey>> Actions { get; }
 }

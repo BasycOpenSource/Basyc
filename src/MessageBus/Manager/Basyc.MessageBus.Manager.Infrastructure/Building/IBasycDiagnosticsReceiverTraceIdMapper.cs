@@ -2,5 +2,5 @@
 
 public interface IBasycDiagnosticsReceiverTraceIdMapper
 {
-    string GetTraceId(string traceId);
+	string GetTraceId(string traceId);
 }

@@ -4,5 +4,5 @@ namespace Basyc.MessageBus.Manager.Application;
 
 public interface ITypedParameterNameFormatter
 {
-    string GetCustomTypeName(Type type);
+	string GetCustomTypeName(Type type);
 }

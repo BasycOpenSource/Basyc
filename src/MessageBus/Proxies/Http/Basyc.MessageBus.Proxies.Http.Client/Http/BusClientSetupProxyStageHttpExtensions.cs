@@ -8,14 +8,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class BusClientSetupProxyStageHttpExtensions
 {
-    public static SetupHttpProxyStage UseHttpProxy(this BusClientSetupProviderStage builder)
-    {
-        builder.services.AddBasycSerialization()
-            .SelectProtobufNet();
-        builder.services.AddSingleton(new HttpClient());
-        builder.services.AddSingleton<IObjectMessageBusClient, HttpProxyObjectMessageBusClient>();
-        builder.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
+	public static SetupHttpProxyStage UseHttpProxy(this BusClientSetupProviderStage builder)
+	{
+		builder.services.AddBasycSerialization()
+			.SelectProtobufNet();
+		builder.services.AddSingleton(new HttpClient());
+		builder.services.AddSingleton<IObjectMessageBusClient, HttpProxyObjectMessageBusClient>();
+		builder.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
 
-        return new SetupHttpProxyStage(builder.services);
-    }
+		return new SetupHttpProxyStage(builder.services);
+	}
 }

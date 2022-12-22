@@ -2,5 +2,5 @@
 
 public interface IResponseFormatter
 {
-    string Format(object response);
+	string Format(object response);
 }

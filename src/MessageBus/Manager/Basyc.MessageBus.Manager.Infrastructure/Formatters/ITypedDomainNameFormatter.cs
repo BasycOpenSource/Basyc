@@ -4,5 +4,5 @@ namespace Basyc.MessageBus.Manager.Application;
 
 public interface ITypedDomainNameFormatter
 {
-    string GetFormattedName(Assembly assembly);
+	string GetFormattedName(Assembly assembly);
 }

@@ -2,9 +2,9 @@
 
 public record FileChange(string FilePath)
 {
-    public void tt()
-    {
-        (string, string) tuple = ("", "");
-        Console.WriteLine(tuple);
-    }
+	public void tt()
+	{
+		(string, string) tuple = ("", "");
+		Console.WriteLine(tuple);
+	}
 }

@@ -12,26 +12,26 @@ namespace Basyc.Blazor.Controls;
 
 public class ExampleJsInterop : IAsyncDisposable
 {
-    private readonly Lazy<Task<IJSObjectReference>> moduleTask;
+	private readonly Lazy<Task<IJSObjectReference>> moduleTask;
 
-    public ExampleJsInterop(IJSRuntime jsRuntime)
-    {
-        moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Basyc.Blazor.Controls/exampleJsInterop.js").AsTask());
-    }
+	public ExampleJsInterop(IJSRuntime jsRuntime)
+	{
+		moduleTask = new(() => jsRuntime.InvokeAsync<IJSObjectReference>(
+			"import", "./_content/Basyc.Blazor.Controls/exampleJsInterop.js").AsTask());
+	}
 
-    public async ValueTask<string> Prompt(string message)
-    {
-        IJSObjectReference module = await moduleTask.Value;
-        return await module.InvokeAsync<string>("showPrompt", message);
-    }
+	public async ValueTask<string> Prompt(string message)
+	{
+		IJSObjectReference module = await moduleTask.Value;
+		return await module.InvokeAsync<string>("showPrompt", message);
+	}
 
-    public async ValueTask DisposeAsync()
-    {
-        if (moduleTask.IsValueCreated)
-        {
-            IJSObjectReference module = await moduleTask.Value;
-            await module.DisposeAsync();
-        }
-    }
+	public async ValueTask DisposeAsync()
+	{
+		if (moduleTask.IsValueCreated)
+		{
+			IJSObjectReference module = await moduleTask.Value;
+			await module.DisposeAsync();
+		}
+	}
 }

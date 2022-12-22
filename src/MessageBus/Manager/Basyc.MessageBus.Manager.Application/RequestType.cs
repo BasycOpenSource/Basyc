@@ -2,8 +2,8 @@
 
 public enum RequestType
 {
-    Query,
-    Command,
-    Generic,
-    Event,
+	Query,
+	Command,
+	Generic,
+	Event,
 }

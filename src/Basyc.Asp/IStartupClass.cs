@@ -11,6 +11,6 @@ namespace Basyc.Asp;
 
 public interface IStartupClass
 {
-    void ConfigureServices(IServiceCollection services);
-    void Configure(IApplicationBuilder app, IWebHostEnvironment env);
+	void ConfigureServices(IServiceCollection services);
+	void Configure(IApplicationBuilder app, IWebHostEnvironment env);
 }

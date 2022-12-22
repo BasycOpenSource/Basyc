@@ -15,13 +15,13 @@ namespace Basyc.Repositories;
 /// </summary>
 public interface IBulkRepository
 {
-    /// <summary>
-    /// Saves changes made only with this repository
-    /// </summary>
-    void Save();
+	/// <summary>
+	/// Saves changes made only with this repository
+	/// </summary>
+	void Save();
 
-    /// <summary>
-    /// Saves changes made only with this repository
-    /// </summary>
-    Task SaveAsync(CancellationToken cancellationToken = default);
+	/// <summary>
+	/// Saves changes made only with this repository
+	/// </summary>
+	Task SaveAsync(CancellationToken cancellationToken = default);
 }

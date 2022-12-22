@@ -5,7 +5,7 @@ namespace Basyc.Diagnostics.Producing.Shared.Listening.Building;
 
 public class SelectListenForStage : BuilderStageBase
 {
-    public SelectListenForStage(IServiceCollection services) : base(services)
-    {
-    }
+	public SelectListenForStage(IServiceCollection services) : base(services)
+	{
+	}
 }

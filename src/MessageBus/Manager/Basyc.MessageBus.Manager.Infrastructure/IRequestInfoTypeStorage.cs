@@ -9,7 +9,7 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public interface IRequestInfoTypeStorage
 {
-    void AddRequest(RequestInfo requestInfo, Type requestType);
-    Type GetRequestType(RequestInfo requestInfo);
+	void AddRequest(RequestInfo requestInfo, Type requestType);
+	Type GetRequestType(RequestInfo requestInfo);
 
 }

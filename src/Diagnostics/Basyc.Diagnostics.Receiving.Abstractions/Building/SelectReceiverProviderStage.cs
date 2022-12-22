@@ -5,7 +5,7 @@ namespace Basyc.Diagnostics.Receiving.Abstractions.Building;
 
 public class SelectReceiverProviderStage : BuilderStageBase
 {
-    public SelectReceiverProviderStage(IServiceCollection services) : base(services)
-    {
-    }
+	public SelectReceiverProviderStage(IServiceCollection services) : base(services)
+	{
+	}
 }

@@ -5,5 +5,5 @@ namespace Basyc.MessageBus.Manager.Application;
 
 public interface IDomainInfoProviderManager
 {
-    IReadOnlyList<DomainInfo> GetDomainInfos();
+	IReadOnlyList<DomainInfo> GetDomainInfos();
 }

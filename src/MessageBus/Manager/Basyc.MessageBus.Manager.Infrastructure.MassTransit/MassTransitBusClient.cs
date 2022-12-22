@@ -7,9 +7,9 @@ namespace Basyc.MessageBus.Manager.Infrastructure.MassTransit;
 
 public class MassTransitRequester : BasycTypedMessageBusRequester, IRequester
 {
-    public MassTransitRequester(ITypedMessageBusClient messageBusManager, IRequestInfoTypeStorage requestInfoTypeStorage, IResponseFormatter responseFormatter)
-        : base(messageBusManager, requestInfoTypeStorage, responseFormatter, null, null, null)
-    {
-        throw new NotImplementedException();
-    }
+	public MassTransitRequester(ITypedMessageBusClient messageBusManager, IRequestInfoTypeStorage requestInfoTypeStorage, IResponseFormatter responseFormatter)
+		: base(messageBusManager, requestInfoTypeStorage, responseFormatter, null, null, null)
+	{
+		throw new NotImplementedException();
+	}
 }

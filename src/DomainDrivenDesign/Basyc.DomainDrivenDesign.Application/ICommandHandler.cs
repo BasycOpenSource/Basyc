@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 namespace Basyc.DomainDrivenDesign.Application;
 
 public interface ICommandHandler<TCommand> : IMessageHandler<TCommand>
-    where TCommand : class, ICommand
+	where TCommand : class, ICommand
 {
 }
 
 public interface ICommandHandler<TCommand, TReponse> : IMessageHandler<TCommand, TReponse>
-    where TCommand : class, ICommand<TReponse>
-    where TReponse : class
+	where TCommand : class, ICommand<TReponse>
+	where TReponse : class
 {
 }

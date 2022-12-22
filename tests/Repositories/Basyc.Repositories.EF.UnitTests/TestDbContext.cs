@@ -9,10 +9,10 @@ namespace Basyc.Repositories.EF.Tests;
 
 public class TestDbContext : DbContext
 {
-    public TestDbContext(DbContextOptions<TestDbContext> options) : base(options)
-    {
-    }
+	public TestDbContext(DbContextOptions<TestDbContext> options) : base(options)
+	{
+	}
 
-    public DbSet<PersonEntity> People { get; set; }
-    public DbSet<CarEntity> Cars { get; set; }
+	public DbSet<PersonEntity> People { get; set; }
+	public DbSet<CarEntity> Cars { get; set; }
 }

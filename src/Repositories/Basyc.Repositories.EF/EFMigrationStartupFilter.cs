@@ -8,17 +8,17 @@ namespace Basyc.Repositories.EF;
 
 public class EFMigrationStartupFilter<TDbContext> : IStartupFilter where TDbContext : DbContext
 {
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-    {
-        return (app) =>
-        {
-            using (var scope = app.ApplicationServices.CreateScope())
-            {
-                var db = scope.ServiceProvider.GetRequiredService<TDbContext>();
-                db.Database.Migrate();
-            }
+	public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+	{
+		return (app) =>
+		{
+			using (var scope = app.ApplicationServices.CreateScope())
+			{
+				var db = scope.ServiceProvider.GetRequiredService<TDbContext>();
+				db.Database.Migrate();
+			}
 
-            next(app);
-        };
-    }
+			next(app);
+		};
+	}
 }

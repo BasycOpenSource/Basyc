@@ -9,28 +9,28 @@ namespace Basyc.MessageBus.Client.Building;
 
 public class BusClientUseDiagnosticsStage : BuilderStageBase
 {
-    public BusClientUseDiagnosticsStage(IServiceCollection services) : base(services)
-    {
-    }
+	public BusClientUseDiagnosticsStage(IServiceCollection services) : base(services)
+	{
+	}
 
 #pragma warning disable CA1822 // Mark members as static
-    public void NoDiagnostics()
+	public void NoDiagnostics()
 #pragma warning restore CA1822 // Mark members as static
-    {
-        services.TryAddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
-        services.Configure<BusDiagnosticsOptions>(x =>
-        {
-            x.UseDiagnostics = false;
-        });
-    }
+	{
+		services.TryAddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
+		services.Configure<BusDiagnosticsOptions>(x =>
+		{
+			x.UseDiagnostics = false;
+		});
+	}
 
-    public BusClientSetupDiagnosticsStage UseDiagnostics()
-    {
-        services.Configure<BusDiagnosticsOptions>(x =>
-        {
-            x.UseDiagnostics = true;
-            x.Service = ServiceIdentity.ApplicationWideIdentity;
-        });
-        return new BusClientSetupDiagnosticsStage(services);
-    }
+	public BusClientSetupDiagnosticsStage UseDiagnostics()
+	{
+		services.Configure<BusDiagnosticsOptions>(x =>
+		{
+			x.UseDiagnostics = true;
+			x.Service = ServiceIdentity.ApplicationWideIdentity;
+		});
+		return new BusClientSetupDiagnosticsStage(services);
+	}
 }

@@ -9,8 +9,8 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Formatters;
 
 public class JsonResponseFormatter : IResponseFormatter
 {
-    public string Format(object response)
-    {
-        return JsonSerializer.Serialize(response);
-    }
+	public string Format(object response)
+	{
+		return JsonSerializer.Serialize(response);
+	}
 }

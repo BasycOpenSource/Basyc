@@ -2,6 +2,6 @@
 
 public class SignalRConstants
 {
-    public const string ProducersHubPattern = "/producersHub";
-    public const string ReceiversHubPattern = "/receiversHub";
+	public const string ProducersHubPattern = "/producersHub";
+	public const string ReceiversHubPattern = "/receiversHub";
 }

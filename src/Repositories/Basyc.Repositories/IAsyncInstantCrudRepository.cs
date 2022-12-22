@@ -13,23 +13,23 @@ namespace Basyc.Repositories;
 /// <typeparam name="TKey"></typeparam>
 public interface IAsyncInstantCrudRepository<TModel, TKey> : IInstantRepository, IAsyncReadRepository<TModel, TKey>
 {
-    /// <summary>
-    /// If id is null it will be genereted, After executing properties like Ids are updated
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="model"></param>
-    Task<TModel> InstaAddAsync(TModel model);
+	/// <summary>
+	/// If id is null it will be genereted, After executing properties like Ids are updated
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="model"></param>
+	Task<TModel> InstaAddAsync(TModel model);
 
-    /// <summary>
-    /// Updates record
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="model"></param>
-    Task<TModel> InstaUpdateAsync(TModel model);
+	/// <summary>
+	/// Updates record
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="model"></param>
+	Task<TModel> InstaUpdateAsync(TModel model);
 
-    /// <summary>
-    /// Deletes items with same id.
-    /// </summary>
-    /// <param name="id"></param>
-    Task InstaRemoveAsync(TKey id);
+	/// <summary>
+	/// Deletes items with same id.
+	/// </summary>
+	/// <param name="id"></param>
+	Task InstaRemoveAsync(TKey id);
 }

@@ -11,8 +11,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class BasycSerializerSelectSerializersStageProtobufNetExtensions
 {
-    public static ProtobufByteSerializer ProtobufNet(this SerializersSelectSerializerStage basycSerializers)
-    {
-        return ProtobufByteSerializer.Singlenton;
-    }
+	public static ProtobufByteSerializer ProtobufNet(this SerializersSelectSerializerStage basycSerializers)
+	{
+		return ProtobufByteSerializer.Singlenton;
+	}
 }

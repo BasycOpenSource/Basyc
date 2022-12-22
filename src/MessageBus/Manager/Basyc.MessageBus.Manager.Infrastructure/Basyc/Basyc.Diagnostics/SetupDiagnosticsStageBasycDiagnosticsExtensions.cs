@@ -6,9 +6,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SetupDiagnosticsStageBasycDiagnosticsExtensions
 {
-    public static SetupBasycDiagnosticsReceiverMapper UseBasycDiagnosticsReceivers(this SetupDiagnosticsStage parent)
-    {
-        parent.services.AddSingleton<IRequestDiagnosticsSource, BasycDiagnosticsReceiversRequestDiagnosticsSource>();
-        return new SetupBasycDiagnosticsReceiverMapper(parent.services);
-    }
+	public static SetupBasycDiagnosticsReceiverMapper UseBasycDiagnosticsReceivers(this SetupDiagnosticsStage parent)
+	{
+		parent.services.AddSingleton<IRequestDiagnosticsSource, BasycDiagnosticsReceiversRequestDiagnosticsSource>();
+		return new SetupBasycDiagnosticsReceiverMapper(parent.services);
+	}
 }

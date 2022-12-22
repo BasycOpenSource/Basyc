@@ -6,5 +6,5 @@
 /// <param name="ServiceName"></param>
 public record struct ServiceIdentity(string ServiceName)
 {
-    public static ServiceIdentity ApplicationWideIdentity = new ServiceIdentity("Not specified identity");
+	public static ServiceIdentity ApplicationWideIdentity = new ServiceIdentity("Not specified identity");
 }

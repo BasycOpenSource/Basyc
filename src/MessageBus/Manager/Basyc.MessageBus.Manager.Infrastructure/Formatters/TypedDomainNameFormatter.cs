@@ -10,8 +10,8 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class TypedDomainNameFormatter : ITypedDomainNameFormatter
 {
-    public string GetFormattedName(Assembly assembly)
-    {
-        return assembly.GetName().Name;
-    }
+	public string GetFormattedName(Assembly assembly)
+	{
+		return assembly.GetName().Name;
+	}
 }

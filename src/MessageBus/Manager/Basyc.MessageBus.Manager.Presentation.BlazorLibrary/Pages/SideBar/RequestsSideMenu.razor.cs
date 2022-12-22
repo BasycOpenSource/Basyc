@@ -5,6 +5,6 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.SideBar;
 
 public partial class RequestsSideMenu
 {
-    [Parameter] public List<DomainItemViewModel> DomainInfoViewModel { get; set; } = new List<DomainItemViewModel>();
-    [Parameter] public EventCallback<RequestItemViewModel> RequestSelected { get; set; }
+	[Parameter] public List<DomainItemViewModel> DomainInfoViewModel { get; set; } = new List<DomainItemViewModel>();
+	[Parameter] public EventCallback<RequestItemViewModel> RequestSelected { get; set; }
 }

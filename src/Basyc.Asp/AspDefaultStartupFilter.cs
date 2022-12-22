@@ -8,32 +8,32 @@ namespace Basyc.Asp;
 
 public class AspDefaultStartupFilter : IStartupFilter
 {
-    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-    {
-        return (app) =>
-        {
-            var env = app.ApplicationServices.GetRequiredService<IHostEnvironment>();
+	public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+	{
+		return (app) =>
+		{
+			var env = app.ApplicationServices.GetRequiredService<IHostEnvironment>();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", env.ApplicationName + " v1"));
-            }
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+				app.UseSwagger();
+				app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", env.ApplicationName + " v1"));
+			}
 
-            app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseAuthorization();
+			app.UseHttpsRedirection();
+			app.UseRouting();
+			app.UseAuthorization();
 
-            app.UseCors(x =>
-            {
-                x.AllowAnyMethod()
-                .AllowAnyHeader()
-                .SetIsOriginAllowed(o => true)
-                .AllowCredentials();
-            });
+			app.UseCors(x =>
+			{
+				x.AllowAnyMethod()
+				.AllowAnyHeader()
+				.SetIsOriginAllowed(o => true)
+				.AllowCredentials();
+			});
 
-            next(app);
-        };
-    }
+			next(app);
+		};
+	}
 }

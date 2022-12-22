@@ -10,9 +10,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class BuildingProtobufSerializationExtensions
 {
-    public static void SelectProtobufNet(this SelectSerializationStage selectSerializationStage)
-    {
-        selectSerializationStage.services.AddSingleton<ITypedByteSerializer, ProtobufByteSerializer>();
-        selectSerializationStage.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
-    }
+	public static void SelectProtobufNet(this SelectSerializationStage selectSerializationStage)
+	{
+		selectSerializationStage.services.AddSingleton<ITypedByteSerializer, ProtobufByteSerializer>();
+		selectSerializationStage.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
+	}
 }

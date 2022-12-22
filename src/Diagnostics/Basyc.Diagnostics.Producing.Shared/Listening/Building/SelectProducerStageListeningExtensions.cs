@@ -5,8 +5,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SelectProducerStageListeningExtensions
 {
-    public static SelectListenForStage AutomaticallyExport(this SetupProducersStage parent)
-    {
-        return new SelectListenForStage(parent.services);
-    }
+	public static SelectListenForStage AutomaticallyExport(this SetupProducersStage parent)
+	{
+		return new SelectListenForStage(parent.services);
+	}
 }

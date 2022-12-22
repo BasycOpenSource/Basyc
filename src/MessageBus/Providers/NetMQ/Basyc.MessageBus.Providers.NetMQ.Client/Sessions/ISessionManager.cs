@@ -2,6 +2,6 @@
 
 public interface ISessionManager<TSessionResult>
 {
-    NetMqSession<TSessionResult> CreateSession(string messageType, string? traceId);
-    bool TryCompleteSession(int sessionId, TSessionResult sessionResult);
+	NetMqSession<TSessionResult> CreateSession(string messageType, string? traceId);
+	bool TryCompleteSession(int sessionId, TSessionResult sessionResult);
 }

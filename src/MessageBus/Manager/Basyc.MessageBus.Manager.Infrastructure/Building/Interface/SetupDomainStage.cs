@@ -7,15 +7,15 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.Interface;
 
 public class SetupDomainStage : BuilderStageBase
 {
-    private readonly Assembly[] assemblies;
+	private readonly Assembly[] assemblies;
 
-    public SetupDomainStage(IServiceCollection services, Assembly[] assemblies) : base(services)
-    {
-        this.assemblies = assemblies;
-    }
+	public SetupDomainStage(IServiceCollection services, Assembly[] assemblies) : base(services)
+	{
+		this.assemblies = assemblies;
+	}
 
-    public RegisterMessagesFromAssemblyStage AsDomain(string domainName)
-    {
-        return new(services, domainName, assemblies);
-    }
+	public RegisterMessagesFromAssemblyStage AsDomain(string domainName)
+	{
+		return new(services, domainName, assemblies);
+	}
 }

@@ -10,36 +10,36 @@ using System.Threading.Tasks;
 namespace Basyc.MessageBus.Client.MasstTransit;
 
 public class MassTransitBasycConsumerProxy<TRequest> : IConsumer<TRequest>
-    where TRequest : class, IMessage
+	where TRequest : class, IMessage
 {
-    private readonly IMessageHandler<TRequest> requestHandler;
+	private readonly IMessageHandler<TRequest> requestHandler;
 
-    public MassTransitBasycConsumerProxy(IMessageHandler<TRequest> requestHandler)
-    {
-        this.requestHandler = requestHandler;
-    }
+	public MassTransitBasycConsumerProxy(IMessageHandler<TRequest> requestHandler)
+	{
+		this.requestHandler = requestHandler;
+	}
 
-    public async Task Consume(ConsumeContext<TRequest> context)
-    {
-        await requestHandler.Handle(context.Message, context.CancellationToken);
-        await context.RespondAsync(new VoidCommandResult());
-    }
+	public async Task Consume(ConsumeContext<TRequest> context)
+	{
+		await requestHandler.Handle(context.Message, context.CancellationToken);
+		await context.RespondAsync(new VoidCommandResult());
+	}
 }
 
 public class MassTransitBasycConsumerProxy<TRequest, TResponse> : IConsumer<TRequest>
  where TRequest : class, IMessage<TResponse>
  where TResponse : class
 {
-    private readonly IMessageHandler<TRequest, TResponse> requestHandler;
+	private readonly IMessageHandler<TRequest, TResponse> requestHandler;
 
-    public MassTransitBasycConsumerProxy(IMessageHandler<TRequest, TResponse> requestHandler)
-    {
-        this.requestHandler = requestHandler;
-    }
+	public MassTransitBasycConsumerProxy(IMessageHandler<TRequest, TResponse> requestHandler)
+	{
+		this.requestHandler = requestHandler;
+	}
 
-    public async Task Consume(ConsumeContext<TRequest> context)
-    {
-        var response = await requestHandler.Handle(context.Message, context.CancellationToken);
-        await context.RespondAsync(response);
-    }
+	public async Task Consume(ConsumeContext<TRequest> context)
+	{
+		var response = await requestHandler.Handle(context.Message, context.CancellationToken);
+		await context.RespondAsync(response);
+	}
 }
