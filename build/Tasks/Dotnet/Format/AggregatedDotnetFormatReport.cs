@@ -39,6 +39,11 @@ namespace Tasks.Dotnet.Format
         private static Dictionary<string, TempDocument> CreateDocumentMap(DotnetFormatReport report)
         {
             var documentIdToTempDocumentMap = new Dictionary<string, TempDocument>();
+            if (report.Records is null)
+            {
+                return documentIdToTempDocumentMap;
+            }
+
             foreach (var record in report.Records)
             {
                 documentIdToTempDocumentMap.TryAdd(record.DocumentId.Id, new(record.DocumentId.Id, record.FilePath, record.FileName, record.DocumentId.ProjectId.Id, new List<string>()));

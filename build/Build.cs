@@ -55,9 +55,19 @@ class Build : NukeBuild
         .Before(Compile)
         .Executes(() =>
         {
-            var branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
-            var changedProjects = GitGetChangedProjects(Repository!.LocalDirectory, branchToComapre);
-            DotnetFormatVerifyNoChanges(changedProjects, out var _, false);
+            if (GitHubActions is not null && GitHubActions.IsPullRequest)
+            {
+                var branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
+                var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
+                DotnetFormatVerifyNoChanges(gitChanges);
+            }
+            else
+            {
+                var branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
+                var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
+                DotnetFormatVerifyNoChanges(gitChanges);
+            }
+
         });
 
 
