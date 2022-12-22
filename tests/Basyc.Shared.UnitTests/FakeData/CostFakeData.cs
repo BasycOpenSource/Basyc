@@ -1,12 +1,6 @@
 ﻿using Basyc.Shared.Models.Pricing;
 using Basyc.Shared.Models.Pricing.Costs;
 using Bogus;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basyc.Shared.Tests.FakeData;
 
@@ -85,7 +79,7 @@ public static class CostFakeData
             .RuleFor(x => x.RoomItems, (x) => GetItemCosts(x.Random.Int(0, 5), true, sharedCurrency).AsReadOnly())
             .RuleFor(x => x.TotalCost, (x, r) =>
                {
-                   Currencies cur = r.RoomItems.Count == 0 ? x.Random.Enum<Currencies>() : r.RoomItems[0].CostPerOne.Currency;
+                   var cur = r.RoomItems.Count == 0 ? x.Random.Enum<Currencies>() : r.RoomItems[0].CostPerOne.Currency;
                    return new Cash(cur, r.RoomItems.Sum(x => x.CostPerOne.Amount));
                })
             .Generate(count);
@@ -107,7 +101,7 @@ public static class CostFakeData
             .RuleFor(x => x.Items, (x) => GetItemCosts(x.Random.Int(0, 5)).AsReadOnly())
                .RuleFor(x => x.TotalCost, (x, r) =>
                {
-                   Currencies cur = r.Items.Count == 0 ? x.Random.Enum<Currencies>() : r.Items[0].CostPerOne.Currency;
+                   var cur = r.Items.Count == 0 ? x.Random.Enum<Currencies>() : r.Items[0].CostPerOne.Currency;
                    return new Cash(cur, r.Items.Sum(x => x.CostPerOne.Amount));
                })
             .Generate(count);
