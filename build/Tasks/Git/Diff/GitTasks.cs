@@ -45,8 +45,10 @@ public static partial class GitTasks
 
                 if (change.Path.EndsWith(".sln"))
                 {
-                    bool solutionIsInGitRoot = solutionDirectoryRelativePath == ".\\" && change.Path.IndexOf("/") == -1;
-                    if (solutionIsInGitRoot || solutionDirectoryRelativePath == change.Path)
+                    bool isChangeInGitRoot = change.Path.IndexOf("/") == -1;
+                    bool solutionIsInGitRoot = solutionDirectoryRelativePath == ".\\" && isChangeInGitRoot;
+                    string v = GetGitParentDirectoryRelativePath(change.Path);
+                    if (solutionIsInGitRoot || solutionDirectoryRelativePath == v)
                     {
                         var sol = solutionChanges.Last();
                         sol.solutionChanged = true;
@@ -301,7 +303,7 @@ public static partial class GitTasks
     public static string GetGitRelativePath(string filePath, string gitRoot)
     {
         var filePathSpan = filePath.AsSpan();
-        var gitRelativePath = filePathSpan[gitRoot.Length..];
+        var gitRelativePath = filePathSpan.Slice(gitRoot.Length + 1);
         return gitRelativePath.ToString();
     }
 }
