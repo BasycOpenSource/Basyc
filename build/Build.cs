@@ -60,13 +60,13 @@ internal class Build : NukeBuild
             {
                 string branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
                 var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
-                var unused = DotnetFormatVerifyNoChanges(gitChanges);
+                DotnetFormatVerifyNoChanges(gitChanges);
             }
             else
             {
                 string branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
                 var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
-                _ = (ITargetDefinition)DotnetFormatVerifyNoChanges(gitChanges);
+                DotnetFormatVerifyNoChanges(gitChanges);
             }
 
         });
@@ -75,7 +75,7 @@ internal class Build : NukeBuild
         .Before(Restore)
         .Executes(() =>
         {
-            _ = (ITargetDefinition)DotNetClean(_ => _
+            DotNetClean(_ => _
                 .SetProject(Solution));
         });
 
@@ -83,7 +83,7 @@ internal class Build : NukeBuild
         .Before(Compile)
         .Executes(() =>
         {
-            _ = (ITargetDefinition)DotNetRestore(_ => _
+            DotNetRestore(_ => _
                 .SetProjectFile(Solution));
         });
 
@@ -92,7 +92,7 @@ internal class Build : NukeBuild
         .DependsOn(Restore)
         .Executes(() =>
         {
-            _ = (ITargetDefinition)DotNetBuild(_ => _
+            DotNetBuild(_ => _
                 .EnableNoRestore()
                 .SetProjectFile(Solution));
         });
@@ -102,7 +102,7 @@ internal class Build : NukeBuild
         .Executes(() =>
         {
             var unitTestProjects = Solution!.GetProjects("*.UnitTests");
-            _ = (ITargetDefinition)DotNetTest(_ => _
+            DotNetTest(_ => _
                 .EnableNoRestore()
                 .CombineWith(unitTestProjects,
                     (settings, unitTestProject) => settings
@@ -114,7 +114,7 @@ internal class Build : NukeBuild
         .DependsOn(UnitTest)
         .Executes(() =>
         {
-            _ = (ITargetDefinition)DotNetPack(_ => _
+            DotNetPack(_ => _
                 .EnableNoRestore()
                 .SetVersion(GitVersion!.NuGetVersionV2)
                 .EnableNoBuild()
@@ -123,12 +123,11 @@ internal class Build : NukeBuild
 
             var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
 
-            _ = (ITargetDefinition)DotNetNuGetPush(_ => _
+            DotNetNuGetPush(_ => _
                 .SetSource("https://nuget.pkg.github.com/BasycOpenSource/index.json")
                 .SetApiKey(GitHubActions.Token)
                 .CombineWith(nugetPackages, (_, nugetPackage) => _
-                    .SetTargetPath(nugetPackage)
-                    ));
+                    .SetTargetPath(nugetPackage)));
         });
 
 }
