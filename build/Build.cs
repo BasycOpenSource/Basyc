@@ -19,14 +19,14 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [GitHubActions(
     "continuous",
-    GitHubActionsImage.Ubuntu1804,
+    GitHubActionsImage.UbuntuLatest,
     OnPushBranches = new[] { "develop" },
     InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest) },
     EnableGitHubToken = true,
     FetchDepth = 0)]
 [GitHubActions(
     "release",
-    GitHubActionsImage.Ubuntu1804,
+    GitHubActionsImage.UbuntuLatest,
     OnPullRequestBranches = new[] { "main" },
     InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest), nameof(NugetPush) },
     EnableGitHubToken = true,
