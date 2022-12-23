@@ -19,7 +19,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [GitHubActions(
 	"continuous",
-	GitHubActionsImage.UbuntuLatest,
+	GitHubActionsImage.WindowsLatest,
 	OnPushBranches = new[] { "develop" },
 	InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest) },
 	EnableGitHubToken = true,
