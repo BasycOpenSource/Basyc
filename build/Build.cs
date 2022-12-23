@@ -23,7 +23,8 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 	OnPushBranches = new[] { "develop" },
 	InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest) },
 	EnableGitHubToken = true,
-	FetchDepth = 0)]
+	FetchDepth = 0,
+	CacheKeyFiles = new string[] { })]
 [GitHubActions(
 	"release",
 	GitHubActionsImage.UbuntuLatest,
@@ -130,5 +131,3 @@ internal class Build : NukeBuild
 		});
 
 }
-
-

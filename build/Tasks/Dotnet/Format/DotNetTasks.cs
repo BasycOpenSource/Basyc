@@ -70,7 +70,7 @@ public static partial class DotNetTasks
 	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> DotnetFormatVerifyNoChanges(GitChangesReport gitChangesReport)
 	{
 		var batchedReport = CreateBatchedReport(gitChangesReport);
-		int totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Select(x => x.Length).Sum();
+		int totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Count();
 		Log.Information($"Solutions to check: {gitChangesReport.SolutionChanges.Length}, projects to check: {gitChangesReport.SolutionChanges.Select(x => x.ProjectChanges.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
 
 		return DotnetFormatVerifyNoChanges(_ => _
