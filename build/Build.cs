@@ -15,16 +15,17 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 ///   - JetBrains ReSharper        https://nuke.build/resharper
 ///   - JetBrains Rider            https://nuke.build/rider
 ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-///   - Microsoft VSCode           https://nuke.build/vscode 
+///   - Microsoft VSCode           https://nuke.build/vscode  <summary>
+// https://github.com/dotnet/format/issues/1094
+// https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings
 
 [GitHubActions(
 	"continuous",
-	GitHubActionsImage.WindowsLatest,
+	GitHubActionsImage.UbuntuLatest,
 	OnPushBranches = new[] { "develop" },
 	InvokedTargets = new[] { nameof(StaticCodeAnalysis), nameof(UnitTest) },
 	EnableGitHubToken = true,
-	FetchDepth = 0,
-	CacheKeyFiles = new string[] { })]
+	FetchDepth = 0)]
 [GitHubActions(
 	"release",
 	GitHubActionsImage.UbuntuLatest,
