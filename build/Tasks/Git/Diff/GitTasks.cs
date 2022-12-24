@@ -40,7 +40,9 @@ public static partial class GitTasks
 			Serilog.Log.Information($"newBranchCommit: {newBranchCommit.Id.ToString().Substring(0, 6)}");
 			Serilog.Log.Information($"newBranchCommit.MessageShort: {newBranchCommit.MessageShort}");
 			Serilog.Log.Information($"branchToCompare: '{branchToCompare}");
-			Serilog.Log.Information($"oldBranch: {oldBranch.Tip.Id.ToString().Substring(0, 6)}");
+			Serilog.Log.Information($"oldBranch: {oldBranch}");
+			Serilog.Log.Information($"oldBranch.Tip: {oldBranch.Tip}");
+			Serilog.Log.Information($"oldBranch.Tip.Id: {oldBranch.Tip.Id.ToString().Substring(0, 6)}");
 			Serilog.Log.Information($"oldBranch.Tip.MessageShort: {oldBranch.Tip.MessageShort}'");
 			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranchCommit.Id.ToString().Substring(0, 6)}:{newBranchCommit.MessageShort}' -> '{branchToCompare}:{oldBranch.Tip.Id.ToString().Substring(0, 6)}:{oldBranch.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
