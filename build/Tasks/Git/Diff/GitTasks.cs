@@ -14,13 +14,23 @@ public static partial class GitTasks
 
 	}
 
-	public static GitChangesReport GitGetChangeReport(string localGitFolder, string branchToCompare)
+	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
+
+	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? branchToCompare = null)
 	{
+		bool couldCompare = branchToCompare != null;
+		if (couldCompare)
+		{
+			return new GitCompareReport(localGitFolder, false, Array.Empty<SolutionChangeReport>());
+		}
+
 		string newBranchName = Nuke.Common.Tools.Git.GitTasks.GitCurrentBranch();
 		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
 
 		using (var repo = new Repository(localGitFolder))
 		{
+			//TODO: Include uncommited changes
+			repo.
 			var oldBranch = repo.Branches[branchToCompare];
 			var newBranch = repo.Branches[newBranchName];
 			var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
@@ -174,7 +184,7 @@ public static partial class GitTasks
 							.ToArray()))
 						.ToArray()))
 				.ToArray();
-			return new(localGitFolder, projectChanges);
+			return new(localGitFolder, couldCompare, projectChanges);
 		}
 	}
 

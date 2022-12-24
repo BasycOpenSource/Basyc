@@ -7,8 +7,8 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using Tasks.Git.Diff;
 using static _build.DotNetTasks;
-using static _build.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 ///Nuke support plugins are available for:
@@ -35,19 +35,17 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 	FetchDepth = 0)]
 internal class Build : NukeBuild
 {
-	[GitRepository] private readonly GitRepository? Repository;
 	[Solution(GenerateProjects = true)] private readonly Solution? Solution;
+	[GitRepository] private readonly GitRepository? Repository;
 	[GitVersion] private readonly GitVersion? GitVersion;
+	[GitCompareReport] private readonly GitCompareReport? GitCompareReport;
 
 	private GitHubActions GitHubActions => GitHubActions.Instance;
-
 	private AbsolutePath OutputDirectory => RootDirectory / "output";
-
 	private AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
 
 	public static int Main()
 	{
-		//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
 		return Execute<Build>(x => x.StaticCodeAnalysis);
 	}
 
@@ -58,17 +56,13 @@ internal class Build : NukeBuild
 		.Before(Compile)
 		.Executes(() =>
 		{
-			if (GitHubActions is not null && GitHubActions.IsPullRequest)
+			if (GitCompareReport!.CouldCompare)
 			{
-				string branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
-				var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
-				DotnetFormatVerifyNoChanges(gitChanges);
+				DotnetFormatVerifyNoChanges(GitCompareReport!);
 			}
 			else
 			{
-				string branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
-				var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
-				DotnetFormatVerifyNoChanges(gitChanges);
+				DotnetFormatVerifyNoChanges(Solution!.FileName);
 			}
 		});
 

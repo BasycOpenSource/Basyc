@@ -67,28 +67,40 @@ public static partial class DotNetTasks
 		return configurator.Invoke(DotnetFormatVerifyNoChanges, DotNetLogger, degreeOfParallelism, completeOnFailure);
 	}
 
-	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> DotnetFormatVerifyNoChanges(GitChangesReport gitChangesReport)
+	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> DotnetFormatVerifyNoChanges(GitCompareReport report)
 	{
-		var batchedReport = CreateBatchedReport(gitChangesReport);
+		if (report.CouldCompare is false)
+		{
+			throw new ArgumentException("Passed invalid report");
+		}
+
+		var batchedReport = CreateBatchedReport(report);
+
 		int totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Count();
-		Log.Information($"Solutions to check: {gitChangesReport.SolutionChanges.Length}, projects to check: {gitChangesReport.SolutionChanges.Select(x => x.ProjectChanges.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
+		Log.Information($"Solutions to check: {report.Solutions.Length}, projects to check: {report.Solutions.Select(x => x.Projects.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
 
 		return DotnetFormatVerifyNoChanges(_ => _
-	  .SetProcessWorkingDirectory(gitChangesReport.GitRepoLocalDirectory)
-	  .CombineWith(batchedReport.Batches, (_, batch) => _
-			.SetProject(batch.SolutionPath)
-				  .AddInclude(batch.FilesToInclude)),
-				  completeOnFailure: true);
+			.SetProcessWorkingDirectory(report.GitRepoLocalDirectory)
+			.CombineWith(batchedReport.Batches, (_, batch) => _
+					.SetProject(batch.SolutionPath)
+						  .AddInclude(batch.FilesToInclude)),
+						  completeOnFailure: true);
 	}
 
-	private static BatchedReport CreateBatchedReport(GitChangesReport report)
+	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> DotnetFormatVerifyNoChanges(params string[] solutionsFullPath)
+	{
+		return DotnetFormatVerifyNoChanges(_ => _
+			.CombineWith(solutionsFullPath, (_, solutionFullPath) => _
+				.SetProject(solutionFullPath)));
+	}
+
+	private static BatchedReport CreateBatchedReport(GitCompareReport report)
 	{
 		var batches = new List<ReportBatch>();
 
-		foreach (var solution in report.SolutionChanges)
+		foreach (var solution in report.Solutions)
 		{
 			string[] changedFilesInSolution = solution.GetChangedFilesFullPath();
-
 			var chunks = ChunkBy(changedFilesInSolution, 250);
 			batches.AddRange(chunks.Select(x => new ReportBatch(solution.SolutionFullPath, x.ToArray())));
 		}
