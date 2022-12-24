@@ -164,9 +164,11 @@ public static partial class GitTasks
 
 			var projectChanges = solutionChanges
 				.Select(
-					solutionChanges => new SolutionChanges(solutionChanges.solutionPath, solutionChanges.solutionChanged, solutionChanges.projectChanges
+					solutionChanges => new SolutionChanges(solutionChanges.solutionPath, solutionChanges.solutionChanged, solutionChanges.solutionItems
+						.Select(filePath => new FileChange(filePath))
+						.ToArray(), solutionChanges.projectChanges
 						.Select(projectChanges => new ProjectChanges(projectChanges.projectPath, projectChanges.projectChanged, projectChanges.fileChanges
-							.Select(fileChange => new FileChange(fileChange))
+							.Select(filePath => new FileChange(filePath))
 							.ToArray()))
 						.ToArray()))
 				.ToArray();

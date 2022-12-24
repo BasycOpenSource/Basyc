@@ -3,10 +3,10 @@ namespace Tasks.Git.Diff;
 
 public record ProjectChanges(string ProjectFullPath, bool IsProjectChanged, FileChange[] FileChanges)
 {
-	public string[] GetAllChangedFiles()
+	public string[] GetChangedFilesFullPath()
 	{
 		return FileChanges
-			.Select(x => x.FilePath)
+			.Select(x => x.FullPath)
 			.Concat(IsProjectChanged ? new[] { ProjectFullPath } : Enumerable.Empty<string>())
 			.ToArray();
 	}

@@ -1,6 +1,6 @@
 ﻿namespace Tasks.Git.Diff;
 
-public record FileChange(string FilePath)
+public record FileChange(string FullPath)
 {
 	public void tt()
 	{
