@@ -19,7 +19,7 @@ public static partial class GitTasks
 	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? branchToCompare = null)
 	{
 		bool couldCompare = branchToCompare != null;
-		if (couldCompare)
+		if (couldCompare is false)
 		{
 			return new GitCompareReport(localGitFolder, false, Array.Empty<SolutionChangeReport>());
 		}
@@ -30,7 +30,6 @@ public static partial class GitTasks
 		using (var repo = new Repository(localGitFolder))
 		{
 			//TODO: Include uncommited changes
-			repo.
 			var oldBranch = repo.Branches[branchToCompare];
 			var newBranch = repo.Branches[newBranchName];
 			var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
@@ -61,8 +60,8 @@ public static partial class GitTasks
 				{
 					bool isChangeInGitRoot = change.Path.IndexOf("/") == -1;
 					bool solutionIsInGitRoot = solutionDirectoryRelativePath == gitRoot && isChangeInGitRoot;
-					string v = GetGitParentDirectoryRelativePath(change.Path);
-					if (solutionIsInGitRoot || solutionDirectoryRelativePath == v)
+					string changeParentDir = GetGitParentDirectoryRelativePath(change.Path);
+					if (solutionIsInGitRoot || solutionDirectoryRelativePath == changeParentDir)
 					{
 						var sol = solutionChanges.Last();
 						sol.solutionChanged = true;

@@ -62,7 +62,7 @@ internal class Build : NukeBuild
 			}
 			else
 			{
-				DotnetFormatVerifyNoChanges(Solution!.FileName);
+				DotnetFormatVerifyNoChanges(Solution!.Path);
 			}
 		});
 
