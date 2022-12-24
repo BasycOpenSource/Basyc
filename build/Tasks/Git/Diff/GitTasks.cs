@@ -12,9 +12,9 @@ public static partial class GitTasks
 	private const string gitRoot = ".\\";
 
 	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
-	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? branchToCompare = null)
+	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? oldBranchName = null)
 	{
-		if (branchToCompare == null)
+		if (oldBranchName == null)
 		{
 			var repoNuke = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
 			if (repoNuke.IsOnMainBranch())
@@ -24,7 +24,7 @@ public static partial class GitTasks
 			}
 			else
 			{
-				branchToCompare = repoNuke.IsOnDevelopBranch() ? "main" : "develop";
+				oldBranchName = repoNuke.IsOnDevelopBranch() ? "main" : "develop";
 			}
 		}
 
@@ -33,21 +33,24 @@ public static partial class GitTasks
 		using (var repo = new LibGit2Sharp.Repository(localGitFolder))
 		{
 			var newBranch = repo.Branches[newBranchName];
-			var oldBranch = repo.Branches[branchToCompare];
+			var oldBranch = repo.Branches[oldBranchName];
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
-			var newBranchCommit = newBranch.Tip;
 			Serilog.Log.Information($"newBranchName: '{newBranchName}");
-			Serilog.Log.Information($"newBranchCommit: {newBranchCommit.Id.ToString().Substring(0, 6)}");
-			Serilog.Log.Information($"newBranchCommit.MessageShort: {newBranchCommit.MessageShort}");
-			Serilog.Log.Information($"branchToCompare: '{branchToCompare}");
+			Serilog.Log.Information($"newBranch: '{newBranch}");
+			Serilog.Log.Information($"newBranch.Tip: {newBranch.Tip}");
+			Serilog.Log.Information($"newBranch.Tip.Id: {newBranch.Tip.Id.ToString().Substring(0, 6)}");
+			Serilog.Log.Information($"newBranch.Tip.MessageShort: {newBranch.Tip.MessageShort}");
+
+			Serilog.Log.Information($"oldBranchName: '{oldBranchName}");
 			Serilog.Log.Information($"oldBranch: {oldBranch}");
 			Serilog.Log.Information($"oldBranch.Tip: {oldBranch.Tip}");
 			Serilog.Log.Information($"oldBranch.Tip.Id: {oldBranch.Tip.Id.ToString().Substring(0, 6)}");
 			Serilog.Log.Information($"oldBranch.Tip.MessageShort: {oldBranch.Tip.MessageShort}'");
-			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranchCommit.Id.ToString().Substring(0, 6)}:{newBranchCommit.MessageShort}' -> '{branchToCompare}:{oldBranch.Tip.Id.ToString().Substring(0, 6)}:{oldBranch.Tip.MessageShort}'");
+
+			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranch.Tip.Id.ToString().Substring(0, 6)}:{newBranch.Tip.MessageShort}' -> '{oldBranchName}:{oldBranch.Tip.Id.ToString().Substring(0, 6)}:{oldBranch.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
 
-			var changesGitRelativePaths = repo.Diff.Compare<TreeChanges>(oldBranch.Tip.Tree, newBranchCommit.Tree)
+			var changesGitRelativePaths = repo.Diff.Compare<TreeChanges>(oldBranch.Tip.Tree, newBranch.Tip.Tree)
 					.Where(x => x.Exists)
 					.Select(x => x.Path);
 
