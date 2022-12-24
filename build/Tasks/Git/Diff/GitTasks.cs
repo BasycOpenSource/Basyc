@@ -32,6 +32,12 @@ public static partial class GitTasks
 			var newBranch = repo.Branches[newBranchName];
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
 			var newBranchCommit = newBranch.Tip;
+			Serilog.Log.Information($"newBranchName: '{newBranchName}");
+			Serilog.Log.Information($"newBranchCommit: {newBranchCommit.Id.ToString().Substring(0, 6)}");
+			Serilog.Log.Information($"newBranchCommit.MessageShort: {newBranchCommit.MessageShort}");
+			Serilog.Log.Information($"branchToCompare: '{branchToCompare}");
+			Serilog.Log.Information($"oldBranch: {oldBranch.Tip.Id.ToString().Substring(0, 6)}");
+			Serilog.Log.Information($"oldBranch.Tip.MessageShort: {oldBranch.Tip.MessageShort}'");
 			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranchCommit.Id.ToString().Substring(0, 6)}:{newBranchCommit.MessageShort}' -> '{branchToCompare}:{oldBranch.Tip.Id.ToString().Substring(0, 6)}:{oldBranch.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
 
