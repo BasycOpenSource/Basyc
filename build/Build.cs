@@ -7,8 +7,9 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using Serilog;
+using Tasks.Git.Diff;
 using static _build.DotNetTasks;
-using static _build.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 ///Nuke support plugins are available for:
@@ -35,40 +36,35 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 	FetchDepth = 0)]
 internal class Build : NukeBuild
 {
-	[GitRepository] private readonly GitRepository? Repository;
+	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
 	[Solution(GenerateProjects = true)] private readonly Solution? Solution;
+	[GitRepository] private readonly GitRepository? Repository;
 	[GitVersion] private readonly GitVersion? GitVersion;
+	[GitCompareReport] private readonly GitCompareReport? GitCompareReport;
 
 	private GitHubActions GitHubActions => GitHubActions.Instance;
-
 	private AbsolutePath OutputDirectory => RootDirectory / "output";
-
 	private AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
 
 	public static int Main()
 	{
-		//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
-		return Execute<Build>(x => x.StaticCodeAnalysis);
+		return Execute<Build>(x => x.UnitTest);
 	}
-
-	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
 	private Target StaticCodeAnalysis => _ => _
 		.Before(Compile)
 		.Executes(() =>
 		{
-			if (GitHubActions is not null && GitHubActions.IsPullRequest)
+			if (GitCompareReport!.CouldCompare)
 			{
-				string branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
-				var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
-				DotnetFormatVerifyNoChanges(gitChanges);
+				DotnetFormatVerifyNoChanges(GitCompareReport!);
 			}
 			else
 			{
-				string branchToComapre = Repository.IsOnDevelopBranch() ? "main" : Repository.IsOnMainBranch() ? throw new NotImplementedException() : "develop";
-				var gitChanges = GitGetChangeReport(Repository!.LocalDirectory, branchToComapre);
-				DotnetFormatVerifyNoChanges(gitChanges);
+				Log.Error($"Git compare report unavailable. Running dotnet format for all files.");
+				DotnetFormatVerifyNoChanges(Solution!.Path);
 			}
 		});
 
@@ -102,13 +98,57 @@ internal class Build : NukeBuild
 		.DependsOn(Compile)
 		.Executes(() =>
 		{
-			var unitTestProjects = Solution!.GetProjects("*.UnitTests");
-			DotNetTest(_ => _
-				.EnableNoRestore()
-				.CombineWith(unitTestProjects,
-					(settings, unitTestProject) => settings
-						.SetProjectFile(unitTestProject)),
-						degreeOfParallelism: 5);
+			//var unitTestProjects = Solution!.GetProjects("*.UnitTests");
+			//DotNetTest(_ => _
+			//	.EnableNoRestore()
+			//	.CombineWith(unitTestProjects,
+			//		(settings, unitTestProject) => settings
+			//			.SetProjectFile(unitTestProject)),
+			//			degreeOfParallelism: 5);
+
+			if (GitCompareReport!.CouldCompare)
+			{
+				var unitTestProjectsPaths = GitCompareReport.ChangedSolutions
+					.SelectMany(x => x.ChangedProjects)
+					.Select(x => x.ProjectFullPath)
+					.Where(x => x.EndsWith(".UnitTests"));
+
+				var changedProjectPaths = GitCompareReport.ChangedSolutions
+					.SelectMany(x => x.ChangedProjects)
+					.Select(x => x.ProjectFullPath)
+					.Except(unitTestProjectsPaths);
+
+				foreach (string? changedProject in changedProjectPaths)
+				{
+					string unitTestProjectName = Path.GetFileNameWithoutExtension(changedProject) + ".UnitTests";
+					var unitTestProject = Solution!.GetProject(unitTestProjectName);
+					if (unitTestProject is null)
+					{
+						Log.Warning($"Unit test project with name '{unitTestProjectName}' for '{changedProject}' not found");
+						continue;
+					}
+
+					unitTestProjectsPaths = unitTestProjectsPaths.Concat(new string[] { unitTestProject });
+				}
+
+				DotNetTest(_ => _
+					.EnableNoRestore()
+					.CombineWith(unitTestProjectsPaths,
+						(settings, unitTestProject) => settings
+							.SetProjectFile(unitTestProject)),
+							degreeOfParallelism: 5);
+			}
+			else
+			{
+				Log.Error($"Git compare report unavailable. Running all unit tests.");
+				var allUnitTestProjects = Solution!.GetProjects("*.UnitTests");
+				DotNetTest(_ => _
+					.EnableNoRestore()
+					.CombineWith(allUnitTestProjects,
+						(settings, unitTestProject) => settings
+							.SetProjectFile(unitTestProject)),
+							degreeOfParallelism: 5);
+			}
 		});
 
 	private Target NugetPush => _ => _
