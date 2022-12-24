@@ -26,41 +26,41 @@ public static partial class GitTasks
 
 		string newBranchName = Nuke.Common.Tools.Git.GitTasks.GitCurrentBranch();
 		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
-
 		using (var repo = new Repository(localGitFolder))
 		{
-			//TODO: Include uncommited changes
 			var oldBranch = repo.Branches[branchToCompare];
 			var newBranch = repo.Branches[newBranchName];
 			var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
 
 			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranchCommit.Id.ToString().Substring(0, 6)}:{newBranchCommit.MessageShort}' -> '{branchToCompare}:{oldBranch.Tip.Id.ToString().Substring(0, 6)}:{oldBranch.Tip.MessageShort}'");
-
-			var changes = repo.Diff.Compare<TreeChanges>(oldBranch.Tip.Tree, newBranchCommit.Tree);
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
+
+			var changesGitRelativePaths = repo.Diff.Compare<TreeChanges>(oldBranch.Tip.Tree, newBranchCommit.Tree)
+					.Where(x => x.Exists)
+					.Select(x => x.Path);
 
 			string? projectDirectoryRelativePath = null;
 			bool projectAlreadyFound = false;
-
 			string? solutionDirectoryRelativePath = null;
 			bool solutionAlreadyFound = false;
-
 			string? lastCheckedDirectoryGitRelativePath = null;
 
-			foreach (var change in changes)
+			if (HasUncommitedChanges(repo))
 			{
-				if (change.Exists is false)
-				{
-					continue;
-				}
+				changesGitRelativePaths = changesGitRelativePaths
+					.Except(GetUncommitedRemovedChanges(repo))
+					.Concat(GetUncommitedChanges(repo));
+			}
 
-				string changeFullPath = Path.Combine(localGitFolder, change.Path);
+			foreach (string? changeRelativePath in changesGitRelativePaths)
+			{
+				string changeFullPath = Path.Combine(localGitFolder, changeRelativePath);
 
-				if (change.Path.EndsWith(".sln"))
+				if (changeRelativePath.EndsWith(".sln"))
 				{
-					bool isChangeInGitRoot = change.Path.IndexOf("/") == -1;
+					bool isChangeInGitRoot = changeRelativePath.IndexOf("/") == -1;
 					bool solutionIsInGitRoot = solutionDirectoryRelativePath == gitRoot && isChangeInGitRoot;
-					string changeParentDir = GetGitParentDirectoryRelativePath(change.Path);
+					string changeParentDir = GetGitParentDirectoryRelativePath(changeRelativePath);
 					if (solutionIsInGitRoot || solutionDirectoryRelativePath == changeParentDir)
 					{
 						var sol = solutionChanges.Last();
@@ -68,16 +68,16 @@ public static partial class GitTasks
 						continue;
 					}
 
-					Serilog.Log.Information($"Adding solution because: Solution found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{change.Path}'. Full change path: '{changeFullPath}'");
+					Serilog.Log.Information($"Adding solution because: Solution found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath.Path}'. Full change path: '{changeFullPath}'");
 					solutionChanges.Add((changeFullPath, true, new(), new()));
-					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(change.Path);
+					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
 					solutionAlreadyFound = true;
 					continue;
 				}
 
-				if (change.Path.EndsWith(".csproj"))
+				if (changeRelativePath.EndsWith(".csproj"))
 				{
-					if (projectDirectoryRelativePath == GetGitParentDirectoryRelativePath(change.Path))
+					if (projectDirectoryRelativePath == GetGitParentDirectoryRelativePath(changeRelativePath))
 					{
 						var (projectPath, projectChanged, fileChanges) = solutionChanges.Last().projectChanges.Last();
 						projectChanged = true;
@@ -93,14 +93,14 @@ public static partial class GitTasks
 					bool solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == gitRoot && solRelativePath.IndexOf("/") == -1;
 					if (!((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) || GetGitParentDirectoryRelativePath(solRelativePath) == solutionDirectoryRelativePath))
 					{
-						Serilog.Log.Information($"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{change.Path}'. Full change path: '{changeFullPath}'");
+						Serilog.Log.Information($"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
 						solutionChanges.Add((solFullPath!, false, new(), new()));
 						solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solFullPath!, localGitFolder));
 						solutionAlreadyFound = true;
 					}
 
 					solutionChanges.Last().projectChanges.Add((changeFullPath, true, new()));
-					projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(change.Path);
+					projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
 					projectAlreadyFound = true;
 					lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
 					continue;
@@ -118,7 +118,7 @@ public static partial class GitTasks
 						if (TryGetProject(changeFullPath, out string? projectFullPath2))
 						{
 							solutionChanges.Last().projectChanges.Add((projectFullPath2, false, new()));
-							projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(change.Path);
+							projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
 							projectAlreadyFound = true;
 							lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
 						}
@@ -132,7 +132,7 @@ public static partial class GitTasks
 						}
 					}
 
-					if (change.Path.StartsWith(projectDirectoryRelativePath!))
+					if (changeRelativePath.StartsWith(projectDirectoryRelativePath!))
 					{
 						solutionChanges.Last().projectChanges.Last().fileChanges.Add(changeFullPath);
 						continue;
@@ -145,12 +145,12 @@ public static partial class GitTasks
 
 				if (TryGetSolution(changeFullPath, out string? solFullPath2) is false)
 				{
-					throw new Exception($"Soltion for project '{changeFullPath}' not found");
+					throw new Exception($"Soltion for file '{changeFullPath}' not found");
 				}
 
 				if (!solutionChanges.Any() || solutionChanges.Last().solutionPath != solFullPath2)
 				{
-					Serilog.Log.Information($"Adding solution because: Nothing cached and last solution does not match. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{change.Path}'. Full change path: '{changeFullPath}'");
+					Serilog.Log.Information($"Adding solution because: Nothing cached and last solution does not match. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
 					solutionChanges.Add((solFullPath2!, false, new(), new()));
 					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solFullPath2!, localGitFolder));
 					solutionAlreadyFound = true;
@@ -160,7 +160,7 @@ public static partial class GitTasks
 				{
 					solutionChanges.Last().projectChanges.Add((projectFullPath, false, new()));
 					solutionChanges.Last().projectChanges.Last().fileChanges.Add(changeFullPath);
-					projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(change.Path);
+					projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
 					projectAlreadyFound = true;
 					lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
 				}
@@ -183,8 +183,30 @@ public static partial class GitTasks
 							.ToArray()))
 						.ToArray()))
 				.ToArray();
+
 			return new(localGitFolder, couldCompare, projectChanges);
 		}
+	}
+
+	private static bool HasUncommitedChanges(Repository repo)
+	{
+		var giStatus = repo.RetrieveStatus();
+		bool hasUncommitedChanges = giStatus.Any();
+		return hasUncommitedChanges;
+	}
+
+	private static IEnumerable<string> GetUncommitedChanges(Repository repo)
+	{
+		var giStatus = repo.RetrieveStatus();
+		var uncommitedChanges = giStatus.Added.Concat(second: giStatus.Modified);
+		return uncommitedChanges.Select(x => x.FilePath);
+	}
+
+	private static IEnumerable<string> GetUncommitedRemovedChanges(Repository repo)
+	{
+		var giStatus = repo.RetrieveStatus();
+		var uncommitedChanges = giStatus.Removed;
+		return uncommitedChanges.Select(x => x.FilePath);
 	}
 
 	private static string GetGitParentDirectoryRelativePath(string gitRelativePath)
