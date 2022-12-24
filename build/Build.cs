@@ -7,8 +7,8 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using Tasks.Git.Diff;
 using static _build.DotNetTasks;
+using static _build.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 ///Nuke support plugins are available for:
@@ -38,7 +38,7 @@ internal class Build : NukeBuild
 	[Solution(GenerateProjects = true)] private readonly Solution? Solution;
 	[GitRepository] private readonly GitRepository? Repository;
 	[GitVersion] private readonly GitVersion? GitVersion;
-	[GitCompareReport] private readonly GitCompareReport? GitCompareReport;
+	//[GitCompareReport] private readonly GitCompareReport? GitCompareReport;
 
 	private GitHubActions GitHubActions => GitHubActions.Instance;
 	private AbsolutePath OutputDirectory => RootDirectory / "output";
@@ -56,6 +56,7 @@ internal class Build : NukeBuild
 		.Before(Compile)
 		.Executes(() =>
 		{
+			var GitCompareReport = GitGetCompareReport(Repository!.LocalDirectory);
 			if (GitCompareReport!.CouldCompare)
 			{
 				DotnetFormatVerifyNoChanges(GitCompareReport!);

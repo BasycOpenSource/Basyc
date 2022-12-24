@@ -13,17 +13,7 @@ public class GitCompareReportAttribute : ValueInjectionAttributeBase
 	public override object GetValue(MemberInfo member, object instance)
 	{
 		var repository = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
-		string? branchToComapre;
-		if (repository.IsOnMainBranch())
-		{
-			branchToComapre = null;
-		}
-		else
-		{
-			branchToComapre = repository.IsOnDevelopBranch() ? "main" : "develop";
-		}
-
-		var gitChanges = GitGetCompareReport(repository!.LocalDirectory, branchToComapre);
+		var gitChanges = GitGetCompareReport(repository!.LocalDirectory);
 		return gitChanges;
 	}
 }

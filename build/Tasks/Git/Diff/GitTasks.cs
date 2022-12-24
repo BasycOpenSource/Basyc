@@ -1,5 +1,7 @@
 ﻿using GlobExpressions;
 using LibGit2Sharp;
+using Nuke.Common;
+using Nuke.Common.Git;
 using System.Diagnostics.CodeAnalysis;
 using Tasks.Git.Diff;
 
@@ -9,26 +11,28 @@ public static partial class GitTasks
 {
 	private const string gitRoot = ".\\";
 
-	public static void GitDiff()
-	{
-
-	}
-
 	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
-
 	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? branchToCompare = null)
 	{
-		bool couldCompare = branchToCompare != null;
-		if (couldCompare is false)
+		if (branchToCompare == null)
 		{
-			return new GitCompareReport(localGitFolder, false, Array.Empty<SolutionChangeReport>());
+			var repoNuke = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
+			if (repoNuke.IsOnMainBranch())
+			{
+				return new GitCompareReport(localGitFolder, false, Array.Empty<SolutionChangeReport>());
+
+			}
+			else
+			{
+				branchToCompare = repoNuke.IsOnDevelopBranch() ? "main" : "develop";
+			}
 		}
 
 		string newBranchName = Nuke.Common.Tools.Git.GitTasks.GitCurrentBranch();
 		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
-		using (var repo = new Repository(localGitFolder))
+		using (var repo = new LibGit2Sharp.Repository(localGitFolder))
 		{
-			var oldBranch = repo.Branches[branchToCompare].TrackedBranch;
+			var oldBranch = repo.Branches[branchToCompare];
 			var newBranch = repo.Branches[newBranchName];
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
 			var newBranchCommit = newBranch.Tip;
@@ -190,18 +194,18 @@ public static partial class GitTasks
 						.ToArray()))
 				.ToArray();
 
-			return new(localGitFolder, couldCompare, projectChanges);
+			return new(localGitFolder, true, projectChanges);
 		}
 	}
 
-	private static bool HasUncommitedChanges(Repository repo)
+	private static bool HasUncommitedChanges(LibGit2Sharp.Repository repo)
 	{
 		var giStatus = repo.RetrieveStatus();
 		bool hasUncommitedChanges = giStatus.Any();
 		return hasUncommitedChanges;
 	}
 
-	private static IEnumerable<string> GetUncommitedChanges(Repository repo)
+	private static IEnumerable<string> GetUncommitedChanges(LibGit2Sharp.Repository repo)
 	{
 		var gitStatus = repo.RetrieveStatus();
 		var uncommitedChanges = gitStatus.Untracked
@@ -213,7 +217,7 @@ public static partial class GitTasks
 		return uncommitedChanges.Select(x => x.FilePath);
 	}
 
-	private static IEnumerable<string> GetUncommitedRemovedChanges(Repository repo)
+	private static IEnumerable<string> GetUncommitedRemovedChanges(LibGit2Sharp.Repository repo)
 	{
 		var gitStatus = repo.RetrieveStatus();
 		var uncommitedChanges = gitStatus.Missing.Concat(gitStatus.Removed);
