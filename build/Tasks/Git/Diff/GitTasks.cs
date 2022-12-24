@@ -32,8 +32,8 @@ public static partial class GitTasks
 		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
 		using (var repo = new LibGit2Sharp.Repository(localGitFolder))
 		{
-			var oldBranch = repo.Branches[branchToCompare];
 			var newBranch = repo.Branches[newBranchName];
+			var oldBranch = repo.Branches[branchToCompare];
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
 			var newBranchCommit = newBranch.Tip;
 			Serilog.Log.Information($"newBranchName: '{newBranchName}");
@@ -78,7 +78,7 @@ public static partial class GitTasks
 						continue;
 					}
 
-					Serilog.Log.Information($"Adding solution because: Solution found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
+					Serilog.Log.Debug($"Adding solution because: Solution found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
 					solutionChanges.Add((changeFullPath, true, new(), new()));
 					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
 					solutionAlreadyFound = true;
@@ -103,7 +103,7 @@ public static partial class GitTasks
 					bool solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == gitRoot && solRelativePath.IndexOf("/") == -1;
 					if (!((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) || GetGitParentDirectoryRelativePath(solRelativePath) == solutionDirectoryRelativePath))
 					{
-						Serilog.Log.Information($"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
+						Serilog.Log.Debug($"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
 						solutionChanges.Add((solFullPath!, false, new(), new()));
 						solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solFullPath!, localGitFolder));
 						solutionAlreadyFound = true;
@@ -160,7 +160,7 @@ public static partial class GitTasks
 
 				if (!solutionChanges.Any() || solutionChanges.Last().solutionPath != solFullPath2)
 				{
-					Serilog.Log.Information($"Adding solution because: Nothing cached and last solution does not match. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
+					Serilog.Log.Debug($"Adding solution because: Nothing cached and last solution does not match. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
 					solutionChanges.Add((solFullPath2!, false, new(), new()));
 					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solFullPath2!, localGitFolder));
 					solutionAlreadyFound = true;
