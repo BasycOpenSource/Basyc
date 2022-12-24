@@ -68,7 +68,7 @@ public static partial class GitTasks
 						continue;
 					}
 
-					Serilog.Log.Information($"Adding solution because: Solution found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath.Path}'. Full change path: '{changeFullPath}'");
+					Serilog.Log.Information($"Adding solution because: Solution found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
 					solutionChanges.Add((changeFullPath, true, new(), new()));
 					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
 					solutionAlreadyFound = true;
@@ -197,15 +197,20 @@ public static partial class GitTasks
 
 	private static IEnumerable<string> GetUncommitedChanges(Repository repo)
 	{
-		var giStatus = repo.RetrieveStatus();
-		var uncommitedChanges = giStatus.Added.Concat(second: giStatus.Modified);
+		var gitStatus = repo.RetrieveStatus();
+		var uncommitedChanges = gitStatus.Untracked
+			.Concat(gitStatus.Modified)
+			.Concat(gitStatus.Added)
+			.Concat(gitStatus.RenamedInIndex)
+			.Concat(gitStatus.RenamedInWorkDir);
+
 		return uncommitedChanges.Select(x => x.FilePath);
 	}
 
 	private static IEnumerable<string> GetUncommitedRemovedChanges(Repository repo)
 	{
-		var giStatus = repo.RetrieveStatus();
-		var uncommitedChanges = giStatus.Removed;
+		var gitStatus = repo.RetrieveStatus();
+		var uncommitedChanges = gitStatus.Missing.Concat(gitStatus.Removed);
 		return uncommitedChanges.Select(x => x.FilePath);
 	}
 
