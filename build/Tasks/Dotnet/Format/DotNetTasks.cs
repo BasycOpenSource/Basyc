@@ -87,13 +87,7 @@ public static partial class DotNetTasks
 
 		foreach (var solution in report.SolutionChanges)
 		{
-			//string[] changedFilesInSolution = solution.ProjectChanges
-			//				.SelectMany(x => x.GetAllChangedFiles())
-			//				.Concat(solution.IsSolutionChanged ? new[] { solution.SolutionFullPath } : Enumerable.Empty<string>())
-			//				.Concat(())
-			//				.ToArray();
-
-			string[] changedFilesInSolution = solution.GetChangedFilesFullPath().ToArray();
+			string[] changedFilesInSolution = solution.GetChangedFilesFullPath();
 
 			var chunks = ChunkBy(changedFilesInSolution, 250);
 			batches.AddRange(chunks.Select(x => new ReportBatch(solution.SolutionFullPath, x.ToArray())));

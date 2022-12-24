@@ -1,3 +1,3 @@
 ﻿namespace Tasks.Git.Diff;
 
-public record GitChangesReport(string GitRepoLocalDirectory, SolutionChanges[] SolutionChanges);
+public record GitChangesReport(string GitRepoLocalDirectory, SolutionChangeReport[] SolutionChanges);

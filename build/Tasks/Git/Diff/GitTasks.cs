@@ -7,6 +7,8 @@ namespace _build;
 
 public static partial class GitTasks
 {
+	private const string gitRoot = ".\\";
+
 	public static void GitDiff()
 	{
 
@@ -48,7 +50,7 @@ public static partial class GitTasks
 				if (change.Path.EndsWith(".sln"))
 				{
 					bool isChangeInGitRoot = change.Path.IndexOf("/") == -1;
-					bool solutionIsInGitRoot = solutionDirectoryRelativePath == ".\\" && isChangeInGitRoot;
+					bool solutionIsInGitRoot = solutionDirectoryRelativePath == gitRoot && isChangeInGitRoot;
 					string v = GetGitParentDirectoryRelativePath(change.Path);
 					if (solutionIsInGitRoot || solutionDirectoryRelativePath == v)
 					{
@@ -79,7 +81,7 @@ public static partial class GitTasks
 					}
 
 					string solRelativePath = GetGitRelativePath(solFullPath!, localGitFolder);
-					bool solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == ".\\" && solRelativePath.IndexOf("/") == -1;
+					bool solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == gitRoot && solRelativePath.IndexOf("/") == -1;
 					if (!((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) || GetGitParentDirectoryRelativePath(solRelativePath) == solutionDirectoryRelativePath))
 					{
 						Serilog.Log.Information($"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{change.Path}'. Full change path: '{changeFullPath}'");
@@ -164,16 +166,14 @@ public static partial class GitTasks
 
 			var projectChanges = solutionChanges
 				.Select(
-					solutionChanges => new SolutionChanges(solutionChanges.solutionPath, solutionChanges.solutionChanged, solutionChanges.solutionItems
+					solutionChanges => new SolutionChangeReport(solutionChanges.solutionPath, solutionChanges.solutionChanged, solutionChanges.solutionItems
 						.Select(filePath => new FileChange(filePath))
 						.ToArray(), solutionChanges.projectChanges
-						.Select(projectChanges => new ProjectChanges(projectChanges.projectPath, projectChanges.projectChanged, projectChanges.fileChanges
+						.Select(projectChanges => new ProjectChangeReport(projectChanges.projectPath, projectChanges.projectChanged, projectChanges.fileChanges
 							.Select(filePath => new FileChange(filePath))
 							.ToArray()))
 						.ToArray()))
 				.ToArray();
-			//Serilog.Log.Information("Git changes report created. Changes solutions");
-
 			return new(localGitFolder, projectChanges);
 		}
 	}
@@ -185,7 +185,7 @@ public static partial class GitTasks
 		int lastPathSeparator = gitRelativePathSpan.LastIndexOf('/');
 		if (lastPathSeparator is -1)
 		{
-			return ".\\";
+			return gitRoot;
 		}
 
 		directoryToSkip = gitRelativePathSpan[..lastPathSeparator].ToString();
