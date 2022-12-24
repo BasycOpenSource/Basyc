@@ -28,7 +28,7 @@ public static partial class GitTasks
 		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
 		using (var repo = new Repository(localGitFolder))
 		{
-			var oldBranch = repo.Branches[branchToCompare];
+			var oldBranch = repo.Branches[branchToCompare].TrackedBranch;
 			var newBranch = repo.Branches[newBranchName];
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
 			var newBranchCommit = newBranch.Tip;
