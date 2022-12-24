@@ -30,8 +30,8 @@ public static partial class GitTasks
 		{
 			var oldBranch = repo.Branches[branchToCompare];
 			var newBranch = repo.Branches[newBranchName];
-			var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
-
+			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
+			var newBranchCommit = newBranch.Tip;
 			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranchCommit.Id.ToString().Substring(0, 6)}:{newBranchCommit.MessageShort}' -> '{branchToCompare}:{oldBranch.Tip.Id.ToString().Substring(0, 6)}:{oldBranch.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
 
