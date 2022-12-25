@@ -35,12 +35,13 @@ public static partial class GitTasks
 		{
 			var newBranch = repo.Branches[newBranchName];
 
-			string logMessage = "";
-			var remote = repo.Network.Remotes["origin"];
-			var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-			Commands.Fetch(repo, remote.Name, refSpecs, null, logMessage);
-			Serilog.Log.Information(logMessage);
+			//string logMessage = "";
+			//var remote = repo.Network.Remotes["origin"];
+			//var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
+			//Commands.Fetch(repo, remote.Name, refSpecs, null, logMessage);
+			//Serilog.Log.Information(logMessage);
 			var oldBranch = repo.Branches[oldBranchName];
+			oldBranch = Commands.Checkout(repo, oldBranch);
 
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
 			Serilog.Log.Information($"newBranchName: '{newBranchName}");
