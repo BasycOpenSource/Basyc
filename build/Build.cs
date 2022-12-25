@@ -98,13 +98,6 @@ internal class Build : NukeBuild
 		.DependsOn(Compile)
 		.Executes(() =>
 		{
-			//var unitTestProjects = Solution!.GetProjects("*.UnitTests");
-			//DotNetTest(_ => _
-			//	.EnableNoRestore()
-			//	.CombineWith(unitTestProjects,
-			//		(settings, unitTestProject) => settings
-			//			.SetProjectFile(unitTestProject)),
-			//			degreeOfParallelism: 5);
 
 			if (GitCompareReport!.CouldCompare)
 			{
@@ -124,7 +117,7 @@ internal class Build : NukeBuild
 					var unitTestProject = Solution!.GetProject(unitTestProjectName);
 					if (unitTestProject is null)
 					{
-						Log.Warning($"Unit test project with name '{unitTestProjectName}' for '{changedProject}' not found");
+						Log.Warning($"Unit test project with name '{unitTestProjectName}' for '{changedProject}' not found.");
 						continue;
 					}
 
