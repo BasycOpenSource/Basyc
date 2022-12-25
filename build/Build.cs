@@ -36,6 +36,9 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 	FetchDepth = 0)]
 internal class Build : NukeBuild
 {
+	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
 	[Solution(GenerateProjects = true)] private readonly Solution? Solution;
 	[GitRepository] private readonly GitRepository? Repository;
 	[GitVersion] private readonly GitVersion? GitVersion;
@@ -47,18 +50,14 @@ internal class Build : NukeBuild
 
 	public static int Main()
 	{
-		Logging.Level = LogLevel.Trace;
+		Logging.Level = IsLocalBuild ? LogLevel.Trace : LogLevel.Normal;
 		return Execute<Build>(x => x.StaticCodeAnalysis);
 	}
-
-	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
 	private Target StaticCodeAnalysis => _ => _
 		.Before(Compile)
 		.Executes(() =>
 		{
-			//var GitCompareReport = GitGetCompareReport(Repository!.LocalDirectory);
 			if (GitCompareReport!.CouldCompare)
 			{
 				DotnetFormatVerifyNoChanges(GitCompareReport!);

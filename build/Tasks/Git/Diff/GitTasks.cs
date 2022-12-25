@@ -15,7 +15,6 @@ public static partial class GitTasks
 	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
 	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? oldBranchName = null)
 	{
-		//ProjectModelTasks.Initialize();
 		if (oldBranchName == null)
 		{
 			var repoNuke = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
@@ -35,21 +34,12 @@ public static partial class GitTasks
 		using (var repo = new LibGit2Sharp.Repository(localGitFolder))
 		{
 
-			Serilog.Log.Debug($"local branches: {string.Join(", ", repo.Branches)}");
 			var newBranchLocal = repo.Branches[newBranchName];
 			var oldBranchRemote = repo.Branches[$"{remoteName}/{oldBranchName}"];
 			var remoteSource = repo.Network.Remotes[remoteName];
 			string log = "";
-			//Commands.Fetch(repo, "origin", new[] { new }, new FetchOptions(), log);
-			//+refs/heads/*:refs/remotes/origin/*
-			//Commands.Fetch(repo, "origin", origin.FetchRefSpecs.Select(x => x.Specification), new FetchOptions(), log);
-			Commands.Fetch(repo, remoteSource.Name, new[] { "main:main" }, new FetchOptions(), log);
-			//var oldBranchLocal = Commands.Checkout(repo, oldBranchRemote);
-			//Commands.Checkout(repo, newBranchLocal);
-			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
+			Commands.Fetch(repo, remoteSource.Name, new[] { $"{oldBranchName}:{oldBranchName}" }, new FetchOptions(), log);
 			var oldBranchLocal = repo.Branches[oldBranchName];
-
-			Serilog.Log.Debug($"oldBranch.Tip: {oldBranchLocal.Tip}");
 			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{oldBranchName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
 
