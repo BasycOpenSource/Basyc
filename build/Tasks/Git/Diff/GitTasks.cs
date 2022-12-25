@@ -10,6 +10,7 @@ namespace _build;
 public static partial class GitTasks
 {
 	private const string gitRoot = ".\\";
+	private const string remoteName = "origin";
 
 	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
 	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? oldBranchName = null)
@@ -37,9 +38,12 @@ public static partial class GitTasks
 			Serilog.Log.Debug($"local branches: {string.Join(", ", repo.Branches)}");
 			var newBranchLocal = repo.Branches[newBranchName];
 			var oldBranchRemote = repo.Branches["origin/" + oldBranchName];
-			var origin = repo.Network.Remotes["origin"];
+			var remoteSource = repo.Network.Remotes["origin"];
 			string log = "";
-			Commands.Fetch(repo, "origin", origin.FetchRefSpecs.Select(x => x.Specification), new FetchOptions(), log);
+			//Commands.Fetch(repo, "origin", new[] { new }, new FetchOptions(), log);
+			//+refs/heads/*:refs/remotes/origin/*
+			//Commands.Fetch(repo, "origin", origin.FetchRefSpecs.Select(x => x.Specification), new FetchOptions(), log);
+			Commands.Fetch(repo, remoteSource.Name, new[] { "main:main" }, new FetchOptions(), log);
 			//var oldBranchLocal = Commands.Checkout(repo, oldBranchRemote);
 			//Commands.Checkout(repo, newBranchLocal);
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
