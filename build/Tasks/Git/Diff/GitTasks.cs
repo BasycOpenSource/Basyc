@@ -35,23 +35,21 @@ public static partial class GitTasks
 		{
 
 			Serilog.Log.Debug($"local branches: {string.Join(", ", repo.Branches)}");
-			var newBranch = repo.Branches[newBranchName];
-			//string logMessage = "";
-			//var remote = repo.Network.Remotes["origin"];
-			//var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-			//Commands.Fetch(repo, remote.Name, refSpecs, null, logMessage);
-			//Serilog.Log.Information(logMessage);
-			var oldBranch = repo.Branches[oldBranchName];
-			Commands.
-			repo.Diff.Compare<TreeChanges>()
+			var newBranchLocal = repo.Branches[newBranchName];
+			var oldBranchRemote = repo.Branches["origin/" + oldBranchName];
+			var origin = repo.Network.Remotes["origin"];
+			string log = "";
+			Commands.Fetch(repo, "origin", origin.FetchRefSpecs.Select(x => x.Specification), new FetchOptions(), log);
+			//var oldBranchLocal = Commands.Checkout(repo, oldBranchRemote);
+			//Commands.Checkout(repo, newBranchLocal);
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
+			var oldBranchLocal = repo.Branches[oldBranchName];
 
-			Serilog.Log.Information($"oldBranch.Tip: {oldBranch.Tip}");
-
-			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranch.Tip.Id.ToString().Substring(0, 6)}:{newBranch.Tip.MessageShort}' -> '{oldBranchName}:{oldBranch.Tip.Id.ToString().Substring(0, 6)}:{oldBranch.Tip.MessageShort}'");
+			Serilog.Log.Debug($"oldBranch.Tip: {oldBranchLocal.Tip}");
+			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{oldBranchName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
 
-			var changesGitRelativePaths = repo.Diff.Compare<TreeChanges>(oldBranch.Tip.Tree, newBranch.Tip.Tree)
+			var changesGitRelativePaths = repo.Diff.Compare<TreeChanges>(oldBranchLocal.Tip.Tree, newBranchLocal.Tip.Tree)
 					.Where(x => x.Exists)
 					.Select(x => x.Path);
 
