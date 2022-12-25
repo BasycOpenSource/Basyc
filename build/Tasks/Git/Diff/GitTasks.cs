@@ -2,7 +2,6 @@
 using LibGit2Sharp;
 using Nuke.Common;
 using Nuke.Common.Git;
-using Nuke.Common.ProjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Tasks.Git.Diff;
 
@@ -15,7 +14,7 @@ public static partial class GitTasks
 	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
 	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? oldBranchName = null)
 	{
-		ProjectModelTasks.Initialize();
+		//ProjectModelTasks.Initialize();
 		if (oldBranchName == null)
 		{
 			var repoNuke = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
