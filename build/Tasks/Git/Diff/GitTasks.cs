@@ -36,26 +36,11 @@ public static partial class GitTasks
 
 			Serilog.Log.Debug($"local branches: {string.Join(", ", repo.Branches)}");
 			var newBranch = repo.Branches[newBranchName];
-			//string logMessage = "";
-			//var remote = repo.Network.Remotes["origin"];
-			//var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
-			//Commands.Fetch(repo, remote.Name, refSpecs, null, logMessage);
-			//Serilog.Log.Information(logMessage);
 			var oldBranch = repo.Branches[oldBranchName];
-			//oldBranch = Commands.Pull(repo, oldBranchName);
 
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
-			Serilog.Log.Information($"newBranchName: '{newBranchName}");
-			Serilog.Log.Information($"newBranch: '{newBranch}");
-			Serilog.Log.Information($"newBranch.Tip: {newBranch.Tip}");
-			Serilog.Log.Information($"newBranch.Tip.Id: {newBranch.Tip.Id.ToString().Substring(0, 6)}");
-			Serilog.Log.Information($"newBranch.Tip.MessageShort: {newBranch.Tip.MessageShort}");
 
-			Serilog.Log.Information($"oldBranchName: '{oldBranchName}");
-			Serilog.Log.Information($"oldBranch: {oldBranch}");
 			Serilog.Log.Information($"oldBranch.Tip: {oldBranch.Tip}");
-			Serilog.Log.Information($"oldBranch.Tip.Id: {oldBranch.Tip.Id.ToString().Substring(0, 6)}");
-			Serilog.Log.Information($"oldBranch.Tip.MessageShort: {oldBranch.Tip.MessageShort}'");
 
 			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranch.Tip.Id.ToString().Substring(0, 6)}:{newBranch.Tip.MessageShort}' -> '{oldBranchName}:{oldBranch.Tip.Id.ToString().Substring(0, 6)}:{oldBranch.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
