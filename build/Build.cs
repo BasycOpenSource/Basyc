@@ -89,9 +89,24 @@ internal class Build : NukeBuild
 		.DependsOn(Restore)
 		.Executes(() =>
 		{
-			DotNetBuild(_ => _
-				.EnableNoRestore()
-				.SetProjectFile(Solution));
+			if (GitCompareReport!.CouldCompare)
+			{
+				var changedProjects = GitCompareReport.ChangedSolutions
+				.SelectMany(x => x.ChangedProjects)
+				.Select(x => x.ProjectFullPath);
+
+				DotNetBuild(_ => _
+					.EnableNoRestore()
+					.CombineWith(changedProjects, (_, changedProject) => _
+					.SetProjectFile(changedProject)));
+			}
+			else
+			{
+				Log.Error($"Git compare report unavailable. Building whole solution.");
+				DotNetBuild(_ => _
+					.EnableNoRestore()
+					.SetProjectFile(Solution));
+			}
 		});
 
 	private Target UnitTest => _ => _
