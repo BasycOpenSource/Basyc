@@ -18,13 +18,13 @@ public class GitCompareReportAttribute : ValueInjectionAttributeBase
 {
 	public override object GetValue(MemberInfo member, object instance)
 	{
-		Test();
+		//Workaround();
 		var repository = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
 		var gitChanges = GitGetCompareReport(repository!.LocalDirectory);
 		return gitChanges;
 	}
 
-	private object Test()
+	private object Workaround()
 	{
 		var repository = Nuke.Common.ControlFlow.SuppressErrors(() => GitRepository.FromLocalDirectory(NukeBuild.RootDirectory));
 		if (repository is { Protocol: GitProtocol.Ssh } && !false)
