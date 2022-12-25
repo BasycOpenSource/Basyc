@@ -77,7 +77,7 @@ public static partial class DotNetTasks
 		var batchedReport = CreateBatchedReport(report);
 
 		int totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Count();
-		Log.Information($"Solutions to check: {report.Solutions.Length}, projects to check: {report.Solutions.Select(x => x.Projects.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
+		Log.Information($"Solutions to check: {report.ChangedSolutions.Length}, projects to check: {report.ChangedSolutions.Select(x => x.ChangedProjects.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
 
 		return DotnetFormatVerifyNoChanges(_ => _
 			.SetProcessWorkingDirectory(report.GitRepoLocalDirectory)
@@ -98,7 +98,7 @@ public static partial class DotNetTasks
 	{
 		var batches = new List<ReportBatch>();
 
-		foreach (var solution in report.Solutions)
+		foreach (var solution in report.ChangedSolutions)
 		{
 			string[] changedFilesInSolution = solution.GetChangedFilesFullPath();
 			var chunks = ChunkBy(changedFilesInSolution, 250);

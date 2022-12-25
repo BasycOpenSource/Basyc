@@ -1,10 +1,10 @@
 ﻿namespace Tasks.Git.Diff;
 
-public record SolutionChangeReport(string SolutionFullPath, bool IsSolutionChanged, FileChange[] SolutionItemsChanges, ProjectChangeReport[] Projects)
+public record SolutionChangeReport(string SolutionFullPath, bool IsSolutionChanged, FileChange[] SolutionItemsChanges, ProjectChangeReport[] ChangedProjects)
 {
 	public string[] GetChangedFilesFullPath()
 	{
-		return Projects
+		return ChangedProjects
 			.SelectMany(x => x.GetChangedFilesFullPath())
 			.Concat(SolutionItemsChanges.Select(x => x.FullPath))
 			.Concat(IsSolutionChanged ? new[] { SolutionFullPath } : Enumerable.Empty<string>())

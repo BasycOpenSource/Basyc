@@ -1,13 +1,13 @@
 using GlobExpressions;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
-using Nuke.Common.Execution;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
+using Serilog;
 using Tasks.Git.Diff;
 using static _build.DotNetTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -50,8 +50,7 @@ internal class Build : NukeBuild
 
 	public static int Main()
 	{
-		Logging.Level = IsLocalBuild ? LogLevel.Trace : LogLevel.Normal;
-		return Execute<Build>(x => x.StaticCodeAnalysis);
+		return Execute<Build>(x => x.UnitTest);
 	}
 
 	private Target StaticCodeAnalysis => _ => _
@@ -64,6 +63,7 @@ internal class Build : NukeBuild
 			}
 			else
 			{
+				Log.Error($"Git compare report unavailable. Running dotnet format for all files.");
 				DotnetFormatVerifyNoChanges(Solution!.Path);
 			}
 		});
@@ -98,13 +98,57 @@ internal class Build : NukeBuild
 		.DependsOn(Compile)
 		.Executes(() =>
 		{
-			var unitTestProjects = Solution!.GetProjects("*.UnitTests");
-			DotNetTest(_ => _
-				.EnableNoRestore()
-				.CombineWith(unitTestProjects,
-					(settings, unitTestProject) => settings
-						.SetProjectFile(unitTestProject)),
-						degreeOfParallelism: 5);
+			//var unitTestProjects = Solution!.GetProjects("*.UnitTests");
+			//DotNetTest(_ => _
+			//	.EnableNoRestore()
+			//	.CombineWith(unitTestProjects,
+			//		(settings, unitTestProject) => settings
+			//			.SetProjectFile(unitTestProject)),
+			//			degreeOfParallelism: 5);
+
+			if (GitCompareReport!.CouldCompare)
+			{
+				var unitTestProjectsPaths = GitCompareReport.ChangedSolutions
+					.SelectMany(x => x.ChangedProjects)
+					.Select(x => x.ProjectFullPath)
+					.Where(x => x.EndsWith(".UnitTests"));
+
+				var changedProjectPaths = GitCompareReport.ChangedSolutions
+					.SelectMany(x => x.ChangedProjects)
+					.Select(x => x.ProjectFullPath)
+					.Except(unitTestProjectsPaths);
+
+				foreach (string? changedProject in changedProjectPaths)
+				{
+					string unitTestProjectName = Path.GetFileNameWithoutExtension(changedProject) + ".UnitTests";
+					var unitTestProject = Solution!.GetProject(unitTestProjectName);
+					if (unitTestProject is null)
+					{
+						Log.Warning($"Unit test project with name '{unitTestProjectName}' for '{changedProject}' not found");
+						continue;
+					}
+
+					unitTestProjectsPaths = unitTestProjectsPaths.Concat(new string[] { unitTestProject });
+				}
+
+				DotNetTest(_ => _
+					.EnableNoRestore()
+					.CombineWith(unitTestProjectsPaths,
+						(settings, unitTestProject) => settings
+							.SetProjectFile(unitTestProject)),
+							degreeOfParallelism: 5);
+			}
+			else
+			{
+				Log.Error($"Git compare report unavailable. Running all unit tests.");
+				var allUnitTestProjects = Solution!.GetProjects("*.UnitTests");
+				DotNetTest(_ => _
+					.EnableNoRestore()
+					.CombineWith(allUnitTestProjects,
+						(settings, unitTestProject) => settings
+							.SetProjectFile(unitTestProject)),
+							degreeOfParallelism: 5);
+			}
 		});
 
 	private Target NugetPush => _ => _

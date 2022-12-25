@@ -2,7 +2,9 @@
 using LibGit2Sharp;
 using Nuke.Common;
 using Nuke.Common.Git;
+using Nuke.Common.IO;
 using System.Diagnostics.CodeAnalysis;
+using Tasks.Git;
 using Tasks.Git.Diff;
 
 namespace _build;
@@ -11,6 +13,8 @@ public static partial class GitTasks
 {
 	private const string gitRoot = ".\\";
 	private const string remoteName = "origin";
+	private const string solutionExtension = ".sln";
+	private const string projectExtension = ".csproj";
 
 	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
 	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? oldBranchName = null)
@@ -29,18 +33,10 @@ public static partial class GitTasks
 			}
 		}
 
-		string newBranchName = Nuke.Common.Tools.Git.GitTasks.GitCurrentBranch();
-		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
-		using (var repo = new LibGit2Sharp.Repository(localGitFolder))
+		using (var repo = new Repository(localGitFolder))
 		{
-
-			var newBranchLocal = repo.Branches[newBranchName];
-			var oldBranchRemote = repo.Branches[$"{remoteName}/{oldBranchName}"];
-			var remoteSource = repo.Network.Remotes[remoteName];
-			string log = "";
-			Commands.Fetch(repo, remoteSource.Name, new[] { $"{oldBranchName}:{oldBranchName}" }, new FetchOptions(), log);
-			var oldBranchLocal = repo.Branches[oldBranchName];
-			Serilog.Log.Information($"Creating change report between '{newBranchName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{oldBranchName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
+			GetBranchesToCompare(repo, oldBranchName, out var newBranchLocal, out var oldBranchLocal);
+			Serilog.Log.Information($"Creating change report between '{newBranchLocal.FriendlyName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{newBranchLocal.FriendlyName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
 
 			var changesGitRelativePaths = repo.Diff.Compare<TreeChanges>(oldBranchLocal.Tip.Tree, newBranchLocal.Tip.Tree)
@@ -53,18 +49,18 @@ public static partial class GitTasks
 			bool solutionAlreadyFound = false;
 			string? lastCheckedDirectoryGitRelativePath = null;
 
-			if (HasUncommitedChanges(repo))
+			if (repo.HasUncommitedChanges())
 			{
 				changesGitRelativePaths = changesGitRelativePaths
-					.Except(GetUncommitedRemovedChanges(repo))
-					.Concat(GetUncommitedChanges(repo));
+					.Except(repo.GetUncommitedRemovedChanges())
+					.Concat(repo.GetUncommitedChanges());
 			}
 
 			foreach (string? changeRelativePath in changesGitRelativePaths)
 			{
 				string changeFullPath = Path.Combine(localGitFolder, changeRelativePath);
 
-				if (changeRelativePath.EndsWith(".sln"))
+				if (changeRelativePath.EndsWith(solutionExtension))
 				{
 					bool isChangeInGitRoot = changeRelativePath.IndexOf("/") == -1;
 					bool solutionIsInGitRoot = solutionDirectoryRelativePath == gitRoot && isChangeInGitRoot;
@@ -83,7 +79,7 @@ public static partial class GitTasks
 					continue;
 				}
 
-				if (changeRelativePath.EndsWith(".csproj"))
+				if (changeRelativePath.EndsWith(projectExtension))
 				{
 					if (projectDirectoryRelativePath == GetGitParentDirectoryRelativePath(changeRelativePath))
 					{
@@ -92,18 +88,15 @@ public static partial class GitTasks
 						continue;
 					}
 
-					if (TryGetSolution(changeFullPath, out string? solFullPath) is false)
-					{
-						throw new Exception($"Soltion for project '{changeFullPath}' not found");
-					}
+					string solutionFilePath = GetSolution(changeFullPath);
 
-					string solRelativePath = GetGitRelativePath(solFullPath!, localGitFolder);
+					string solRelativePath = GetGitRelativePath(solutionFilePath!, localGitFolder);
 					bool solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == gitRoot && solRelativePath.IndexOf("/") == -1;
 					if (!((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) || GetGitParentDirectoryRelativePath(solRelativePath) == solutionDirectoryRelativePath))
 					{
 						Serilog.Log.Debug($"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
-						solutionChanges.Add((solFullPath!, false, new(), new()));
-						solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solFullPath!, localGitFolder));
+						solutionChanges.Add((solutionFilePath!, false, new(), new()));
+						solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solutionFilePath!, localGitFolder));
 						solutionAlreadyFound = true;
 					}
 
@@ -151,16 +144,13 @@ public static partial class GitTasks
 					}
 				}
 
-				if (TryGetSolution(changeFullPath, out string? solFullPath2) is false)
-				{
-					throw new Exception($"Soltion for file '{changeFullPath}' not found");
-				}
+				string solutionFilePath2 = GetSolution(changeFullPath);
 
-				if (!solutionChanges.Any() || solutionChanges.Last().solutionPath != solFullPath2)
+				if (!solutionChanges.Any() || solutionChanges.Last().solutionPath != solutionFilePath2)
 				{
 					Serilog.Log.Debug($"Adding solution because: Nothing cached and last solution does not match. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
-					solutionChanges.Add((solFullPath2!, false, new(), new()));
-					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solFullPath2!, localGitFolder));
+					solutionChanges.Add((solutionFilePath2!, false, new(), new()));
+					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solutionFilePath2!, localGitFolder));
 					solutionAlreadyFound = true;
 				}
 
@@ -196,30 +186,16 @@ public static partial class GitTasks
 		}
 	}
 
-	private static bool HasUncommitedChanges(LibGit2Sharp.Repository repo)
+	private static void GetBranchesToCompare(Repository repo, string? oldBranchName, out Branch newBranchLocal, out Branch oldBranchLocal)
 	{
-		var giStatus = repo.RetrieveStatus();
-		bool hasUncommitedChanges = giStatus.Any();
-		return hasUncommitedChanges;
-	}
-
-	private static IEnumerable<string> GetUncommitedChanges(LibGit2Sharp.Repository repo)
-	{
-		var gitStatus = repo.RetrieveStatus();
-		var uncommitedChanges = gitStatus.Untracked
-			.Concat(gitStatus.Modified)
-			.Concat(gitStatus.Added)
-			.Concat(gitStatus.RenamedInIndex)
-			.Concat(gitStatus.RenamedInWorkDir);
-
-		return uncommitedChanges.Select(x => x.FilePath);
-	}
-
-	private static IEnumerable<string> GetUncommitedRemovedChanges(LibGit2Sharp.Repository repo)
-	{
-		var gitStatus = repo.RetrieveStatus();
-		var uncommitedChanges = gitStatus.Missing.Concat(gitStatus.Removed);
-		return uncommitedChanges.Select(x => x.FilePath);
+		string newBranchName = Nuke.Common.Tools.Git.GitTasks.GitCurrentBranch();
+		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
+		newBranchLocal = repo.Branches[newBranchName];
+		var oldBranchRemote = repo.Branches[$"{remoteName}/{oldBranchName}"];
+		var remoteSource = repo.Network.Remotes[remoteName];
+		string log = "";
+		Commands.Fetch(repo, remoteSource.Name, new[] { $"{oldBranchName}:{oldBranchName}" }, new FetchOptions(), log);
+		oldBranchLocal = repo.Branches[oldBranchName];
 	}
 
 	private static string GetGitParentDirectoryRelativePath(string gitRelativePath)
@@ -242,7 +218,7 @@ public static partial class GitTasks
 		DirectoryInfo fileDirectory;
 		if (IsFile(fullPath))
 		{
-			if (fullPath.EndsWith(".csproj"))
+			if (fullPath.EndsWith(projectExtension))
 			{
 				projectPath = fullPath;
 				return true;
@@ -257,10 +233,10 @@ public static partial class GitTasks
 			fileDirectory = new DirectoryInfo(fullPath);
 		}
 
-		var csprojFile = fileDirectory.GlobFiles("*.csproj").SingleOrDefault();
+		var csprojFile = fileDirectory.GlobFiles($"*{projectExtension}").SingleOrDefault();
 		if (csprojFile == default)
 		{
-			var slnFile = fileDirectory.GlobFiles("*.sln").SingleOrDefault();
+			var slnFile = fileDirectory.GlobFiles($"*{solutionExtension}").SingleOrDefault();
 			if (slnFile != default)
 			{
 				projectPath = null;
@@ -303,9 +279,19 @@ public static partial class GitTasks
 			}
 			else
 			{
-				throw new ArgumentException($"Path '{path}' is not valid file or directory path", nameof(path));
+				throw new ArgumentException($"Path '{path}' does not exists or is not valid file or directory path", nameof(path));
 			}
 		}
+	}
+
+	private static string GetSolution(string fullPath)
+	{
+		if (TryGetSolution(fullPath, out string? solutionFullPath) is false)
+		{
+			throw new Exception($"Soltion for file '{fullPath}' not found");
+		}
+
+		return solutionFullPath!;
 	}
 
 	private static bool TryGetSolution(string fullPath, out string? solutionFullPath)
@@ -314,7 +300,7 @@ public static partial class GitTasks
 		DirectoryInfo fileDirectory;
 		if (IsFile(fullPath))
 		{
-			if (fullPath.EndsWith(".sln"))
+			if (fullPath.EndsWith(solutionExtension))
 			{
 				solutionFullPath = fullPath;
 				return true;
@@ -329,7 +315,7 @@ public static partial class GitTasks
 			fileDirectory = new DirectoryInfo(fullPath);
 		}
 
-		var solutionFile = fileDirectory.GlobFiles("*.sln").SingleOrDefault();
+		var solutionFile = fileDirectory.GlobFiles($"*{solutionExtension}").SingleOrDefault();
 		if (solutionFile == default)
 		{
 			var gitIgnoreFile = fileDirectory.GlobFiles(".gitignore").FirstOrDefault();
@@ -348,7 +334,7 @@ public static partial class GitTasks
 		}
 	}
 
-	public static string GetGitRelativePath(string filePath, string gitRoot)
+	private static string GetGitRelativePath(string filePath, string gitRoot)
 	{
 		var filePathSpan = filePath.AsSpan();
 		var gitRelativePath = filePathSpan.Slice(gitRoot.Length + 1);
