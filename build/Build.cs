@@ -98,13 +98,6 @@ internal class Build : NukeBuild
 		.DependsOn(Compile)
 		.Executes(() =>
 		{
-			//var unitTestProjects = Solution!.GetProjects("*.UnitTests");
-			//DotNetTest(_ => _
-			//	.EnableNoRestore()
-			//	.CombineWith(unitTestProjects,
-			//		(settings, unitTestProject) => settings
-			//			.SetProjectFile(unitTestProject)),
-			//			degreeOfParallelism: 5);
 
 			if (GitCompareReport!.CouldCompare)
 			{
