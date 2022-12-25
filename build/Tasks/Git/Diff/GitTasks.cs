@@ -33,15 +33,16 @@ public static partial class GitTasks
 		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
 		using (var repo = new LibGit2Sharp.Repository(localGitFolder))
 		{
-			var newBranch = repo.Branches[newBranchName];
 
+			Serilog.Log.Debug($"local branches: {string.Join(", ", repo.Branches)}");
+			var newBranch = repo.Branches[newBranchName];
 			//string logMessage = "";
 			//var remote = repo.Network.Remotes["origin"];
 			//var refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
 			//Commands.Fetch(repo, remote.Name, refSpecs, null, logMessage);
 			//Serilog.Log.Information(logMessage);
 			var oldBranch = repo.Branches[oldBranchName];
-			//oldBranch = Commands.Checkout(repo, oldBranch);
+			//oldBranch = Commands.Pull(repo, oldBranchName);
 
 			//var newBranchCommit = newBranch.Commits.First(x => x.Id.ToString() == newBranchCommintId);
 			Serilog.Log.Information($"newBranchName: '{newBranchName}");

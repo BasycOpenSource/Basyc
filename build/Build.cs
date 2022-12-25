@@ -1,6 +1,7 @@
 using GlobExpressions;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
+using Nuke.Common.Execution;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -46,6 +47,7 @@ internal class Build : NukeBuild
 
 	public static int Main()
 	{
+		Logging.Level = LogLevel.Trace;
 		return Execute<Build>(x => x.StaticCodeAnalysis);
 	}
 

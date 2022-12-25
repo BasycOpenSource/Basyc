@@ -1,6 +1,5 @@
 ﻿using JetBrains.Annotations;
 using Nuke.Common;
-using Nuke.Common.CI.TeamCity;
 using Nuke.Common.Git;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.GitVersion;
@@ -15,33 +14,20 @@ public class GitCompareReportAttribute : ValueInjectionAttributeBase
 {
 	public override object GetValue(MemberInfo member, object instance)
 	{
-		Workaround();
+		//Workaround();
 		var repository = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
 		var gitChanges = GitGetCompareReport(repository!.LocalDirectory);
 		return gitChanges;
 	}
 
-	private object Workaround()
+	private static void Workaround()
 	{
 		var gitVersion = GitVersionTasks.GitVersion(s => s
 				.SetFramework("net5.0")
 				.SetNoFetch(false)
 				.SetNoCache(false)
 				.DisableProcessLogOutput()
-				.SetUpdateAssemblyInfo(false)
-				.When(TeamCity.Instance is { IsPullRequest: true } && !EnvironmentInfo.Variables.ContainsKey("Git_Branch"), _ => _
-						.AddProcessEnvironmentVariable(
-							"Git_Branch",
-							TeamCity.Instance.ConfigurationProperties.Single(x => x.Key.StartsWith("teamcity.build.vcs.branch")).Value)))
+				.SetUpdateAssemblyInfo(false))
 			.Result;
-
-		//if (true)
-		//{
-		//	AzurePipelines.Instance?.UpdateBuildNumber(gitVersion.FullSemVer);
-		//	TeamCity.Instance?.SetBuildNumber(gitVersion.FullSemVer);
-		//	AppVeyor.Instance?.UpdateBuildVersion($"{gitVersion.FullSemVer}.build.{AppVeyor.Instance.BuildNumber}");
-		//}
-
-		return gitVersion;
 	}
 }
