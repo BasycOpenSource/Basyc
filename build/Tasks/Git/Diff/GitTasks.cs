@@ -37,8 +37,8 @@ public static partial class GitTasks
 
 			Serilog.Log.Debug($"local branches: {string.Join(", ", repo.Branches)}");
 			var newBranchLocal = repo.Branches[newBranchName];
-			var oldBranchRemote = repo.Branches["origin/" + oldBranchName];
-			var remoteSource = repo.Network.Remotes["origin"];
+			var oldBranchRemote = repo.Branches[$"{remoteName}/{oldBranchName}"];
+			var remoteSource = repo.Network.Remotes[remoteName];
 			string log = "";
 			//Commands.Fetch(repo, "origin", new[] { new }, new FetchOptions(), log);
 			//+refs/heads/*:refs/remotes/origin/*
