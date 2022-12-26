@@ -16,4 +16,8 @@
 		<PackageDownload Include="GitVersion.Tool" Version="[5.11.1]" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\..\IO\Basyc.Extensions.IO\Basyc.Extensions.IO.csproj" />
+	</ItemGroup>
+
 </Project>

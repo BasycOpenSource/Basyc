@@ -70,7 +70,8 @@ public interface IBasycBuild : INukeBuild
 			   {
 				   var changedProjects = GitCompareReport.ChangedSolutions
 				   .SelectMany(x => x.ChangedProjects)
-				   .Select(x => x.ProjectFullPath);
+				   .Select(x => x.ProjectFullPath)
+				   .Where(x => x.EndsWith("_build.csproj") is false);
 
 				   DotNetBuild(_ => _
 					   .EnableNoRestore()
@@ -91,18 +92,19 @@ public interface IBasycBuild : INukeBuild
 		   .DependsOn(Compile)
 		   .Executes(() =>
 		   {
+			   string unitTestSuffix = ".UnitTests";
 			   if (GitCompareReport!.CouldCompare)
 			   {
-				   var testProjectsToRun = GitCompareReport.GetTestProjectsToRun(Solution, ".UnitTests");
+				   var testProjectsToRun = GitCompareReport.GetTestProjectsToRun(Solution, unitTestSuffix);
 
 				   Log.Information($"Starting unit tests: '{string.Join("\n", testProjectsToRun)}'");
-				   UnitTestAndCoverage(testProjectsToRun);
+				   UnitTestAndCoverage(testProjectsToRun, unitTestSuffix);
 			   }
 			   else
 			   {
 				   Log.Error($"Git compare report unavailable. Running all unit tests.");
 				   var allUnitTestProjects = Solution!.GetProjects("*.UnitTests");
-				   UnitTestAndCoverage(allUnitTestProjects.Select(x => x.Path.ToString()));
+				   UnitTestAndCoverage(allUnitTestProjects.Select(x => x.Path.ToString()), unitTestSuffix);
 
 			   }
 		   });

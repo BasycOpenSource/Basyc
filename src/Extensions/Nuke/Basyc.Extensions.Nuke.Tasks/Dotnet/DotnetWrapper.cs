@@ -44,13 +44,13 @@ public static class DotnetWrapper
 		return isFormated;
 	}
 
-	public static void Test(string projectDll, string collect)
-	{
-		//DotNet($"test \"{projectDll}\" --collect:\"{collect}\"");
-		//DotNet($"test --collect:\"{collect}\"", workingDirectory: Directory.GetParent(projectDll).FullName);
-		DotNet($"test --collect:\"{collect}\" --no-build", workingDirectory: @"C:\Users\Honza\source\repos\BasycOpenSource\Basyc\tests\Serialization\Basyc.Serialization.ProtobufNet.UnitTests");
-		//DotNet($"test \"{projectDll}\" /p:CollectCoverage=true");
-		//DotNet($"test /p:CollectCoverage=true");
+	//public static void Test(string projectDll, string collect)
+	//{
+	//	//DotNet($"test \"{projectDll}\" --collect:\"{collect}\"");
+	//	//DotNet($"test --collect:\"{collect}\"", workingDirectory: Directory.GetParent(projectDll).FullName);
+	//	DotNet($"test --collect:\"{collect}\" --no-build", workingDirectory: @"C:\Users\Honza\source\repos\BasycOpenSource\Basyc\tests\Serialization\Basyc.Serialization.ProtobufNet.UnitTests");
+	//	//DotNet($"test \"{projectDll}\" /p:CollectCoverage=true");
+	//	//DotNet($"test /p:CollectCoverage=true");
 
-	}
+	//}
 }
