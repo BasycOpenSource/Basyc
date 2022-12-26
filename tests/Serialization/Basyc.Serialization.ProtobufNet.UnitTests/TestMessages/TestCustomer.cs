@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Basyc.Serialization.ProtobufNet.Tests.TestMessages;
+namespace Basyc.Serialization.ProtobufNet.UnitTests.TestMessages;
 
 public class TestCustomer
 {

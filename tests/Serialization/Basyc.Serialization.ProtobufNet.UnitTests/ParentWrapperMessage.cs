@@ -5,7 +5,7 @@
 
 using ProtoBuf;
 
-namespace Basyc.Serialization.ProtobufNet.Tests;
+namespace Basyc.Serialization.ProtobufNet.UnitTests;
 
 [ProtoContract]
 public class ParentWrapperMessage

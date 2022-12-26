@@ -7,15 +7,17 @@ namespace Basyc.Serialization.ProtobufNet;
 
 public class ProtobufByteSerializer : ITypedByteSerializer
 {
-	public static ProtobufByteSerializer Singlenton = new ProtobufByteSerializer();
-	private readonly static Dictionary<Type, PreparedTypeMetadata> knownTypes = new Dictionary<Type, PreparedTypeMetadata>();
+	public static ProtobufByteSerializer Singlenton = new();
+	private static readonly Dictionary<Type, PreparedTypeMetadata> knownTypes = new();
 	private static PreparedTypeMetadata PrepareSerializer(Type typeToPrepare)
 	{
 		if (knownTypes.TryGetValue(typeToPrepare, out var metadata))
+		{
 			return metadata;
+		}
 
 		var publicProperties = typeToPrepare.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-		var hasZeroProperties = publicProperties.Length == 0;
+		bool hasZeroProperties = publicProperties.Length == 0;
 		var newMetadata = new PreparedTypeMetadata(hasZeroProperties, publicProperties);
 		knownTypes.Add(typeToPrepare, newMetadata);
 
@@ -59,9 +61,11 @@ public class ProtobufByteSerializer : ITypedByteSerializer
 			var properties = typeToPrepare.GetProperties();
 			foreach (var property in properties)
 			{
-				var canSeriProperty = RuntimeTypeModel.Default.CanSerialize(property.PropertyType);
+				bool canSeriProperty = RuntimeTypeModel.Default.CanSerialize(property.PropertyType);
 				if (canSeriProperty)
+				{
 					continue;
+				}
 
 				//PrepareSerializer(property.PropertyType);
 				TryFixWithSkippingEmptyCtor(property.PropertyType);
@@ -86,15 +90,21 @@ public class ProtobufByteSerializer : ITypedByteSerializer
 		var ctors = type.GetConstructors();
 
 		if (ctors.Length <= 1)
+		{
 			return false;
+		}
 
 		//Must contain empty ctor to have the problem
 		if (ctors.FirstOrDefault(x => x.GetParameters().Length != 0) is null)
+		{
 			return false;
+		}
 
 		//Must contain ctor with all properties
 		if (ctors.Any(x => x.GetParameters().Length == type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Length) is false)
+		{
 			return false;
+		}
 
 		return true;
 	}
@@ -103,18 +113,22 @@ public class ProtobufByteSerializer : ITypedByteSerializer
 	{
 		var publicProperties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 		if (publicProperties.Length is 0)
+		{
 			return false;
+		}
 
 		var notEmptyCtors = type.GetConstructors().Where(x => x.GetParameters().Length > 0);
 		if (notEmptyCtors.Any(x => x.GetParameters().Length == publicProperties.Length) is false)
+		{
 			return true;
+		}
 
 		return false;
 	}
 
 	private static bool FixPotentialMissingPropertiesInCtor(Type type)
 	{
-		var hadProblem = false;
+		bool hadProblem = false;
 		if (IsTypeMissingPropertiesInCtor(type))
 		{
 			PrepareButSkipCtor(type);
@@ -127,7 +141,9 @@ public class ProtobufByteSerializer : ITypedByteSerializer
 			foreach (var property in properties)
 			{
 				if (FixPotentialMissingPropertiesInCtor(property.PropertyType) is true)
+				{
 					hadProblem = true;
+				}
 			}
 		}
 
@@ -139,10 +155,14 @@ public class ProtobufByteSerializer : ITypedByteSerializer
 		var typeMetadata = PrepareSerializer(dataType);
 
 		if (input == null)
+		{
 			return new byte[0];
+		}
 
 		if (typeMetadata.HasZeroProperties)
+		{
 			return new byte[0];
+		}
 
 		using var stream = new MemoryStream();
 		Serializer.Serialize(stream, input);
@@ -154,7 +174,9 @@ public class ProtobufByteSerializer : ITypedByteSerializer
 		PrepareSerializer(dataType);
 
 		if (input == null)
+		{
 			return dataType.GetDefaultValue();
+		}
 
 		var stream = new MemoryStream(input);
 		stream.Write(input, 0, input.Length);
@@ -173,7 +195,7 @@ public class ProtobufByteSerializer : ITypedByteSerializer
 	public bool TryDeserialize<T>(byte[] serializedInput, out T? input, out SerializationFailure? error)
 	{
 		var thisCasted = (ITypedByteSerializer)this;
-		var wasSuccesful = thisCasted.TryDeserialize(serializedInput, typeof(T), out var inputObject, out error);
+		bool wasSuccesful = thisCasted.TryDeserialize(serializedInput, typeof(T), out object? inputObject, out error);
 		input = (T?)inputObject;
 		return wasSuccesful;
 

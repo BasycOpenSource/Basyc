@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Basyc.Serialization.ProtobufNet.Tests.TestMessages;
+namespace Basyc.Serialization.ProtobufNet.UnitTests.TestMessages;
 
 public class Class_Inits_And_Sets_Properties
 {

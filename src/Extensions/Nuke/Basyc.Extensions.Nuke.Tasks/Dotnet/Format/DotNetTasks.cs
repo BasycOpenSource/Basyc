@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-namespace Basyc.Extensions.Nuke.Tasks.Dotnet;
+namespace Basyc.Extensions.Nuke.Tasks;
 
 public static partial class DotNetTasks
 {
