@@ -1,12 +1,13 @@
 ﻿using Nuke.Common.Tooling;
 using System.Diagnostics.Contracts;
+using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-namespace _build;
+namespace Basyc.Extensions.Nuke.Tasks.Dotnet.Format;
 
 [Serializable]
 public class DotNetFormatSettings : ToolSettings
 {
-	public override Action<OutputType, string> ProcessCustomLogger => Nuke.Common.Tools.DotNet.DotNetTasks.DotNetLogger;
+	public override Action<OutputType, string> ProcessCustomLogger => DotNetLogger;
 	public virtual string? Project { get; internal set; }
 	public virtual List<string> Include { get; internal set; } = new List<string>();
 

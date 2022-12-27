@@ -3,9 +3,9 @@ using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.ValueInjection;
 using System.Reflection;
-using static _build.GitTasks;
+using static Basyc.Extensions.Nuke.Tasks.GitTasks;
 
-namespace Tasks.Git.Diff;
+namespace Basyc.Extensions.Nuke.Tasks.Git.Diff;
 
 [UsedImplicitly(ImplicitUseKindFlags.Default)]
 public class GitCompareReportAttribute : ValueInjectionAttributeBase

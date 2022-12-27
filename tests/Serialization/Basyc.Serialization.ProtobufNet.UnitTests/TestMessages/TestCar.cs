@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Basyc.Serialization.ProtobufNet.Tests.TestMessages;
+namespace Basyc.Serialization.ProtobufNet.UnitTests.TestMessages;
 
 public class TestCar
 {

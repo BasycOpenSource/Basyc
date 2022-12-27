@@ -1,12 +1,12 @@
-﻿using Nuke.Common.Tooling;
+﻿using Basyc.Extensions.Nuke.Tasks.Dotnet.Format;
+using Basyc.Extensions.Nuke.Tasks.Git.Diff;
+using Nuke.Common.Tooling;
 using Serilog;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using Tasks.Dotnet;
-using Tasks.Dotnet.Format;
-using Tasks.Git.Diff;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-namespace _build;
+
+namespace Basyc.Extensions.Nuke.Tasks;
 
 public static partial class DotNetTasks
 {

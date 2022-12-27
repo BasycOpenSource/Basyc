@@ -1,4 +1,4 @@
-﻿namespace Tasks.Dotnet.Format;
+﻿namespace Basyc.Extensions.Nuke.Tasks.Dotnet.Format;
 
 public record DotnetFormatReport(ReportRecord[]? Records);
 public record ReportRecord(DocumentId DocumentId, string FilePath, string FileName, List<FileChange> FileChanges);

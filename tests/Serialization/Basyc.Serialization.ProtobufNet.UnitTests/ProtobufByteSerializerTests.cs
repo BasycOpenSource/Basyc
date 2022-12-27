@@ -1,13 +1,11 @@
-﻿using Basyc.Serialization.ProtobufNet.Tests.TestMessages;
+﻿using Basyc.Serialization.ProtobufNet.UnitTests.TestMessages;
 using Basyc.Serializaton.Abstraction;
 using Bogus;
 using FluentAssertions;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using Xunit;
 
-namespace Basyc.Serialization.ProtobufNet.Tests;
+namespace Basyc.Serialization.ProtobufNet.UnitTests;
 
 public class ProtobufByteSerializerTests
 {
@@ -34,11 +32,11 @@ public class ProtobufByteSerializerTests
 	public void Should_Serialize_All_Properties()
 	{
 		var originalCustomer = customerFaker.Generate();
-		var seriCustomer = serializer.Serialize(originalCustomer, typeof(TestCustomer));
+		byte[] seriCustomer = serializer.Serialize(originalCustomer, typeof(TestCustomer));
 		var deseriCustomer = (TestCustomer?)serializer.Deserialize(seriCustomer, typeof(TestCustomer));
 
-		var origialJson = JsonSerializer.Serialize(originalCustomer);
-		var deseriJson = JsonSerializer.Serialize(deseriCustomer);
+		string origialJson = JsonSerializer.Serialize(originalCustomer);
+		string deseriJson = JsonSerializer.Serialize(deseriCustomer);
 		origialJson.Should().Be(deseriJson);
 	}
 
@@ -46,15 +44,15 @@ public class ProtobufByteSerializerTests
 	public void Should_Serialize_Even_Nested()
 	{
 		var originalCustomer = customerFaker.Generate();
-		var seriCustomer = serializer.Serialize(originalCustomer, typeof(TestCustomer));
-		var customerMessageType = TypedToSimpleConverter.ConvertTypeToSimple(originalCustomer.GetType());
+		byte[] seriCustomer = serializer.Serialize(originalCustomer, typeof(TestCustomer));
+		string customerMessageType = TypedToSimpleConverter.ConvertTypeToSimple(originalCustomer.GetType());
 		var originalWrapper = new ParentWrapperMessage(0, customerMessageType, seriCustomer);
 
-		var seriWrapper = serializer.Serialize(originalWrapper, typeof(ParentWrapperMessage));
+		byte[] seriWrapper = serializer.Serialize(originalWrapper, typeof(ParentWrapperMessage));
 		var deseriWrapper = (ParentWrapperMessage?)serializer.Deserialize(seriWrapper, typeof(ParentWrapperMessage));
 
-		var origialJson = JsonSerializer.Serialize(originalWrapper);
-		var deseriJson = JsonSerializer.Serialize(deseriWrapper);
+		string origialJson = JsonSerializer.Serialize(originalWrapper);
+		string deseriJson = JsonSerializer.Serialize(deseriWrapper);
 		deseriJson.Should().Be(origialJson);
 	}
 
@@ -62,10 +60,10 @@ public class ProtobufByteSerializerTests
 	public void Should_Serialize_Empty_Class()
 	{
 		var input = new Class_Empty();
-		var seriInput = serializer.Serialize<Class_Empty?>(input);
-		var deseriInput = serializer.Deserialize<Class_Empty?>(seriInput);
-		var origialJson = JsonSerializer.Serialize(input);
-		var deseriJson = JsonSerializer.Serialize(deseriInput);
+		byte[] seriInput = serializer.Serialize<Class_Empty?>(input);
+		object? deseriInput = serializer.Deserialize<Class_Empty?>(seriInput);
+		string origialJson = JsonSerializer.Serialize(input);
+		string deseriJson = JsonSerializer.Serialize(deseriInput);
 		deseriJson.Should().Be(origialJson);
 	}
 
@@ -73,26 +71,28 @@ public class ProtobufByteSerializerTests
 	public void Should_Serialize_Empty_Record()
 	{
 		var input = new Class_Empty();
-		var seriInput = serializer.Serialize<Record_Empty?>(input);
-		var deseriInput = serializer.Deserialize<Record_Empty?>(seriInput);
-		var origialJson = JsonSerializer.Serialize(input);
-		var deseriJson = JsonSerializer.Serialize(deseriInput);
+		byte[] seriInput = serializer.Serialize<Record_Empty?>(input);
+		object? deseriInput = serializer.Deserialize<Record_Empty?>(seriInput);
+		string origialJson = JsonSerializer.Serialize(input);
+		string deseriJson = JsonSerializer.Serialize(deseriInput);
 		deseriJson.Should().Be(origialJson);
 	}
 
 	[Fact]
 	public void Should_Serialize_Inits_And_Sets_Properties()
 	{
-		var input = new Class_Inits_And_Sets_Properties("John");
-		input.NickName = "Johny";
-		input.NickNames = new List<string>() { "Johny1", "Johny2" };
+		var input = new Class_Inits_And_Sets_Properties("John")
+		{
+			NickName = "Johny",
+			NickNames = new List<string>() { "Johny1", "Johny2" }
+		};
 		input.Ages.Add(1);
 		input.Ages.Add(2);
-		var seriInput = serializer.Serialize<Class_Inits_And_Sets_Properties?>(input);
+		byte[] seriInput = serializer.Serialize<Class_Inits_And_Sets_Properties?>(input);
 		seriInput.Should().NotBeEmpty();
-		var deseriInput = serializer.Deserialize<Class_Inits_And_Sets_Properties?>(seriInput);
-		var origialJson = JsonSerializer.Serialize(input);
-		var deseriJson = JsonSerializer.Serialize(deseriInput);
+		object? deseriInput = serializer.Deserialize<Class_Inits_And_Sets_Properties?>(seriInput);
+		string origialJson = JsonSerializer.Serialize(input);
+		string deseriJson = JsonSerializer.Serialize(deseriInput);
 		deseriJson.Should().Be(origialJson);
 	}
 }

@@ -6,8 +6,7 @@ using System.Reflection;
 using System.Text;
 using LogLevel = Nuke.Common.LogLevel;
 
-namespace Tasks.Dotnet.Format;
-
+namespace Basyc.Extensions.Nuke.Tasks.Dotnet.Format;
 public static class ProcessExceptionHelper
 {
 	public static void Throw(ProcessException processException, params string[] errors)

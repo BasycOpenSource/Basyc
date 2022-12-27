@@ -262,3 +262,4 @@ dotnet_style_qualification_for_property = false:silent
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_event = false:silent
 indent_style = tab
+dotnet_diagnostic.IDE0005.severity = none

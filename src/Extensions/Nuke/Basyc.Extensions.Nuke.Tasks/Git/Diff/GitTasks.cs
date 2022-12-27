@@ -1,13 +1,14 @@
-﻿using GlobExpressions;
+﻿using Basyc.Extensions.Nuke.Tasks.Git.Diff;
+using GlobExpressions;
 using LibGit2Sharp;
 using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
+using Nuke.Common.Utilities.Collections;
 using System.Diagnostics.CodeAnalysis;
-using Tasks.Git;
-using Tasks.Git.Diff;
+using static Nuke.Common.Tools.Git.GitTasks;
 
-namespace _build;
+namespace Basyc.Extensions.Nuke.Tasks;
 
 public static partial class GitTasks
 {
@@ -19,6 +20,7 @@ public static partial class GitTasks
 	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
 	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? oldBranchName = null)
 	{
+		localGitFolder = localGitFolder.Replace("\\", "/");
 		if (oldBranchName == null)
 		{
 			var repoNuke = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
@@ -39,9 +41,22 @@ public static partial class GitTasks
 			Serilog.Log.Information($"Creating change report between '{newBranchLocal.FriendlyName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{newBranchLocal.FriendlyName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
 
-			var changesGitRelativePaths = repo.Diff.Compare<TreeChanges>(oldBranchLocal.Tip.Tree, newBranchLocal.Tip.Tree)
+			var paths = repo.Diff.Compare<TreeChanges>(oldBranchLocal.Tip.Tree, newBranchLocal.Tip.Tree)
 					.Where(x => x.Exists)
 					.Select(x => x.Path);
+			SortedSet<string> changesGitRelativePaths = new(paths);
+
+			if (repo.HasUncommitedChanges())
+			{
+				//changesGitRelativePaths = changesGitRelativePaths
+				//	.Except(repo.GetUncommitedRemovedChanges())
+				//	.Concat(repo.GetUncommitedChanges());
+
+				repo.GetUncommitedRemovedChanges()
+					.ForEach(x => changesGitRelativePaths.Remove(x));
+				repo.GetUncommitedChanges()
+					.ForEach(x => changesGitRelativePaths.Add(x));
+			}
 
 			string? projectDirectoryRelativePath = null;
 			bool projectAlreadyFound = false;
@@ -49,16 +64,10 @@ public static partial class GitTasks
 			bool solutionAlreadyFound = false;
 			string? lastCheckedDirectoryGitRelativePath = null;
 
-			if (repo.HasUncommitedChanges())
-			{
-				changesGitRelativePaths = changesGitRelativePaths
-					.Except(repo.GetUncommitedRemovedChanges())
-					.Concat(repo.GetUncommitedChanges());
-			}
-
 			foreach (string? changeRelativePath in changesGitRelativePaths)
 			{
-				string changeFullPath = Path.Combine(localGitFolder, changeRelativePath);
+				//string changeFullPath = Path.Combine(localGitFolder, changeRelativePath);
+				string changeFullPath = $"{localGitFolder}/{changeRelativePath}";
 
 				if (changeRelativePath.EndsWith(solutionExtension))
 				{
@@ -188,8 +197,8 @@ public static partial class GitTasks
 
 	private static void GetBranchesToCompare(Repository repo, string? oldBranchName, out Branch newBranchLocal, out Branch oldBranchLocal)
 	{
-		string newBranchName = Nuke.Common.Tools.Git.GitTasks.GitCurrentBranch();
-		string newBranchCommintId = Nuke.Common.Tools.Git.GitTasks.GitCurrentCommit();
+		string newBranchName = GitCurrentBranch();
+		string newBranchCommintId = GitCurrentCommit();
 		newBranchLocal = repo.Branches[newBranchName];
 		var oldBranchRemote = repo.Branches[$"{remoteName}/{oldBranchName}"];
 		var remoteSource = repo.Network.Remotes[remoteName];
@@ -254,7 +263,7 @@ public static partial class GitTasks
 		}
 		else
 		{
-			projectPath = csprojFile.FullName;
+			projectPath = csprojFile.FullName.Replace('\\', '/');
 			return true;
 		}
 	}
@@ -329,7 +338,7 @@ public static partial class GitTasks
 		}
 		else
 		{
-			solutionFullPath = solutionFile.FullName;
+			solutionFullPath = solutionFile.FullName.Replace('\\', '/');
 			return true;
 		}
 	}

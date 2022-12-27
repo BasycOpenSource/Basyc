@@ -1,3 +1,3 @@
-﻿namespace Basyc.Serialization.ProtobufNet.Tests.TestMessages;
+﻿namespace Basyc.Serialization.ProtobufNet.UnitTests.TestMessages;
 
 public record Record_Empty();

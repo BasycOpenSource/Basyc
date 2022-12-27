@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Nuke.Common.Tooling;
-using System.Diagnostics.CodeAnalysis;
-using Tasks.Dotnet.Format;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-namespace Tasks.Dotnet;
+namespace Basyc.Extensions.Nuke.Tasks.Dotnet.Format;
 
 public static class DotnetWrapper
 {
@@ -13,13 +11,13 @@ public static class DotnetWrapper
 	{
 		filesTocheck = filesTocheck.Select(x => Path.GetRelativePath(Path.GetDirectoryName(project)!, x).Replace('\\', '/'));
 
-		var formatReportFilePath = Path.GetTempPath() + $"dotnetFormatReport-{Random.Shared.Next()}.json";
+		string formatReportFilePath = Path.GetTempPath() + $"dotnetFormatReport-{Random.Shared.Next()}.json";
 
 		bool isFormated;
 		try
 		{
-			var includeParam = string.Join(' ', filesTocheck);
-			var include = filesTocheck.Any() ? $" --include {includeParam}" : "";
+			string includeParam = string.Join(' ', filesTocheck);
+			string include = filesTocheck.Any() ? $" --include {includeParam}" : "";
 			DotNet($"format \"{project}\"{include} --verify-no-changes --no-restore --report \"{formatReportFilePath}\" --verbosity quiet",
 			logOutput: false,
 			workingDirectory: workingDirectory);
@@ -38,11 +36,21 @@ public static class DotnetWrapper
 
 			isFormated = false;
 			processException = ex;
-			var fileContent = File.ReadAllText(formatReportFilePath);
+			string fileContent = File.ReadAllText(formatReportFilePath);
 			report = new(JsonConvert.DeserializeObject<ReportRecord[]>(fileContent));
 		}
 
 		File.Delete(formatReportFilePath);
 		return isFormated;
 	}
+
+	//public static void Test(string projectDll, string collect)
+	//{
+	//	//DotNet($"test \"{projectDll}\" --collect:\"{collect}\"");
+	//	//DotNet($"test --collect:\"{collect}\"", workingDirectory: Directory.GetParent(projectDll).FullName);
+	//	DotNet($"test --collect:\"{collect}\" --no-build", workingDirectory: @"C:\Users\Honza\source\repos\BasycOpenSource\Basyc\tests\Serialization\Basyc.Serialization.ProtobufNet.UnitTests");
+	//	//DotNet($"test \"{projectDll}\" /p:CollectCoverage=true");
+	//	//DotNet($"test /p:CollectCoverage=true");
+
+	//}
 }

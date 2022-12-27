@@ -1,7 +1,8 @@
 ﻿using LibGit2Sharp;
 
-namespace Tasks.Git;
-public static class RepositoryBasycExtensions
+namespace Basyc.Extensions.Nuke.Tasks.Git.Diff;
+
+internal static class RepositoryBasycExtensions
 {
 	public static bool HasUncommitedChanges(this Repository repo)
 	{

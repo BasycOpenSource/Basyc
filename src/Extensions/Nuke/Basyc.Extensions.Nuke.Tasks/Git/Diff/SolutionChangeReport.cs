@@ -1,4 +1,4 @@
-﻿namespace Tasks.Git.Diff;
+﻿namespace Basyc.Extensions.Nuke.Tasks.Git.Diff;
 
 public record SolutionChangeReport(string SolutionFullPath, bool IsSolutionChanged, FileChange[] SolutionItemsChanges, ProjectChangeReport[] ChangedProjects)
 {
