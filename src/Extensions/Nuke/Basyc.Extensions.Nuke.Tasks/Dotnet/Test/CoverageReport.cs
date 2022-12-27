@@ -1,2 +1,2 @@
 ﻿namespace Basyc.Extensions.Nuke.Tasks.Dotnet.Test;
-public record CoverageReport(ProjectCoverageReport[] Projects);
+public record CoverageReport(ProjectCoverageReport[] Modules);

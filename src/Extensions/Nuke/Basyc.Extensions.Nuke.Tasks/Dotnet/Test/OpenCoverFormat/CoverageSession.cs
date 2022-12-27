@@ -19,7 +19,7 @@ public class Summary
 	[XmlAttribute(AttributeName = "sequenceCoverage")]
 	public string SequenceCoverage { get; set; }
 	[XmlAttribute(AttributeName = "branchCoverage")]
-	public string? BranchCoverage { get; set; }
+	public string BranchCoverage { get; set; }
 	[XmlAttribute(AttributeName = "maxCyclomaticComplexity")]
 	public string? MaxCyclomaticComplexity { get; set; }
 	[XmlAttribute(AttributeName = "minCyclomaticComplexity")]
@@ -156,7 +156,7 @@ public class Method
 	[XmlElement(ElementName = "MetadataToken")]
 	public string? MetadataToken { get; set; }
 	[XmlElement(ElementName = "Name")]
-	public string? Name { get; set; }
+	public string Name { get; set; }
 	[XmlElement(ElementName = "FileRef")]
 	public FileRef? FileRef { get; set; }
 	[XmlElement(ElementName = "SequencePoints")]
@@ -170,9 +170,9 @@ public class Method
 	[XmlAttribute(AttributeName = "nPathComplexity")]
 	public string? NPathComplexity { get; set; }
 	[XmlAttribute(AttributeName = "sequenceCoverage")]
-	public string? SequenceCoverage { get; set; }
+	public string SequenceCoverage { get; set; }
 	[XmlAttribute(AttributeName = "branchCoverage")]
-	public string? BranchCoverage { get; set; }
+	public string BranchCoverage { get; set; }
 	[XmlAttribute(AttributeName = "isConstructor")]
 	public string? IsConstructor { get; set; }
 	[XmlAttribute(AttributeName = "isGetter")]
@@ -187,7 +187,7 @@ public class Method
 public class Methods
 {
 	[XmlElement(ElementName = "Method")]
-	public List<Method>? Method { get; set; }
+	public List<Method> Method { get; set; }
 }
 
 [XmlRoot(ElementName = "Class")]
@@ -196,9 +196,9 @@ public class Class
 	[XmlElement(ElementName = "Summary")]
 	public Summary Summary { get; set; }
 	[XmlElement(ElementName = "FullName")]
-	public string? FullName { get; set; }
+	public string FullName { get; set; }
 	[XmlElement(ElementName = "Methods")]
-	public Methods? Methods { get; set; }
+	public Methods Methods { get; set; }
 }
 
 [XmlRoot(ElementName = "Classes")]

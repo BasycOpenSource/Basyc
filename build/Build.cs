@@ -14,14 +14,15 @@ using Nuke.Common.CI.GitHubActions;
 	"continuous",
 	GitHubActionsImage.UbuntuLatest,
 	OnPushBranches = new[] { "develop" },
-	InvokedTargets = new[] { nameof(IBasycBuild.StaticCodeAnalysis), nameof(IBasycBuild.UnitTest) },
+	InvokedTargets = new[] { nameof(IBasycBuild.StaticCodeAnalysisAffected), nameof(IBasycBuild.UnitTestAffected) },
 	EnableGitHubToken = true,
 	FetchDepth = 0)]
 [GitHubActions(
 	"release",
 	GitHubActionsImage.UbuntuLatest,
 	OnPullRequestBranches = new[] { "main" },
-	InvokedTargets = new[] { nameof(IBasycBuild.StaticCodeAnalysis), nameof(IBasycBuild.UnitTest), nameof(IBasycBuild.NugetPush) },
+	InvokedTargets = new[] { nameof(IBasycBuild.StaticCodeAnalysisAll), nameof(IBasycBuild.UnitTestAll), nameof(IBasycBuild.NugetPush) },
+	ImportSecrets = new[] { nameof(NuGetApiKey) },
 	EnableGitHubToken = true,
 	FetchDepth = 0)]
 internal class Build : NukeBuild, IBasycBuild
@@ -29,8 +30,14 @@ internal class Build : NukeBuild, IBasycBuild
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
+	[Parameter][Secret] private readonly string? NuGetApiKey;
+	[Parameter] private readonly string? NuGetSource = "https://nuget.pkg.github.com/BasycOpenSource/index.json";
+
+	private GitHubActions GitHubActions => GitHubActions.Instance;
+
 	public static int Main()
 	{
-		return Execute<Build>(x => ((IBasycBuild)x).UnitTest);
+		IBasycBuild.BuildProjectName = "_build";
+		return Execute<Build>(x => ((IBasycBuild)x).UnitTestAffected);
 	}
 }

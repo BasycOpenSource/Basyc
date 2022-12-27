@@ -1,7 +1,10 @@
 ﻿using Basyc.Extensions.IO;
 using Basyc.Extensions.Nuke.Tasks.Dotnet.Test;
 using Basyc.Extensions.Nuke.Tasks.Dotnet.Test.OpenCover;
+using Basyc.Extensions.Nuke.Tasks.Git.Diff;
+using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
+using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Serilog;
 using System.Globalization;
@@ -13,77 +16,121 @@ public static partial class DotNetTasks
 {
 	private static readonly XmlSerializer xmlSerializer = new(typeof(CoverageSession));
 
-	public static CoverageReport UnitTestAndCoverage(IEnumerable<string> testProjectsPaths, string unitTestProjectNameSuffix = ".UnitTests")
+	public static CoverageReport UnitTestAndCoverageAffected(Solution solution, GitCompareReport gitCompareReport, string testProjectSuffix = ".UnitTests")
 	{
-		Dictionary<string, (string fullPath, ProjectCoverageReport? report)>? reportHolder = testProjectsPaths
-			.ToDictionary(x => Path.GetFileNameWithoutExtension(x), x => (x, (ProjectCoverageReport?)null));
+		var projectsToTestPaths = gitCompareReport.ChangedSolutions
+			.SelectMany(x => x.ChangedProjects)
+			.Select(x => x.ProjectFullPath)
+			.Where(x => Path.GetFileNameWithoutExtension(x).EndsWith(testProjectSuffix) is false)
+			.ToHashSet();
 
-		using var settingsFile = CreateRunSettings(testProjectsPaths, unitTestProjectNameSuffix);
-		using var resultsDirectory = TemporaryDirectory.CreateTempDirectory("dotnetTestOutputDir/TestRun", true);
+		string[] changedTestProjectPaths = gitCompareReport.ChangedSolutions
+			.SelectMany(x => x.ChangedProjects)
+			.Select(x => x.ProjectFullPath)
+			.Where(x => Path.GetFileNameWithoutExtension(x).EndsWith(testProjectSuffix))
+			.ToArray();
+
+		if (changedTestProjectPaths.Any())
+		{
+			foreach (string changedTestProjectPath in changedTestProjectPaths)
+			{
+				string projectName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(changedTestProjectPath));
+				string projectPath = solution.GetProject(projectName).Path.ToString().NormalizePath();
+				projectsToTestPaths.Add(projectPath);
+			}
+		}
+
+		return UnitTestAndCoverage(solution, projectsToTestPaths, testProjectSuffix);
+	}
+
+	public static CoverageReport UnitTestAndCoverageAll(Solution solution, string testProjectSuffix = ".UnitTests")
+	{
+		var allUnitTestProjectsPaths = solution!.GetProjects($"!(*{testProjectSuffix})")
+				   .Select(x => x.Path.ToString());
+		return UnitTestAndCoverage(solution, allUnitTestProjectsPaths, testProjectSuffix);
+	}
+
+	private static CoverageReport UnitTestAndCoverage(Solution solution, IEnumerable<string> projectToTestPaths, string textProjectSuffix = ".UnitTests")
+	{
+		var inProgressReport = new InProgressReport();
+		inProgressReport.AddRange(projectToTestPaths.Select(projectToTestPath =>
+		{
+			string projectName = Path.GetFileNameWithoutExtension(projectToTestPath);
+			string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + textProjectSuffix;
+			var testProject = solution!.GetProject(unitTestProjectName);
+			if (testProject is null)
+			{
+				return (projectName, null!, false);
+			}
+
+			return (projectName, testProject.Path.ToString(), true);
+		})!);
+
+		var testProjectsToRun = inProgressReport.GetAllReports().Where(x => x.TestProjectFound).ToArray();
+		using var settingsFile = CreateRunSettings(testProjectsToRun.Select(x => x.ProjectToTestName));
+		using var projectResultDirectory = TemporaryDirectory.CreateNew("BasycDotnetTest/Projects");
 		DotNetTest(_ => _
 			.EnableNoRestore()
 			.EnableNoBuild()
-			.SetResultsDirectory(resultsDirectory.FullPath)
+			.EnableCollectCoverage()
 			.SetSettingsFile(settingsFile.FullPath)
-			.CombineWith(reportHolder.Values.Select(x => x.fullPath),
-		(settings, unitTestProject) => settings
-				.SetProjectFile(unitTestProject)),
+			.CombineWith(testProjectsToRun,
+		(settings, projectReport) => settings
+				.SetResultsDirectory(projectResultDirectory.FullPath + "/" + projectReport.ProjectToTestName)
+				.SetProjectFile(projectReport.TestProjectPath)),
 			degreeOfParallelism: 5);
 
-		var modulesDirs = resultsDirectory.GetInfo().GetDirectories();
-		if (modulesDirs.Any() is false || modulesDirs.Length != reportHolder.Keys.Count)
+		foreach (var testProjectReport in testProjectsToRun)
 		{
-			throw new InvalidOperationException("Coverage results not found");
-		}
+			var dir = new DirectoryInfo(projectResultDirectory.FullPath + "/" + testProjectReport.ProjectToTestName);
+			var uniqueNameDir = dir.GetDirectories().First();
 
-		//var projectReports = new List<ProjectCoverageReport>();
-		for (int moduleIndex = 0; moduleIndex < reportHolder.Keys.Count; moduleIndex++)
-		{
-			var moduleDir = modulesDirs[moduleIndex];
-			string openCoverResults = Path.Combine(moduleDir.FullName, "coverage.opencover.xml");
+			string openCoverResults = Path.Combine(uniqueNameDir.FullName, "coverage.opencover.xml");
 			using var outputFileStream = System.IO.File.OpenRead(openCoverResults);
 			var openCoverCoverageSession = (CoverageSession)xmlSerializer.Deserialize(outputFileStream)!;
-			var sessionProjectReports = openCoverCoverageSession.Modules.Module
-				.Select(module => new ProjectCoverageReport(
-				module.ModuleName,
-				 (double)Math.Round(module.Classes.Class
-					.Select(x => double.Parse(x.Summary.SequenceCoverage, CultureInfo.InvariantCulture.NumberFormat))
-				 .Average()))).ToArray();
-			//projectReports.AddRange(sessionProjectReports);
-			foreach (var report in sessionProjectReports)
+			var openCoverReport = openCoverCoverageSession.Modules.Module
+				.Select(ParseOpencoverModule).FirstOrDefault();
+
+			if (openCoverReport == default)
 			{
-				//reportHolder[report.ProjectName].report = report;
-				reportHolder[report.ProjectName + unitTestProjectNameSuffix] = new(report.ProjectName, new ProjectCoverageReport(report.ProjectName, 0));
+				//When parsing a open cover file returns 0 modules.
+				//It means that there are 0 tests inside the test project
+				//that is testing project to test.
+				inProgressReport.CompleteReport(testProjectReport.ProjectToTestName, new ProjectCoverageReport(testProjectReport.ProjectToTestName, true, 0, 0, Array.Empty<ClassCoverageReport>()));
+			}
+			else
+			{
+				inProgressReport.CompleteReport(testProjectReport.ProjectToTestName, openCoverReport);
 			}
 		}
 
-		Log.Information("Coverage report:");
-		//testProjectsPathsArray.Values.ToArray()(x => Log.Information($"Name: {x.ProjectName} SequenceCoverge: {x.SequenceCoverage}"));
-		var projectReports = reportHolder.Values.ToArray();
-		for (int i = 0; i < projectReports.Length; i++)
-		{
-			var projectReport = projectReports[i];
-			if (projectReport.report is null)
-			{
-				projectReports[i].report = new ProjectCoverageReport("empty", 0);
-			}
+		LogTestReport(inProgressReport);
 
-			projectReport = projectReports[i];
-			Log.Information($"Name: {projectReport!.report!.ProjectName} SequenceCoverge: {projectReport!.report.SequenceCoverage}");
-		}
-
-		return new CoverageReport(reportHolder.Values.Select(x => x.report).ToArray()!);
+		return new CoverageReport(inProgressReport.GetAllReports().Select(x => x.Report!).ToArray());
 	}
 
-	private static TemporaryFile CreateRunSettings(IEnumerable<string> testProjectPaths, string unitTestProjectNameSuffix)
+	private static void LogTestReport(InProgressReport inProgressReport)
 	{
-		string includeParam = string.Join(",", testProjectPaths
-			.Select(x =>
+		Log.Information("Coverage report:");
+		var projectReports = inProgressReport.GetAllReports();
+		foreach (var projectReport in projectReports)
+		{
+			Log.Information($"		Assembly: {projectReport.ProjectToTestName} SequenceCoverage: {projectReport!.Report!.SequenceCoverage}% SequenceCoverage: {projectReport.Report.SequenceCoverage}% TestFound: {projectReport!.Report!.TestProjectFound}");
+
+			foreach (var classReport in projectReport.Report.ClassReports)
 			{
-				string unitTestProjectName = Path.GetFileNameWithoutExtension(x);
-				var sourceProjectName = unitTestProjectName.AsSpan().Slice(0, unitTestProjectName.Length - unitTestProjectNameSuffix.Length);
-				return $"[{sourceProjectName}]*";
-			}));
+				Log.Information($"			Class: {classReport.ClassName} BranchCoverage: {classReport.BranchCoverage}% SequenceCoverage: {classReport.SequenceCoverage}%");
+				foreach (var methodReport in classReport.MethodReports)
+				{
+					Log.Information($"				Method: {classReport.ClassName} BranchCoverage: {methodReport.BranchCoverage}% SequenceCoverage: {methodReport.SequenceCoverage}%");
+				}
+			}
+		}
+	}
+
+	private static TemporaryFile CreateRunSettings(IEnumerable<string> projectToTestNames)
+	{
+		string includeParam = string.Join(",", projectToTestNames.Select(x => $"[{x}]*"));
 
 		//Example and more options here:
 		//https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md
@@ -94,7 +141,7 @@ public static partial class DotNetTasks
 			    <DataCollectors>
 			      <DataCollector friendlyName="XPlat code coverage">
 			        <Configuration>
-			          <Format>opencover</Format>          
+			          <Format>cobertura</Format>          
 					  <Include>{includeParam}</Include> <!-- [Assembly-Filter]Type-Filter -->
 			          <Exclude>[*test*]*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
 			          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
@@ -111,8 +158,56 @@ public static partial class DotNetTasks
 			</RunSettings>
 			""";
 
-		var settingFile = TemporaryFile.CreateTempFile("coverlet", "runsettings");
+		var settingFile = TemporaryFile.CreateNew("coverlet", "runsettings");
 		System.IO.File.WriteAllText(settingFile.FullPath, fileContent);
 		return settingFile;
 	}
+
+	private static string GetTestedProjectName(string testProjectPath, string unitTestProjectNameSuffix)
+	{
+		var sourceProjectName = Path.GetFileNameWithoutExtension(testProjectPath).AsSpan().Slice(0, testProjectPath.Length - unitTestProjectNameSuffix.Length);
+		return $"{sourceProjectName}";
+	}
+
+	private static bool TryGetTestProjectPath(string projectToTestPath, Solution solution, string testProjectSuffix, out string? testProjectPath)
+	{
+		string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
+		var unitTestProject = solution!.GetProject(unitTestProjectName);
+		if (unitTestProject is null)
+		{
+			testProjectPath = null;
+			return false;
+		}
+
+		testProjectPath = unitTestProject.Path.ToString().Replace('\\', '/');
+		return true;
+	}
+
+	private static ProjectCoverageReport ParseOpencoverModule(Module module)
+	{
+		double sequenceCoverage = (double)Math.Round(module.Classes.Class
+			.Select(x => double.Parse(x.Summary.SequenceCoverage, CultureInfo.InvariantCulture.NumberFormat))
+			.Average());
+
+		return new ProjectCoverageReport(
+				module.ModuleName,
+				true,
+				 double.NaN,
+				 double.NaN,
+				 module.Classes.Class
+				 .Select(classDto =>
+				 {
+					 string className = Path.GetFileNameWithoutExtension(classDto.FullName + ".cs");
+					 return new ClassCoverageReport(className, ParseDouble(classDto.Summary.BranchCoverage), ParseDouble(classDto.Summary.SequenceCoverage), classDto.Methods.Method
+						 .Select(methodDto => new MethodCoverageReport(methodDto.Name, ParseDouble(methodDto.BranchCoverage), ParseDouble(methodDto.SequenceCoverage)))
+						 .ToArray());
+				 })
+				 .ToArray());
+	}
+
+	private static double ParseDouble(string nubmer)
+	{
+		return double.Parse(nubmer, CultureInfo.InvariantCulture.NumberFormat);
+	}
 }
+
