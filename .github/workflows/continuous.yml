@@ -36,7 +36,7 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
-      - name: Run './build.cmd StaticCodeAnalysis UnitTest'
-        run: ./build.cmd StaticCodeAnalysis UnitTest
+      - name: Run './build.cmd StaticCodeAnalysisAffected UnitTestAffected'
+        run: ./build.cmd StaticCodeAnalysisAffected UnitTestAffected
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
