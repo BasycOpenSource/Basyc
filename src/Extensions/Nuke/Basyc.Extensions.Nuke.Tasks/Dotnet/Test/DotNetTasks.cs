@@ -115,7 +115,7 @@ public static partial class DotNetTasks
 		var projectReports = inProgressReport.GetAllReports();
 		foreach (var projectReport in projectReports)
 		{
-			Log.Information($"		Assembly: {projectReport.ProjectToTestName} SequenceCoverage: {projectReport!.Report!.SequenceCoverage}% SequenceCoverage: {projectReport.Report.SequenceCoverage}% TestFound: {projectReport!.Report!.TestProjectFound}");
+			Log.Information($"		Assembly: {projectReport.ProjectToTestName} BranchCoverage: {projectReport!.Report!.BranchCoverage}% SequenceCoverage: {projectReport.Report.SequenceCoverage}% TestFound: {projectReport!.Report!.TestProjectFound}");
 
 			foreach (var classReport in projectReport.Report.ClassReports)
 			{

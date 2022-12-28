@@ -73,16 +73,6 @@ public interface IBasycBuild : INukeBuild
 		   {
 			   if (GitCompareReport!.CouldCompare)
 			   {
-				   //var changedProjects = GitCompareReport.ChangedSolutions
-				   //.SelectMany(x => x.ChangedProjects)
-				   //.Select(x => x.ProjectFullPath)
-				   //.Where(x => x.EndsWith($"{BuildProjectName}.csproj") is false);
-
-				   //DotNetBuild(_ => _
-				   // .EnableNoRestore()
-				   // .CombineWith(changedProjects, (_, changedProject) => _
-				   // .SetProjectFile(changedProject)));
-
 				   var changedProjectsPaths = GitCompareReport.ChangedSolutions
 				   .SelectMany(x => x.ChangedProjects)
 				   .Select(x => x.ProjectFullPath);
@@ -115,13 +105,6 @@ public interface IBasycBuild : INukeBuild
 		   .DependsOn(RestoreAll)
 		   .Executes(() =>
 		   {
-			   // var changedProjects = Solution.AllProjects.Where(x => x.Path.ToString().EndsWith($"{BuildProjectName}.csproj") is false);
-			   // Log.Information($"Building whole solution.");
-			   // DotNetBuild(_ => _
-			   //  .EnableNoRestore()
-			   //  .CombineWith(changedProjects, (_, changedProject) => _
-			   //.SetProjectFile(changedProject)));
-
 			   using var tempSolution = SolutionHelper.NewTempSolution(Solution, BuildProjectName);
 
 			   DotNetBuild(_ => _
