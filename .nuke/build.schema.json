@@ -79,10 +79,11 @@
           "items": {
             "type": "string",
             "enum": [
-              "Clean",
-              "Compile",
-              "NugetPush",
-              "Restore",
+              "CleanAll",
+              "CompileAffected",
+              "CompileAll",
+              "NugetPushAll",
+              "RestoreAll",
               "StaticCodeAnalysisAffected",
               "StaticCodeAnalysisAll",
               "UnitTestAffected",
@@ -100,10 +101,11 @@
           "items": {
             "type": "string",
             "enum": [
-              "Clean",
-              "Compile",
-              "NugetPush",
-              "Restore",
+              "CleanAll",
+              "CompileAffected",
+              "CompileAll",
+              "NugetPushAll",
+              "RestoreAll",
               "StaticCodeAnalysisAffected",
               "StaticCodeAnalysisAll",
               "UnitTestAffected",

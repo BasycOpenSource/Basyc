@@ -141,7 +141,7 @@ public static partial class DotNetTasks
 			    <DataCollectors>
 			      <DataCollector friendlyName="XPlat code coverage">
 			        <Configuration>
-			          <Format>cobertura</Format>          
+			          <Format>opencover</Format>          
 					  <Include>{includeParam}</Include> <!-- [Assembly-Filter]Type-Filter -->
 			          <Exclude>[*test*]*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
 			          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>

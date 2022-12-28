@@ -21,7 +21,7 @@ using Nuke.Common.CI.GitHubActions;
 	"release",
 	GitHubActionsImage.UbuntuLatest,
 	OnPullRequestBranches = new[] { "main" },
-	InvokedTargets = new[] { nameof(IBasycBuild.StaticCodeAnalysisAll), nameof(IBasycBuild.UnitTestAll), nameof(IBasycBuild.NugetPush) },
+	InvokedTargets = new[] { nameof(IBasycBuild.StaticCodeAnalysisAll), nameof(IBasycBuild.UnitTestAll), nameof(IBasycBuild.NugetPushAll) },
 	ImportSecrets = new[] { nameof(NuGetApiKey) },
 	EnableGitHubToken = true,
 	FetchDepth = 0)]
@@ -31,7 +31,7 @@ internal class Build : NukeBuild, IBasycBuild
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
 	[Parameter][Secret] private readonly string? NuGetApiKey;
-	[Parameter] private readonly string? NuGetSource = "https://nuget.pkg.github.com/BasycOpenSource/index.json";
+	[Parameter] private readonly string? NuGetSource;
 
 	private GitHubActions GitHubActions => GitHubActions.Instance;
 

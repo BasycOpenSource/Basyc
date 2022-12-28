@@ -5,6 +5,7 @@ using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.Utilities.Collections;
+using Serilog;
 using System.Diagnostics.CodeAnalysis;
 using static Nuke.Common.Tools.Git.GitTasks;
 
@@ -48,10 +49,6 @@ public static partial class GitTasks
 
 			if (repo.HasUncommitedChanges())
 			{
-				//changesGitRelativePaths = changesGitRelativePaths
-				//	.Except(repo.GetUncommitedRemovedChanges())
-				//	.Concat(repo.GetUncommitedChanges());
-
 				repo.GetUncommitedRemovedChanges()
 					.ForEach(x => changesGitRelativePaths.Remove(x));
 				repo.GetUncommitedChanges()
@@ -66,7 +63,6 @@ public static partial class GitTasks
 
 			foreach (string? changeRelativePath in changesGitRelativePaths)
 			{
-				//string changeFullPath = Path.Combine(localGitFolder, changeRelativePath);
 				string changeFullPath = $"{localGitFolder}/{changeRelativePath}";
 
 				if (changeRelativePath.EndsWith(solutionExtension))
@@ -128,7 +124,7 @@ public static partial class GitTasks
 						if (TryGetProject(changeFullPath, out string? projectFullPath2))
 						{
 							solutionChanges.Last().projectChanges.Add((projectFullPath2, false, new()));
-							projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
+							projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(projectFullPath2, localGitFolder));
 							projectAlreadyFound = true;
 							lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
 						}
@@ -167,7 +163,7 @@ public static partial class GitTasks
 				{
 					solutionChanges.Last().projectChanges.Add((projectFullPath, false, new()));
 					solutionChanges.Last().projectChanges.Last().fileChanges.Add(changeFullPath);
-					projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
+					projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(projectFullPath, localGitFolder));
 					projectAlreadyFound = true;
 					lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
 				}
@@ -191,7 +187,31 @@ public static partial class GitTasks
 						.ToArray()))
 				.ToArray();
 
-			return new(localGitFolder, true, projectChanges);
+			var report = new GitCompareReport(localGitFolder, true, projectChanges);
+			LogReport(report);
+			return report;
+		}
+	}
+
+	private static void LogReport(GitCompareReport report)
+	{
+		Log.Information("Added or modified files:");
+		foreach (var solution in report.ChangedSolutions)
+		{
+			Log.Information($"  Solution: {solution.SolutionFullPath}");
+			foreach (var solutionItem in solution.SolutionItemsChanges)
+			{
+				Log.Information($"    Solution item: {solutionItem.FullPath}");
+			}
+
+			foreach (var project in solution.ChangedProjects)
+			{
+				Log.Information($"    Project: {project.ProjectFullPath}");
+				foreach (var file in project.FileChanges)
+				{
+					Log.Information($"      File: {file.FullPath}");
+				}
+			}
 		}
 	}
 
