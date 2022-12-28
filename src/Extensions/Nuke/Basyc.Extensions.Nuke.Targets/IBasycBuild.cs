@@ -164,7 +164,7 @@ public interface IBasycBuild : INukeBuild
 
 			   DotNetNuGetPush(_ => _
 				   .SetSource("https://api.nuget.org/v3/index.json")
-				   .SetApiKey("oy2lz2o2kfxbcgrktvjaq3vdnn4fptvuhmvey6x2enz6wi")
+				   .SetApiKey()
 				   .CombineWith(nugetPackages, (_, nugetPackage) => _
 					   .SetTargetPath(nugetPackage)));
 		   });
