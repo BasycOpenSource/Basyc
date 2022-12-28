@@ -80,19 +80,28 @@ public interface IBasycBuildAll : INukeBuild
 			   // .SetProject(Solution)
 			   // .SetOutputDirectory(OutputPackagesDirectory));
 
+			   //  DotNetPack(_ => _
+			   //.EnableNoRestore()
+			   //.SetVersion(GitVersion!.NuGetVersionV2)
+			   //.EnableNoBuild()
+			   //.SetOutputDirectory(OutputPackagesDirectory)
+			   //.CombineWith(projectsToPublish, (_, project) => _
+			   //	.SetProject(project)));
+
+			   using var solutionToUse = SolutionHelper.NewTempSolution(Solution, BuildProjectName);
+
 			   DotNetPack(_ => _
-					.EnableNoRestore()
-					.SetVersion(GitVersion!.NuGetVersionV2)
-					.EnableNoBuild()
-					.SetOutputDirectory(OutputPackagesDirectory)
-					.CombineWith(projectsToPublish, (_, project) => _
-						.SetProject(project)));
+				 .EnableNoRestore()
+				 .SetVersion(GitVersion!.NuGetVersionV2)
+				 .EnableNoBuild()
+				 .SetOutputDirectory(OutputPackagesDirectory)
+					 .SetProject(solutionToUse.Solution));
 
 			   var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
 
 			   DotNetNuGetPush(_ => _
 				   .SetSource("https://api.nuget.org/v3/index.json")
-				   .SetApiKey("")
+				   .SetApiKey("oy2lz2o2kfxbcgrktvjaq3vdnn4fptvuhmvey6x2enz6wi")
 				   .CombineWith(nugetPackages, (_, nugetPackage) => _
 					   .SetTargetPath(nugetPackage)));
 		   });
