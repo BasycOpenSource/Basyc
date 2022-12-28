@@ -67,7 +67,7 @@ public static partial class DotNetTasks
 		return configurator.Invoke(DotnetFormatVerifyNoChanges, DotNetLogger, degreeOfParallelism, completeOnFailure);
 	}
 
-	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> DotnetFormatVerifyNoChanges(GitCompareReport report)
+	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> BasycFormatVerifyNoChangesAffected(GitCompareReport report)
 	{
 		if (report.CouldCompare is false)
 		{
@@ -87,7 +87,7 @@ public static partial class DotNetTasks
 						  completeOnFailure: true);
 	}
 
-	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> DotnetFormatVerifyNoChanges(params string[] solutionsFullPath)
+	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> BasycFormatVerifyNoChanges(params string[] solutionsFullPath)
 	{
 		return DotnetFormatVerifyNoChanges(_ => _
 			.CombineWith(solutionsFullPath, (_, solutionFullPath) => _

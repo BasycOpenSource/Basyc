@@ -1,9 +1,10 @@
 ﻿using Basyc.Extensions.IO;
+using Basyc.Extensions.Nuke.Tasks.Git.Diff;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.ProjectModel.ProjectModelTasks;
 
-namespace Basyc.Extensions.Nuke.Targets.Helpers.Solutions;
+namespace Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 public static class SolutionHelper
 {
 	/// <summary>
@@ -37,5 +38,25 @@ public static class SolutionHelper
 		newSolution.RemoveProject(newSolution.GetProject(buildProjectName));
 		newSolution.Save();
 		return new TemporarySolution(newSolution);
+	}
+
+	public static TemporarySolution GetAffectedAsSolution(GitCompareReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
+	{
+		var changedProjectsPaths = gitCompareReport.ChangedSolutions
+			.SelectMany(x => x.ChangedProjects)
+			.Select(x => x.ProjectFullPath);
+
+		changedProjectsPaths = changedProjectsPaths.Concat(changedProjectsPaths.Select(x =>
+		{
+			var testProject = solution.GetProject(Path.GetFileNameWithoutExtension(x) + unitTestSuffix);
+			if (testProject is null)
+			{
+				return null!;
+			}
+
+			return testProject.Path.ToString().NormalizePath();
+		}).Where(x => x is not null));
+		var solutionToUse = SolutionHelper.NewTempSolution(solution, buildProjectName, changedProjectsPaths);
+		return solutionToUse;
 	}
 }

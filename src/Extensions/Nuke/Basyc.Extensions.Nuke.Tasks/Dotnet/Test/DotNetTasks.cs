@@ -16,7 +16,7 @@ public static partial class DotNetTasks
 {
 	private static readonly XmlSerializer xmlSerializer = new(typeof(CoverageSession));
 
-	public static CoverageReport UnitTestAndCoverageAffected(Solution solution, GitCompareReport gitCompareReport, string testProjectSuffix = ".UnitTests")
+	public static CoverageReport BasycUnitTestAndCoverageAffected(Solution solution, GitCompareReport gitCompareReport, string testProjectSuffix = ".UnitTests")
 	{
 		var projectsToTestPaths = gitCompareReport.ChangedSolutions
 			.SelectMany(x => x.ChangedProjects)
@@ -43,7 +43,7 @@ public static partial class DotNetTasks
 		return UnitTestAndCoverage(solution, projectsToTestPaths, testProjectSuffix);
 	}
 
-	public static CoverageReport UnitTestAndCoverageAll(Solution solution, string testProjectSuffix = ".UnitTests")
+	public static CoverageReport BasycUnitTestAndCoverageAll(Solution solution, string testProjectSuffix = ".UnitTests")
 	{
 		var allUnitTestProjectsPaths = solution!.GetProjects($"!(*{testProjectSuffix})")
 				   .Select(x => x.Path.ToString());

@@ -1,6 +1,6 @@
 ﻿using Nuke.Common.ProjectModel;
 
-namespace Basyc.Extensions.Nuke.Targets.Helpers.Solutions;
+namespace Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 public readonly struct TemporarySolution : IDisposable
 {
 	public TemporarySolution(Solution solution)

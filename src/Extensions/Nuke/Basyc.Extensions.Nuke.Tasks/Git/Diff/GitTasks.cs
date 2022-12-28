@@ -265,7 +265,7 @@ public static partial class GitTasks
 		var csprojFile = fileDirectory.GlobFiles($"*{projectExtension}").SingleOrDefault();
 		if (csprojFile == default)
 		{
-			var slnFile = fileDirectory.GlobFiles($"*{solutionExtension}").SingleOrDefault();
+			var slnFile = fileDirectory.GlobFiles($"*{solutionExtension}").FirstOrDefault();
 			if (slnFile != default)
 			{
 				projectPath = null;
