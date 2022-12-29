@@ -8,6 +8,11 @@ public static class StringBasycExtensions
 	/// <returns></returns>
 	public static string NormalizePath(this string path)
 	{
-		return path.Replace("\\", "/");
+		return path.Replace('\\', '/');
+	}
+
+	public static string NormalizeForCurrentOs(this string path)
+	{
+		return path.Replace('\\', '/').Replace('/', Path.DirectorySeparatorChar);
 	}
 }

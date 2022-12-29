@@ -22,17 +22,13 @@ using Nuke.Common.CI.GitHubActions;
 	GitHubActionsImage.UbuntuLatest,
 	OnPullRequestBranches = new[] { "main" },
 	InvokedTargets = new[] { nameof(IBasycBuildAffected.StaticCodeAnalysisAll), nameof(IBasycBuildAffected.UnitTestAll), nameof(IBasycBuildAffected.NugetPushAll) },
-	ImportSecrets = new[] { nameof(NuGetApiKey) },
+	ImportSecrets = new[] { nameof(IBasycBuildAll.NuGetApiKey) },
 	EnableGitHubToken = true,
 	FetchDepth = 0)]
 internal class Build : NukeBuild, IBasycBuildAffected
 {
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
-
-	[Parameter][Secret] private readonly string? NuGetApiKey;
-	[Parameter] private readonly string? NuGetSource;
-
 	private GitHubActions GitHubActions => GitHubActions.Instance;
 
 	public static int Main()

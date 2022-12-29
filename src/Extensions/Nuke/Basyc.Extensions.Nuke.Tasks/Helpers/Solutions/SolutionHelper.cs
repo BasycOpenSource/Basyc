@@ -15,7 +15,11 @@ public static class SolutionHelper
 	/// <returns></returns>
 	public static TemporarySolution NewTempSolution(Solution solution, string buildProjectName)
 	{
-		var newSolution = CreateSolution($"{solution.Path.Parent}/global.generated.sln", new[] { solution }, folderNameProvider: x => x == solution ? null : x.Name);
+		//var newSolutionDirectory = solution.Path.Parent;
+		//var newSolutionDirectory = TemporaryDirectory.CreateNew("Basyc-TemporarySolutions", false);
+		//var newSolution = CreateSolution($"{newSolutionDirectory.FullPath}/global.generated.sln", new[] { solution }, folderNameProvider: x => x == solution ? null : x.Name);
+		string uniqueName = TemporaryFile.GetNewName("temporary.generated", "sln");
+		var newSolution = CreateSolution($"{uniqueName}", new[] { solution }, folderNameProvider: x => x == solution ? null : x.Name);
 		newSolution.RemoveProject(newSolution.GetProject(buildProjectName));
 		newSolution.Save();
 		return new TemporarySolution(newSolution);
@@ -31,7 +35,13 @@ public static class SolutionHelper
 	public static TemporarySolution NewTempSolution(Solution solution, string buildProjectName, IEnumerable<string> projectsPaths)
 	{
 		var projectsPathsSet = projectsPaths.ToHashSet();
-		var newSolution = CreateSolution($"{solution.Path.Parent}/global.generated.sln", new[] { solution }, folderNameProvider: x => x == solution ? null : x.Name);
+		//var newSolutionDirectory = solution.Path.Parent;
+		//var newSolutionDirectory = TemporaryDirectory.CreateNew("Basyc-TemporarySolutions", false);
+		//var newSolution = CreateSolution($"{newSolutionDirectory.FullPath}/global.generated.sln", new[] { solution }, folderNameProvider: x => x == solution ? null : x.Name);
+		string uniqueName = TemporaryFile.GetNewName("temporary.generated", "sln");
+
+		var newSolution = CreateSolution($"{uniqueName}", new[] { solution }, folderNameProvider: x => x == solution ? null : x.Name);
+
 		newSolution.AllProjects
 			.Where(x => projectsPathsSet.Contains(x.Path.ToString().NormalizePath()) is false)
 			.ForEach(newSolution.RemoveProject);

@@ -1,4 +1,5 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
+﻿using Basyc.Extensions.IO;
+using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
@@ -17,8 +18,10 @@ public interface IBasycBuildAll : INukeBuild
 
 	[Solution] Solution Solution => TryGetValue(() => Solution);
 	[GitVersion] GitVersion GitVersion => TryGetValue(() => GitVersion);
-	[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
 	[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
+	[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
+	[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
+	[Parameter][Secret] string NuGetApiCertPassword => TryGetValue(() => NuGetApiCertPassword);
 
 	protected AbsolutePath OutputDirectory => RootDirectory / "output";
 	protected AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
@@ -71,37 +74,25 @@ public interface IBasycBuildAll : INukeBuild
 		   .DependsOn(CompileAll)
 		   .Executes(() =>
 		   {
-			   var projectsToPublish = Solution.AllProjects.Where(x => x.Path.ToString().EndsWith($"{BuildProjectName}.csproj") is false);
-
-			   //DotNetPack(_ => _
-			   // .EnableNoRestore()
-			   // .SetVersion(GitVersion!.NuGetVersionV2)
-			   // .EnableNoBuild()
-			   // .SetProject(Solution)
-			   // .SetOutputDirectory(OutputPackagesDirectory));
-
-			   //  DotNetPack(_ => _
-			   //.EnableNoRestore()
-			   //.SetVersion(GitVersion!.NuGetVersionV2)
-			   //.EnableNoBuild()
-			   //.SetOutputDirectory(OutputPackagesDirectory)
-			   //.CombineWith(projectsToPublish, (_, project) => _
-			   //	.SetProject(project)));
-
 			   using var solutionToUse = SolutionHelper.NewTempSolution(Solution, BuildProjectName);
+			   var packagesVersionedDirectory = OutputPackagesDirectory / GitVersion!.NuGetVersionV2;
 
 			   DotNetPack(_ => _
-				 .EnableNoRestore()
-				 .SetVersion(GitVersion!.NuGetVersionV2)
-				 .EnableNoBuild()
-				 .SetOutputDirectory(OutputPackagesDirectory)
-					 .SetProject(solutionToUse.Solution));
+							.EnableNoRestore()
+							.SetVersion(GitVersion!.NuGetVersionV2)
+							.EnableNoBuild()
+							.SetOutputDirectory(packagesVersionedDirectory)
+								.SetProject(solutionToUse.Solution));
 
-			   var nugetPackages = OutputPackagesDirectory.GlobFiles("*.nupkg");
+			   byte[] certContent = Convert.FromBase64String(NuGetApiPrivateKeyPfxBase64);
+			   using var cert = TemporaryFile.CreateNewWith(fileExtension: "pfx", content: certContent);
+			   string pathToSign = (packagesVersionedDirectory.ToString() + "/*.nupkg").NormalizeForCurrentOs();
+			   BasycNugetSign(pathToSign, cert.FullPath, NuGetApiCertPassword);
 
+			   var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
 			   DotNetNuGetPush(_ => _
-				   .SetSource("https://api.nuget.org/v3/index.json")
-				   .SetApiKey("oy2lz2o2kfxbcgrktvjaq3vdnn4fptvuhmvey6x2enz6wi")
+				   .SetSource(NuGetSource)
+				   .SetApiKey(NuGetApiKey)
 				   .CombineWith(nugetPackages, (_, nugetPackage) => _
 					   .SetTargetPath(nugetPackage)));
 		   });
