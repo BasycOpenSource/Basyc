@@ -14,6 +14,7 @@ public interface IBasycBuildRelease : IBasycBuildBase
 	protected string NuGetApiKey { get; }
 
 	Target StaticCodeAnalysisAll => _ => _
+	.Before(CompileAll)
 	.Executes(() =>
 	{
 		BasycFormatVerifyNoChanges(Solution!.Path);
@@ -36,6 +37,7 @@ public interface IBasycBuildRelease : IBasycBuildBase
 	   });
 
 	Target CompileAll => _ => _
+	   .After(StaticCodeAnalysisAll)
 	   .After(RestoreAll)
 	   .DependsOn(RestoreAll)
 	   .Executes(() =>
