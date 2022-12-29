@@ -14,30 +14,42 @@ using Nuke.Common.CI.GitHubActions;
 	"continuous",
 	GitHubActionsImage.UbuntuLatest,
 	OnPushBranches = new[] { "develop" },
-	InvokedTargets = new[] { nameof(IBasycBuild.StaticCodeAnalysisAffected), nameof(IBasycBuild.UnitTestAffected) },
+	InvokedTargets = new[] { nameof(IBasycBuildContinuous.StaticCodeAnalysisAffected), nameof(IBasycBuildContinuous.UnitTestAffected) },
+	EnableGitHubToken = false,
+	FetchDepth = 0)]
+[GitHubActions(
+	"pullRequest",
+	GitHubActionsImage.UbuntuLatest,
+	OnPullRequestBranches = new[] { "main" },
+	InvokedTargets = new[] { nameof(IBasycBuildRelease.StaticCodeAnalysisAll), nameof(IBasycBuildRelease.UnitTestAll) },
 	EnableGitHubToken = true,
 	FetchDepth = 0)]
 [GitHubActions(
 	"release",
 	GitHubActionsImage.UbuntuLatest,
-	OnPullRequestBranches = new[] { "main" },
-	InvokedTargets = new[] { nameof(IBasycBuild.StaticCodeAnalysisAll), nameof(IBasycBuild.UnitTestAll), nameof(IBasycBuild.NugetPush) },
-	ImportSecrets = new[] { nameof(NuGetApiKey) },
+	OnPushBranches = new[] { "main" },
+	InvokedTargets = new[] { nameof(IBasycBuildRelease.StaticCodeAnalysisAll), nameof(IBasycBuildRelease.UnitTestAll), nameof(IBasycBuildRelease.NugetPushAll) },
 	EnableGitHubToken = true,
 	FetchDepth = 0)]
-internal class Build : NukeBuild, IBasycBuild
+internal class Build : NukeBuild, IBasycBuildAll
 {
+
+	//[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
+	//[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
+	//[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
+	//[Parameter][Secret] string NuGetApiCertPassword => TryGetValue(() => NuGetApiCertPassword);
+
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-	[Parameter][Secret] private readonly string? NuGetApiKey;
-	[Parameter] private readonly string? NuGetSource = "https://nuget.pkg.github.com/BasycOpenSource/index.json";
+	string IBasycBuildRelease.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 
-	private GitHubActions GitHubActions => GitHubActions.Instance;
+	string IBasycBuildRelease.NuGetApiKey => GitHubActions.Instance.Token;
 
 	public static int Main()
 	{
-		IBasycBuild.BuildProjectName = "_build";
-		return Execute<Build>(x => ((IBasycBuild)x).UnitTestAffected);
+		IBasycBuildBase.BuildProjectName = "_build";
+		IBasycBuildBase.UnitTestSuffix = ".UnitTests";
+		return Execute<Build>(x => ((IBasycBuildAll)x).UnitTestAll);
 	}
 }

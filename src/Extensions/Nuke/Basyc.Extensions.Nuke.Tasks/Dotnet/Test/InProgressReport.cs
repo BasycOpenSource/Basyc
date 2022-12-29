@@ -1,9 +1,11 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Dotnet.Test;
+using Nuke.Common.ProjectModel;
 using Nuke.Common.Utilities.Collections;
 
 namespace Basyc.Extensions.Nuke.Tasks;
 public class InProgressReport
 {
+
 	private readonly Dictionary<string, InProgressProjectReport> map = new();
 	public int ProjectCount { get; private set; }
 	public InProgressProjectReport GetReport(string projectName)
@@ -11,7 +13,7 @@ public class InProgressReport
 		return map[projectName];
 	}
 
-	public void CompleteReport(string projectName, ProjectCoverageReport report)
+	public void Complete(string projectName, ProjectCoverageReport report)
 	{
 		GetReport(projectName).Report = report;
 	}
@@ -22,13 +24,34 @@ public class InProgressReport
 		ProjectCount += 1;
 		if (testProjectFound is false)
 		{
-			CompleteReport(projectToTestName, new ProjectCoverageReport(projectToTestName, testProjectFound, 0, 0, Array.Empty<ClassCoverageReport>()));
+			Complete(projectToTestName, new ProjectCoverageReport(projectToTestName, testProjectFound, 0, 0, Array.Empty<ClassCoverageReport>()));
 		}
 	}
 
 	public void AddRange(IEnumerable<(string projectToTestName, string? testProjectPath, bool testProjectFound)> items)
 	{
 		items.ForEach(x => Add(x.projectToTestName, x.testProjectPath, x.testProjectFound));
+	}
+
+	public void AddSolution(Solution solution, string testProjectSuffix = ".UnitTests")
+	{
+		string[] sourceProjectsPaths = solution.AllProjects
+			.Where(x => x.Name.EndsWith(testProjectSuffix) is false)
+			.Select(x => x.Path.ToString())
+			.ToArray();
+
+		AddRange(sourceProjectsPaths.Select(projectToTestPath =>
+		{
+			string projectName = Path.GetFileNameWithoutExtension(projectToTestPath);
+			string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
+			var testProject = solution!.GetProject(unitTestProjectName);
+			if (testProject is null)
+			{
+				return (projectName, null!, false);
+			}
+
+			return (projectName, testProject.Path.ToString(), true);
+		})!);
 	}
 
 	public InProgressProjectReport[] GetAllReports()

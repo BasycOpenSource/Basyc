@@ -132,23 +132,19 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
 			},
 			responseCase =>
 			{
-				using (var requestCaseActivity = DiagnosticHelper.Start("NetMQ ResponseCase", responseCase.TraceId))
-				{
-					logger.LogInformation($"Response received from {senderAddressString}:{responseCase.SessionId}");
-					if (sessionManager.TryCompleteSession(responseCase.SessionId, new NetMQSessionResult(responseCase.ResponseBytes, responseCase.ResponseType)) is false)
-						logger.LogError($"Session '{responseCase.SessionId}' completation failed. Session does not exist");
+				using var requestCaseActivity = DiagnosticHelper.Start("NetMQ ResponseCase", responseCase.TraceId);
+				logger.LogInformation($"Response received from {senderAddressString}:{responseCase.SessionId}");
+				if (sessionManager.TryCompleteSession(responseCase.SessionId, new NetMQSessionResult(responseCase.ResponseBytes, responseCase.ResponseType)) is false)
+					logger.LogError($"Session '{responseCase.SessionId}' completation failed. Session does not exist");
 
-					return Task.CompletedTask;
-				}
+				return Task.CompletedTask;
 			},
 			async eventCase =>
 			{
-				using (var requestCaseActivity = DiagnosticHelper.Start("NetMQ EventCase", eventCase.TraceId))
-				{
-					logger.LogInformation($"Event received from {senderAddressString}:{eventCase.SessionId}");
-					var eventRequest = objectToByteSerailizer.Deserialize(eventCase.EventBytes, eventCase.EventType);
-					var responseData = await handlerManager.ConsumeMessage(eventCase.EventType, eventRequest, cancellationToken, eventCase.TraceId, requestCaseActivity.Activity?.SpanId.ToString());
-				}
+				using var requestCaseActivity = DiagnosticHelper.Start("NetMQ EventCase", eventCase.TraceId);
+				logger.LogInformation($"Event received from {senderAddressString}:{eventCase.SessionId}");
+				var eventRequest = objectToByteSerailizer.Deserialize(eventCase.EventBytes, eventCase.EventType);
+				var responseData = await handlerManager.ConsumeMessage(eventCase.EventType, eventRequest, cancellationToken, eventCase.TraceId, requestCaseActivity.Activity?.SpanId.ToString());
 			},
 			failureCase =>
 			{
@@ -281,10 +277,8 @@ public partial class NetMQByteMessageBusClient : IByteMessageBusClient
 			logger.LogInformation($"Requesting '{FormatType(requestType)}'");
 			try
 			{
-				using (var sendingActivity = DiagnosticHelper.Start("NetMQ.SendMultipartMessage"))
-				{
-					dealerSocket.SendMultipartMessage(messageToBroker);
-				}
+				using var sendingActivity = DiagnosticHelper.Start("NetMQ.SendMultipartMessage");
+				dealerSocket.SendMultipartMessage(messageToBroker);
 			}
 			catch (Exception ex)
 			{

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Basyc.Extensions.IO;
+using Newtonsoft.Json;
 using Nuke.Common.Tooling;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -44,13 +45,15 @@ public static class DotnetWrapper
 		return isFormated;
 	}
 
-	//public static void Test(string projectDll, string collect)
-	//{
-	//	//DotNet($"test \"{projectDll}\" --collect:\"{collect}\"");
-	//	//DotNet($"test --collect:\"{collect}\"", workingDirectory: Directory.GetParent(projectDll).FullName);
-	//	DotNet($"test --collect:\"{collect}\" --no-build", workingDirectory: @"C:\Users\Honza\source\repos\BasycOpenSource\Basyc\tests\Serialization\Basyc.Serialization.ProtobufNet.UnitTests");
-	//	//DotNet($"test \"{projectDll}\" /p:CollectCoverage=true");
-	//	//DotNet($"test /p:CollectCoverage=true");
+	public static void NugetSignWithFile(IEnumerable<string> packagesPaths, string certPath, string? certPassword)
+	{
+		DotNet($"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {certPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite", logOutput: false);
+	}
 
-	//}
+	public static void NugetSignWithBase64(IEnumerable<string> packagesPaths, string base64Cert, string? certPassword)
+	{
+		byte[] certContent = Convert.FromBase64String(base64Cert);
+		using var cert = TemporaryFile.CreateNewWith(fileExtension: "pfx", content: certContent);
+		DotNet($"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {cert.FullPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite", logOutput: false);
+	}
 }

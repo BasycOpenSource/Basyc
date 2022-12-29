@@ -72,12 +72,16 @@
           "items": {
             "type": "string",
             "enum": [
-              "Clean",
-              "Compile",
-              "NugetPush",
-              "Restore",
-              "StaticCodeAnalysis",
-              "UnitTest"
+              "CleanAll",
+              "CompileAffected",
+              "CompileAll",
+              "NugetPushAll",
+              "RestoreAffected",
+              "RestoreAll",
+              "StaticCodeAnalysisAffected",
+              "StaticCodeAnalysisAll",
+              "UnitTestAffected",
+              "UnitTestAll"
             ]
           }
         },
@@ -91,12 +95,16 @@
           "items": {
             "type": "string",
             "enum": [
-              "Clean",
-              "Compile",
-              "NugetPush",
-              "Restore",
-              "StaticCodeAnalysis",
-              "UnitTest"
+              "CleanAll",
+              "CompileAffected",
+              "CompileAll",
+              "NugetPushAll",
+              "RestoreAffected",
+              "RestoreAll",
+              "StaticCodeAnalysisAffected",
+              "StaticCodeAnalysisAll",
+              "UnitTestAffected",
+              "UnitTestAll"
             ]
           }
         },
