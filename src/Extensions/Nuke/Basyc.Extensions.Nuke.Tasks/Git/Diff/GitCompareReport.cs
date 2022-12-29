@@ -35,4 +35,6 @@ public record GitCompareReport(string GitRepoLocalDirectory, bool CouldCompare, 
 
 		return unitTestProjectsPaths;
 	}
+
+
 }
