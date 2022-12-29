@@ -47,21 +47,6 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
-        "NuGetApiCertPassword": {
-          "type": "string",
-          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
-        },
-        "NuGetApiKey": {
-          "type": "string",
-          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
-        },
-        "NuGetApiPrivateKeyPfxBase64": {
-          "type": "string",
-          "default": "Secrets must be entered via 'nuke :secrets [profile]'"
-        },
-        "NuGetSource": {
-          "type": "string"
-        },
         "Partition": {
           "type": "string",
           "description": "Partition to use on CI"

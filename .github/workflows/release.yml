@@ -39,7 +39,4 @@ jobs:
       - name: Run './build.cmd StaticCodeAnalysisAll UnitTestAll NugetPushAll'
         run: ./build.cmd StaticCodeAnalysisAll UnitTestAll NugetPushAll
         env:
-          NuGetApiKey: ${{ secrets.NUGET_API_KEY }}
-          NuGetApiPrivateKeyPfxBase64: ${{ secrets.NUGET_API_PRIVATE_KEY_PFX_BASE64 }}
-          NuGetApiCertPassword: ${{ secrets.NUGET_API_CERT_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

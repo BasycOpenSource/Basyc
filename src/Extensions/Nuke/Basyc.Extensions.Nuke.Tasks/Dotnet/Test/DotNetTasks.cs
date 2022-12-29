@@ -2,6 +2,7 @@
 using Basyc.Extensions.Nuke.Tasks.Dotnet.Test;
 using Basyc.Extensions.Nuke.Tasks.Dotnet.Test.OpenCover;
 using Basyc.Extensions.Nuke.Tasks.Git.Diff;
+using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Coverlet;
@@ -45,9 +46,32 @@ public static partial class DotNetTasks
 
 	public static CoverageReport BasycUnitTestAndCoverageAll(Solution solution, string testProjectSuffix = ".UnitTests")
 	{
-		var allUnitTestProjectsPaths = solution!.GetProjects($"!(*{testProjectSuffix})")
-				   .Select(x => x.Path.ToString());
-		return UnitTestAndCoverage(solution, allUnitTestProjectsPaths, testProjectSuffix);
+		var sourceProjects = solution.AllProjects
+			.Where(x => x.Name.EndsWith(testProjectSuffix) is false)
+			.Select(x => x.Path.ToString());
+		return UnitTestAndCoverage(solution, sourceProjects, testProjectSuffix);
+	}
+
+	private static CoverageReport BasycUnitTestAndCoverageAll2(Solution solution, string testProjectSuffix = ".UnitTests")
+	{
+		var inProgressReport = new InProgressReport();
+		inProgressReport.AddSolution(solution, testProjectSuffix);
+		var testProjectsToRun = inProgressReport.GetAllReports().Where(x => x.TestProjectFound).ToArray();
+		using var tempSolution = SolutionHelper.NewTempSolution(solution, null, testProjectsToRun.Select(x => x.TestProjectPath!));
+		using var settingsFile = CreateRunSettings(testProjectsToRun.Select(x => x.ProjectToTestName));
+		using var projectResultDirectory = TemporaryDirectory.CreateNew("BasycDotnetTest/Solution");
+
+		DotNetTest(_ => _
+			.EnableNoRestore()
+			.EnableNoBuild()
+			.EnableCollectCoverage()
+			.SetSettingsFile(settingsFile.FullPath)
+				.SetResultsDirectory(projectResultDirectory.FullPath)
+				.SetProjectFile(solution));
+
+		CompleteSolution(inProgressReport, projectResultDirectory.FullPath);
+		LogTestReport(inProgressReport);
+		return new CoverageReport(inProgressReport.GetAllReports().Select(x => x.Report!).ToArray());
 	}
 
 	private static CoverageReport UnitTestAndCoverage(Solution solution, IEnumerable<string> projectToTestPaths, string textProjectSuffix = ".UnitTests")
@@ -96,11 +120,11 @@ public static partial class DotNetTasks
 				//When parsing a open cover file returns 0 modules.
 				//It means that there are 0 tests inside the test project
 				//that is testing project to test.
-				inProgressReport.CompleteReport(testProjectReport.ProjectToTestName, new ProjectCoverageReport(testProjectReport.ProjectToTestName, true, 0, 0, Array.Empty<ClassCoverageReport>()));
+				inProgressReport.Complete(testProjectReport.ProjectToTestName, new ProjectCoverageReport(testProjectReport.ProjectToTestName, true, 0, 0, Array.Empty<ClassCoverageReport>()));
 			}
 			else
 			{
-				inProgressReport.CompleteReport(testProjectReport.ProjectToTestName, openCoverReport);
+				inProgressReport.Complete(testProjectReport.ProjectToTestName, openCoverReport);
 			}
 		}
 
@@ -208,6 +232,58 @@ public static partial class DotNetTasks
 	private static double ParseDouble(string nubmer)
 	{
 		return double.Parse(nubmer, CultureInfo.InvariantCulture.NumberFormat);
+	}
+
+	private static void CompleteSolution(InProgressReport inProgressReport, string projectResultDirectory)
+	{
+		throw new NotImplementedException();
+		var testProjectsToRun = inProgressReport.GetAllReports().Where(x => x.TestProjectFound).ToArray();
+
+		//foreach (var testProjectReport in testProjectsToRun)
+		//{
+		//	var dir = new DirectoryInfo(projectResultDirectory + "/" + testProjectReport.ProjectToTestName);
+		//	var uniqueNameDir = dir.GetDirectories().First();
+
+		//	string openCoverResults = Path.Combine(uniqueNameDir.FullName, "coverage.opencover.xml");
+		//	using var outputFileStream = System.IO.File.OpenRead(openCoverResults);
+		//	var openCoverCoverageSession = (CoverageSession)xmlSerializer.Deserialize(outputFileStream)!;
+		//	var openCoverReport = openCoverCoverageSession.Modules.Module
+		//		.Select(ParseOpencoverModule).FirstOrDefault();
+
+		//	if (openCoverReport == default)
+		//	{
+		//		//When parsing a open cover file returns 0 modules.
+		//		//It means that there are 0 tests inside the test project
+		//		//that is testing project to test.
+		//		inProgressReport.Complete(testProjectReport.ProjectToTestName, new ProjectCoverageReport(testProjectReport.ProjectToTestName, true, 0, 0, Array.Empty<ClassCoverageReport>()));
+		//	}
+		//	else
+		//	{
+		//		inProgressReport.Complete(testProjectReport.ProjectToTestName, openCoverReport);
+		//	}
+		//}
+
+		var solutionResultsDir = new DirectoryInfo(projectResultDirectory);
+		foreach (var uniqueNameDir in solutionResultsDir.GetDirectories())
+		{
+			string openCoverResults = Path.Combine(uniqueNameDir.FullName, "coverage.opencover.xml");
+			using var outputFileStream = System.IO.File.OpenRead(openCoverResults);
+			var openCoverCoverageSession = (CoverageSession)xmlSerializer.Deserialize(outputFileStream)!;
+			var openCoverReport = openCoverCoverageSession.Modules.Module
+				.Select(ParseOpencoverModule).FirstOrDefault();
+
+			//if (openCoverReport == default)
+			//{
+			//	//When parsing a open cover file returns 0 modules.
+			//	//It means that there are 0 tests inside the test project
+			//	//that is testing project to test.
+			//	inProgressReport.Complete(openCoverReport.ProjectName, new ProjectCoverageReport(openCoverReport.ProjectName, true, 0, 0, Array.Empty<ClassCoverageReport>()));
+			//}
+			//else
+			//{
+			//	inProgressReport.Complete(openCoverReport.ProjectName, openCoverReport);
+			//}
+		}
 	}
 }
 

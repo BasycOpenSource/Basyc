@@ -3,13 +3,18 @@
 namespace Basyc.Extensions.Nuke.Tasks;
 public static partial class DotNetTasks
 {
-	public static void BasycNugetSign(IEnumerable<string> paths, string certPath, string? certPassword)
+	public static void BasycNugetSignWithFile(IEnumerable<string> paths, string certPath, string? certPassword)
 	{
-		DotnetWrapper.NugetSign(paths, certPath, certPassword);
+		DotnetWrapper.NugetSignWithFile(paths, certPath, certPassword);
 	}
 
-	public static void BasycNugetSign(string path, string certPath, string? certPassword)
+	public static void BasycNugetSignWithFile(string path, string certPath, string? certPassword)
 	{
-		DotnetWrapper.NugetSign(new[] { path }, certPath, certPassword);
+		DotnetWrapper.NugetSignWithFile(new[] { path }, certPath, certPassword);
+	}
+
+	public static void BasycNugetSignWithBase64(string path, string base64cert, string? certPassword)
+	{
+		DotnetWrapper.NugetSignWithFile(new[] { path }, base64cert, certPassword);
 	}
 }

@@ -15,14 +15,13 @@ using Nuke.Common.CI.GitHubActions;
 	GitHubActionsImage.UbuntuLatest,
 	OnPushBranches = new[] { "develop" },
 	InvokedTargets = new[] { nameof(IBasycBuildContinuous.StaticCodeAnalysisAffected), nameof(IBasycBuildContinuous.UnitTestAffected) },
-	EnableGitHubToken = true,
+	EnableGitHubToken = false,
 	FetchDepth = 0)]
 [GitHubActions(
 	"release",
 	GitHubActionsImage.UbuntuLatest,
 	OnPullRequestBranches = new[] { "main" },
 	InvokedTargets = new[] { nameof(IBasycBuildRelease.StaticCodeAnalysisAll), nameof(IBasycBuildRelease.UnitTestAll), nameof(IBasycBuildRelease.NugetPushAll) },
-	ImportSecrets = new[] { nameof(IBasycBuildRelease.NuGetApiKey), nameof(IBasycBuildRelease.NuGetApiPrivateKeyPfxBase64), nameof(IBasycBuildRelease.NuGetApiCertPassword) },
 	EnableGitHubToken = true,
 	FetchDepth = 0)]
 internal class Build : NukeBuild, IBasycBuildAll
@@ -31,10 +30,14 @@ internal class Build : NukeBuild, IBasycBuildAll
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 	private GitHubActions GitHubActions => GitHubActions.Instance;
 
+	string IBasycBuildRelease.NugetSourceUrl => GitHubActions.Instance.ServerUrl;
+
+	string IBasycBuildRelease.NuGetApiKey => GitHubActions.Token;
+
 	public static int Main()
 	{
 		IBasycBuildBase.BuildProjectName = "_build";
 		IBasycBuildBase.UnitTestSuffix = ".UnitTests";
-		return Execute<Build>(x => ((IBasycBuildAll)x).UnitTestAffected);
+		return Execute<Build>(x => ((IBasycBuildAll)x).UnitTestAll);
 	}
 }

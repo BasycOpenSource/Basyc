@@ -1,5 +1,4 @@
-﻿using Basyc.Extensions.IO;
-using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
@@ -13,10 +12,12 @@ namespace Basyc.Extensions.Nuke.Targets;
 public interface IBasycBuildRelease : IBasycBuildBase
 {
 
-	[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
-	[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
-	[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
-	[Parameter][Secret] string NuGetApiCertPassword => TryGetValue(() => NuGetApiCertPassword);
+	//[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
+	//[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
+	//[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
+	//[Parameter][Secret] string NuGetApiCertPassword => TryGetValue(() => NuGetApiCertPassword);
+	protected string NugetSourceUrl { get; }
+	protected string NuGetApiKey { get; }
 
 	Target StaticCodeAnalysisAll => _ => _
 	.Executes(() =>
@@ -76,15 +77,13 @@ public interface IBasycBuildRelease : IBasycBuildBase
 							.SetOutputDirectory(packagesVersionedDirectory)
 								.SetProject(solutionToUse.Solution));
 
-			   byte[] certContent = Convert.FromBase64String(NuGetApiPrivateKeyPfxBase64);
-			   using var cert = TemporaryFile.CreateNewWith(fileExtension: "pfx", content: certContent);
-			   string pathToSign = (packagesVersionedDirectory.ToString() + "/*.nupkg").NormalizeForCurrentOs();
-			   BasycNugetSign(pathToSign, cert.FullPath, NuGetApiCertPassword);
+			   //string pathToSign = (packagesVersionedDirectory.ToString() + "/*.nupkg").NormalizeForCurrentOs();
+			   //BasycNugetSignWithBase64(pathToSign, NuGetApiPrivateKeyPfxBase64, NuGetApiCertPassword);
 
-			   //var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
-			   var nugetPackages = packagesVersionedDirectory.GlobFiles("Basyc.Asp.*.nupkg");
+			   var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
+			   //var nugetPackages = packagesVersionedDirectory.GlobFiles("Basyc.Asp.*.nupkg");
 			   DotNetNuGetPush(_ => _
-				   .SetSource(NuGetSource)
+				   .SetSource(NugetSourceUrl)
 				   .SetApiKey(NuGetApiKey)
 				   .CombineWith(nugetPackages, (_, nugetPackage) => _
 					   .SetTargetPath(nugetPackage)));

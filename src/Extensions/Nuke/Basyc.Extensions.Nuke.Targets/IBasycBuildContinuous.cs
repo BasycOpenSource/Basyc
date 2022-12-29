@@ -1,5 +1,7 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Git.Diff;
 using Nuke.Common;
+using Nuke.Common.CI.GitHubActions;
+using Serilog;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 
 namespace Basyc.Extensions.Nuke.Targets;
@@ -11,6 +13,8 @@ public interface IBasycBuildContinuous : IBasycBuildBase
 	.Before(CompileAffected)
 	.Executes(() =>
 	{
+		Log.Information(GitHubActions.Instance.ServerUrl);
+		Log.Information(GitHubActions.Instance.Repository);
 		GitCompareReport.ThrowIfNotValid();
 		BasycFormatVerifyNoChangesAffected(GitCompareReport!);
 	});
