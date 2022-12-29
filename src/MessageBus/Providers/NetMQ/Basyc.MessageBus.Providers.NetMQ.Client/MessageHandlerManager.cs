@@ -56,47 +56,44 @@ public class MessageHandlerManager : IMessageHandlerManager
 		//{
 		//	new KeyValuePair<string, object?>(DiagnosticConstants.ShouldBeReceived ,true)
 		//}))
-		using (var handlerStartedActivity = DiagnosticHelper.Start("ConsumeMessage"))
+		using var handlerStartedActivity = DiagnosticHelper.Start("ConsumeMessage");
+		//if (handlerStartedActivity is not null)
+		//{
+		//	handlerStartedActivity.AddBaggage(DiagnosticConstants.ShouldBeReceived, true.ToString());
+		//}
+
+		var invokeActivity = DiagnosticHelper.Start("Invoking method info");
+		Task handlerResultTask = (Task)handlerMetadata.HandlerInfo.HandleMethodInfo.Invoke(handler, new object[] { messageData!, cancellationToken })!;
+		object? handlerResult;
+		try
 		{
-			//if (handlerStartedActivity is not null)
-			//{
-			//	handlerStartedActivity.AddBaggage(DiagnosticConstants.ShouldBeReceived, true.ToString());
-			//}
-
-			var invokeActivity = DiagnosticHelper.Start("Invoking method info");
-			Task handlerResultTask = (Task)handlerMetadata.HandlerInfo.HandleMethodInfo.Invoke(handler, new object[] { messageData!, cancellationToken })!;
-			object? handlerResult;
-			try
+			if (handlerMetadata.HandlerInfo.HasResponse)
 			{
-				if (handlerMetadata.HandlerInfo.HasResponse)
-				{
-					object taskResult = ((dynamic)handlerResultTask).Result!;
-					invokeActivity.Stop();
-					handlerResult = taskResult;
-				}
-				else
-				{
-					await handlerResultTask;
-					invokeActivity.Stop();
-					handlerResult = new VoidResult();
-				}
-			}
-			catch (Exception ex)
-			{
-				var endSessionActivity2 = DiagnosticHelper.Start("Basyc.MessageBus.Client.NetMQ.MessageHandlerManager End BusHandlerLoggerSessionManager session");
-				BusHandlerLoggerSessionManager.EndSession();
-				endSessionActivity2.Stop();
+				object taskResult = ((dynamic)handlerResultTask).Result!;
 				invokeActivity.Stop();
-				return ex;
+				handlerResult = taskResult;
 			}
-
-			var endSessionActivity = DiagnosticHelper.Start("Basyc.MessageBus.Client.NetMQ.MessageHandlerManager End BusHandlerLoggerSessionManager session");
-			BusHandlerLoggerSessionManager.EndSession();
-			endSessionActivity.Stop();
-
-			return handlerResult;
-
+			else
+			{
+				await handlerResultTask;
+				invokeActivity.Stop();
+				handlerResult = new VoidResult();
+			}
 		}
+		catch (Exception ex)
+		{
+			var endSessionActivity2 = DiagnosticHelper.Start("Basyc.MessageBus.Client.NetMQ.MessageHandlerManager End BusHandlerLoggerSessionManager session");
+			BusHandlerLoggerSessionManager.EndSession();
+			endSessionActivity2.Stop();
+			invokeActivity.Stop();
+			return ex;
+		}
+
+		var endSessionActivity = DiagnosticHelper.Start("Basyc.MessageBus.Client.NetMQ.MessageHandlerManager End BusHandlerLoggerSessionManager session");
+		BusHandlerLoggerSessionManager.EndSession();
+		endSessionActivity.Stop();
+
+		return handlerResult;
 	}
 
 	public string[] GetConsumableMessageTypes()
