@@ -9,15 +9,15 @@
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_release --host GitHubActions
+#         nuke --generate-configuration GitHubActions_pullRequest --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: release
+name: pullRequest
 
 on:
-  push:
+  pull_request:
     branches:
       - main
 

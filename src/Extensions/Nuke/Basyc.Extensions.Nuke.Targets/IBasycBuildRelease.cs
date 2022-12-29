@@ -4,7 +4,6 @@ using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
-using Serilog;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -17,7 +16,6 @@ public interface IBasycBuildRelease : IBasycBuildBase
 	Target StaticCodeAnalysisAll => _ => _
 	.Executes(() =>
 	{
-		Log.Information($"Running dotnet format for all files.");
 		BasycFormatVerifyNoChanges(Solution!.Path);
 	});
 
@@ -53,7 +51,6 @@ public interface IBasycBuildRelease : IBasycBuildBase
 	   .DependsOn(CompileAll)
 	   .Executes(() =>
 	   {
-		   Log.Information($"Running all unit tests.");
 		   BasycUnitTestAndCoverageAll(Solution, UnitTestSuffix);
 	   });
 
