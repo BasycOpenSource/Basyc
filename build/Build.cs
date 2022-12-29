@@ -21,7 +21,7 @@ using Nuke.Common.CI.GitHubActions;
 	"pullRequest",
 	GitHubActionsImage.UbuntuLatest,
 	OnPullRequestBranches = new[] { "main" },
-	InvokedTargets = new[] { nameof(IBasycBuildRelease.StaticCodeAnalysisAll), nameof(IBasycBuildRelease.UnitTestAll), nameof(IBasycBuildRelease.NugetPushAll) },
+	InvokedTargets = new[] { nameof(IBasycBuildRelease.StaticCodeAnalysisAll), nameof(IBasycBuildRelease.UnitTestAll) },
 	EnableGitHubToken = true,
 	FetchDepth = 0)]
 [GitHubActions(
