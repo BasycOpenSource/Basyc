@@ -11,11 +11,6 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 namespace Basyc.Extensions.Nuke.Targets;
 public interface IBasycBuildRelease : IBasycBuildBase
 {
-
-	//[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
-	//[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
-	//[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
-	//[Parameter][Secret] string NuGetApiCertPassword => TryGetValue(() => NuGetApiCertPassword);
 	protected string NugetSourceUrl { get; }
 	protected string NuGetApiKey { get; }
 

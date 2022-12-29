@@ -26,13 +26,18 @@ using Nuke.Common.CI.GitHubActions;
 	FetchDepth = 0)]
 internal class Build : NukeBuild, IBasycBuildAll
 {
+
+	//[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
+	//[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
+	//[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
+	//[Parameter][Secret] string NuGetApiCertPassword => TryGetValue(() => NuGetApiCertPassword);
+
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
-	private GitHubActions GitHubActions => GitHubActions.Instance;
 
-	string IBasycBuildRelease.NugetSourceUrl => GitHubActions.Instance.ServerUrl;
+	string IBasycBuildRelease.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 
-	string IBasycBuildRelease.NuGetApiKey => GitHubActions.Token;
+	string IBasycBuildRelease.NuGetApiKey => GitHubActions.Instance.Token;
 
 	public static int Main()
 	{
