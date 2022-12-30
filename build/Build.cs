@@ -20,7 +20,7 @@ using Nuke.Common.CI.GitHubActions;
 	"pullRequest",
 	GitHubActionsImage.UbuntuLatest,
 	OnPullRequestBranches = new[] { "develop", "main" },
-	InvokedTargets = new[] { nameof(IBasycBuildAll.StaticCodeAnalysisAll), nameof(IBasycBuildAll.UnitTestAll) },
+	InvokedTargets = new[] { nameof(IBasycBuildAll.PullRequestCheck), nameof(IBasycBuildAll.StaticCodeAnalysisAll), nameof(IBasycBuildAll.UnitTestAll) },
 	EnableGitHubToken = false,
 	FetchDepth = 0)]
 [GitHubActions(
@@ -33,16 +33,14 @@ using Nuke.Common.CI.GitHubActions;
 
 internal class Build : NukeBuild, IBasycBuilds
 {
-	//[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
-	//[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
-	//[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
-	//[Parameter][Secret] string NuGetApiCertPassword => TryGetValue(() => NuGetApiCertPassword);
 
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-	string IBasycBuildAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
-	string IBasycBuildAll.NuGetApiKey => GitHubActions.Instance.Token;
+	string IBasycBuildBase.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
+	string IBasycBuildBase.NuGetApiKey => GitHubActions.Instance.Token;
+	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance.IsPullRequest;
+	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.BaseRef;
 
 	public static int Main()
 	{

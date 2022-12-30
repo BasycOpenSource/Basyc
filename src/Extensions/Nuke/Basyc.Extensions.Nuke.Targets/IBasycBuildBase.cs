@@ -16,4 +16,10 @@ public interface IBasycBuildBase : INukeBuild
 
 	protected AbsolutePath OutputDirectory => RootDirectory / "output";
 	protected AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
+
+	protected bool IsPullRequest { get; }
+	protected string PullRequestTargetBranch { get; }
+
+	protected string NugetSourceUrl { get; }
+	protected string NuGetApiKey { get; }
 }

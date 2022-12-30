@@ -1,4 +1,5 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
+﻿using Basyc.Extensions.Nuke.Tasks.Git;
+using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
@@ -12,8 +13,20 @@ namespace Basyc.Extensions.Nuke.Targets;
 public interface IBasycBuildAll : IBasycBuildBase
 {
 	[GitRepository] protected new GitRepository Repository => TryGetValue(() => Repository);
-	protected string NugetSourceUrl { get; }
-	protected string NuGetApiKey { get; }
+
+	Target PullRequestCheck => _ => _
+		.Executes(() =>
+		{
+			if (IsPullRequest is false)
+			{
+				throw new InvalidOperationException($"Can't validate pull request if {IsPullRequest} is false");
+			}
+
+			if (BranchHelper.IsPullRequestAllowed(Repository.Branch, PullRequestTargetBranch) is false)
+			{
+				throw new InvalidOperationException($"Pull request between {Repository.Branch} and {PullRequestTargetBranch} is not allowed");
+			}
+		});
 
 	Target StaticCodeAnalysisAll => _ => _
 	.Before(CompileAll)
