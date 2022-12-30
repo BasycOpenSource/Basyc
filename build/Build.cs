@@ -1,15 +1,14 @@
+// https://github.com/dotnet/format/issues/1094
+// https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings
+
 using Basyc.Extensions.Nuke.Targets;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
-
 ///Nuke support plugins are available for:
 ///   - JetBrains ReSharper        https://nuke.build/resharper
 ///   - JetBrains Rider            https://nuke.build/rider
 ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
 ///   - Microsoft VSCode           https://nuke.build/vscode  <summary>
-// https://github.com/dotnet/format/issues/1094
-// https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings
-
 [GitHubActions(
 	"continuous",
 	GitHubActionsImage.UbuntuLatest,
@@ -33,7 +32,6 @@ using Nuke.Common.CI.GitHubActions;
 	FetchDepth = 0)]
 internal class Build : NukeBuild, IBasycBuildAll
 {
-
 	//[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
 	//[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
 	//[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
@@ -50,6 +48,6 @@ internal class Build : NukeBuild, IBasycBuildAll
 	{
 		IBasycBuildBase.BuildProjectName = "_build";
 		IBasycBuildBase.UnitTestSuffix = ".UnitTests";
-		return Execute<Build>(x => ((IBasycBuildAll)x).UnitTestAll);
+		return Execute<Build>(x => ((IBasycBuildAll)x).UnitTestAffected);
 	}
 }

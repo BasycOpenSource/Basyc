@@ -3,7 +3,6 @@ using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
-using Nuke.Common.Tools.GitVersion;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
@@ -14,6 +13,7 @@ public interface IBasycBuildRelease : IBasycBuildBase
 	protected string NuGetApiKey { get; }
 
 	Target StaticCodeAnalysisAll => _ => _
+	.Before(CompileAll)
 	.Executes(() =>
 	{
 		BasycFormatVerifyNoChanges(Solution!.Path);
@@ -36,6 +36,7 @@ public interface IBasycBuildRelease : IBasycBuildBase
 	   });
 
 	Target CompileAll => _ => _
+	   .After(StaticCodeAnalysisAll)
 	   .After(RestoreAll)
 	   .DependsOn(RestoreAll)
 	   .Executes(() =>
