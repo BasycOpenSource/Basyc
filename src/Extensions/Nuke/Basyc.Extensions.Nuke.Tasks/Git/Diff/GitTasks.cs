@@ -24,22 +24,16 @@ public static partial class GitTasks
 		localGitFolder = localGitFolder.Replace("\\", "/");
 		if (oldBranchName == null)
 		{
-			var repoNuke = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
-			if (repoNuke.IsOnMainBranch())
+			if (TryGetBranchToCompareName(out oldBranchName) is false)
 			{
 				return new GitCompareReport(localGitFolder, false, Array.Empty<SolutionChangeReport>());
-
-			}
-			else
-			{
-				oldBranchName = repoNuke.IsOnDevelopBranch() ? "main" : "develop";
 			}
 		}
 
 		using (var repo = new Repository(localGitFolder))
 		{
 			GetBranchesToCompare(repo, oldBranchName, out var newBranchLocal, out var oldBranchLocal);
-			Serilog.Log.Information($"Creating change report between '{newBranchLocal.FriendlyName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{newBranchLocal.FriendlyName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
+			Log.Information($"Creating change report between '{newBranchLocal.FriendlyName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{newBranchLocal.FriendlyName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
 			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)> projectChanges)> solutionChanges = new();
 
 			var paths = repo.Diff.Compare<TreeChanges>(oldBranchLocal.Tip.Tree, newBranchLocal.Tip.Tree)
@@ -99,7 +93,7 @@ public static partial class GitTasks
 					bool solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == gitRoot && solRelativePath.IndexOf("/") == -1;
 					if (!((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) || GetGitParentDirectoryRelativePath(solRelativePath) == solutionDirectoryRelativePath))
 					{
-						Serilog.Log.Debug($"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
+						Log.Debug($"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
 						solutionChanges.Add((solutionFilePath!, false, new(), new()));
 						solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solutionFilePath!, localGitFolder));
 						solutionAlreadyFound = true;
@@ -368,5 +362,42 @@ public static partial class GitTasks
 		var filePathSpan = filePath.AsSpan();
 		var gitRelativePath = filePathSpan.Slice(gitRoot.Length + 1);
 		return gitRelativePath.ToString();
+	}
+
+	private static bool TryGetBranchToCompareName(out string? branchToCompareName)
+	{
+		var gitRepoNuke = GitRepository.FromLocalDirectory(NukeBuild.RootDirectory);
+		if (gitRepoNuke.IsOnMainBranch())
+		{
+			branchToCompareName = null;
+			return false;
+		}
+
+		if (gitRepoNuke.IsOnDevelopBranch())
+		{
+			branchToCompareName = "main";
+			return true;
+		}
+
+		if (gitRepoNuke.IsOnFeatureBranch())
+		{
+			branchToCompareName = "develop";
+			return true;
+		}
+
+		if (gitRepoNuke.IsOnReleaseBranch())
+		{
+			branchToCompareName = "main";
+			return true;
+		}
+
+		if (gitRepoNuke.IsOnHotfixBranch())
+		{
+			branchToCompareName = "main";
+			return true;
+		}
+
+		branchToCompareName = null;
+		return false;
 	}
 }
