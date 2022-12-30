@@ -9,18 +9,17 @@
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_release --host GitHubActions
+#         nuke --generate-configuration GitHubActions_prerelease --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------
 
-name: release
+name: prerelease
 
 on:
   push:
     branches:
-      - develop
-      - main
+      - 'release/*'
 
 jobs:
   ubuntu-latest:

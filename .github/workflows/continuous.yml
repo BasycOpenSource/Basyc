@@ -19,7 +19,9 @@ name: continuous
 on:
   push:
     branches:
-      - develop
+      - 'feature/*'
+      - 'release/*'
+      - 'hotfix/*'
 
 jobs:
   ubuntu-latest:

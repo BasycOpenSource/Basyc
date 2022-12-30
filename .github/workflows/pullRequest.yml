@@ -19,6 +19,7 @@ name: pullRequest
 on:
   pull_request:
     branches:
+      - develop
       - main
 
 jobs:
@@ -38,5 +39,3 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
       - name: Run './build.cmd StaticCodeAnalysisAll UnitTestAll'
         run: ./build.cmd StaticCodeAnalysisAll UnitTestAll
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
