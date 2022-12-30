@@ -33,7 +33,6 @@ using Nuke.Common.CI.GitHubActions;
 	FetchDepth = 0)]
 internal class Build : NukeBuild, IBasycBuildAll
 {
-
 	//[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
 	//[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
 	//[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
@@ -50,6 +49,6 @@ internal class Build : NukeBuild, IBasycBuildAll
 	{
 		IBasycBuildBase.BuildProjectName = "_build";
 		IBasycBuildBase.UnitTestSuffix = ".UnitTests";
-		return Execute<Build>(x => ((IBasycBuildAll)x).UnitTestAll);
+		return Execute<Build>(x => ((IBasycBuildAll)x).UnitTestAffected);
 	}
 }

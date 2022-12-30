@@ -42,10 +42,14 @@ public static class SolutionHelper
 			.ForEach(newSolution.RemoveProject);
 		if (buildProjectName is not null)
 		{
-			newSolution.RemoveProject(newSolution.GetProject(buildProjectName));
-			newSolution.Save();
+			var buildProject = newSolution.GetProject(buildProjectName);
+			if (buildProject is not null)
+			{
+				newSolution.RemoveProject(buildProject);
+			}
 		}
 
+		newSolution.Save();
 		return new TemporarySolution(newSolution);
 	}
 
