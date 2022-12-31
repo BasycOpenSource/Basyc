@@ -8,7 +8,7 @@ using Nuke.Common.CI.GitHubActions;
 ///   - JetBrains ReSharper        https://nuke.build/resharper
 ///   - JetBrains Rider            https://nuke.build/rider
 ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-///   - Microsoft VSCode           https://nuke.build/vscode  <summary>
+///   - Microsoft VSCode           https://nuke.build/vscode 
 [GitHubActions(
 	"continuous",
 	GitHubActionsImage.UbuntuLatest,

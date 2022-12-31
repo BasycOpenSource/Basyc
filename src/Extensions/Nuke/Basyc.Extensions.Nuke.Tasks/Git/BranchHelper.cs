@@ -66,6 +66,6 @@ public static class BranchHelper
 			return false;
 		}
 
-		throw new InvalidOperationException();
+		throw new InvalidOperationException("Failed to check branches");
 	}
 }
