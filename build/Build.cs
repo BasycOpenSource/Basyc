@@ -37,16 +37,15 @@ internal class Build : NukeBuild, IBasycBuilds
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
+	string IBasycBuildBase.BuildProjectName => "_build";
+	string IBasycBuildBase.UnitTestSuffix => ".UnitTests";
 	string IBasycBuildBase.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 	string IBasycBuildBase.NuGetApiKey => GitHubActions.Instance.Token;
 	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance.IsPullRequest;
-	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.GitHubEvent["pull_request"]!.Value<string>("base.ref");
+	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.GetPullRequestTargetBranch();
 
 	public static int Main()
 	{
-		IBasycBuildBase.BuildProjectName = "_build";
-		IBasycBuildBase.UnitTestSuffix = ".UnitTests";
 		return Execute<Build>(x => ((IBasycBuilds)x).ReleaseAll);
-
 	}
 }

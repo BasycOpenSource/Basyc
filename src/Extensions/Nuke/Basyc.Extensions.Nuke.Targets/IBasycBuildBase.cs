@@ -7,8 +7,8 @@ using Nuke.Common.Tools.GitVersion;
 namespace Basyc.Extensions.Nuke.Targets;
 public interface IBasycBuildBase : INukeBuild
 {
-	public static string BuildProjectName { get; set; } = "_build";
-	public static string UnitTestSuffix { get; set; } = ".UnitTests";
+	string BuildProjectName { get; }
+	string UnitTestSuffix { get; }
 
 	[Solution] protected Solution Solution => TryGetValue(() => Solution);
 	[GitVersion] protected GitVersion GitVersion => TryGetValue(() => GitVersion);

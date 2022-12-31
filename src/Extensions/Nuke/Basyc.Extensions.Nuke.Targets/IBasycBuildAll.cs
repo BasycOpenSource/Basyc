@@ -1,13 +1,11 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Git;
-using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
+using Basyc.Extensions.Nuke.Tasks.Tools.Git;
 using Nuke.Common;
-using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities;
-using Serilog;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 using static Basyc.Extensions.Nuke.Tasks.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -20,15 +18,6 @@ public interface IBasycBuildAll : IBasycBuildBase
 	Target PullRequestCheck => _ => _
 		.Executes(() =>
 		{
-			string eventJson = File.ReadAllText(GitHubActions.Instance.EventPath);
-			Log.Information(eventJson);
-			var pullRequestObject = GitHubActions.Instance.GitHubEvent.GetPropertyValue("pull_request");
-			string targetBranch = pullRequestObject["base"]!.Value<string>("ref");
-			Log.Information(pullRequestObject.ToString());
-			Log.Information(targetBranch);
-
-			var ttt = GitHubActions.Instance.GitHubEvent.Value<Dictionary<string, string>>("pull_request");
-
 			if (IsPullRequest is false)
 			{
 				throw new InvalidOperationException($"Can't validate pull request if {IsPullRequest} is false");
