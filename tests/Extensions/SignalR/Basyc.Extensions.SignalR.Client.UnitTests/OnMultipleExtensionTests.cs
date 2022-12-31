@@ -38,6 +38,7 @@ public class OnMultipleExtensionTests
 		hubConnection.OnMultiple(messageReceiver);
 		await hubConnection.StartAsync();
 		await hubConnection.ReceiveMessage(nameof(MethodsServerCanCall_Inhertited_Numbers.ReceiveNumber), new object?[] { 1 });
+		await Task.Delay(100);
 		messageReceiver.LastReceivedNumber.Should().Be(1);
 	}
 
