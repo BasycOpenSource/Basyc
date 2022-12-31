@@ -1,7 +1,4 @@
-﻿using Nuke.Common.Utilities;
-
-//namespace Basyc.Extensions.Nuke.Tasks.Extensions.GithubActions;
-namespace Nuke.Common.CI.GitHubActions;
+﻿namespace Nuke.Common.CI.GitHubActions;
 public static class GithubActionsBasycExtensions
 {
 	/// <summary>
@@ -16,8 +13,14 @@ public static class GithubActionsBasycExtensions
 
 	public static string GetPullRequestTargetBranch(this GitHubActions gitHubActions)
 	{
-		var pullRequestObject = gitHubActions.GitHubEvent.GetPropertyValue("pull_request");
-		string targetBranch = pullRequestObject["base"]!.Value<string>("ref");
-		return targetBranch;
+		//var pullRequestObject = gitHubActions.GitHubEvent.GetPropertyValue("pull_request");
+		//string targetBranch = pullRequestObject["base"]!.Value<string>("ref");
+		//return targetBranch;
+		return gitHubActions.BaseRef;
+	}
+
+	public static string GetPullRequestSourceBranch(this GitHubActions gitHubActions)
+	{
+		return gitHubActions.HeadRef;
 	}
 }

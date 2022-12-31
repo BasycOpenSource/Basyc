@@ -23,7 +23,7 @@ public interface IBasycBuildAll : IBasycBuildBase
 				throw new InvalidOperationException($"Can't validate pull request if {IsPullRequest} is false");
 			}
 
-			if (BranchHelper.IsPullRequestAllowed(Repository.Branch, PullRequestTargetBranch) is false)
+			if (BranchHelper.IsPullRequestAllowed(PullRequestSourceBranch, PullRequestTargetBranch) is false)
 			{
 				throw new InvalidOperationException($"Pull request between {Repository.Branch} and {PullRequestTargetBranch} is not allowed");
 			}

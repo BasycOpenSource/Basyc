@@ -19,7 +19,7 @@ public interface IBasycBuildBase : INukeBuild
 
 	protected bool IsPullRequest { get; }
 	protected string PullRequestTargetBranch { get; }
-
+	protected string PullRequestSourceBranch { get; }
 	protected string NugetSourceUrl { get; }
 	protected string NuGetApiKey { get; }
 }
