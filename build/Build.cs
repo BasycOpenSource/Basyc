@@ -47,5 +47,6 @@ internal class Build : NukeBuild, IBasycBuilds
 		IBasycBuildBase.BuildProjectName = "_build";
 		IBasycBuildBase.UnitTestSuffix = ".UnitTests";
 		return Execute<Build>(x => ((IBasycBuilds)x).ReleaseAll);
+
 	}
 }
