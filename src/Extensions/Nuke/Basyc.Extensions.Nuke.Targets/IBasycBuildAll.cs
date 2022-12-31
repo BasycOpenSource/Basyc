@@ -6,6 +6,7 @@ using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Utilities;
 using Serilog;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 using static Basyc.Extensions.Nuke.Tasks.GitTasks;
@@ -21,6 +22,12 @@ public interface IBasycBuildAll : IBasycBuildBase
 		{
 			string eventJson = File.ReadAllText(GitHubActions.Instance.EventPath);
 			Log.Information(eventJson);
+			var pullRequestObject = GitHubActions.Instance.GitHubEvent.GetPropertyValue("pull_request");
+			string targetBranch = pullRequestObject["base"]!.Value<string>("ref");
+			Log.Information(pullRequestObject.ToString());
+			Log.Information(targetBranch);
+
+			var ttt = GitHubActions.Instance.GitHubEvent.Value<Dictionary<string, string>>("pull_request");
 
 			if (IsPullRequest is false)
 			{
