@@ -8,7 +8,7 @@ using Nuke.Common.CI.GitHubActions;
 ///   - JetBrains ReSharper        https://nuke.build/resharper
 ///   - JetBrains Rider            https://nuke.build/rider
 ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-///   - Microsoft VSCode           https://nuke.build/vscode  <summary>
+///   - Microsoft VSCode           https://nuke.build/vscode 
 [GitHubActions(
 	"continuous",
 	GitHubActionsImage.UbuntuLatest,
@@ -20,7 +20,7 @@ using Nuke.Common.CI.GitHubActions;
 	"pullRequest",
 	GitHubActionsImage.UbuntuLatest,
 	OnPullRequestBranches = new[] { "develop", "main" },
-	InvokedTargets = new[] { nameof(IBasycBuildAll.StaticCodeAnalysisAll), nameof(IBasycBuildAll.UnitTestAll) },
+	InvokedTargets = new[] { nameof(IBasycBuildAll.PullRequestCheck), nameof(IBasycBuildAll.StaticCodeAnalysisAll), nameof(IBasycBuildAll.UnitTestAll) },
 	EnableGitHubToken = false,
 	FetchDepth = 0)]
 [GitHubActions(
@@ -33,21 +33,20 @@ using Nuke.Common.CI.GitHubActions;
 
 internal class Build : NukeBuild, IBasycBuilds
 {
-	//[Parameter] string NuGetSource => TryGetValue(() => NuGetSource);
-	//[Parameter][Secret] string NuGetApiKey => TryGetValue(() => NuGetApiKey);
-	//[Parameter][Secret] string NuGetApiPrivateKeyPfxBase64 => TryGetValue(() => NuGetApiPrivateKeyPfxBase64);
-	//[Parameter][Secret] string NuGetApiCertPassword => TryGetValue(() => NuGetApiCertPassword);
 
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-	string IBasycBuildAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
-	string IBasycBuildAll.NuGetApiKey => GitHubActions.Instance.Token;
+	string IBasycBuildBase.BuildProjectName => "_build";
+	string IBasycBuildBase.UnitTestSuffix => ".UnitTests";
+	string IBasycBuildBase.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
+	string IBasycBuildBase.NuGetApiKey => GitHubActions.Instance.Token;
+	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance.IsPullRequest;
+	string IBasycBuildBase.PullRequestSourceBranch => GitHubActions.Instance.GetPullRequestSourceBranch();
+	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.GetPullRequestTargetBranch();
 
 	public static int Main()
 	{
-		IBasycBuildBase.BuildProjectName = "_build";
-		IBasycBuildBase.UnitTestSuffix = ".UnitTests";
 		return Execute<Build>(x => ((IBasycBuilds)x).ReleaseAll);
 	}
 }

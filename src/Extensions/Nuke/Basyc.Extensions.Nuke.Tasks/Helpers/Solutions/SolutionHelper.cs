@@ -1,5 +1,5 @@
 ﻿using Basyc.Extensions.IO;
-using Basyc.Extensions.Nuke.Tasks.Git.Diff;
+using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.ProjectModel.ProjectModelTasks;

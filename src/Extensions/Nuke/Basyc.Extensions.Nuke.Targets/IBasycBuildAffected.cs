@@ -1,4 +1,4 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Git.Diff;
+﻿using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Serilog;
