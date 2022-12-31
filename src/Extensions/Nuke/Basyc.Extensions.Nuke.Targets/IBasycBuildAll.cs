@@ -1,10 +1,12 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Git;
 using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
+using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.Git;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Serilog;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 using static Basyc.Extensions.Nuke.Tasks.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -17,6 +19,9 @@ public interface IBasycBuildAll : IBasycBuildBase
 	Target PullRequestCheck => _ => _
 		.Executes(() =>
 		{
+			string eventJson = File.ReadAllText(GitHubActions.Instance.EventPath);
+			Log.Information(eventJson);
+
 			if (IsPullRequest is false)
 			{
 				throw new InvalidOperationException($"Can't validate pull request if {IsPullRequest} is false");
