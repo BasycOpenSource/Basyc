@@ -40,7 +40,7 @@ internal class Build : NukeBuild, IBasycBuilds
 	string IBasycBuildBase.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 	string IBasycBuildBase.NuGetApiKey => GitHubActions.Instance.Token;
 	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance.IsPullRequest;
-	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.BaseRef;
+	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.GitHubEvent["pull_request"]!.Value<string>("base.ref");
 
 	public static int Main()
 	{
