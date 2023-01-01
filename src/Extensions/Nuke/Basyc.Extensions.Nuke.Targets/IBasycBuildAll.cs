@@ -16,18 +16,26 @@ public interface IBasycBuildAll : IBasycBuildBase
 	[GitRepository] protected new GitRepository Repository => TryGetValue(() => Repository);
 
 	Target PullRequestCheck => _ => _
-		.Executes(() =>
+	.DependentFor(StaticCodeAnalysisAll, CleanAll, RestoreAll, CompileAll, UnitTestAll, RestoreAll)
+	.OnlyWhenStatic(() => IsPullRequest)
+	.Executes(() =>
+	{
+		if (GitFlowHelper.IsPullRequestAllowed(PullRequestSourceBranch, PullRequestTargetBranch) is false)
 		{
-			if (IsPullRequest is false)
-			{
-				throw new InvalidOperationException($"Can't validate pull request if {IsPullRequest} is false");
-			}
+			throw new InvalidOperationException($"Pull request between {PullRequestSourceBranch} and {PullRequestTargetBranch} is not allowed according git flow");
+		}
+	});
 
-			if (BranchHelper.IsPullRequestAllowed(PullRequestSourceBranch, PullRequestTargetBranch) is false)
-			{
-				throw new InvalidOperationException($"Pull request between {Repository.Branch} and {PullRequestTargetBranch} is not allowed");
-			}
-		});
+	Target ReleaseCheck => _ => _
+	.DependentFor(StaticCodeAnalysisAll, CleanAll, RestoreAll, CompileAll, UnitTestAll, RestoreAll)
+	.OnlyWhenStatic(() => InvokedTargets.Any(x => x.Name == nameof(ReleaseAll)))
+	.Executes(() =>
+	{
+		if (GitFlowHelper.IsReleaseAllowed(Repository.Branch) is false)
+		{
+			throw new InvalidOperationException($"Branch '{Repository.Branch}' is not allowed to be released according git flow. Only releases from main or develop are allowed");
+		}
+	});
 
 	Target StaticCodeAnalysisAll => _ => _
 	.Before(CompileAll)
@@ -53,17 +61,15 @@ public interface IBasycBuildAll : IBasycBuildBase
 	   });
 
 	Target CompileAll => _ => _
-	   .After(StaticCodeAnalysisAll)
-	   .After(RestoreAll)
-	   .DependsOn(RestoreAll)
-	   .Executes(() =>
-	   {
-		   using var tempSolution = SolutionHelper.NewTempSolution(Solution, BuildProjectName);
-		   DotNetBuild(_ => _
-			.EnableNoRestore()
-			.SetProjectFile(tempSolution.Solution));
-
-	   });
+	.DependsOn(RestoreAll)
+	.After(StaticCodeAnalysisAll, RestoreAll)
+	.Executes(() =>
+	{
+		using var tempSolution = SolutionHelper.NewTempSolution(Solution, BuildProjectName);
+		DotNetBuild(_ => _
+	   .EnableNoRestore()
+	   .SetProjectFile(tempSolution.Solution));
+	});
 
 	Target UnitTestAll => _ => _
 	   .DependsOn(CompileAll)
@@ -73,8 +79,8 @@ public interface IBasycBuildAll : IBasycBuildBase
 	   });
 
 	Target ReleaseAll => _ => _
-		   .Before(UnitTestAll)
 		   .DependsOn(CompileAll)
+		   .Before(UnitTestAll)
 		   .Executes(() =>
 		   {
 			   GitCreateTag($"v{GitVersion!.NuGetVersionV2}", Repository);
@@ -88,9 +94,6 @@ public interface IBasycBuildAll : IBasycBuildBase
 							.EnableNoBuild()
 							.SetOutputDirectory(packagesVersionedDirectory)
 								.SetProject(solutionToUse.Solution));
-
-			   //string pathToSign = (packagesVersionedDirectory.ToString() + "/*.nupkg").NormalizeForCurrentOs();
-			   //BasycNugetSignWithBase64(pathToSign, NuGetApiPrivateKeyPfxBase64, NuGetApiCertPassword);
 
 			   var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
 			   DotNetNuGetPush(_ => _

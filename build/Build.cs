@@ -20,7 +20,7 @@ using Nuke.Common.CI.GitHubActions;
 	"pullRequest",
 	GitHubActionsImage.UbuntuLatest,
 	OnPullRequestBranches = new[] { "develop", "main" },
-	InvokedTargets = new[] { nameof(IBasycBuildAll.PullRequestCheck), nameof(IBasycBuildAll.StaticCodeAnalysisAll), nameof(IBasycBuildAll.UnitTestAll) },
+	InvokedTargets = new[] { nameof(IBasycBuildAll.StaticCodeAnalysisAll), nameof(IBasycBuildAll.UnitTestAll) },
 	EnableGitHubToken = false,
 	FetchDepth = 0)]
 [GitHubActions(
@@ -39,14 +39,14 @@ internal class Build : NukeBuild, IBasycBuilds
 
 	string IBasycBuildBase.BuildProjectName => "_build";
 	string IBasycBuildBase.UnitTestSuffix => ".UnitTests";
-	string IBasycBuildBase.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
-	string IBasycBuildBase.NuGetApiKey => GitHubActions.Instance.Token;
-	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance.IsPullRequest;
+	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance is not null && GitHubActions.Instance.IsPullRequest;
 	string IBasycBuildBase.PullRequestSourceBranch => GitHubActions.Instance.GetPullRequestSourceBranch();
 	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.GetPullRequestTargetBranch();
+	string IBasycBuildBase.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
+	string IBasycBuildBase.NuGetApiKey => GitHubActions.Instance.Token;
 
 	public static int Main()
 	{
-		return Execute<Build>(x => ((IBasycBuilds)x).ReleaseAll);
+		return Execute<Build>(x => ((IBasycBuilds)x).CompileAll);
 	}
 }
