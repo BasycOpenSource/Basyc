@@ -37,7 +37,7 @@ jobs:
             .nuke/temp
             ~/.nuget/packages
           key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
-      - name: Run './build.cmd ReleaseAll'
-        run: ./build.cmd ReleaseAll
+      - name: Run './build.cmd NugetReleaseAll'
+        run: ./build.cmd NugetReleaseAll
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

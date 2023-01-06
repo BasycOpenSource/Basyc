@@ -5,6 +5,7 @@ using Basyc.Extensions.Nuke.Targets;
 using Basyc.Extensions.Nuke.Targets.Nuget;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
+using Nuke.Common.Git;
 ///Nuke support plugins are available for:
 ///   - JetBrains ReSharper        https://nuke.build/resharper
 ///   - JetBrains Rider            https://nuke.build/rider
@@ -37,7 +38,7 @@ internal class Build : NukeBuild, IBasycBuilds
 
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
-
+	[GitRepository] private readonly GitRepository? Repository;
 	string IBasycBuildBase.BuildProjectName => "_build";
 	string IBasycBuildBase.UnitTestSuffix => ".UnitTests";
 	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance is not null && GitHubActions.Instance.IsPullRequest;
@@ -48,6 +49,6 @@ internal class Build : NukeBuild, IBasycBuilds
 
 	public static int Main()
 	{
-		return Execute<Build>(x => ((IBasycBuilds)x).CompileAll);
+		return Execute<Build>(x => ((IBasycBuilds)x).CompileAffected);
 	}
 }
