@@ -1,12 +1,12 @@
-﻿namespace Basyc.Extensions.Nuke.Tasks.Tools.Git;
+﻿namespace Basyc.Extensions.Nuke.Tasks.Helpers;
 public static class GitFlowHelper
 {
-	public static bool IsPullRequestAllowed(string sourceBranch, string targetBranch)
+	public static bool IsPullRequestAllowed(string sourceBranch, string targetBranch, bool canSkipReleaseBranch)
 	{
 		sourceBranch = sourceBranch.ToLowerInvariant();
 		targetBranch = targetBranch.ToLowerInvariant();
 
-		if (sourceBranch is "main")
+		if (sourceBranch is "main" or "master")
 		{
 			return false;
 		}
@@ -18,12 +18,20 @@ public static class GitFlowHelper
 				return true;
 			}
 
+			if (canSkipReleaseBranch)
+			{
+				if (targetBranch is "main" or "master")
+				{
+					return true;
+				}
+			}
+
 			return false;
 		}
 
 		if (sourceBranch.StartsWith("release"))
 		{
-			if (targetBranch is "main")
+			if (targetBranch is "main" or "master")
 			{
 				return true;
 			}
@@ -53,7 +61,7 @@ public static class GitFlowHelper
 
 		if (sourceBranch.StartsWith("hotfix"))
 		{
-			if (targetBranch is "main")
+			if (targetBranch is "main" or "master")
 			{
 				return true;
 			}

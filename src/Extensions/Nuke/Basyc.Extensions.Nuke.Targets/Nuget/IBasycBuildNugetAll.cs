@@ -1,5 +1,5 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
-using Basyc.Extensions.Nuke.Tasks.Tools.Git;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers;
+using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
 using Nuke.Common.IO;
 using Nuke.Common.Tooling;

@@ -1,5 +1,5 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
-using Basyc.Extensions.Nuke.Tasks.Tools.Git;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers;
+using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.Tools.DotNet;
@@ -16,7 +16,7 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 	.OnlyWhenStatic(() => IsPullRequest)
 	.Executes(() =>
 	{
-		if (GitFlowHelper.IsPullRequestAllowed(PullRequestSourceBranch, PullRequestTargetBranch) is false)
+		if (GitFlowHelper.IsPullRequestAllowed(PullRequestSourceBranch, PullRequestTargetBranch, false) is false)
 		{
 			throw new InvalidOperationException($"Pull request between {PullRequestSourceBranch} and {PullRequestTargetBranch} is not allowed according git flow");
 		}
