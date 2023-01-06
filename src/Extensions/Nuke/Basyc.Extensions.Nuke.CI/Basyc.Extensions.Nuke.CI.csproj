@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Basyc.Extensions.Nuke.Tasks\Basyc.Extensions.Nuke.Tasks.csproj" />
+    <Folder Include="GithubActions\" />
   </ItemGroup>
 
 </Project>

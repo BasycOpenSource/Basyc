@@ -5,7 +5,7 @@ using Serilog;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 
 namespace Basyc.Extensions.Nuke.Targets;
-public interface IBasycBuildAffected : IBasycBuildBase
+public interface IBasycBuildCommonAffected : IBasycBuildBase
 {
 	[GitCompareReport] GitCompareReport GitCompareReport => TryGetValue(() => GitCompareReport);
 

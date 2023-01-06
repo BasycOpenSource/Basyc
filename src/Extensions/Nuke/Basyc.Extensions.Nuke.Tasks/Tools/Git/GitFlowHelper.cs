@@ -1,5 +1,5 @@
 ﻿namespace Basyc.Extensions.Nuke.Tasks.Tools.Git;
-public static class BranchHelper
+public static class GitFlowHelper
 {
 	public static bool IsPullRequestAllowed(string sourceBranch, string targetBranch)
 	{
@@ -67,5 +67,15 @@ public static class BranchHelper
 		}
 
 		throw new InvalidOperationException($"Failed to check '{sourceBranch}' against '{targetBranch}'");
+	}
+
+	public static bool IsReleaseAllowed(string currentBranch)
+	{
+		if (currentBranch is "main" or "master" or "develop")
+		{
+			return true;
+		}
+
+		return false;
 	}
 }
