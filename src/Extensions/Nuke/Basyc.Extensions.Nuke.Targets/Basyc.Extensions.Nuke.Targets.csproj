@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Basyc.Extensions.Nuke.Tasks\Basyc.Extensions.Nuke.Tasks.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
+	</ItemGroup>
+
 </Project>

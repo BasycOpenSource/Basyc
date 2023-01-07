@@ -7,6 +7,8 @@ using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 namespace Basyc.Extensions.Nuke.Targets;
 public interface IBasycBuildCommonAffected : IBasycBuildBase
 {
+	double MinSequenceCoverage { get; }
+	double MinBranchCoverage { get; }
 	[GitCompareReport] GitCompareReport GitCompareReport => TryGetValue(() => GitCompareReport);
 
 	Target StaticCodeAnalysisAffected => _ => _
@@ -40,7 +42,8 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 		   .Executes(() =>
 		   {
 			   GitCompareReport.ThrowIfNotValid();
-			   BasycUnitTestAndCoverageAffected(Solution, GitCompareReport, UnitTestSuffix);
+			   var report = BasycUnitTestAffected(Solution, GitCompareReport, UnitTestSuffix);
+			   BasycAssertCovereage(report, MinSequenceCoverage, MinBranchCoverage);
 		   });
-
 }
+

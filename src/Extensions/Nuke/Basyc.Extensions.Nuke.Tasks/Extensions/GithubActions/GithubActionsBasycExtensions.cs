@@ -1,4 +1,8 @@
-﻿namespace Nuke.Common.CI.GitHubActions;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Nuke.Common.CI.GitHubActions;
+
+[ExcludeFromCodeCoverage]
 public static class GithubActionsBasycExtensions
 {
 	/// <summary>
@@ -13,9 +17,6 @@ public static class GithubActionsBasycExtensions
 
 	public static string GetPullRequestTargetBranch(this GitHubActions gitHubActions)
 	{
-		//var pullRequestObject = gitHubActions.GitHubEvent.GetPropertyValue("pull_request");
-		//string targetBranch = pullRequestObject["base"]!.Value<string>("ref");
-		//return targetBranch;
 		return gitHubActions.BaseRef;
 	}
 

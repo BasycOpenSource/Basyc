@@ -1,5 +1,4 @@
 ﻿using Basyc.Extensions.IO;
-using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
 using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test.OpenCoverFormat;
 using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
@@ -7,6 +6,7 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Utilities.Collections;
 using Serilog;
 using System.Globalization;
 using System.Xml.Serialization;
@@ -17,7 +17,7 @@ public static partial class DotNetTasks
 {
 	private static readonly XmlSerializer xmlSerializer = new(typeof(CoverageSession));
 
-	public static CoverageReport BasycUnitTestAndCoverageAffected(Solution solution, GitCompareReport gitCompareReport, string testProjectSuffix = ".UnitTests")
+	public static CoverageReport BasycUnitTestAffected(Solution solution, GitCompareReport gitCompareReport, string testProjectSuffix = ".UnitTests")
 	{
 		var projectsToTestPaths = gitCompareReport.ChangedSolutions
 			.SelectMany(x => x.ChangedProjects)
@@ -41,40 +41,77 @@ public static partial class DotNetTasks
 			}
 		}
 
-		return UnitTestAndCoverage(solution, projectsToTestPaths, testProjectSuffix);
+		return UnitTest(solution, projectsToTestPaths, testProjectSuffix);
 	}
 
-	public static CoverageReport BasycUnitTestAndCoverageAll(Solution solution, string testProjectSuffix = ".UnitTests")
+	public static CoverageReport BasycUnitTestAll(Solution solution, string testProjectSuffix = ".UnitTests")
 	{
 		var sourceProjects = solution.AllProjects
 			.Where(x => x.Name.EndsWith(testProjectSuffix) is false)
 			.Select(x => x.Path.ToString());
-		return UnitTestAndCoverage(solution, sourceProjects, testProjectSuffix);
+		return UnitTest(solution, sourceProjects, testProjectSuffix);
 	}
 
-	private static CoverageReport BasycUnitTestAndCoverageAll2(Solution solution, string testProjectSuffix = ".UnitTests")
+	public static void BasycAssertCovereage(CoverageReport report, double minSequenceCoverage, double minBranchCoverage)
 	{
-		var inProgressReport = new InProgressReport();
-		inProgressReport.AddSolution(solution, testProjectSuffix);
-		var testProjectsToRun = inProgressReport.GetAllReports().Where(x => x.TestProjectFound).ToArray();
-		using var tempSolution = SolutionHelper.NewTempSolution(solution, null, testProjectsToRun.Select(x => x.TestProjectPath!));
-		using var settingsFile = CreateRunSettings(testProjectsToRun.Select(x => x.ProjectToTestName));
-		using var projectResultDirectory = TemporaryDirectory.CreateNew("BasycDotnetTest/Solution");
+		List<string> errors = new();
 
-		DotNetTest(_ => _
-			.EnableNoRestore()
-			.EnableNoBuild()
-			.EnableCollectCoverage()
-			.SetSettingsFile(settingsFile.FullPath)
-				.SetResultsDirectory(projectResultDirectory.FullPath)
-				.SetProjectFile(solution));
+		report.Modules.ForEach(module =>
+		{
+			if (module.SequenceCoverage < minSequenceCoverage)
+			{
+				errors.Add($"Project '{module.ProjectName}' sequence coverage {module.SequenceCoverage}% it too low. Desired: {minSequenceCoverage}%");
+			}
 
-		CompleteSolution(inProgressReport, projectResultDirectory.FullPath);
-		LogTestReport(inProgressReport);
-		return new CoverageReport(inProgressReport.GetAllReports().Select(x => x.Report!).ToArray());
+			if (module.BranchCoverage < minBranchCoverage)
+			{
+				errors.Add($"Project '{module.ProjectName}' branch coverage {module.SequenceCoverage}% it too low. Desired: {minBranchCoverage}%");
+			}
+
+			module.ClassReports.ForEach(classReport =>
+			{
+				if (classReport.SequenceCoverage < minSequenceCoverage)
+				{
+					errors.Add($"Class '{classReport.ClassName}' sequence coverage {classReport.SequenceCoverage}% it too low. Desired: {minSequenceCoverage}%");
+				}
+
+				if (classReport.BranchCoverage < minBranchCoverage)
+				{
+					errors.Add($"Class '{classReport.ClassName}' branch coverage {classReport.SequenceCoverage}% it too low. Desired: {minBranchCoverage}%");
+				}
+			});
+
+		});
+
+		if (errors.Any())
+		{
+			throw new Exception(string.Join("\n", errors));
+		}
 	}
 
-	private static CoverageReport UnitTestAndCoverage(Solution solution, IEnumerable<string> projectToTestPaths, string textProjectSuffix = ".UnitTests")
+	//private static CoverageReport BasycUnitTestAndCoverageAll2(Solution solution, string testProjectSuffix = ".UnitTests")
+	//{
+	//	var inProgressReport = new InProgressReport();
+	//	inProgressReport.AddSolution(solution, testProjectSuffix);
+	//	var testProjectsToRun = inProgressReport.GetAllReports().Where(x => x.TestProjectFound).ToArray();
+	//	using var tempSolution = SolutionHelper.NewTempSolution(solution, null, testProjectsToRun.Select(x => x.TestProjectPath!));
+	//	using var settingsFile = CreateRunSettings(testProjectsToRun.Select(x => x.ProjectToTestName));
+	//	using var projectResultDirectory = TemporaryDirectory.CreateNew("BasycDotnetTest/Solution");
+
+	//	DotNetTest(_ => _
+	//		.EnableNoRestore()
+	//		.EnableNoBuild()
+	//		.EnableCollectCoverage()
+	//		.SetSettingsFile(settingsFile.FullPath)
+	//			.SetResultsDirectory(projectResultDirectory.FullPath)
+	//			.SetProjectFile(solution));
+
+	//	CompleteSolution(inProgressReport, projectResultDirectory.FullPath);
+	//	LogTestReport(inProgressReport);
+	//	return new CoverageReport(inProgressReport.GetAllReports().Select(x => x.Report!).ToArray());
+	//}
+
+	private static CoverageReport UnitTest(Solution solution, IEnumerable<string> projectToTestPaths, string textProjectSuffix = ".UnitTests")
 	{
 		var inProgressReport = new InProgressReport();
 		inProgressReport.AddRange(projectToTestPaths.Select(projectToTestPath =>
@@ -91,13 +128,13 @@ public static partial class DotNetTasks
 		})!);
 
 		var testProjectsToRun = inProgressReport.GetAllReports().Where(x => x.TestProjectFound).ToArray();
-		using var settingsFile = CreateRunSettings(testProjectsToRun.Select(x => x.ProjectToTestName));
+		using var testSettingsFile = CreateRunSettings(testProjectsToRun.Select(x => x.ProjectToTestName));
 		using var projectResultDirectory = TemporaryDirectory.CreateNew("BasycDotnetTest/Projects");
 		DotNetTest(_ => _
 			.EnableNoRestore()
 			.EnableNoBuild()
 			.EnableCollectCoverage()
-			.SetSettingsFile(settingsFile.FullPath)
+			.SetSettingsFile(testSettingsFile.FullPath)
 			.CombineWith(testProjectsToRun,
 		(settings, projectReport) => settings
 				.SetResultsDirectory(projectResultDirectory.FullPath + "/" + projectReport.ProjectToTestName)
@@ -135,18 +172,18 @@ public static partial class DotNetTasks
 
 	private static void LogTestReport(InProgressReport inProgressReport)
 	{
-		Log.Information("Coverage report:");
+		Log.Debug("Coverage report:");
 		var projectReports = inProgressReport.GetAllReports();
 		foreach (var projectReport in projectReports)
 		{
-			Log.Information($"		Assembly: {projectReport.ProjectToTestName} BranchCoverage: {projectReport!.Report!.BranchCoverage}% SequenceCoverage: {projectReport.Report.SequenceCoverage}% TestFound: {projectReport!.Report!.TestProjectFound}");
+			Log.Debug($"		Assembly: {projectReport.ProjectToTestName} BranchCoverage: {projectReport!.Report!.BranchCoverage}% SequenceCoverage: {projectReport.Report.SequenceCoverage}% TestFound: {projectReport!.Report!.TestProjectFound}");
 
 			foreach (var classReport in projectReport.Report.ClassReports)
 			{
-				Log.Information($"			Class: {classReport.ClassName} BranchCoverage: {classReport.BranchCoverage}% SequenceCoverage: {classReport.SequenceCoverage}%");
+				Log.Debug($"			Class: {classReport.ClassName} BranchCoverage: {classReport.BranchCoverage}% SequenceCoverage: {classReport.SequenceCoverage}%");
 				foreach (var methodReport in classReport.MethodReports)
 				{
-					Log.Information($"				Method: {classReport.ClassName} BranchCoverage: {methodReport.BranchCoverage}% SequenceCoverage: {methodReport.SequenceCoverage}%");
+					Log.Debug($"				Method: {classReport.ClassName} BranchCoverage: {methodReport.BranchCoverage}% SequenceCoverage: {methodReport.SequenceCoverage}%");
 				}
 			}
 		}
@@ -168,7 +205,7 @@ public static partial class DotNetTasks
 			          <Format>opencover</Format>          
 					  <Include>{includeParam}</Include> <!-- [Assembly-Filter]Type-Filter -->
 			          <Exclude>[*test*]*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
-			          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+			          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute,ExcludeFromCodeCoverageAttribute</ExcludeByAttribute>
 			          <SingleHit>false</SingleHit>
 			          <UseSourceLink>true</UseSourceLink>
 			          <IncludeTestAssembly>true</IncludeTestAssembly>

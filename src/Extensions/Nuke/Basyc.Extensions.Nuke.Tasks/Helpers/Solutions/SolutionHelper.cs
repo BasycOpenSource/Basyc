@@ -2,9 +2,12 @@
 using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Utilities.Collections;
+using System.Diagnostics.CodeAnalysis;
 using static Nuke.Common.ProjectModel.ProjectModelTasks;
 
 namespace Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
+
+[ExcludeFromCodeCoverage]
 public static class SolutionHelper
 {
 

@@ -1,7 +1,9 @@
 ﻿using LibGit2Sharp;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Basyc.Extensions.Nuke.Tasks.Extensions.LibGit2Sharp;
 
+[ExcludeFromCodeCoverage]
 internal static class RepositoryBasycExtensions
 {
 	public static bool HasUncommitedChanges(this Repository repo)

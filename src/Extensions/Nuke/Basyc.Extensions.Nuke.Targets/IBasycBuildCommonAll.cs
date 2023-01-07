@@ -60,7 +60,7 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 	   .DependsOn(CompileAll)
 	   .Executes(() =>
 	   {
-		   BasycUnitTestAndCoverageAll(Solution, UnitTestSuffix);
+		   BasycUnitTestAll(Solution, UnitTestSuffix);
 	   });
 
 }
