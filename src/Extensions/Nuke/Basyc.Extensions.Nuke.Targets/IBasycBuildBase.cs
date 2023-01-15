@@ -10,14 +10,18 @@ public interface IBasycBuildBase : INukeBuild
 	string BuildProjectName { get; }
 	string UnitTestSuffix { get; }
 
-	[Solution] protected Solution Solution => TryGetValue(() => Solution);
+	[Solution(SuppressBuildProjectCheck = true)] protected Solution Solution => TryGetValue(() => Solution);
 	[GitVersion] protected GitVersion GitVersion => TryGetValue(() => GitVersion);
 	[GitRepository] protected GitRepository Repository => TryGetValue(() => Repository);
 
 	protected AbsolutePath OutputDirectory => RootDirectory / "output";
 	protected AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
+	protected AbsolutePath TestHistoryDirectory => RootDirectory / "tests" / "history";
 
 	protected bool IsPullRequest { get; }
 	protected string PullRequestTargetBranch { get; }
 	protected string PullRequestSourceBranch { get; }
+
+	double MinSequenceCoverage { get; }
+	double MinBranchCoverage { get; }
 }

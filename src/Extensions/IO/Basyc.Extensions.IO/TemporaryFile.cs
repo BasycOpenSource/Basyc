@@ -46,4 +46,20 @@ public readonly record struct TemporaryFile(string FullPath) : IDisposable
 
 		return new TemporaryFile(fileFullPath);
 	}
+
+	public static TemporaryFile CreateFromExisting(string fullPath)
+	{
+		return new TemporaryFile(fullPath);
+	}
+
+	public static explicit operator TemporaryFile(string path)
+	{
+		ArgumentException.ThrowIfNullOrEmpty(path);
+		return new TemporaryFile(path);
+	}
+
+	public static implicit operator string(TemporaryFile path)
+	{
+		return path.ToString();
+	}
 }

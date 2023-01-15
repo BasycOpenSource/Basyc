@@ -68,7 +68,7 @@ public static partial class DotNetTasks
 		return configurator.Invoke(DotnetFormatVerifyNoChanges, DotNetLogger, degreeOfParallelism, completeOnFailure);
 	}
 
-	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> BasycFormatVerifyNoChangesAffected(GitCompareReport report)
+	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> BasycDotNetFormatVerifyNoChangesAffected(AffectedReport report)
 	{
 		if (report.CouldCompare is false)
 		{
@@ -95,7 +95,7 @@ public static partial class DotNetTasks
 				.SetProject(solutionFullPath)));
 	}
 
-	private static BatchedReport CreateBatchedReport(GitCompareReport report)
+	private static BatchedReport CreateBatchedReport(AffectedReport report)
 	{
 		var batches = new List<ReportBatch>();
 

@@ -18,14 +18,14 @@ public static partial class GitTasks
 	private const string projectExtension = ".csproj";
 
 	//ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
-	public static GitCompareReport GitGetCompareReport(string localGitFolder, string? oldBranchName = null)
+	public static AffectedReport GitGetAffectedReport(string localGitFolder, string? oldBranchName = null)
 	{
 		localGitFolder = localGitFolder.Replace("\\", "/");
 		if (oldBranchName == null)
 		{
 			if (TryGetBranchToCompareName(out oldBranchName) is false)
 			{
-				return new GitCompareReport(localGitFolder, false, Array.Empty<SolutionChangeReport>());
+				return new AffectedReport(localGitFolder, false, Array.Empty<SolutionChangeReport>());
 			}
 		}
 
@@ -180,13 +180,13 @@ public static partial class GitTasks
 						.ToArray()))
 				.ToArray();
 
-			var report = new GitCompareReport(localGitFolder, true, projectChanges);
+			var report = new AffectedReport(localGitFolder, true, projectChanges);
 			LogReport(report);
 			return report;
 		}
 	}
 
-	private static void LogReport(GitCompareReport report)
+	private static void LogReport(AffectedReport report)
 	{
 		Log.Information("Added or modified files:");
 		foreach (var solution in report.ChangedSolutions)

@@ -1,49 +1,54 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common;
-using Nuke.Common.CI.GitHubActions;
-using Serilog;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 
 namespace Basyc.Extensions.Nuke.Targets;
 public interface IBasycBuildCommonAffected : IBasycBuildBase
 {
-	double MinSequenceCoverage { get; }
-	double MinBranchCoverage { get; }
-	[GitCompareReport] GitCompareReport GitCompareReport => TryGetValue(() => GitCompareReport);
+	[AffectedReport] AffectedReport AffectedReport => TryGetValue(() => AffectedReport);
 
 	Target StaticCodeAnalysisAffected => _ => _
 	.Before(CompileAffected)
 	.Executes(() =>
 	{
-		Log.Information(GitHubActions.Instance.ServerUrl);
-		Log.Information(GitHubActions.Instance.Repository);
-		GitCompareReport.ThrowIfNotValid();
-		BasycFormatVerifyNoChangesAffected(GitCompareReport!);
+		AffectedReport.ThrowIfNotValid();
+		BasycDotNetFormatVerifyNoChangesAffected(AffectedReport!);
 	});
+
 	Target RestoreAffected => _ => _
 		.Before(CompileAffected)
 		.Executes(() =>
 		{
-			GitCompareReport.ThrowIfNotValid();
-			BasycRestoreAffected(GitCompareReport, UnitTestSuffix, BuildProjectName, Solution);
+			AffectedReport.ThrowIfNotValid();
+			BasycDotNetRestoreAffected(AffectedReport, UnitTestSuffix, BuildProjectName, Solution);
 		});
 
 	Target CompileAffected => _ => _
 		   .DependsOn(RestoreAffected)
 		   .Executes(() =>
 		   {
-			   GitCompareReport.ThrowIfNotValid();
-			   BasycBuildAffected(GitCompareReport, UnitTestSuffix, BuildProjectName, Solution);
+			   AffectedReport.ThrowIfNotValid();
+			   BasycDotNetBuildAffected(AffectedReport, UnitTestSuffix, BuildProjectName, Solution);
 		   });
 
-	//https://github.com/danielpalme/ReportGenerator
 	Target UnitTestAffected => _ => _
 		   .DependsOn(CompileAffected)
 		   .Executes(() =>
 		   {
-			   GitCompareReport.ThrowIfNotValid();
-			   var report = BasycUnitTestAffected(Solution, GitCompareReport, UnitTestSuffix);
-			   BasycAssertCovereage(report, MinSequenceCoverage, MinBranchCoverage);
+			   AffectedReport.ThrowIfNotValid();
+			   using var coverageReport = BasycUnitTestAffected(Solution, AffectedReport, UnitTestSuffix);
+			   string oldCoverageFile = (TestHistoryDirectory / "develop") + ".json";
+			   if (File.Exists(oldCoverageFile))
+			   {
+				   using var oldCoverage = BasycTestLoadFromFile(oldCoverageFile);
+				   BasycTestCreateSummaryConsole(coverageReport, MinSequenceCoverage, MinBranchCoverage, oldCoverage);
+			   }
+			   else
+			   {
+				   BasycTestCreateSummaryConsole(coverageReport, MinSequenceCoverage, MinBranchCoverage);
+			   }
+
+			   BasycTestAssertMinimum(coverageReport, MinSequenceCoverage, MinBranchCoverage);
 		   });
 }
 

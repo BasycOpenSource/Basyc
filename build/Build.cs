@@ -46,8 +46,8 @@ internal class Build : NukeBuild, IBasycBuilds
 	string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 	string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
 
-	double IBasycBuildCommonAffected.MinSequenceCoverage => 50;
-	double IBasycBuildCommonAffected.MinBranchCoverage => 50;
+	double IBasycBuildBase.MinSequenceCoverage => 50;
+	double IBasycBuildBase.MinBranchCoverage => 50;
 
 	public static int Main()
 	{

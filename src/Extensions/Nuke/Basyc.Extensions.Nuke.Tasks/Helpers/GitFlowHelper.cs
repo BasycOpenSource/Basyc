@@ -1,11 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿namespace Basyc.Extensions.Nuke.Tasks.Helpers;
 
-namespace Basyc.Extensions.Nuke.Tasks.Helpers;
-
-[ExcludeFromCodeCoverage]
 public static class GitFlowHelper
 {
-	public static bool IsPullRequestAllowed(string sourceBranch, string targetBranch, bool canSkipReleaseBranch)
+	public static bool IsPullRequestAllowed(string sourceBranch, string targetBranch, bool canSkipReleaseBranch = false)
 	{
 		sourceBranch = sourceBranch.ToLowerInvariant();
 		targetBranch = targetBranch.ToLowerInvariant();

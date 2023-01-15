@@ -10,6 +10,7 @@
 		<!--<NukeRootDirectory>..</NukeRootDirectory>-->
 		<!--<NukeScriptDirectory>..</NukeScriptDirectory>-->
 		<NukeTelemetryVersion>1</NukeTelemetryVersion>
+		<!--<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>-->
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -23,6 +24,10 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\src\Extensions\Nuke\Basyc.Extensions.Nuke.Targets\Basyc.Extensions.Nuke.Targets.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
 	</ItemGroup>
 
 </Project>

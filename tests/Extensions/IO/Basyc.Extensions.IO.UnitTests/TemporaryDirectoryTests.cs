@@ -6,7 +6,7 @@ public class TemporaryDirectoryTests : IDisposable
 	[Fact]
 	public void GetNewName_Should_GiveUniqueName()
 	{
-		string[] names = Enumerable.Range(0, 10).Select(x => TemporaryDirectory.GetNewName()).ToArray();
+		string[] names = Enumerable.Range(0, 10).Select(x => TemporaryDirectory.GetNewPath()).ToArray();
 		names.Should().OnlyHaveUniqueItems();
 	}
 
@@ -14,7 +14,7 @@ public class TemporaryDirectoryTests : IDisposable
 	public void GetNewName_Should_GiveUniqueName_With_Selected_FriendlyName()
 	{
 		string friendlyName = "friendlyname";
-		string[] names = Enumerable.Range(0, 10).Select(x => TemporaryDirectory.GetNewName(directoryNameStart: friendlyName)).ToArray();
+		string[] names = Enumerable.Range(0, 10).Select(x => TemporaryDirectory.GetNewPath(directoryNameStart: friendlyName)).ToArray();
 		names.Should().OnlyHaveUniqueItems();
 		names.Should().AllSatisfy(x => x.Should().Contain(friendlyName));
 	}

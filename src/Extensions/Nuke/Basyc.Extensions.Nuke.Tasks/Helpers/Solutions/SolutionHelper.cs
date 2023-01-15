@@ -56,7 +56,7 @@ public static class SolutionHelper
 		return new TemporarySolution(newSolution);
 	}
 
-	public static TemporarySolution GetAffectedAsSolution(GitCompareReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
+	public static TemporarySolution GetAffectedAsSolution(AffectedReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
 	{
 		var changedProjectsPaths = gitCompareReport.ChangedSolutions
 			.SelectMany(x => x.ChangedProjects)

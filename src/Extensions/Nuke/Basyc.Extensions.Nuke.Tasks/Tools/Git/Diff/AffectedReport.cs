@@ -3,7 +3,7 @@ using Serilog;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 
-public record GitCompareReport(string GitRepoLocalDirectory, bool CouldCompare, SolutionChangeReport[] ChangedSolutions)
+public record AffectedReport(string GitRepoLocalDirectory, bool CouldCompare, SolutionChangeReport[] ChangedSolutions)
 {
 	public HashSet<string> GetTestProjectsToRun(Solution solution, string testProjectNameSuffix)
 	{

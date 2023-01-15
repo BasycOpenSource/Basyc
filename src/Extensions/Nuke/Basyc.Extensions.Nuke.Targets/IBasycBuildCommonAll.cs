@@ -50,17 +50,34 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 	.After(StaticCodeAnalysisAll, RestoreAll)
 	.Executes(() =>
 	{
-		using var tempSolution = SolutionHelper.NewTempSolution(Solution, BuildProjectName);
+		using var solutionToBuild = SolutionHelper.NewTempSolution(Solution, BuildProjectName);
 		DotNetBuild(_ => _
-	   .EnableNoRestore()
-	   .SetProjectFile(tempSolution.Solution));
+			.EnableNoRestore()
+			.SetProjectFile(solutionToBuild.Solution));
 	});
 
 	Target UnitTestAll => _ => _
 	   .DependsOn(CompileAll)
 	   .Executes(() =>
 	   {
-		   BasycUnitTestAll(Solution, UnitTestSuffix);
+		   string oldCoverageFile = (TestHistoryDirectory / "develop") + ".json";
+		   using var coverageReport = BasycUnitTestAll(Solution, UnitTestSuffix);
+		   if (File.Exists(oldCoverageFile))
+		   {
+			   using var oldCoverage = BasycTestLoadFromFile(oldCoverageFile);
+			   BasycTestCreateSummaryConsole(coverageReport, MinSequenceCoverage, MinBranchCoverage, oldCoverage);
+		   }
+		   else
+		   {
+			   BasycTestCreateSummaryConsole(coverageReport, MinSequenceCoverage, MinBranchCoverage);
+		   }
+
+		   if (IsPullRequest)
+		   {
+			   BasycTestSaveToFile(coverageReport, oldCoverageFile);
+		   }
+
+		   BasycTestAssertMinimum(coverageReport, MinSequenceCoverage, MinBranchCoverage);
 	   });
 
 }

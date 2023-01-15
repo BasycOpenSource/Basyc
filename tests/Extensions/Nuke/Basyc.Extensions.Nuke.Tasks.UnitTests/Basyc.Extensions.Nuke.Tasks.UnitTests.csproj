@@ -23,6 +23,7 @@
 
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\..\src\Extensions\Nuke\Basyc.Extensions.Nuke.Tasks\Basyc.Extensions.Nuke.Tasks.csproj" />
 	  <ProjectReference Include="..\..\..\Basyc.Shared.UnitTests\Basyc.Shared.UnitTests.csproj" />
 	</ItemGroup>
 </Project>
