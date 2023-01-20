@@ -165,21 +165,20 @@ public static partial class DotNetTasks
 		return new CoverageSummary(summaryOutputDir.FullPath);
 	}
 
+	private const string goodText = "ok";
+	private const string oldGoodColor = "darkgreen";
+	private const string newGoodColor = "green1";
+	private const string badText = "bad";
+	private const string oldBadColor = "darkred_1";
+	private const string newBadColor = "red1";
 	public static void BasycTestCreateSummaryConsole(CoverageReport coverageReport, double minSequenceCoverage, double minBranchCoverage, CoverageReport? oldCoverageReport = null)
 	{
 
-		string goodText = "good";
-		string goodColor = "green1";
-		string badText = "bad";
-		string badColor = "red1";
-
 		var assemblyTable = new Table();
+		assemblyTable.AddColumn(new TableColumn("ok?").Centered());
 		assemblyTable.AddColumn("file");
-		assemblyTable.AddColumn(new TableColumn("branch old").RightAligned());
 		assemblyTable.AddColumn(new TableColumn("branch").RightAligned());
-		assemblyTable.AddColumn(new TableColumn("line old").RightAligned());
 		assemblyTable.AddColumn(new TableColumn("line").RightAligned());
-		assemblyTable.AddColumn(new TableColumn("status").LeftAligned());
 
 		foreach (var project in coverageReport.Projects)
 		{
@@ -187,100 +186,89 @@ public static partial class DotNetTasks
 			bool projectBranchBad = project.BranchCoverage < minBranchCoverage;
 			bool projectSequenceBad = project.SequenceCoverage < minSequenceCoverage;
 			bool projectIsBad = projectBranchBad || projectSequenceBad;
-			string projectColor = projectIsBad ? badColor : goodColor;
-			string projectBranchColor = projectBranchBad ? badColor : goodColor;
-			string projectSequenceColor = projectSequenceBad ? badColor : goodColor;
+			string projectColor = projectIsBad ? newBadColor : newGoodColor;
+			string projectBranchColor = projectBranchBad ? newBadColor : newGoodColor;
+			string projectSequenceColor = projectSequenceBad ? newBadColor : newGoodColor;
 			string projectstatusText = projectIsBad ? badText : goodText;
-			string projectNameTag = project.TestProjectFound ? "" : $"[{badColor}](test not found)[/]";
+			string projectNameTag = project.TestProjectFound ? "" : $"[{newBadColor}](test not found)[/]";
 
 			ProjectCoverageReport? oldProject = null;
-			var oldProjectbranchCoverageText = Markup.FromInterpolated($"");
-			var oldProjectCoverageText = Markup.FromInterpolated($"");
+			double? oldProjectBranchCoverage = null;
+			double? oldProjectSequenceCoverage = null;
 			if (oldCoverageReport is not null)
 			{
 				oldProject = oldCoverageReport.Projects.FirstOrDefault(x => x.Name == project.Name);
 				if (oldProject is not null)
 				{
-					bool oldProjectBranchBad = oldProject.BranchCoverage < minBranchCoverage;
-					bool oldProjectSequenceBad = oldProject.SequenceCoverage < minSequenceCoverage;
-					string oldProjectBranchColor = oldProjectBranchBad ? badColor : goodColor;
-					string oldProjectSequenceColor = oldProjectSequenceBad ? badColor : goodColor;
-					oldProjectbranchCoverageText = Markup.FromInterpolated($"[{oldProjectBranchColor}] {oldProject.BranchCoverage}%[/]");
-					oldProjectCoverageText = Markup.FromInterpolated($"[{oldProjectSequenceColor}]{oldProject.SequenceCoverage}%[/]");
+					oldProjectBranchCoverage = oldProject.BranchCoverage;
+					oldProjectSequenceCoverage = oldProject.SequenceCoverage;
 				}
 			}
 
-			var priojectNameText = new Markup($"[bold]{project.Name}.csproj[/] {projectNameTag}");
-			var projectBranchCoverageText = Markup.FromInterpolated($"[{projectBranchColor}] {project.BranchCoverage}%[/]");
-			var projectCoverageText = Markup.FromInterpolated($"[{projectSequenceColor}]{project.SequenceCoverage}%[/]");
+			var projectNameText = new Markup($"[bold]{project.Name}.csproj[/] {projectNameTag}");
+			var projectBranchCoverageText = GetPercetangeMarkup(project.BranchCoverage, oldProjectBranchCoverage, minBranchCoverage);
+			var projectSequenceCoverageText = GetPercetangeMarkup(project.SequenceCoverage, oldProjectSequenceCoverage, minSequenceCoverage);
 			var projectStatusMarkup = Markup.FromInterpolated($"[{projectColor} bold]{projectstatusText}[/]");
 
-			assemblyTable.AddRow(priojectNameText, oldProjectbranchCoverageText, projectBranchCoverageText, oldProjectCoverageText, projectCoverageText, projectStatusMarkup);
+			assemblyTable.AddRow(projectStatusMarkup, projectNameText, projectBranchCoverageText, projectSequenceCoverageText);
 
 			foreach (var @class in project.Classes)
 			{
 				bool classBranchBad = @class.BranchCoverage < minBranchCoverage;
 				bool classSequenceBad = @class.SequenceCoverage < minSequenceCoverage;
 				bool classIsBad = classBranchBad || classSequenceBad;
-				string classColor = classIsBad ? badColor : goodColor;
-				string classBranchColor = classBranchBad ? badColor : goodColor;
-				string classSequenceColor = classSequenceBad ? badColor : goodColor;
+				string classColor = classIsBad ? newBadColor : newGoodColor;
+				string classBranchColor = classBranchBad ? newBadColor : newGoodColor;
+				string classSequenceColor = classSequenceBad ? newBadColor : newGoodColor;
 				string classStatusText = classIsBad ? badText : goodText;
 
-				var oldClassBranchCoverageMarkup = Markup.FromInterpolated($"");
-				var oldClassCoverageMarkup = Markup.FromInterpolated($"");
 				ClassCoverageReport? oldClass = null;
+				double? oldClassBranchCoverage = null;
+				double? oldClassSequenceCoverage = null;
 				if (oldProject is not null)
 				{
-					oldClass = project.Classes.FirstOrDefault(x => x.Name == @class.Name);
+					oldClass = oldProject.Classes.FirstOrDefault(x => x.Name == @class.Name);
 					if (oldClass is not null)
 					{
-						bool oldClassBranchBad = oldClass.BranchCoverage < minBranchCoverage;
-						bool oldClassSequenceBad = oldClass.SequenceCoverage < minSequenceCoverage;
-						string oldClassBranchColor = oldClassBranchBad ? badColor : goodColor;
-						string oldClassSequenceColor = oldClassSequenceBad ? badColor : goodColor;
-						oldClassBranchCoverageMarkup = Markup.FromInterpolated($"[{oldClassBranchColor}] {oldClass.BranchCoverage}%[/]");
-						oldClassCoverageMarkup = Markup.FromInterpolated($"[{oldClassSequenceColor}]{oldClass.SequenceCoverage}%[/]");
+						oldClassBranchCoverage = oldClass.BranchCoverage;
+						oldClassSequenceCoverage = oldClass.SequenceCoverage;
 					}
 				}
 
 				var classNameText = Markup.FromInterpolated($"    [green]{@class.Name.Split('.').Last()}.cs[/]");
-				var branchCoverageText = Markup.FromInterpolated($"[{classBranchColor}]{@class.BranchCoverage}%[/]");
-				var coverageText = Markup.FromInterpolated($"[{classSequenceColor}]{@class.SequenceCoverage}%[/]");
+				var branchCoverageText = GetPercetangeMarkup(@class.BranchCoverage, oldClassBranchCoverage, minBranchCoverage);
+				var sequenceCoverageText = GetPercetangeMarkup(@class.SequenceCoverage, oldClassSequenceCoverage, minSequenceCoverage);
+
 				var classStatusMarkup = Markup.FromInterpolated($"[{classColor} bold]{classStatusText}[/]");
-				assemblyTable.AddRow(classNameText, oldClassBranchCoverageMarkup, branchCoverageText, oldClassCoverageMarkup, coverageText, classStatusMarkup);
+				assemblyTable.AddRow(classStatusMarkup, classNameText, branchCoverageText, sequenceCoverageText);
 
 				foreach (var method in @class.Methods)
 				{
 					bool methodBranchBad = method.BranchCoverage < minBranchCoverage;
 					bool methodSequenceBad = method.SequenceCoverage < minSequenceCoverage;
 					bool methodIsBad = methodBranchBad || methodSequenceBad;
-					string methodColor = methodIsBad ? badColor : goodColor;
-					string methodBranchColor = methodBranchBad ? badColor : goodColor;
-					string methodSequenceColor = methodSequenceBad ? badColor : goodColor;
+					string methodColor = methodIsBad ? newBadColor : newGoodColor;
+					string methodBranchColor = methodBranchBad ? newBadColor : newGoodColor;
+					string methodSequenceColor = methodSequenceBad ? newBadColor : newGoodColor;
 					string methodStatusText = methodIsBad ? badText : goodText;
 
-					var oldMethodBranchCoverageMarkup = Markup.FromInterpolated($"");
-					var oldMethodCoverageMarkup = Markup.FromInterpolated($"");
+					double? oldMethodBranchCoverage = null;
+					double? oldMethodSequenceCoverage = null;
 					if (oldClass is not null)
 					{
 						var oldMethod = oldClass.Methods.FirstOrDefault(x => x.Name == method.Name);
 						if (oldMethod is not null)
 						{
-							bool oldMethodBranchBad = oldMethod.BranchCoverage < minBranchCoverage;
-							bool oldMethodSequenceBad = oldMethod.SequenceCoverage < minSequenceCoverage;
-							string oldMethodBranchColor = oldMethodBranchBad ? badColor : goodColor;
-							string oldMethodSequenceColor = oldMethodSequenceBad ? badColor : goodColor;
-							oldMethodBranchCoverageMarkup = Markup.FromInterpolated($"[{oldMethodBranchColor}] {oldMethod.BranchCoverage}%[/]");
-							oldMethodCoverageMarkup = Markup.FromInterpolated($"[{oldMethodSequenceColor}]{oldMethod.SequenceCoverage}%[/]");
+							oldMethodBranchCoverage = oldMethod.BranchCoverage;
+							oldMethodSequenceCoverage = oldMethod.SequenceCoverage;
 						}
 					}
 
 					var methodNameMarkup = Markup.FromInterpolated($"      [magenta3_1]{method.Name.Split("::").Last()}[/]");
-					var methodbranchCoverageMarkup = Markup.FromInterpolated($"[{methodBranchColor}]{method.BranchCoverage}%[/]");
-					var methodcoverageMarkup = Markup.FromInterpolated($"[{methodSequenceColor}]{method.SequenceCoverage}%[/]");
+					var methodBranchCoverageMarkup = GetPercetangeMarkup(method.BranchCoverage, oldMethodBranchCoverage, minBranchCoverage);
+					var methodSequenceCoverageMarkup = GetPercetangeMarkup(method.SequenceCoverage, oldMethodSequenceCoverage, minSequenceCoverage);
 					var methodstatusMarkup = Markup.FromInterpolated($"[{methodColor} bold]{methodStatusText}[/]");
-					assemblyTable.AddRow(methodNameMarkup, oldMethodBranchCoverageMarkup, methodbranchCoverageMarkup, oldMethodCoverageMarkup, methodcoverageMarkup, methodstatusMarkup);
+					assemblyTable.AddRow(methodstatusMarkup, methodNameMarkup, methodBranchCoverageMarkup, methodSequenceCoverageMarkup);
 				}
 			}
 
@@ -292,7 +280,27 @@ public static partial class DotNetTasks
 		AnsiConsole.Write(assemblyTable);
 	}
 
-	public static void BasycTestSaveToFile(CoverageReport coverageReport, string path)
+	private static Markup GetPercetangeMarkup(double newPercentage, double? oldPercentage, double minimum)
+	{
+		newPercentage = Math.Round(newPercentage, 0);
+		if (oldPercentage.HasValue)
+			oldPercentage = Math.Round(oldPercentage.Value, 0);
+
+		bool valueBad = newPercentage < minimum;
+		string color = valueBad ? newBadColor : newGoodColor;
+
+		if (oldPercentage is null || newPercentage == oldPercentage)
+			return Markup.FromInterpolated($"[{color}]{newPercentage}%[/]");
+
+		bool valueIncreased = newPercentage >= oldPercentage;
+		double valueDiff = Math.Round(newPercentage - oldPercentage.Value, 0);
+		string valueDiffText = (valueDiff > 0 ? "+" : "") + valueDiff;
+		string changeColor = valueIncreased ? oldGoodColor : oldBadColor;
+
+		return Markup.FromInterpolated($"[{color}]{newPercentage}%[/]([{changeColor}]{valueDiffText}%[/])");
+	}
+
+	public static void BasycCoverageSaveToFile(CoverageReport coverageReport, string path)
 	{
 		var dto = CoverageReportJsonDto.ToDto(coverageReport);
 		string json = JsonSerializer.Serialize(dto);
@@ -301,7 +309,7 @@ public static partial class DotNetTasks
 		System.IO.File.WriteAllText(path, json);
 	}
 
-	public static CoverageReport BasycTestLoadFromFile(string path)
+	public static CoverageReport BasycCoverageLoadFromFile(string path)
 	{
 		string json = System.IO.File.ReadAllText(path);
 		var dto = JsonSerializer.Deserialize<CoverageReportJsonDto>(json)!;

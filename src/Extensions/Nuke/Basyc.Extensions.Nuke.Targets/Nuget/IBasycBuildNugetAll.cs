@@ -1,4 +1,4 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Helpers;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
 using Nuke.Common.IO;

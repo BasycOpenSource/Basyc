@@ -1,4 +1,5 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
+using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common;
 using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
 
@@ -37,10 +38,13 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 		   {
 			   AffectedReport.ThrowIfNotValid();
 			   using var coverageReport = BasycUnitTestAffected(Solution, AffectedReport, UnitTestSuffix);
-			   string oldCoverageFile = (TestHistoryDirectory / "develop") + ".json";
+
+			   string oldCoverageFile = (TestHistoryDirectory / GitFlowHelper.GetGitFlowSourceBranch(Repository.Branch).ToString()) + ".json";
 			   if (File.Exists(oldCoverageFile))
 			   {
-				   using var oldCoverage = BasycTestLoadFromFile(oldCoverageFile);
+				   string newCoverageFile = (TestHistoryDirectory / Repository.Branch.Replace('/', '-')) + ".json";
+				   using var oldCoverage = BasycCoverageLoadFromFile(oldCoverageFile);
+				   BasycCoverageSaveToFile(oldCoverage, newCoverageFile);
 				   BasycTestCreateSummaryConsole(coverageReport, MinSequenceCoverage, MinBranchCoverage, oldCoverage);
 			   }
 			   else

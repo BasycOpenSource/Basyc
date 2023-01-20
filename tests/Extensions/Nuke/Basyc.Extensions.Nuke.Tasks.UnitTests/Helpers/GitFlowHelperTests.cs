@@ -1,4 +1,4 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Helpers;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 
 namespace Basyc.Extensions.Nuke.Tasks.UnitTests.Helpers;
 public class GitFlowHelperTests

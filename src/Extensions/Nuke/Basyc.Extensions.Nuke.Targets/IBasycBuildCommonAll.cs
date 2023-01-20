@@ -1,4 +1,4 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Helpers;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
 using Nuke.Common.Git;
@@ -64,7 +64,7 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 		   using var coverageReport = BasycUnitTestAll(Solution, UnitTestSuffix);
 		   if (File.Exists(oldCoverageFile))
 		   {
-			   using var oldCoverage = BasycTestLoadFromFile(oldCoverageFile);
+			   using var oldCoverage = BasycCoverageLoadFromFile(oldCoverageFile);
 			   BasycTestCreateSummaryConsole(coverageReport, MinSequenceCoverage, MinBranchCoverage, oldCoverage);
 		   }
 		   else
@@ -74,7 +74,7 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 
 		   if (IsPullRequest)
 		   {
-			   BasycTestSaveToFile(coverageReport, oldCoverageFile);
+			   BasycCoverageSaveToFile(coverageReport, oldCoverageFile);
 		   }
 
 		   BasycTestAssertMinimum(coverageReport, MinSequenceCoverage, MinBranchCoverage);

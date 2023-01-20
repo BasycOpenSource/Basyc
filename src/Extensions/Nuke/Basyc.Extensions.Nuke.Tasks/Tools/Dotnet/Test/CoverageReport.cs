@@ -9,7 +9,6 @@ public record CoverageReport(
 {
 	public void Dispose()
 	{
-		//ProjectToCoverageFileMap.Values.ForEach(x => x.Dispose());
 		Directory.Dispose();
 	}
 }
