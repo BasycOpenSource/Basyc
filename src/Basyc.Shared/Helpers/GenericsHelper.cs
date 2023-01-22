@@ -81,7 +81,7 @@ public static class GenericsHelper
 		}
 		else
 		{
-			return new Type[0];
+			return Type.EmptyTypes;
 		}
 	}
 }

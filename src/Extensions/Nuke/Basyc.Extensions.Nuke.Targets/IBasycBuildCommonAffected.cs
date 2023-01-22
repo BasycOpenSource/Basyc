@@ -1,7 +1,7 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common;
-using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
+using static Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.DotNetTasks;
 
 namespace Basyc.Extensions.Nuke.Targets;
 
@@ -51,8 +51,10 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 					UnitTestSettings.BranchMinimum, oldCoverage);
 			}
 			else
+			{
 				BasycTestCreateSummaryConsole(coverageReport, UnitTestSettings.SequenceMinimum,
 					UnitTestSettings.BranchMinimum);
+			}
 
 			BasycTestAssertMinimum(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
 		});

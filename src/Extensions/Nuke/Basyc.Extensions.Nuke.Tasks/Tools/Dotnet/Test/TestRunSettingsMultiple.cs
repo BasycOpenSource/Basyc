@@ -2,9 +2,11 @@
 using Nuke.Common.Utilities.Collections;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
+
 public readonly struct TestRunSettingsMultiple : IDisposable
 {
-	private Dictionary<string, TemporaryFile> temporaryFiles { get; init; } = new();
+	private Dictionary<string, TemporaryFile> temporaryFiles { get; } = new();
+
 	public TestRunSettingsMultiple(IEnumerable<string> projectToTestNames)
 	{
 		foreach (string projectToTestName in projectToTestNames)
@@ -23,12 +25,13 @@ public readonly struct TestRunSettingsMultiple : IDisposable
 		return temporaryFiles[projectToTestFullPath];
 	}
 
+	//Example and more options here:
+	//https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md
 	private static TemporaryFile CreateRunSettings(params string[] projectToTestNames)
 	{
 		string includeParam = string.Join(",", projectToTestNames.Select(x => $"[{x}]*"));
-
 		string fileContent = $"""
-			<?xml version="1.0" encoding="utf-8" ?>
+		<?xml version="1.0" encoding="utf-8" ?>
 			<RunSettings>
 			  <DataCollectionRunSettings>
 			    <DataCollectors>
@@ -49,7 +52,7 @@ public readonly struct TestRunSettingsMultiple : IDisposable
 			    </DataCollectors>
 			  </DataCollectionRunSettings>
 			</RunSettings>
-			""";
+		""";
 
 		var settingFile = TemporaryFile.CreateNewWith("coverlet", "runsettings", fileContent);
 		return settingFile;

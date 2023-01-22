@@ -4,10 +4,11 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-namespace Basyc.Extensions.Nuke.Tasks;
+// ReSharper disable once CheckNamespace
+namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
+
 public static partial class DotNetTasks
 {
-
 	public static void BasycDotNetRestoreAffected(AffectedReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
 	{
 		using var solutionToUse = SolutionHelper.GetAffectedAsSolution(gitCompareReport, unitTestSuffix, buildProjectName, solution);

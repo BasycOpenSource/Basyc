@@ -4,15 +4,24 @@ using Palmmedia.ReportGenerator.Core;
 using Spectre.Console;
 using System.Text;
 
-namespace Basyc.Extensions.Nuke.Tasks;
+// ReSharper disable once CheckNamespace
+namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
+
 public static partial class DotNetTasks
 {
+	private const string goodText = "ok";
+	private const string oldGoodColor = "darkgreen";
+	private const string newGoodColor = "green1";
+	private const string badText = "bad";
+	private const string oldBadColor = "darkred_1";
+	private const string newBadColor = "red1";
+
 	public static CoverageSummary BasycTestCreateSummaryMarkdown(CoverageReport coverageReport)
 	{
 		string[] coverageFilePathPatterns = coverageReport.ProjectToCoverageFileMap.Select(x => x.Value.FullPath).ToArray();
 		var summaryOutputDir = TemporaryDirectory.CreateNew($"{nameof(BasycTestCreateSummaryMarkdown)}/CoverageSummary");
 		var historyDir = Directory.CreateDirectory(TemporaryDirectory.GetNewPath($"{nameof(BasycTestCreateSummaryMarkdown)}/CoverageHistory", false));
-		var summaryGenerator = new Palmmedia.ReportGenerator.Core.Generator();
+		var summaryGenerator = new Generator();
 		summaryGenerator.GenerateReport(new ReportConfiguration(
 			coverageFilePathPatterns,
 			summaryOutputDir.FullPath,
@@ -29,15 +38,9 @@ public static partial class DotNetTasks
 		return new CoverageSummary(summaryOutputDir.FullPath);
 	}
 
-	private const string goodText = "ok";
-	private const string oldGoodColor = "darkgreen";
-	private const string newGoodColor = "green1";
-	private const string badText = "bad";
-	private const string oldBadColor = "darkred_1";
-	private const string newBadColor = "red1";
-	public static void BasycTestCreateSummaryConsole(CoverageReport coverageReport, double minSequenceCoverage, double minBranchCoverage, CoverageReport? oldCoverageReport = null)
+	public static void BasycTestCreateSummaryConsole(CoverageReport coverageReport, double minSequenceCoverage, double minBranchCoverage,
+		CoverageReport? oldCoverageReport = null)
 	{
-
 		var assemblyTable = new Table();
 		assemblyTable.AddColumn(new TableColumn("ok?").Centered());
 		assemblyTable.AddColumn("file");
@@ -63,7 +66,8 @@ public static partial class DotNetTasks
 		AnsiConsole.Write(assemblyTable);
 	}
 
-	private static void PrintMethod(double minSequenceCoverage, double minBranchCoverage, Table assemblyTable, ClassCoverageReport? oldClass, MethodCoverageReport method)
+	private static void PrintMethod(double minSequenceCoverage, double minBranchCoverage, Table assemblyTable, ClassCoverageReport? oldClass,
+		MethodCoverageReport method)
 	{
 		bool methodBranchBad = method.BranchCoverage < minBranchCoverage;
 		bool methodSequenceBad = method.SequenceCoverage < minSequenceCoverage;
@@ -134,7 +138,8 @@ public static partial class DotNetTasks
 		return stringBuilder.ToString();
 	}
 
-	private static ProjectCoverageReport? PrintProject(double minSequenceCoverage, double minBranchCoverage, CoverageReport? oldCoverageReport, Table assemblyTable, ProjectCoverageReport project)
+	private static ProjectCoverageReport? PrintProject(double minSequenceCoverage, double minBranchCoverage, CoverageReport? oldCoverageReport,
+		Table assemblyTable, ProjectCoverageReport project)
 	{
 		bool projectBranchBad = project.BranchCoverage < minBranchCoverage;
 		bool projectSequenceBad = project.SequenceCoverage < minSequenceCoverage;
@@ -177,13 +182,19 @@ public static partial class DotNetTasks
 	{
 		string projectNameTag = "";
 		if (project.CoverageExcluded)
+		{
 			projectNameTag = "(excluded)";
+		}
 		else
+		{
 			projectNameTag = project.TestProjectFound ? "" : $"[{newBadColor}](tests missing)[/]";
+		}
+
 		return projectNameTag;
 	}
 
-	private static ClassCoverageReport? PrintClass(double minSequenceCoverage, double minBranchCoverage, Table assemblyTable, ProjectCoverageReport? oldProject, ClassCoverageReport @class)
+	private static ClassCoverageReport? PrintClass(double minSequenceCoverage, double minBranchCoverage, Table assemblyTable, ProjectCoverageReport? oldProject,
+		ClassCoverageReport @class)
 	{
 		bool classBranchBad = @class.BranchCoverage < minBranchCoverage;
 		bool classSequenceBad = @class.SequenceCoverage < minSequenceCoverage;
@@ -218,13 +229,17 @@ public static partial class DotNetTasks
 	{
 		newPercentage = Math.Round(newPercentage, 0);
 		if (oldPercentage.HasValue)
+		{
 			oldPercentage = Math.Round(oldPercentage.Value, 0);
+		}
 
 		bool valueBad = newPercentage < minimum;
 		string color = valueBad ? newBadColor : newGoodColor;
 
 		if (oldPercentage is null || newPercentage == oldPercentage)
+		{
 			return Markup.FromInterpolated($"[{color}]{newPercentage}%[/]");
+		}
 
 		bool valueIncreased = newPercentage >= oldPercentage;
 		double valueDiff = Math.Round(newPercentage - oldPercentage.Value, 0);
@@ -234,4 +249,3 @@ public static partial class DotNetTasks
 		return Markup.FromInterpolated($"([{changeColor}]{valueDiffText}%[/]) [{color}]{newPercentage,4}%[/]");
 	}
 }
-

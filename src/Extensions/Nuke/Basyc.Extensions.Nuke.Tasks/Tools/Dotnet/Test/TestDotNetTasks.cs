@@ -9,19 +9,22 @@ using Nuke.Common.Tools.Coverlet;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
-using Spectre.Console;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Xml.Serialization;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using File = System.IO.File;
 
-namespace Basyc.Extensions.Nuke.Tasks;
+// ReSharper disable CheckNamespace
+namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
+
 public static partial class DotNetTasks
 {
 	private static readonly XmlSerializer xmlSerializer = new(typeof(CoverageSession));
 
-	public static CoverageReport BasycUnitTestAffected(Solution solution, AffectedReport gitCompareReport, string testProjectSuffix, UnitTestSettings projectTestException)
+	public static CoverageReport BasycUnitTestAffected(Solution solution, AffectedReport gitCompareReport, string testProjectSuffix,
+		UnitTestSettings projectTestException)
 	{
 		var projectsToTestPaths = gitCompareReport.ChangedSolutions
 			.SelectMany(x => x.ChangedProjects)
@@ -64,19 +67,28 @@ public static partial class DotNetTasks
 		report.Projects.ForEach(projectReport =>
 		{
 			if (projectReport.CoverageExcluded)
+			{
 				return;
+			}
+
 			if (projectReport.SequenceCoverage >= minSequenceCoverage && projectReport.BranchCoverage >= minBranchCoverage)
+			{
 				return;
+			}
 
 			classErrorStringBuilder.AppendLine($"Project '{projectReport.Name}'");
 			projectReport.Classes.ForEach(classReport =>
 			{
 				var classErrors = new List<string>();
 				if (classReport.SequenceCoverage < minSequenceCoverage)
+				{
 					classErrors.Add($"Sequence coverage {classReport.SequenceCoverage}% should be {minSequenceCoverage}%");
+				}
 
 				if (classReport.BranchCoverage < minBranchCoverage)
+				{
 					classErrors.Add($"Branch coverage {classReport.BranchCoverage}% should be {minBranchCoverage}%");
+				}
 
 				if (classErrors.Any())
 				{
@@ -90,17 +102,23 @@ public static partial class DotNetTasks
 				}
 
 				if (classReport.Methods.Any())
+				{
 					classErrorStringBuilder.AppendLine();
+				}
 
 				classReport.Methods.ForEach(method =>
 				{
 					var methodErrors = new List<string>();
 
 					if (method.SequenceCoverage < minSequenceCoverage)
+					{
 						methodErrors.Add($"Sequence coverage {method.SequenceCoverage}% should be {minSequenceCoverage}%.");
+					}
 
 					if (method.BranchCoverage < minBranchCoverage)
+					{
 						methodErrors.Add($"Branch coverage {method.BranchCoverage}% should be {minBranchCoverage}%.");
+					}
 
 					if (methodErrors.Any())
 					{
@@ -125,7 +143,9 @@ public static partial class DotNetTasks
 		});
 
 		if (errors.Any())
+		{
 			throw new Exception("Some projects do not meet coverage minimum.");
+		}
 	}
 
 	public static void BasycCoverageSaveToFile(CoverageReport coverageReport, string path)
@@ -133,19 +153,20 @@ public static partial class DotNetTasks
 		var dto = CoverageReportJsonDto.ToDto(coverageReport);
 		string json = JsonSerializer.Serialize(dto);
 		Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-		global::System.IO.File.CreateText(path).Dispose();
-		global::System.IO.File.WriteAllText(path, json);
+		File.CreateText(path).Dispose();
+		File.WriteAllText(path, json);
 	}
 
 	public static CoverageReport BasycCoverageLoadFromFile(string path)
 	{
-		string json = global::System.IO.File.ReadAllText(path);
+		string json = File.ReadAllText(path);
 		var dto = JsonSerializer.Deserialize<CoverageReportJsonDto>(json)!;
 		var report = CoverageReportJsonDto.ToReport(dto);
 		return report;
 	}
 
-	private static CoverageReport UnitTest(Solution solution, IEnumerable<string> projectToTestPaths, string testProjectSuffix, UnitTestSettings testExceptions)
+	private static CoverageReport UnitTest(Solution solution, IEnumerable<string> projectToTestPaths, string testProjectSuffix,
+		UnitTestSettings testExceptions)
 	{
 		var inProgressReport = new InProgressReport();
 		inProgressReport.AddRange(solution, projectToTestPaths, testProjectSuffix, testExceptions);
@@ -155,14 +176,14 @@ public static partial class DotNetTasks
 
 		var projectResultDirectory = TemporaryDirectory.CreateNew($"{nameof(UnitTest)}/Projects");
 		DotNetTest(_ => _
-			.EnableNoRestore()
-			.EnableNoBuild()
-			.EnableCollectCoverage()
-			.CombineWith(projectReports, (settings, projectReport) => settings
-				.SetSettingsFile(testRunSettings.GetForProject(projectReport.ProjectToTestName).FullPath)
-				.SetResultsDirectory(projectResultDirectory.FullPath + "/" + projectReport.ProjectToTestName)
-				.SetProjectFile(projectReport.TestProjectPath)),
-			degreeOfParallelism: 5);
+				.EnableNoRestore()
+				.EnableNoBuild()
+				.EnableCollectCoverage()
+				.CombineWith(projectReports, (settings, projectReport) => settings
+					.SetSettingsFile(testRunSettings.GetForProject(projectReport.ProjectToTestName).FullPath)
+					.SetResultsDirectory(projectResultDirectory.FullPath + "/" + projectReport.ProjectToTestName)
+					.SetProjectFile(projectReport.TestProjectPath)),
+			5);
 
 		Dictionary<string, TemporaryFile> projectToCoverageFileMap = new();
 		foreach (var testProjectReport in projectReports)
@@ -172,7 +193,7 @@ public static partial class DotNetTasks
 
 			string openCoverResultsFilePath = Path.Combine(uniqueNameDir.FullName, "coverage.opencover.xml");
 			projectToCoverageFileMap.Add(testProjectReport.ProjectToTestName, TemporaryFile.CreateFromExisting(openCoverResultsFilePath));
-			using var outputFileStream = global::System.IO.File.OpenRead(openCoverResultsFilePath);
+			using var outputFileStream = File.OpenRead(openCoverResultsFilePath);
 			var openCoverCoverageSession = (CoverageSession)xmlSerializer.Deserialize(outputFileStream)!;
 			var openCoverReport = openCoverCoverageSession.Modules.Module
 				.Select(ParseOpencoverModule)
@@ -183,7 +204,8 @@ public static partial class DotNetTasks
 				//When parsing a open cover file returns 0 modules.
 				//It means that there are 0 tests inside the test project
 				//that is testing project to test.
-				inProgressReport.Complete(testProjectReport.ProjectToTestName, new ProjectCoverageReport(testProjectReport.ProjectToTestName, true, false, 0, 0, Array.Empty<ClassCoverageReport>()));
+				inProgressReport.Complete(testProjectReport.ProjectToTestName,
+					new ProjectCoverageReport(testProjectReport.ProjectToTestName, true, false, 0, 0, Array.Empty<ClassCoverageReport>()));
 			}
 			else
 			{
@@ -195,7 +217,6 @@ public static partial class DotNetTasks
 		//dotnet test /p:CollectCoverage=true /p:MergeWith='/path/to/result.json'
 		var projectCoverageReports = inProgressReport.GetAllReports().Select(x => x.Report!).ToArray();
 		return new CoverageReport(projectResultDirectory, projectCoverageReports, projectToCoverageFileMap);
-
 	}
 
 	private static void LogTestReport(InProgressReport inProgressReport)
@@ -204,25 +225,25 @@ public static partial class DotNetTasks
 		var projectReports = inProgressReport.GetAllReports();
 		foreach (var projectReport in projectReports)
 		{
-			Log.Debug($"		Assembly: {projectReport.ProjectToTestName} BranchCoverage: {projectReport!.Report!.BranchCoverage}% SequenceCoverage: {projectReport.Report.SequenceCoverage}% TestFound: {projectReport!.Report!.TestProjectFound} Excluded: {projectReport!.Report.CoverageExcluded}");
+			Log.Debug(
+				$"		Assembly: {projectReport.ProjectToTestName} BranchCoverage: {projectReport!.Report!.BranchCoverage}% SequenceCoverage: {projectReport.Report.SequenceCoverage}% TestFound: {projectReport!.Report!.TestProjectFound} Excluded: {projectReport!.Report.CoverageExcluded}");
 
 			foreach (var classReport in projectReport.Report.Classes)
 			{
 				Log.Debug($"			Class: {classReport.Name} BranchCoverage: {classReport.BranchCoverage}% SequenceCoverage: {classReport.SequenceCoverage}%");
 				foreach (var methodReport in classReport.Methods)
 				{
-					Log.Debug($"				Method: {classReport.Name} BranchCoverage: {methodReport.BranchCoverage}% SequenceCoverage: {methodReport.SequenceCoverage}%");
+					Log.Debug(
+						$"				Method: {classReport.Name} BranchCoverage: {methodReport.BranchCoverage}% SequenceCoverage: {methodReport.SequenceCoverage}%");
 				}
 			}
 		}
 	}
 
-	//Example and more options here:
-	//https://github.com/coverlet-coverage/coverlet/blob/master/Documentation/VSTestIntegration.md
-
 	private static string GetTestedProjectName(string testProjectPath, string unitTestProjectNameSuffix)
 	{
-		var sourceProjectName = Path.GetFileNameWithoutExtension(testProjectPath).AsSpan().Slice(0, testProjectPath.Length - unitTestProjectNameSuffix.Length);
+		var sourceProjectName = Path.GetFileNameWithoutExtension(testProjectPath).AsSpan()
+			.Slice(0, testProjectPath.Length - unitTestProjectNameSuffix.Length);
 		return $"{sourceProjectName}";
 	}
 
@@ -242,31 +263,32 @@ public static partial class DotNetTasks
 
 	private static ProjectCoverageReport ParseOpencoverModule(Module module)
 	{
-		double projectBranchCoverage = (double)Math.Round(module.Classes.Class
+		double projectBranchCoverage = Math.Round(module.Classes.Class
 			.Select(x => double.Parse(x.Summary.BranchCoverage, CultureInfo.InvariantCulture.NumberFormat))
 			.Average());
-		double projectSequenceCoverage = (double)Math.Round(module.Classes.Class
+		double projectSequenceCoverage = Math.Round(module.Classes.Class
 			.Select(x => double.Parse(x.Summary.SequenceCoverage, CultureInfo.InvariantCulture.NumberFormat))
 			.Average());
 
 		return new ProjectCoverageReport(
-				module.ModuleName,
-				true,
-				false,
-				 projectBranchCoverage,
-				 projectSequenceCoverage,
-				 module.Classes.Class
-				 .Select(classDto =>
-				 {
-					 string className = Path.GetFileNameWithoutExtension(classDto.FullName + ".cs");
-					 double branchCoverage = ParseDouble(classDto.Summary.BranchCoverage);
-					 double sequenceCoverage = ParseDouble(classDto.Summary.SequenceCoverage);
+			module.ModuleName,
+			true,
+			false,
+			projectBranchCoverage,
+			projectSequenceCoverage,
+			module.Classes.Class
+				.Select(classDto =>
+				{
+					string className = Path.GetFileNameWithoutExtension(classDto.FullName + ".cs");
+					double branchCoverage = ParseDouble(classDto.Summary.BranchCoverage);
+					double sequenceCoverage = ParseDouble(classDto.Summary.SequenceCoverage);
 
-					 return new ClassCoverageReport(className, branchCoverage, sequenceCoverage, classDto.Methods.Method
-						 .Select(methodDto => new MethodCoverageReport(methodDto.Name, ParseDouble(methodDto.BranchCoverage), ParseDouble(methodDto.SequenceCoverage)))
-						 .ToArray());
-				 })
-				 .ToArray());
+					return new ClassCoverageReport(className, branchCoverage, sequenceCoverage, classDto.Methods.Method
+						.Select(methodDto =>
+							new MethodCoverageReport(methodDto.Name, ParseDouble(methodDto.BranchCoverage), ParseDouble(methodDto.SequenceCoverage)))
+						.ToArray());
+				})
+				.ToArray());
 	}
 
 	private static double ParseDouble(string nubmer)
@@ -274,4 +296,3 @@ public static partial class DotNetTasks
 		return double.Parse(nubmer, CultureInfo.InvariantCulture.NumberFormat);
 	}
 }
-

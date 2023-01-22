@@ -1,5 +1,4 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
-using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
+﻿using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
 using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common.Tooling;
 using Serilog;
@@ -7,26 +6,23 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-namespace Basyc.Extensions.Nuke.Tasks;
+// ReSharper disable CheckNamespace
+namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
 
 public static partial class DotNetTasks
 {
-	private record BatchedReport(ReportBatch[] Batches);
-	private record ReportBatch(string SolutionPath, string[] FilesToInclude);
-
-	private static bool DotnetFormatVerifyNoChanges(string workingDirectory, string projectOrSolutionPath, IEnumerable<string> filesTocheck, [NotNullWhen(false)] out AggregatedDotnetFormatReport? aggregatedReport, out ProcessException? processException)
+	private static bool DotnetFormatVerifyNoChanges(string workingDirectory, string projectOrSolutionPath, IEnumerable<string> filesTocheck,
+		[NotNullWhen(false)] out AggregatedDotnetFormatReport? aggregatedReport, out ProcessException? processException)
 	{
 		bool isFormated = DotnetWrapper.FormatVerifyNoChanges(workingDirectory, projectOrSolutionPath, filesTocheck, out var report, out processException);
 		if (isFormated)
 		{
-			Log.Information($"Files formatted correctly");
+			Log.Information("Files formatted correctly");
 			aggregatedReport = null;
 			return true;
 		}
-		else
-		{
-			Log.Information($"Not formatted file(s) found");
-		}
+
+		Log.Information("Not formatted file(s) found");
 
 		bool isSolution = projectOrSolutionPath.EndsWith(".sln");
 
@@ -46,10 +42,10 @@ public static partial class DotNetTasks
 	public static IReadOnlyCollection<Output> DotnetFormatVerifyNoChanges(DotNetFormatSettings? toolSettings = null)
 	{
 		toolSettings ??= new DotNetFormatSettings();
-		bool isFormated = DotnetFormatVerifyNoChanges(toolSettings.ProcessWorkingDirectory, toolSettings!.Project!, toolSettings.Include, out var report, out var processException);
+		bool isFormated = DotnetFormatVerifyNoChanges(toolSettings.ProcessWorkingDirectory, toolSettings!.Project!, toolSettings.Include, out var report,
+			out var processException);
 		if (isFormated is false)
 		{
-
 			string[] outputMessages = CreateOutputMessages(toolSettings.Project!, report!);
 			ProcessExceptionHelper.Throw(processException!, outputMessages);
 		}
@@ -60,15 +56,16 @@ public static partial class DotNetTasks
 	public static IReadOnlyCollection<Output> DotnetFormatVerifyNoChanges(Configure<DotNetFormatSettings> configurator)
 	{
 		return DotnetFormatVerifyNoChanges(configurator(new DotNetFormatSettings()));
-
 	}
 
-	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> DotnetFormatVerifyNoChanges(CombinatorialConfigure<DotNetFormatSettings> configurator, int degreeOfParallelism = 1, bool completeOnFailure = false)
+	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> DotnetFormatVerifyNoChanges(
+		CombinatorialConfigure<DotNetFormatSettings> configurator, int degreeOfParallelism = 1, bool completeOnFailure = false)
 	{
 		return configurator.Invoke(DotnetFormatVerifyNoChanges, DotNetLogger, degreeOfParallelism, completeOnFailure);
 	}
 
-	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> BasycDotNetFormatVerifyNoChangesAffected(AffectedReport report)
+	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> BasycDotNetFormatVerifyNoChangesAffected(
+		AffectedReport report)
 	{
 		if (report.CouldCompare is false)
 		{
@@ -78,14 +75,15 @@ public static partial class DotNetTasks
 		var batchedReport = CreateBatchedReport(report);
 
 		int totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Count();
-		Log.Information($"Solutions to check: {report.ChangedSolutions.Length}, projects to check: {report.ChangedSolutions.Select(x => x.ChangedProjects.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
+		Log.Information(
+			$"Solutions to check: {report.ChangedSolutions.Length}, projects to check: {report.ChangedSolutions.Select(x => x.ChangedProjects.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
 
 		return DotnetFormatVerifyNoChanges(_ => _
-			.SetProcessWorkingDirectory(report.GitRepoLocalDirectory)
-			.CombineWith(batchedReport.Batches, (_, batch) => _
+				.SetProcessWorkingDirectory(report.GitRepoLocalDirectory)
+				.CombineWith(batchedReport.Batches, (_, batch) => _
 					.SetProject(batch.SolutionPath)
-						  .AddInclude(batch.FilesToInclude)),
-						  completeOnFailure: true);
+					.AddInclude(batch.FilesToInclude)),
+			completeOnFailure: true);
 	}
 
 	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> BasycFormatVerifyNoChanges(params string[] solutionsFullPath)
@@ -138,4 +136,8 @@ public static partial class DotNetTasks
 
 		return errorMessages.ToArray();
 	}
+
+	private record BatchedReport(ReportBatch[] Batches);
+
+	private record ReportBatch(string SolutionPath, string[] FilesToInclude);
 }
