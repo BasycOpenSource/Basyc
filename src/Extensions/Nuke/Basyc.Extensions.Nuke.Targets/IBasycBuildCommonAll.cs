@@ -60,16 +60,17 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 	   .DependsOn(CompileAll)
 	   .Executes(() =>
 	   {
-		   string oldCoverageFile = (TestHistoryDirectory / "develop") + ".json";
-		   using var coverageReport = BasycUnitTestAll(Solution, UnitTestSuffix);
+		   string oldCoverageFile = (TestHistoryDirectory / GitFlowHelper.GetGitFlowSourceBranch(Repository.Branch).ToString()) + ".json";
+		   using var coverageReport = BasycUnitTestAll(Solution, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
 		   if (File.Exists(oldCoverageFile))
 		   {
+			   string newCoverageFile = (TestHistoryDirectory / Repository.Branch.Replace('/', '-')) + ".json";
 			   using var oldCoverage = BasycCoverageLoadFromFile(oldCoverageFile);
-			   BasycTestCreateSummaryConsole(coverageReport, MinSequenceCoverage, MinBranchCoverage, oldCoverage);
+			   BasycTestCreateSummaryConsole(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum, oldCoverage);
 		   }
 		   else
 		   {
-			   BasycTestCreateSummaryConsole(coverageReport, MinSequenceCoverage, MinBranchCoverage);
+			   BasycTestCreateSummaryConsole(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
 		   }
 
 		   if (IsPullRequest)
@@ -77,7 +78,7 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 			   BasycCoverageSaveToFile(coverageReport, oldCoverageFile);
 		   }
 
-		   BasycTestAssertMinimum(coverageReport, MinSequenceCoverage, MinBranchCoverage);
+		   BasycTestAssertMinimum(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
 	   });
 
 }

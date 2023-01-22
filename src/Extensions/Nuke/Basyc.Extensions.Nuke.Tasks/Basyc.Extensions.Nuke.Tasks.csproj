@@ -19,6 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\Basyc.Extensions.System\Basyc.Extensions.System.csproj" />
 	  <ProjectReference Include="..\..\IO\Basyc.Extensions.IO\Basyc.Extensions.IO.csproj" />
 	</ItemGroup>
 

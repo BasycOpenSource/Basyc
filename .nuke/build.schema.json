@@ -6,7 +6,7 @@
     "build": {
       "type": "object",
       "properties": {
-        "Configuration": {
+        "configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
           "enum": [

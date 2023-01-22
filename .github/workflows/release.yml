@@ -5,11 +5,11 @@
 #
 #     - To turn off auto-generation set:
 #
-#         [GitHubActions (AutoGenerate = false)]
+#         [BasycReleasePipeline (AutoGenerate = false)]
 #
 #     - To trigger manual generation invoke:
 #
-#         nuke --generate-configuration GitHubActions_release --host GitHubActions
+#         nuke --generate-configuration GitHubActions_BasycReleasePipeline --host GitHubActions
 #
 # </auto-generated>
 # ------------------------------------------------------------------------------

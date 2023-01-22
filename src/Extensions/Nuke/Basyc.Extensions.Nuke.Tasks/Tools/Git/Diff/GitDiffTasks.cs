@@ -188,21 +188,21 @@ public static partial class GitTasks
 
 	private static void LogReport(AffectedReport report)
 	{
-		Log.Information("Added or modified files:");
+		Log.Debug("Added or modified files:");
 		foreach (var solution in report.ChangedSolutions)
 		{
-			Log.Information($"  Solution: {solution.SolutionFullPath}");
+			Log.Debug($"  Solution: {solution.SolutionFullPath}");
 			foreach (var solutionItem in solution.SolutionItemsChanges)
 			{
-				Log.Information($"    Solution item: {solutionItem.FullPath}");
+				Log.Debug($"    Solution item: {solutionItem.FullPath}");
 			}
 
 			foreach (var project in solution.ChangedProjects)
 			{
-				Log.Information($"    Project: {project.ProjectFullPath}");
+				Log.Debug($"    Project: {project.ProjectFullPath}");
 				foreach (var file in project.FileChanges)
 				{
-					Log.Information($"      File: {file.FullPath}");
+					Log.Debug($"      File: {file.FullPath}");
 				}
 			}
 		}
@@ -225,10 +225,9 @@ public static partial class GitTasks
 		string? directoryToSkip;
 		var gitRelativePathSpan = gitRelativePath.AsSpan();
 		int lastPathSeparator = gitRelativePathSpan.LastIndexOf('/');
+
 		if (lastPathSeparator is -1)
-		{
 			return gitRoot;
-		}
 
 		directoryToSkip = gitRelativePathSpan[..lastPathSeparator].ToString();
 		return directoryToSkip;
@@ -290,28 +289,20 @@ public static partial class GitTasks
 	private static bool IsFile(string path)
 	{
 		if (File.Exists(path))
-		{
 			return true;
-		}
 		else
 		{
 			if (Directory.Exists(path))
-			{
 				return false;
-			}
 			else
-			{
 				throw new ArgumentException($"Path '{path}' does not exists or is not valid file or directory path", nameof(path));
-			}
 		}
 	}
 
 	private static string GetSolution(string fullPath)
 	{
 		if (TryGetSolution(fullPath, out string? solutionFullPath) is false)
-		{
 			throw new Exception($"Soltion for file '{fullPath}' not found");
-		}
 
 		return solutionFullPath!;
 	}

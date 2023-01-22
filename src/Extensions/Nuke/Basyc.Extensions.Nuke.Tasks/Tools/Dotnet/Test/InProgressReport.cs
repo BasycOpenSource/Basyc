@@ -35,18 +35,22 @@ public class InProgressReport
 		}
 	}
 
-	public void AddRange(IEnumerable<(string projectToTestName, string? testProjectPath, bool testProjectFound, bool shouldBeExcluded)> items)
+	public void AddRange(IEnumerable<(string projectToTestName, string? testProjectPath, bool testProjectFound, bool shouldBeExcluded)> items, UnitTestSettings testExceptions)
 	{
-		items.ForEach(x => Add(x.projectToTestName, x.testProjectPath, x.testProjectFound, x.shouldBeExcluded));
+		items.ForEach(x =>
+		{
+			Add(x.projectToTestName, x.testProjectPath, x.testProjectFound, x.shouldBeExcluded);
+		});
 	}
 
-	public void AddRange(Solution solution, IEnumerable<string> sourceProjectsPaths, string testProjectSuffix = ".UnitTests")
+	public void AddRange(Solution solution, IEnumerable<string> sourceProjectsPaths, string testProjectSuffix, UnitTestSettings testExceptions)
 	{
 		AddRange(sourceProjectsPaths.Select(projectToTestPath =>
 		{
 			var projectToTest = solution.GetProject(projectToTestPath.NormalizeForCurrentOs());
 			var projectToTestAttributes = projectToTest.GetItems("AssemblyAttribute");
-			bool excluded = projectToTestAttributes.Contains("System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute");
+			bool excluded = projectToTestAttributes.Contains("System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute")
+								|| testExceptions.ProjectExceptions.Any(y => y.Path == projectToTestPath);
 
 			string projectName = Path.GetFileNameWithoutExtension(projectToTestPath);
 			string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
@@ -57,10 +61,11 @@ public class InProgressReport
 			}
 
 			return (projectName, testProject.Path.ToString(), true, excluded);
-		})!);
+		})!,
+		testExceptions);
 	}
 
-	public void AddSolution(Solution solution, string testProjectSuffix = ".UnitTests")
+	public void AddSolution(Solution solution, string testProjectSuffix, UnitTestSettings testExceptions)
 	{
 		string[] sourceProjectsPaths = solution.AllProjects
 			.Where(x => x.Name.EndsWith(testProjectSuffix) is false)
@@ -82,7 +87,8 @@ public class InProgressReport
 			}
 
 			return (projectName, testProject.Path.ToString(), true, excluded);
-		})!);
+		})!,
+		testExceptions);
 	}
 
 	public InProgressProjectReport[] GetAllReports()

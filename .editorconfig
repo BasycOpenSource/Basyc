@@ -107,9 +107,9 @@ csharp_preferred_modifier_order = public,private,protected,internal,file,static,
 csharp_style_prefer_readonly_struct = true:suggestion
 
 # Code-block preferences
-csharp_prefer_braces = false:error
-csharp_prefer_simple_using_statement = true:error
-csharp_style_namespace_declarations = file_scoped:error
+csharp_prefer_braces = true:suggestion
+csharp_prefer_simple_using_statement = true:suggestion
+csharp_style_namespace_declarations = block_scoped:silent
 csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 
@@ -120,7 +120,7 @@ csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
 csharp_style_inlined_variable_declaration = true:error
 csharp_style_prefer_index_operator = false:silent
 csharp_style_prefer_local_over_anonymous_function = true:suggestion
-csharp_style_prefer_null_check_over_type_check = true:error
+csharp_style_prefer_null_check_over_type_check = true:suggestion
 csharp_style_prefer_range_operator = false:silent
 csharp_style_prefer_tuple_swap = true:suggestion
 csharp_style_prefer_utf8_string_literals = true:suggestion
@@ -129,11 +129,11 @@ csharp_style_unused_value_assignment_preference = unused_local_variable:disabled
 csharp_style_unused_value_expression_statement_preference = unused_local_variable:disabled
 
 # 'using' directive preferences
-csharp_using_directive_placement = outside_namespace:error
+csharp_using_directive_placement = outside_namespace:silent
 
 # New line preferences
 csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = true:silent
-csharp_style_allow_blank_lines_between_consecutive_braces_experimental = false:error
+csharp_style_allow_blank_lines_between_consecutive_braces_experimental = true:silent
 csharp_style_allow_embedded_statements_on_same_line_experimental = true:silent
 
 #### C# Formatting Rules ####
@@ -227,20 +227,20 @@ dotnet_naming_style.begins_with_i.capitalization = pascal_case
 
 [*.{cs,vb}]
 dotnet_style_prefer_simplified_interpolation = true:suggestion
-dotnet_style_coalesce_expression = false:silent
+dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion
-dotnet_style_prefer_is_null_check_over_reference_equality_method = true:error
-dotnet_style_prefer_auto_properties = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
+dotnet_style_prefer_auto_properties = true:silent
 dotnet_style_object_initializer = true:suggestion
 dotnet_style_collection_initializer = true:suggestion
 dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
-dotnet_style_prefer_conditional_expression_over_assignment = false:silent
-dotnet_style_prefer_conditional_expression_over_return = false:silent
-dotnet_style_explicit_tuple_names = true:error
-dotnet_style_prefer_inferred_tuple_names = true:error
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = true:silent
+dotnet_style_explicit_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
 dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
 dotnet_style_prefer_compound_assignment = true:suggestion
-dotnet_style_namespace_match_folder = false:silent
+dotnet_style_namespace_match_folder = true:suggestion
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
