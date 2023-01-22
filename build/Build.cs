@@ -42,6 +42,7 @@ internal class Build : NukeBuild, IBasycBuilds
 
 	public static int Main()
 	{
+		//comment1
 		return Execute<Build>(x => ((IBasycBuilds)x).UnitTestAffected);
 	}
 }
