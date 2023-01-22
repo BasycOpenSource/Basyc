@@ -7,7 +7,7 @@ public abstract class ConverterBase<TSource, TTarget> : IConverter<TSource, TTar
 	public List<TSource> ToSources(IEnumerable<TTarget> targets)
 	{
 		List<TSource> sources = new();
-		foreach (TTarget? target in targets) 
+		foreach (TTarget? target in targets)
 			sources.Add(ToSource(target));
 
 		return sources;
