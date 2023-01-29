@@ -18,7 +18,7 @@ public class CoverageReportJsonDto
 
 	public static CoverageReport ToReport(CoverageReportJsonDto dto)
 	{
-		return new CoverageReport(TemporaryDirectory.CreateNew(), dto.Projects, null);
+		return new CoverageReport(TemporaryDirectory.CreateNew(), dto.Projects);
 	}
 }
 

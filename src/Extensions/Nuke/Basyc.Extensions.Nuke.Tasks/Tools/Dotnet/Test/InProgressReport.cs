@@ -50,8 +50,8 @@ public class InProgressReport
 			{
 				var projectToTest = solution.GetProject(projectToTestPath.NormalizeForCurrentOs());
 				var projectToTestAttributes = projectToTest.GetItems("AssemblyAttribute");
-				bool excluded = projectToTestAttributes.Contains("System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute")
-				                || testExceptions.ProjectExceptions.Any(y => y.Path == projectToTestPath);
+				bool excluded = projectToTestAttributes.Contains("System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute") ||
+								testExceptions.ProjectExceptions.Any(y => y.Path == projectToTestPath);
 
 				string projectName = Path.GetFileNameWithoutExtension(projectToTestPath);
 				string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;

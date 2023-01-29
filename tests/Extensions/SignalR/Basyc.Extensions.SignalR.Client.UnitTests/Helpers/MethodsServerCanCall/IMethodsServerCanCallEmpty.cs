@@ -1,0 +1,5 @@
+﻿namespace Basyc.Extensions.SignalR.Client.Tests.MethodsServerCanCall;
+
+public interface IMethodsServerCanCallEmpty
+{
+}

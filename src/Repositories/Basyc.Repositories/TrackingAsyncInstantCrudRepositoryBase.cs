@@ -1,28 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Basyc.Repositories;
+﻿namespace Basyc.Repositories;
 
 public abstract class TrackingAsyncInstantCrudRepositoryBase<TModel, TKey> : IAsyncInstantCrudRepository<TModel, TKey>, ITrackingChangesRepository<TModel, TKey>
-	   where TModel : class
+	where TModel : class where TKey : notnull
 {
-	public List<RepositoryAction<TModel, TKey>> Actions { get; private set; } = new List<RepositoryAction<TModel, TKey>>();
-
-	public TrackingAsyncInstantCrudRepositoryBase()
-	{
-	}
-
 	public abstract Task<Dictionary<TKey, TModel>> GetAllAsync();
 
-	public abstract Task<TModel> TryGetAsync(TKey key);
+	public abstract Task<TModel?> TryGetAsync(TKey key);
 
-	public abstract Task<TModel> GetAsync(TKey id);
-
-	protected abstract TKey GetModelId(TModel model);
+	public abstract Task<TModel?> GetAsync(TKey id);
 
 	public Task InstaRemoveAsync(TKey id)
 	{
@@ -77,4 +62,8 @@ public abstract class TrackingAsyncInstantCrudRepositoryBase<TModel, TKey> : IAs
 
 		return Task.FromResult(model);
 	}
+
+	public List<RepositoryAction<TModel, TKey>> Actions { get; } = new();
+
+	protected abstract TKey GetModelId(TModel model);
 }

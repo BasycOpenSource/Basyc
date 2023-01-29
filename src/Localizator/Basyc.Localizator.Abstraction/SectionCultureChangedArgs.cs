@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 
 namespace Basyc.Localizator.Abstraction;
 
@@ -14,7 +11,7 @@ public class SectionCultureChangedArgs : EventArgs
 		NewCulture = newCulture;
 	}
 
-	public string SectionName { get; set; }
-	public CultureInfo OldCulture { get; set; }
-	public CultureInfo NewCulture { get; set; }
+	public string SectionName { get; }
+	public CultureInfo OldCulture { get; }
+	public CultureInfo NewCulture { get; }
 }

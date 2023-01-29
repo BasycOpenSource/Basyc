@@ -1,25 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿namespace Basyc.Repositories;
 
-namespace Basyc.Repositories;
-
-public interface IReadRepository<TModel, TKey>
+public interface IReadRepository<TModel, TKey> where TKey : notnull
 {
 	/// <summary>
-	/// Returns all records as dictionary
+	///     Returns all records as dictionary
 	/// </summary>
 	/// <returns></returns>
 	Dictionary<TKey, TModel> GetAll();
 
 	/// <summary>
-	/// Throws exception when not found,
+	///     Throws exception when not found,
 	/// </summary>
 	/// <param name="id"></param>
 	/// <returns></returns>
 	TModel Get(TKey id);
 
 	/// <summary>
-	/// Returns default when not found,
+	///     Returns default when not found,
 	/// </summary>
 	/// <param name="id"></param>
 	/// <returns></returns>

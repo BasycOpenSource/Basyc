@@ -1,4 +1,5 @@
 ﻿using Basyc.Diagnostics.Producing.Shared;
+using Basyc.Diagnostics.Providers.SignalR.Shared.DTOs;
 using Basyc.Diagnostics.Receiving.SignalR;
 using Basyc.Diagnostics.Shared.Logging;
 using Basyc.Diagnostics.SignalR.Shared;
@@ -12,9 +13,10 @@ namespace Basyc.Diagnostics.Producing.SignalR;
 
 public class SignalRDiagnosticsExporter : IDiagnosticsExporter
 {
-	private readonly Channel<ChangesSignalRDTO> signalRChannel = Channel.CreateUnbounded<ChangesSignalRDTO>(new UnboundedChannelOptions() { SingleReader = true });
-
 	private readonly IStrongTypedHubConnectionPusher<IServerMethodsProducersCanCall> hubConnection;
+
+	private readonly Channel<ChangesSignalRDto>
+		signalRChannel = Channel.CreateUnbounded<ChangesSignalRDto>(new UnboundedChannelOptions { SingleReader = true });
 
 	public SignalRDiagnosticsExporter(IOptions<SignalRLogReceiverOptions> options)
 	{
@@ -25,7 +27,7 @@ public class SignalRDiagnosticsExporter : IDiagnosticsExporter
 	}
 
 	/// <summary>
-	/// Returns false when failed to connect
+	///     Returns false when failed to connect
 	/// </summary>
 	/// <returns></returns>
 	public async Task<bool> StartAsync()
@@ -57,21 +59,20 @@ public class SignalRDiagnosticsExporter : IDiagnosticsExporter
 
 	public async Task ProduceLog(LogEntry logEntry)
 	{
-		var logs = new LogEntrySignalRDTO[] { LogEntrySignalRDTO.FromEntry(logEntry) };
-		await signalRChannel.Writer.WriteAsync(new(logs, Array.Empty<ActivityStartSignalRDTO>(), Array.Empty<ActivityEndSignalRDTO>()));
+		var logs = new[] { LogEntrySignalRDto.FromEntry(logEntry) };
+		await signalRChannel.Writer.WriteAsync(new ChangesSignalRDto(logs, Array.Empty<ActivityStartSignalRDto>(), Array.Empty<ActivityEndSignalRDto>()));
 	}
 
 	public async Task StartActivity(ActivityStart activityStartEntry)
 	{
-		var starts = new ActivityStartSignalRDTO[] { ActivityStartSignalRDTO.FromEntry(activityStartEntry) };
-		await signalRChannel.Writer.WriteAsync(new(Array.Empty<LogEntrySignalRDTO>(), starts, Array.Empty<ActivityEndSignalRDTO>()));
-
+		var starts = new[] { ActivityStartSignalRDto.FromEntry(activityStartEntry) };
+		await signalRChannel.Writer.WriteAsync(new ChangesSignalRDto(Array.Empty<LogEntrySignalRDto>(), starts, Array.Empty<ActivityEndSignalRDto>()));
 	}
 
 	public async Task EndActivity(ActivityEnd activity)
 	{
-		var ends = new ActivityEndSignalRDTO[] { ActivityEndSignalRDTO.FromEntry(activity) };
-		await signalRChannel.Writer.WriteAsync(new(Array.Empty<LogEntrySignalRDTO>(), Array.Empty<ActivityStartSignalRDTO>(), ends));
+		var ends = new[] { ActivityEndSignalRDto.FromEntry(activity) };
+		await signalRChannel.Writer.WriteAsync(new ChangesSignalRDto(Array.Empty<LogEntrySignalRDto>(), Array.Empty<ActivityStartSignalRDto>(), ends));
 	}
 
 	private static async Task<List<T>> ReadWithTimeoutAsync<T>(ChannelReader<T> reader, TimeSpan readTOut, CancellationToken cancellationToken)
@@ -81,8 +82,8 @@ public class SignalRDiagnosticsExporter : IDiagnosticsExporter
 
 		var messages = new List<T>();
 
-		using (CancellationTokenSource linkedCts =
-			CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSrc.Token, cancellationToken))
+		using (var linkedCts =
+				CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSrc.Token, cancellationToken))
 		{
 			try
 			{

@@ -1,7 +1,5 @@
 ﻿using Basyc.MessageBus.Manager.Application.Building.Stages.MessageRegistration;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Interface;
-using System;
-using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -15,7 +13,7 @@ public static class MessageManagerBuilderInterfacedExtensionsInterfaceExntesions
 	public static SetupDisplayNameStage FromInterface(this RegisterMessagesFromAssemblyStage fromAssemblyStage, Type interfaceType)
 	{
 		var registration = new InterfaceRegistration();
-		registration.AssembliesToScan = fromAssemblyStage.assembliesToScan.ToList();
+		registration.AssembliesToScan.AddRange(fromAssemblyStage.assembliesToScan);
 		registration.MessageInterfaceType = interfaceType;
 		registration.DomainName = fromAssemblyStage.domainName;
 		fromAssemblyStage.services.Configure<InterfaceDomainProviderOptions>(options =>

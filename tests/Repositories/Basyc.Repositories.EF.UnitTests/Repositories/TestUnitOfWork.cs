@@ -8,13 +8,13 @@ public class TestUnitOfWork : IUnitOfWork
 
 	public TestUnitOfWork(TestDbContext dbContext)
 	{
-		People = new PersonEFCrudRepository(dbContext, NullLogger<PersonEFCrudRepository>.Instance);
-		Cars = new CarEFCrudRepository(dbContext, NullLogger<CarEFCrudRepository>.Instance);
+		People = new PersonEfCrudRepository(dbContext, NullLogger<PersonEfCrudRepository>.Instance);
+		Cars = new CarEfCrudRepository(dbContext, NullLogger<CarEfCrudRepository>.Instance);
 		this.dbContext = dbContext;
 	}
 
-	public PersonEFCrudRepository People { get; }
-	public CarEFCrudRepository Cars { get; }
+	public PersonEfCrudRepository People { get; }
+	public CarEfCrudRepository Cars { get; }
 
 	public void Save()
 	{

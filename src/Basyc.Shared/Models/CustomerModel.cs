@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Basyc.Shared.Models;
+﻿namespace Basyc.Shared.Models;
 
 public class CustomerModel
 {
+#pragma warning disable CS8618
 	public CustomerModel()
+#pragma warning restore CS8618
 	{
 	}
 

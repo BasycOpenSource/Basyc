@@ -2,5 +2,5 @@
 
 public class DaprMessageBusManagerOptions
 {
-	public string PubSubName { get; set; }
+	public string? PubSubName { get; set; }
 }

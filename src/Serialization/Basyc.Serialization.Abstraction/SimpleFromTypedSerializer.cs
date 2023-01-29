@@ -23,14 +23,13 @@ public sealed class ObjectFromTypedByteSerializer : IObjectToByteSerailizer
 		return seriResult;
 	}
 
-	public bool TryDeserialize(byte[] serializedInput, string dataType, out object? input, out SerializationFailure? error)
-	{
-		return typedByteSerializer.TryDeserialize(serializedInput, TypedToSimpleConverter.ConvertSimpleToType(dataType), out input, out error);
-	}
+	// public bool TryDeserialize(byte[] serializedInput, [NotNullWhen(true)] string dataType, out object? input, [NotNullWhen(false)] out SerializationFailure? error)
+	// {
+	// 	return typedByteSerializer.TryDeserialize(serializedInput, TypedToSimpleConverter.ConvertSimpleToType(dataType), out input, out error);
+	// }
 
-	public bool TrySerialize(object? input, string dataType, out byte[]? output, out SerializationFailure? error)
-	{
-		return typedByteSerializer.TrySerialize(input, TypedToSimpleConverter.ConvertSimpleToType(dataType), out output, out error);
-
-	}
+	// public bool TrySerialize(object? input, string dataType, [NotNullWhen(true)] out byte[]? output, [NotNullWhen(false)] out SerializationFailure? error)
+	// {
+	// 	return typedByteSerializer.TrySerialize(input, TypedToSimpleConverter.ConvertSimpleToType(dataType), out output, out error);
+	// }
 }

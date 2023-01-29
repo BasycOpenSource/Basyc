@@ -10,10 +10,10 @@ namespace Basyc.MessageBus.Client.NetMQ;
 
 public class MessageHandlerManager : IMessageHandlerManager
 {
-	private record HandlerMetadata(NetMQMessageHandlerInfo HandlerInfo, Type HandlerRuntimeType);
-	private readonly IServiceProvider serviceProvider;
-	private readonly IOptions<MessageHandlerManagerOptions> options;
 	private readonly Dictionary<string, HandlerMetadata> handlerTypesCacheMap = new();
+	private readonly IOptions<MessageHandlerManagerOptions> options;
+	private readonly IServiceProvider serviceProvider;
+
 	public MessageHandlerManager(IServiceProvider serviceProvider, IOptions<MessageHandlerManagerOptions> options)
 	{
 		this.serviceProvider = serviceProvider;
@@ -40,12 +40,15 @@ public class MessageHandlerManager : IMessageHandlerManager
 		}
 	}
 
-	public async Task<OneOf<object, Exception>> ConsumeMessage(string messageType, object? messageData, CancellationToken cancellationToken, string traceId, string parentSpanId)
+	public async Task<OneOf<object, Exception>> ConsumeMessage(string messageType, object? messageData, CancellationToken cancellationToken, string traceId,
+		string parentSpanId)
 	{
 		if (handlerTypesCacheMap.TryGetValue(messageType, out var handlerMetadata) is false)
+		{
 			throw new InvalidOperationException("Handler for this message not found");
+		}
 
-		object handler = serviceProvider.GetRequiredService(handlerMetadata.HandlerRuntimeType)!;
+		var handler = serviceProvider.GetRequiredService(handlerMetadata.HandlerRuntimeType)!;
 		BusHandlerLoggerSessionManager.StartSession(new LoggingSession(traceId, handlerMetadata.HandlerInfo.HandleMethodInfo.Name));
 
 		//var activityTraceId = ActivityTraceId.CreateFromString(traceId);
@@ -63,7 +66,7 @@ public class MessageHandlerManager : IMessageHandlerManager
 		//}
 
 		var invokeActivity = DiagnosticHelper.Start("Invoking method info");
-		Task handlerResultTask = (Task)handlerMetadata.HandlerInfo.HandleMethodInfo.Invoke(handler, new object[] { messageData!, cancellationToken })!;
+		var handlerResultTask = (Task)handlerMetadata.HandlerInfo.HandleMethodInfo.Invoke(handler, new[] { messageData!, cancellationToken })!;
 		object? handlerResult;
 		try
 		{
@@ -102,4 +105,6 @@ public class MessageHandlerManager : IMessageHandlerManager
 			.Select(handlerMetadata => handlerMetadata.HandlerInfo.MessageSimpleType)
 			.ToArray();
 	}
+
+	private record HandlerMetadata(NetMqMessageHandlerInfo HandlerInfo, Type HandlerRuntimeType);
 }

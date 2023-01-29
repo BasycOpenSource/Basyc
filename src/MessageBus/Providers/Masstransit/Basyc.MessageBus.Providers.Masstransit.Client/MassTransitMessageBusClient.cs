@@ -1,11 +1,8 @@
 ﻿using Basyc.MessageBus.Shared;
 using MassTransit;
 using OneOf;
-using System;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
+using Throw;
 
 namespace Basyc.MessageBus.Client.MasstTransit;
 
@@ -28,7 +25,6 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
 	{
 		var publishTask = massTransitBus.Publish(data, cancellationToken);
 		return BusTask.FromTask("-1", publishTask);
-
 	}
 
 	BusTask<TResponse> ITypedMessageBusClient.RequestAsync<TRequest, TResponse>(RequestContext requestContext, CancellationToken cancellationToken)
@@ -37,7 +33,8 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
 		return BusTask<TResponse>.FromTask<Response<TResponse>>("-1", requestTask, x => (OneOf<TResponse, ErrorMessage>)x.Message);
 	}
 
-	BusTask<TResponse> ITypedMessageBusClient.RequestAsync<TRequest, TResponse>(TRequest request, RequestContext requestContext, CancellationToken cancellationToken)
+	BusTask<TResponse> ITypedMessageBusClient.RequestAsync<TRequest, TResponse>(TRequest request, RequestContext requestContext,
+		CancellationToken cancellationToken)
 	{
 		var requestTask = massTransitBus.Request<TRequest, TResponse>(request, cancellationToken);
 		return BusTask<TResponse>.FromTask<Response<TResponse>>("-1", requestTask, x => (OneOf<TResponse, ErrorMessage>)x.Message);
@@ -46,24 +43,27 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
 	BusTask<object> ITypedMessageBusClient.RequestAsync(Type requestType, Type responseType, RequestContext requestContext, CancellationToken cancellationToken)
 	{
 		var bus = (ITypedMessageBusClient)this;
-		return bus.RequestAsync(requestType, Activator.CreateInstance(requestType), responseType, requestContext, cancellationToken);
+		var requestData = Activator.CreateInstance(requestType);
+		requestData.ThrowIfNull();
+		return bus.RequestAsync(requestType, requestData, responseType, requestContext, cancellationToken);
 	}
 
-	public BusTask<object> RequestAsync(Type requestType, object request, Type responseType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
+	public BusTask<object> RequestAsync(Type requestType, object request, Type responseType, RequestContext requestContext = default,
+		CancellationToken cancellationToken = default)
 	{
 		var conType = typeof(SendContext<>).MakeGenericType(requestType);
 		var actionType = typeof(Action<>).MakeGenericType(conType);
-		var methodParameterTypes = new Type[] { typeof(IBus), requestType, typeof(CancellationToken), typeof(RequestTimeout), actionType };
+		var methodParameterTypes = new[] { typeof(IBus), requestType, typeof(CancellationToken), typeof(RequestTimeout), actionType };
 		//MassTransit does not have Request variant that accepts type as parameter (not type parameter)
 		//MethodInfo requestMethodInfo = typeof(MassTransit.RequestExtensions).GetMethod(nameof(MassTransit.RequestExtensions.Request), BindingFlags.Public | BindingFlags.Static, null, methodParameterTypes, null);
-		MethodInfo requestMethodInfo = typeof(RequestExtensions).GetMethods().Where(x => x.Name == nameof(RequestExtensions.Request)).Skip(2).First();
+		var requestMethodInfo = typeof(RequestExtensions).GetMethods().Where(x => x.Name == nameof(RequestExtensions.Request)).Skip(2).First();
 		var parameters = requestMethodInfo.GetParameters();
-		MethodInfo genericMethod = requestMethodInfo.MakeGenericMethod(requestType, responseType);
+		var genericMethod = requestMethodInfo.MakeGenericMethod(requestType, responseType);
 
 		//var busResponse = (Response<object>)await InvokeAsync(genericMethod, null, new object[] { massTransitBus, request, cancellationToken, default(RequestTimeout), null });
 		//return busResponse.Message;
 
-		var busResponse = InvokeAsync(genericMethod, null, new object[] { massTransitBus, request, cancellationToken, default(RequestTimeout), null });
+		var busResponse = InvokeAsync(genericMethod, null, massTransitBus, request, cancellationToken, default(RequestTimeout), null!);
 		var busTask = BusTask<object>.FromTask("-1", busResponse);
 		return busTask;
 	}
@@ -80,6 +80,7 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
 	public BusTask SendAsync(Type requestType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
 	{
 		var request = Activator.CreateInstance(requestType);
+		request.ThrowIfNull();
 		//await _massTransitBus.Publish(request, requestType, cancellationToken);
 		return SendAsync(requestType, request, requestContext, cancellationToken);
 	}
@@ -94,14 +95,6 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
 	{
 		//await _massTransitBus.Publish(request, cancellationToken);
 		return SendAsync(typeof(TRequest), request, requestContext, cancellationToken);
-	}
-
-	private static async Task<object> InvokeAsync(MethodInfo masstransitRequestMethod, object obj, params object[] parameters)
-	{
-		var task = (Task)masstransitRequestMethod.Invoke(obj, parameters);
-		await task.ConfigureAwait(false);
-		var resultProperty = task.GetType().GetProperty(nameof(Task<object>.Result));
-		return resultProperty.GetValue(task);
 	}
 
 	public void Dispose()
@@ -119,5 +112,16 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
 	public Task StartAsync(CancellationToken cancellationToken = default)
 	{
 		throw new NotImplementedException();
+	}
+
+	private static async Task<object> InvokeAsync(MethodInfo masstransitRequestMethod, object? obj, params object[]? parameters)
+	{
+		var task = (Task)masstransitRequestMethod.Invoke(obj, parameters)!;
+		await task.ConfigureAwait(false);
+		var resultProperty = task.GetType().GetProperty(nameof(Task<object>.Result));
+		resultProperty.ThrowIfNull();
+		var value = resultProperty.GetValue(task);
+		value.ThrowIfNull();
+		return value;
 	}
 }

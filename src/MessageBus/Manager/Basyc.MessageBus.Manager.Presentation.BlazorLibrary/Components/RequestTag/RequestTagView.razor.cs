@@ -6,7 +6,7 @@ public partial class RequestTagView
 {
 	private RequestTagType requestType;
 
-	public string WordContent { get; private set; }
+	public string? WordContent { get; private set; }
 
 	[Parameter]
 	public RequestTagType RequestType

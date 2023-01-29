@@ -3,11 +3,11 @@ using MudBlazor.Services;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class IServicesBusMangerExtensions
+public static class ServicesBusMangerExtensions
 {
-	public static void AddBasycBusManagerBlazorUI(this IServiceCollection services)
+	public static void AddBasycBusManagerBlazorUi(this IServiceCollection services)
 	{
 		services.AddMudServices();
-		services.AddSingleton<BusManagerJSInterop>();
+		services.AddSingleton<BusManagerJsInterop>();
 	}
 }

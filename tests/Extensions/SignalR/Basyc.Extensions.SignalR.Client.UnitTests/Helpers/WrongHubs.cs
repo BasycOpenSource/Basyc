@@ -2,17 +2,17 @@
 
 public static class WrongHubs
 {
-	public static Type[] TypesThatShouldFailCreating = new Type[]
+	public static Type[] TypesThatShouldFailCreating =
 	{
-		typeof(IWrongHubClient_Has_ReturnValues),
-		typeof(IWrongHubClient_Has_TaskReturnValues),
-		typeof(IWrongHubClient_HasInherited_ReturnValue),
-		typeof(IWrongHubClient_Has_AllWrongs),
-		typeof(WrongHubClient_Is_Class),
+		typeof(IWrongHubClientHasReturnValues),
+		typeof(IWrongHubClientHasTaskReturnValues),
+		typeof(IWrongHubClientHasInheritedReturnValue),
+		typeof(IWrongHubClientHasAllWrongs),
+		typeof(WrongHubClientIsClass)
 	};
 }
 
-public interface IWrongHubClient_Has_ReturnValues : ICorrectMethodsClientCanCall_Voids
+public interface IWrongHubClientHasReturnValues : ICorrectMethodsClientCanCallVoids
 {
 	int WrongSendNothingReceiveNumber();
 	string WrongSendNothingReceiveText();
@@ -22,7 +22,7 @@ public interface IWrongHubClient_Has_ReturnValues : ICorrectMethodsClientCanCall
 	object WrongSendIntString(int number, string name);
 }
 
-public interface IWrongHubClient_Has_TaskReturnValues : ICorrectMethodsClientCanCall_Voids
+public interface IWrongHubClientHasTaskReturnValues : ICorrectMethodsClientCanCallVoids
 {
 	Task<int> WrongSendNothingAsyncInt();
 	Task<int> WrongSendIntAsyncInt(int number);
@@ -30,23 +30,22 @@ public interface IWrongHubClient_Has_TaskReturnValues : ICorrectMethodsClientCan
 	Task<int> WrongSendIntStringAsyncInt(int number, string text);
 }
 
-public interface IWrongHubClient_HasInherited_ReturnValue : IWrongHubClient_Has_ReturnValues
+public interface IWrongHubClientHasInheritedReturnValue : IWrongHubClientHasReturnValues
 {
 }
 
-public interface IWrongHubClient_Has_AllWrongs :
-	IWrongHubClient_Has_ReturnValues,
-	IWrongHubClient_Has_TaskReturnValues,
-	ICorrectMethodsClientCanCall_AllCorrect
+public interface IWrongHubClientHasAllWrongs :
+	IWrongHubClientHasReturnValues,
+	IWrongHubClientHasTaskReturnValues,
+	ICorrectMethodsClientCanCallAllCorrect
 {
 }
 
-public class WrongHubClient_Is_Class
+public class WrongHubClientIsClass
 {
-
 }
 
-public class WrongHubClient_Is_Class_Numbers_Exceptions
+public class WrongHubClientIsClassNumbersExceptions
 {
 	public void ThrowNumberVoid(int number)
 	{
@@ -63,7 +62,6 @@ public class WrongHubClient_Is_Class_Numbers_Exceptions
 	{
 		await Task.Delay(150);
 		throw MethodExceptionHelperException.CreateForCurrentMethod(new object?[] { number, number2 });
-
 	}
 
 	public async Task ThrowNumbers3Async(int number, int number2, int number3)

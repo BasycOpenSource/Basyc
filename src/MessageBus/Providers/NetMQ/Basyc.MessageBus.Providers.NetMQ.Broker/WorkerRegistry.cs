@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Basyc.MessageBus.Broker.NetMQ;
 
 public class WorkerRegistry : IWorkerRegistry
 {
-	private readonly Dictionary<string, MessageTypeRecord> workerStorage = new Dictionary<string, MessageTypeRecord>();
+	private readonly Dictionary<string, MessageTypeRecord> workerStorage = new();
+
 	public void RegisterWorker(string workerId, string[] suppportedMessages)
 	{
 		foreach (var supportedMessage in suppportedMessages)
@@ -26,23 +23,25 @@ public class WorkerRegistry : IWorkerRegistry
 		}
 	}
 
-	public bool TryGetWorkerFor(string messageType, out string? workerId)
+	public bool TryGetWorkerFor(string messageType, [NotNullWhen(true)] out string? workerId)
 	{
 		if (workerStorage.TryGetValue(messageType, out var workers))
 		{
 			if (workers.LastUsedWorkerId == workers.WorkerIds.Count - 1)
+			{
 				workers.LastUsedWorkerId = 0;
+			}
 			else
+			{
 				workers.LastUsedWorkerId++;
+			}
 
 			workerId = workers.WorkerIds[workers.LastUsedWorkerId];
 			return true;
 		}
-		else
-		{
-			workerId = null;
-			return false;
-		}
+
+		workerId = null;
+		return false;
 	}
 
 	public bool TryGetWorkersFor(string messageType, out string[] workerIds)
@@ -52,10 +51,8 @@ public class WorkerRegistry : IWorkerRegistry
 			workerIds = workers.WorkerIds.ToArray();
 			return true;
 		}
-		else
-		{
-			workerIds = Array.Empty<string>();
-			return false;
-		}
+
+		workerIds = Array.Empty<string>();
+		return false;
 	}
 }

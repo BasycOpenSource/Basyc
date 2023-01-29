@@ -7,10 +7,10 @@ namespace Basyc.MessageBus.HttpProxy.Server.Asp.Http;
 
 public class ProxyHttpRequestHandler
 {
+	private static readonly string proxyRequestSimpleDatatype = TypedToSimpleConverter.ConvertTypeToSimple<RequestHttpDto>();
+	private static readonly string proxyResponseSimpleDataType = TypedToSimpleConverter.ConvertTypeToSimple<ResponseHttpDto>();
 	private readonly IByteMessageBusClient messageBus;
 	private readonly IObjectToByteSerailizer serializer;
-	private static readonly string proxyRequestSimpleDatatype = TypedToSimpleConverter.ConvertTypeToSimple<RequestHttpDTO>();
-	private static readonly string proxyResponseSimpleDataType = TypedToSimpleConverter.ConvertTypeToSimple<ResponseHttpDTO>();
 
 	public ProxyHttpRequestHandler(IByteMessageBusClient messageBus, IObjectToByteSerailizer serializer)
 	{
@@ -20,19 +20,19 @@ public class ProxyHttpRequestHandler
 
 	public async Task Handle(HttpContext context)
 	{
-		MemoryStream httpBodyMemoryStream = new MemoryStream();
+		var httpBodyMemoryStream = new MemoryStream();
 		await context.Request.Body.CopyToAsync(httpBodyMemoryStream);
 		var proxyRequestBytes = httpBodyMemoryStream.ToArray();
-		RequestHttpDTO proxyRequest = (RequestHttpDTO)serializer.Deserialize(proxyRequestBytes, proxyRequestSimpleDatatype);
+		var proxyRequest = (RequestHttpDto)serializer.Deserialize(proxyRequestBytes, proxyRequestSimpleDatatype)!;
 
 		if (proxyRequest.HasResponse)
 		{
-			var busTask = messageBus.RequestAsync(proxyRequest.MessageType, proxyRequest.MessageBytes);
+			var busTask = messageBus.RequestAsync(proxyRequest.MessageType, proxyRequest.MessageBytes!);
 			var busTaskValue = await busTask.Task;
 			await busTaskValue.Match(
 				async byteResponse =>
 				{
-					var proxyResponse = new ResponseHttpDTO(busTask.TraceId, byteResponse.ResponseBytes, byteResponse.ResposneType);
+					var proxyResponse = new ResponseHttpDto(busTask.TraceId, byteResponse.ResponseBytes, byteResponse.ResposneType);
 					var proxyResponseBytes = serializer.Serialize(proxyResponse, proxyResponseSimpleDataType);
 					await context.Response.BodyWriter.WriteAsync(proxyResponseBytes);
 				},
@@ -40,17 +40,16 @@ public class ProxyHttpRequestHandler
 		}
 		else
 		{
-			var busTask = messageBus.SendAsync(proxyRequest.MessageType, proxyRequest.MessageBytes);
+			var busTask = messageBus.SendAsync(proxyRequest.MessageType, proxyRequest.MessageBytes!);
 			var sendResult = await busTask.Task;
 			await sendResult.Match(
-			async success =>
-			{
-				var proxyResponse = new ResponseHttpDTO(busTask.TraceId);
-				var proxyResponseBytes = serializer.Serialize(proxyResponse, proxyResponseSimpleDataType);
-				await context.Response.BodyWriter.WriteAsync(proxyResponseBytes);
-			},
-			busRequestError => throw new Exception(busRequestError.Message));
-
+				async success =>
+				{
+					var proxyResponse = new ResponseHttpDto(busTask.TraceId);
+					var proxyResponseBytes = serializer.Serialize(proxyResponse, proxyResponseSimpleDataType);
+					await context.Response.BodyWriter.WriteAsync(proxyResponseBytes);
+				},
+				busRequestError => throw new Exception(busRequestError.Message));
 		}
 	}
 }

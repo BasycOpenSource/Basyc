@@ -1,47 +1,49 @@
 ﻿@using Basyc.MessageBus.Manager.Application
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.ResultHistory.ResultHistoryItem
-@inject IRequestDiagnosticsManager resultLoggingManager;
+@inject IRequestDiagnosticsManager ResultLoggingManager;
 
 
 <historyView>
-    @if (RequestContexts is not null)
-    {
-        int resultCounter = 0;
-        @foreach (var requestContext in RequestContexts)
-        {
-            if (resultLoggingManager.TryGetDiagnostics(requestContext.TraceId, out var diagnosticsContext) is false)
-            {
-                <div>cant get daignostic context</div>
-            }
-            else
-            {
-                <item>
-                    <ResultHistoryItemView RequestContext="requestContext" OrderIndex="++resultCounter" />
-                </item>
-            }
-            
-        }
-    }
-    else
-    {
-        @:empty history
-    }
+	@if (RequestContexts is not null)
+	{
+		var resultCounter = 0;
+		@foreach (var requestContext in RequestContexts)
+		{
+			if (ResultLoggingManager.TryGetDiagnostics(requestContext.TraceId, out var diagnosticsContext) is false)
+			{
+				<div>cant get daignostic context</div>
+			}
+			else
+			{
+				<item>
+					<ResultHistoryItemView RequestContext="requestContext" OrderIndex="++resultCounter"/>
+				</item>
+			}
+		}
+	}
+	else
+	{
+		@:empty history
+	}
 </historyView>
 
 @code {
-    [Parameter] public List<RequestContext> RequestContexts { get; set; }
-    private RequestContext selectedRequestResults;
 
-    [Parameter]
-    public RequestContext SelectedRequestResults
-    {
-        get => selectedRequestResults;
-        set
-        {
-            if (value == selectedRequestResults) return;
-            selectedRequestResults = value;
-        }
-    }
+	[Parameter]
+	public List<RequestContext>? RequestContexts { get; set; }
+
+	private RequestContext? selectedRequestResults;
+
+	[Parameter]
+	public RequestContext? SelectedRequestResults
+	{
+		get => selectedRequestResults;
+		set
+		{
+			if (value == selectedRequestResults) return;
+			selectedRequestResults = value;
+		}
+	}
 
 }

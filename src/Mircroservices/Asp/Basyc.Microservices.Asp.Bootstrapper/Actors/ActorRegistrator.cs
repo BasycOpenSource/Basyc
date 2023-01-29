@@ -1,11 +1,6 @@
 ﻿using Basyc.MicroService.Abstraction.Initialization;
 using Dapr.Actors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basyc.MicroService.Asp.Bootstrapper.Actors;
 
@@ -19,7 +14,7 @@ public class ActorRegistrator
 	}
 
 	/// <summary>
-	/// <typeparamref name="TStartup"/> must be in default namespace besides Actors folder
+	///     <typeparamref name="TStartup" /> must be in default namespace besides Actors folder
 	/// </summary>
 	/// <typeparam name="TStartup"></typeparam>
 	public void RegisterActors<TStartup>()
@@ -29,8 +24,8 @@ public class ActorRegistrator
 
 	public void RegisterActors(string actorsNamespace)
 	{
-
-		var actorTypes = Assembly.GetEntryAssembly().DefinedTypes.Where(x => x.IsClass && x.ImplementedInterfaces.Contains(typeof(IActor)) && x.Namespace.StartsWith(actorsNamespace));
+		var actorTypes = Assembly.GetEntryAssembly()!.DefinedTypes.Where(x =>
+			x.IsClass && x.ImplementedInterfaces.Contains(typeof(IActor)) && x.Namespace!.StartsWith(actorsNamespace));
 		foreach (var actor in actorTypes)
 		{
 			microserviceProvider.RegisterActor(actor);

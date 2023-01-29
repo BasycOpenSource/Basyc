@@ -1,21 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Basyc.Localizator.Abstraction;
 
 public class LocalizationDependencyBuilder
 {
-	private readonly IServiceCollection _servics;
+	private readonly IServiceCollection services;
+
 	public LocalizationDependencyBuilder(IServiceCollection services)
 	{
-		_servics = services;
+		this.services = services;
 	}
 
 	public LocalizationDependencyBuilder AddStorage<TLocalizatorStorage>() where TLocalizatorStorage : class, ILocalizatorStorage
 	{
-		_servics.AddSingleton<ILocalizatorStorage, TLocalizatorStorage>();
+		services.AddSingleton<ILocalizatorStorage, TLocalizatorStorage>();
 		return this;
 	}
 }

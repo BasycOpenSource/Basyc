@@ -10,4 +10,12 @@
 		<ProjectReference Include="..\Basyc.MessageBus.Manager.Infrastructure\Basyc.MessageBus.Manager.Infrastructure.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Remove="packages.lock.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Throw" Version="1.3.1" />
+	</ItemGroup>
+
 </Project>

@@ -1,7 +1,8 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
 
 namespace Basyc.Extensions.Nuke.Tasks;
-public static partial class DotNetTasks
+
+public static class DotNetTasks
 {
 	public static void BasycNugetSignWithFile(IEnumerable<string> paths, string certPath, string? certPassword)
 	{
@@ -13,8 +14,8 @@ public static partial class DotNetTasks
 		DotnetWrapper.NugetSignWithFile(new[] { path }, certPath, certPassword);
 	}
 
-	public static void BasycNugetSignWithBase64(string path, string base64cert, string? certPassword)
+	public static void BasycNugetSignWithBase64(string path, string base64Cert, string? certPassword)
 	{
-		DotnetWrapper.NugetSignWithFile(new[] { path }, base64cert, certPassword);
+		DotnetWrapper.NugetSignWithFile(new[] { path }, base64Cert, certPassword);
 	}
 }

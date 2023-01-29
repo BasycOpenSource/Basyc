@@ -11,16 +11,25 @@ namespace Basyc.Extensions.Nuke.Tasks.CI;
 public class BasycPipelineAttribute : ConfigurationAttributeBase
 {
 	private readonly ConfigurationAttributeBase baseProvider;
-	public BasycPipelineAttribute(string name, CiProviders provider, HostOs hostOs, GitFlowBranches[] gitFlowBranches, Trigger trigger, string[] targets)
+
+	public BasycPipelineAttribute(string name, CiProvider provider, HostOs hostOs, GitFlowBranches[] gitFlowBranches, Trigger trigger, string[] targets)
 	{
-		string[] branches = GetBranchesPatterns(gitFlowBranches);
+		var branches = GetBranchesPatterns(gitFlowBranches);
 		baseProvider = provider switch
 		{
-			CiProviders.GithubActions => UseGithub(name, hostOs, trigger, branches, targets),
-			CiProviders.AzurePipelines => throw new NotImplementedException(),
-			_ => throw new NotImplementedException(),
+			CiProvider.GithubActions => UseGithub(name, hostOs, trigger, branches, targets),
+			CiProvider.AzurePipelines => throw new NotImplementedException(),
+			_ => throw new NotImplementedException()
 		};
 	}
+
+	public override string IdPostfix => base.IdPostfix + GetType().Name;
+
+	public override Type HostType => baseProvider.HostType;
+	public override string ConfigurationFile => baseProvider.ConfigurationFile;
+	public override IEnumerable<string> GeneratedFiles => baseProvider.GeneratedFiles;
+	public override IEnumerable<string> RelevantTargetNames => baseProvider.RelevantTargetNames;
+	public override IEnumerable<string> IrrelevantTargetNames => baseProvider.IrrelevantTargetNames;
 
 	private static string[] GetBranchesPatterns(GitFlowBranches[] gitFlowBranches)
 	{
@@ -44,8 +53,6 @@ public class BasycPipelineAttribute : ConfigurationAttributeBase
 				case GitFlowBranches.Feature:
 					patterns.Add("feature/*");
 					break;
-				default:
-					break;
 			}
 		}
 
@@ -61,20 +68,17 @@ public class BasycPipelineAttribute : ConfigurationAttributeBase
 			EnableGitHubToken = true
 		};
 		if (trigger == Trigger.Push)
+		{
 			githubAttribute.OnPushBranches = branches;
+		}
 		else
+		{
 			githubAttribute.OnPullRequestBranches = branches;
+		}
+
 		githubAttribute.InvokedTargets = targets;
 		return githubAttribute;
 	}
-
-	public override string IdPostfix => base.IdPostfix + GetType().Name;
-
-	public override Type HostType => baseProvider.HostType;
-	public override string ConfigurationFile => baseProvider.ConfigurationFile;
-	public override IEnumerable<string> GeneratedFiles => baseProvider.GeneratedFiles;
-	public override IEnumerable<string> RelevantTargetNames => baseProvider.RelevantTargetNames;
-	public override IEnumerable<string> IrrelevantTargetNames => baseProvider.IrrelevantTargetNames;
 
 	public override CustomFileWriter CreateWriter(StreamWriter streamWriter)
 	{

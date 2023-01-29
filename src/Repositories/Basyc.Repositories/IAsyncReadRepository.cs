@@ -1,27 +1,24 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿namespace Basyc.Repositories;
 
-namespace Basyc.Repositories;
-
-public interface IAsyncReadRepository<TModel, TKey>
+public interface IAsyncReadRepository<TModel, TKey> where TKey : notnull
 {
 	/// <summary>
-	/// Returns all records as dictionary
+	///     Returns all records as dictionary
 	/// </summary>
 	/// <returns></returns>
 	Task<Dictionary<TKey, TModel>> GetAllAsync();
 
 	/// <summary>
-	/// Throws exception when not found,
+	///     Throws exception when not found,
 	/// </summary>
 	/// <param name="id"></param>
 	/// <returns></returns>
-	Task<TModel> GetAsync(TKey id);
+	Task<TModel?> GetAsync(TKey id);
 
 	/// <summary>
-	/// Returns default when not found,
+	///     Returns default when not found,
 	/// </summary>
 	/// <param name="id"></param>
 	/// <returns></returns>
-	Task<TModel> TryGetAsync(TKey id);
+	Task<TModel?> TryGetAsync(TKey id);
 }

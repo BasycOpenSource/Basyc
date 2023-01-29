@@ -8,26 +8,24 @@ using Basyc.Serialization.Abstraction;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using OneOf;
-using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Basyc.MessageBus.HttpProxy.Client.Http;
 
 public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 {
-	private readonly IStrongTypedHubConnectionPusherAndReceiver<IMethodsClientCanCall, IClientMethodsServerCanCall> hubConnection;
 	private readonly IObjectToByteSerailizer byteSerializer;
+	private readonly IStrongTypedHubConnectionPusherAndReceiver<IMethodsClientCanCall, IClientMethodsServerCanCall> hubConnection;
 	private readonly SignalRSessionManager sessionManager;
 
-	public SignalRProxyObjectMessageBusClient(IOptions<SignalROptions> options, IObjectToByteSerailizer byteSerializer, ISharedRequestIdCounter requestIdCounter)
+	public SignalRProxyObjectMessageBusClient(IOptions<SignalROptions> options, IObjectToByteSerailizer byteSerializer,
+		ISharedRequestIdCounter requestIdCounter)
 	{
 		sessionManager = new SignalRSessionManager(requestIdCounter);
 		hubConnection = new HubConnectionBuilder()
-		.WithUrl(options.Value.SignalRServerUri + options.Value.ProxyClientHubPattern)
-		.WithAutomaticReconnect()
-		.BuildStrongTyped<IMethodsClientCanCall, IClientMethodsServerCanCall>(sessionManager);
+			.WithUrl(options.Value.SignalRServerUri + options.Value.ProxyClientHubPattern)
+			.WithAutomaticReconnect()
+			.BuildStrongTyped<IMethodsClientCanCall, IClientMethodsServerCanCall>(sessionManager);
 		this.byteSerializer = byteSerializer;
 	}
 
@@ -45,7 +43,6 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 	public BusTask PublishAsync(string eventType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
 	{
 		return CreateAndStartBusTask(eventType, null, requestContext, cancellationToken).ToBusTask();
-
 	}
 
 	public BusTask PublishAsync(string eventType, object eventData, RequestContext requestContext = default, CancellationToken cancellationToken = default)
@@ -56,10 +53,10 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 	public BusTask<object> RequestAsync(string requestType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
 	{
 		return BusTask<object>.FromBusTask(CreateAndStartBusTask(requestType, null, requestContext, cancellationToken), x => x!);
-
 	}
 
-	public BusTask<object> RequestAsync(string requestType, object requestData, RequestContext requestContext = default, CancellationToken cancellationToken = default)
+	public BusTask<object> RequestAsync(string requestType, object requestData, RequestContext requestContext = default,
+		CancellationToken cancellationToken = default)
 	{
 		return BusTask<object>.FromBusTask(CreateAndStartBusTask(requestType, requestData, requestContext, cancellationToken), x => x!);
 	}
@@ -74,17 +71,20 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 		return CreateAndStartBusTask(commandType, commandData, requestContext, cancellationToken).ToBusTask();
 	}
 
-	private BusTask<object?> CreateAndStartBusTask(string requestType, object? requestData = null, RequestContext requestContext = default, CancellationToken cancellationToken = default)
+	private BusTask<object?> CreateAndStartBusTask(string requestType, object? requestData = null, RequestContext requestContext = default,
+		CancellationToken cancellationToken = default)
 	{
-		var createAndStartBusTaskActivity = DiagnosticHelper.Start("SignalRProxyObjectMessageBusClient.CreateAndStartBusTask", requestContext.TraceId, requestContext.ParentSpanId);
-		SignalRSession session = sessionManager.StartSession(requestContext.TraceId);
+		var createAndStartBusTaskActivity = DiagnosticHelper.Start("SignalRProxyObjectMessageBusClient.CreateAndStartBusTask", requestContext.TraceId,
+			requestContext.ParentSpanId);
+		var session = sessionManager.StartSession(requestContext.TraceId);
 		var waintingForTaskRunActivity = DiagnosticHelper.Start("Waiting for Task.Run");
-		Task<OneOf<object?, ErrorMessage>> reqeustTask = Task.Run(async () => await BustaskMethod(requestType, requestData, requestContext, createAndStartBusTaskActivity, session, waintingForTaskRunActivity));
+		var reqeustTask = Task.Run(async () =>
+			await BustaskMethod(requestType, requestData, requestContext, createAndStartBusTaskActivity, session, waintingForTaskRunActivity));
 		return BusTask<object?>.FromTask(session.TraceId, reqeustTask);
-
 	}
 
-	private async Task<OneOf<object?, ErrorMessage>> BustaskMethod(string requestType, object? requestData, RequestContext requestContext, DiagnosticHelperActivityDisposer createAndStartBusTaskActivity, SignalRSession session, DiagnosticHelperActivityDisposer waintingForTaskRunActivity)
+	private async Task<OneOf<object?, ErrorMessage>> BustaskMethod(string requestType, object? requestData, RequestContext requestContext,
+		DiagnosticHelperActivityDisposer createAndStartBusTaskActivity, SignalRSession session, DiagnosticHelperActivityDisposer waintingForTaskRunActivity)
 	{
 		waintingForTaskRunActivity.Stop();
 		var busTaskActivity = DiagnosticHelper.Start("BustaskMethod");
@@ -102,7 +102,7 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 
 		try
 		{
-			await hubConnection.Call.Request(new RequestSignalRDTO(requestType, true, requestDataBytes, RequestContext: requestContext));
+			await hubConnection.Call.Request(new RequestSignalRDto(requestType, true, requestDataBytes, RequestContext: requestContext));
 		}
 		catch (Exception ex)
 		{
@@ -116,39 +116,35 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 		var sessionRsult = await session.WaitForCompletion();
 		waitingForResult.Stop();
 
-		return sessionRsult.Match<OneOf<object?, ErrorMessage>>(resultDTO =>
-		{
-			if (resultDTO.HasResponse)
+		return sessionRsult.Match<OneOf<object?, ErrorMessage>>(resultDto =>
 			{
-				var deseriActivity = DiagnosticHelper.Start("SignalR Request");
-
-				if (byteSerializer.TryDeserialize(resultDTO.ResponseData!, resultDTO.ResponseType!, out var deserializedResult, out var error) is false)
+				if (resultDto.HasResponse)
 				{
+					var deseriActivity = DiagnosticHelper.Start("SignalR Request");
+
+					if (byteSerializer.TryDeserialize(resultDto.ResponseData!, resultDto.ResponseType!, out var deserializedResult, out var error) is false)
+					{
+						busTaskActivity.Stop();
+						createAndStartBusTaskActivity.Stop();
+						deseriActivity.Stop();
+						return new ErrorMessage("Failed to serailize response");
+					}
+
+					deseriActivity.Stop();
 					busTaskActivity.Stop();
 					createAndStartBusTaskActivity.Stop();
-					deseriActivity.Stop();
-					return new ErrorMessage("Failed to serailize response");
+					return deserializedResult;
 				}
 
-				deseriActivity.Stop();
 				busTaskActivity.Stop();
 				createAndStartBusTaskActivity.Stop();
-				return deserializedResult;
-
-			}
-			else
+				return null!;
+			},
+			error =>
 			{
 				busTaskActivity.Stop();
 				createAndStartBusTaskActivity.Stop();
-				return (OneOf<object?, ErrorMessage>)null;
-			}
-		},
-		error =>
-		{
-			busTaskActivity.Stop();
-			createAndStartBusTaskActivity.Stop();
-			return error;
-		});
-
+				return error;
+			});
 	}
 }

@@ -1,63 +1,69 @@
 ﻿@using Basyc.Diagnostics.Shared.Durations
 <durationBoxContainer>
 
-    @{
-        var minHeight = DurationViewHelper.GetCssDurationValue(DurationSegment.Duration, Scale);
-        string durationBoxStyle = $"min-height: {minHeight};";
-        var minHeightNumber = double.Parse(minHeight);
-        var showDurationInBox = double.Parse(minHeight) > 2.5;
-        //-0.5 to compensate margings and line heights.
-        //if line height is 1rem and margings and paddings are 0 this is not needed
-        int segmentNameNumberOfLines = (int)Math.Floor(minHeightNumber - 0.5);
-        if (segmentNameNumberOfLines == 0)
-        {
-            segmentNameNumberOfLines = 1;
-        }
-        string segmentNameStyle = $"-webkit-line-clamp: {segmentNameNumberOfLines}; line-clamp: {segmentNameNumberOfLines};";
-        DurationSegment previousSegment = null;
-    }
+	@{
+		var minHeight = DurationViewHelper.GetCssDurationValue(DurationSegment.Duration, Scale);
+		var durationBoxStyle = $"min-height: {minHeight};";
+		var minHeightNumber = double.Parse(minHeight);
+		var showDurationInBox = double.Parse(minHeight) > 2.5;
+		//-0.5 to compensate margings and line heights.
+		//if line height is 1rem and margings and paddings are 0 this is not needed
+		var segmentNameNumberOfLines = (int)Math.Floor(minHeightNumber - 0.5);
+		if (segmentNameNumberOfLines == 0)
+		{
+			segmentNameNumberOfLines = 1;
+		}
+		var segmentNameStyle = $"-webkit-line-clamp: {segmentNameNumberOfLines}; line-clamp: {segmentNameNumberOfLines};";
+		DurationSegment? previousSegment = null;
+	}
 
-    <durationBox Style="@durationBoxStyle">
-        @if (showDurationInBox)
-        {
-            <durationBoxDuration>
-                @(Math.Ceiling(DurationSegment.Duration.TotalMilliseconds))ms
-            </durationBoxDuration>
-        }
-        <div class="tooltiptext">
-            <DurationBoxToolTip Name="DurationSegment.Name" StartTime="DurationSegment.StartTime" Duration="DurationSegment.Duration" Service="DurationSegment.Service" />
-        </div>
-    </durationBox>
-    <nestedContent>
-        <segmentNameContainer>
-            <segmentName style="@segmentNameStyle">
-                @DurationSegment.Name
-            </segmentName>
-        </segmentNameContainer>
+	<durationBox Style="@durationBoxStyle">
+		@if (showDurationInBox)
+		{
+			<durationBoxDuration>
+				@(Math.Ceiling(DurationSegment.Duration.TotalMilliseconds))ms
+			</durationBoxDuration>
+		}
+		<div class="tooltiptext">
+			<DurationBoxToolTip Name="DurationSegment.Name" StartTime="DurationSegment.StartTime" Duration="DurationSegment.Duration" Service="DurationSegment.Service"/>
+		</div>
+	</durationBox>
+	<nestedContent>
+		<segmentNameContainer>
+			<segmentName style="@segmentNameStyle">
+				@DurationSegment.Name
+			</segmentName>
+		</segmentNameContainer>
 
-        @foreach (var nestedSegment in DurationSegment.NestedSegments)
-        {
-            string borderMergerStyle = "";
-            if (previousSegment is not null && previousSegment.EndTime != nestedSegment.StartTime)
-            {
-                <DurationUnknownBoxView StartTime="previousSegment.EndTime" Duration="previousSegment.EndTime - nestedSegment.StartTime" Scale="Scale"  Service="previousSegment.Service"/>
-            }
-            else
-            {
-                borderMergerStyle = "display:block; margin-top: -2px;";
-            }
+		@foreach (var nestedSegment in DurationSegment.NestedSegments)
+		{
+			var borderMergerStyle = "";
+			if (previousSegment is not null && previousSegment.EndTime != nestedSegment.StartTime)
+			{
+				<DurationUnknownBoxView StartTime="previousSegment.EndTime" Duration="previousSegment.EndTime - nestedSegment.StartTime" Scale="Scale" Service="previousSegment.Service"/>
+			}
+			else
+			{
+				borderMergerStyle = "display:block; margin-top: -2px;";
+			}
 
-            <borderMerger style="@borderMergerStyle">
-                <DurationBoxView DurationSegment="nestedSegment" />
-            </borderMerger>
-            previousSegment = nestedSegment;
-        }
-    </nestedContent>
+			<borderMerger style="@borderMergerStyle">
+				<DurationBoxView DurationSegment="nestedSegment"/>
+			</borderMerger>
+			previousSegment = nestedSegment;
+		}
+	</nestedContent>
 </durationBoxContainer>
 
 
 @code {
-    [Parameter] public DurationSegment DurationSegment { get; set; }
-    [Parameter] public double Scale { get; set; }
+
+	[Parameter]
+	[EditorRequired]
+	public DurationSegment DurationSegment { get; set; } = null!;
+
+	[Parameter]
+	[EditorRequired]
+	public double Scale { get; set; }
 
 }

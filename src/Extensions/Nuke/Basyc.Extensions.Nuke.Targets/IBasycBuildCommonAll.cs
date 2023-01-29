@@ -10,19 +10,16 @@ namespace Basyc.Extensions.Nuke.Targets;
 
 public interface IBasycBuildCommonAll : IBasycBuildBase
 {
-	[GitRepository] protected new GitRepository Repository => TryGetValue(() => Repository);
+	[GitRepository] protected new GitRepository Repository => TryGetValue(() => Repository)!;
 
-	Target PullRequestCheck => _ => _
+	Target BranchCheckAll => _ => _
+		.DependentFor(StaticCodeAnalysisAll, CleanAll, RestoreAll, CompileAll, UnitTestAll, RestoreAll)
+		.Executes(BranchCheck);
+
+	Target PullRequestCheckAll => _ => _
 		.DependentFor(StaticCodeAnalysisAll, CleanAll, RestoreAll, CompileAll, UnitTestAll, RestoreAll)
 		.OnlyWhenStatic(() => IsPullRequest)
-		.Executes(() =>
-		{
-			if (GitFlowHelper.IsPullRequestAllowed(PullRequestSourceBranch, PullRequestTargetBranch) is false)
-			{
-				throw new InvalidOperationException(
-					$"Pull request between {PullRequestSourceBranch} and {PullRequestTargetBranch} is not allowed according git flow");
-			}
-		});
+		.Executes(PullRequestCheck);
 
 	Target StaticCodeAnalysisAll => _ => _
 		.Before(CompileAll)
@@ -62,11 +59,11 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 		.DependsOn(CompileAll)
 		.Executes(() =>
 		{
-			string oldCoverageFile = $"{TestHistoryDirectory / GitFlowHelper.GetGitFlowSourceBranch(Repository.Branch!).ToString()}.json";
+			var oldCoverageFile = $"{TestHistoryDirectory / GitFlowHelper.GetGitFlowSourceBranch(Repository.Branch!).ToString()}.json";
 			using var coverageReport = BasycUnitTestAll(Solution, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
 			if (File.Exists(oldCoverageFile))
 			{
-				string newCoverageFile = $"{TestHistoryDirectory / Repository.Branch!.Replace('/', '-')}.json";
+				var newCoverageFile = $"{TestHistoryDirectory / Repository.Branch!.Replace('/', '-')}.json";
 				using var oldCoverage = BasycCoverageLoadFromFile(oldCoverageFile);
 				BasycTestCreateSummaryConsole(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum, oldCoverage);
 			}

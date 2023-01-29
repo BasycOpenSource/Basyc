@@ -32,7 +32,7 @@ public static partial class DotNetTasks
 			.Where(x => Path.GetFileNameWithoutExtension(x).EndsWith(testProjectSuffix) is false)
 			.ToHashSet();
 
-		string[] changedTestProjectPaths = gitCompareReport.ChangedSolutions
+		var changedTestProjectPaths = gitCompareReport.ChangedSolutions
 			.SelectMany(x => x.ChangedProjects)
 			.Select(x => x.ProjectFullPath)
 			.Where(x => Path.GetFileNameWithoutExtension(x).EndsWith(testProjectSuffix))
@@ -40,10 +40,10 @@ public static partial class DotNetTasks
 
 		if (changedTestProjectPaths.Any())
 		{
-			foreach (string changedTestProjectPath in changedTestProjectPaths)
+			foreach (var changedTestProjectPath in changedTestProjectPaths)
 			{
-				string projectName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(changedTestProjectPath));
-				string projectPath = solution.GetProject(projectName).Path.ToString().NormalizePath();
+				var projectName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(changedTestProjectPath));
+				var projectPath = solution.GetProject(projectName).Path.ToString().NormalizePath();
 				projectsToTestPaths.Add(projectPath);
 			}
 		}
@@ -124,8 +124,8 @@ public static partial class DotNetTasks
 					{
 						classErrorStringBuilder.Append(indent);
 						classErrorStringBuilder.Append(indent);
-						int methodNameIndex = method.Name.IndexOf("::") + 2;
-						string shortMethodName = method.Name.Substring(methodNameIndex);
+						var methodNameIndex = method.Name.IndexOf("::") + 2;
+						var shortMethodName = method.Name.Substring(methodNameIndex);
 						classErrorStringBuilder.Append($"Method '{shortMethodName}' ");
 						methodErrors.ForEach(methodError =>
 						{
@@ -151,7 +151,7 @@ public static partial class DotNetTasks
 	public static void BasycCoverageSaveToFile(CoverageReport coverageReport, string path)
 	{
 		var dto = CoverageReportJsonDto.ToDto(coverageReport);
-		string json = JsonSerializer.Serialize(dto);
+		var json = JsonSerializer.Serialize(dto);
 		Directory.CreateDirectory(Path.GetDirectoryName(path)!);
 		File.CreateText(path).Dispose();
 		File.WriteAllText(path, json);
@@ -159,7 +159,7 @@ public static partial class DotNetTasks
 
 	public static CoverageReport BasycCoverageLoadFromFile(string path)
 	{
-		string json = File.ReadAllText(path);
+		var json = File.ReadAllText(path);
 		var dto = JsonSerializer.Deserialize<CoverageReportJsonDto>(json)!;
 		var report = CoverageReportJsonDto.ToReport(dto);
 		return report;
@@ -185,14 +185,12 @@ public static partial class DotNetTasks
 					.SetProjectFile(projectReport.TestProjectPath)),
 			5);
 
-		Dictionary<string, TemporaryFile> projectToCoverageFileMap = new();
 		foreach (var testProjectReport in projectReports)
 		{
 			var dir = new DirectoryInfo(projectResultDirectory.FullPath + "/" + testProjectReport.ProjectToTestName);
 			var uniqueNameDir = dir.GetDirectories().First();
 
-			string openCoverResultsFilePath = Path.Combine(uniqueNameDir.FullName, "coverage.opencover.xml");
-			projectToCoverageFileMap.Add(testProjectReport.ProjectToTestName, TemporaryFile.CreateFromExisting(openCoverResultsFilePath));
+			var openCoverResultsFilePath = Path.Combine(uniqueNameDir.FullName, "coverage.opencover.xml");
 			using var outputFileStream = File.OpenRead(openCoverResultsFilePath);
 			var openCoverCoverageSession = (CoverageSession)xmlSerializer.Deserialize(outputFileStream)!;
 			var openCoverReport = openCoverCoverageSession.Modules.Module
@@ -216,7 +214,7 @@ public static partial class DotNetTasks
 		//for all bacthes etc. :
 		//dotnet test /p:CollectCoverage=true /p:MergeWith='/path/to/result.json'
 		var projectCoverageReports = inProgressReport.GetAllReports().Select(x => x.Report!).ToArray();
-		return new CoverageReport(projectResultDirectory, projectCoverageReports, projectToCoverageFileMap);
+		return new CoverageReport(projectResultDirectory, projectCoverageReports);
 	}
 
 	private static void LogTestReport(InProgressReport inProgressReport)
@@ -249,7 +247,7 @@ public static partial class DotNetTasks
 
 	private static bool TryGetTestProjectPath(string projectToTestPath, Solution solution, string testProjectSuffix, out string? testProjectPath)
 	{
-		string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
+		var unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
 		var unitTestProject = solution!.GetProject(unitTestProjectName);
 		if (unitTestProject is null)
 		{
@@ -263,10 +261,10 @@ public static partial class DotNetTasks
 
 	private static ProjectCoverageReport ParseOpencoverModule(Module module)
 	{
-		double projectBranchCoverage = Math.Round(module.Classes.Class
+		var projectBranchCoverage = Math.Round(module.Classes.Class
 			.Select(x => double.Parse(x.Summary.BranchCoverage, CultureInfo.InvariantCulture.NumberFormat))
 			.Average());
-		double projectSequenceCoverage = Math.Round(module.Classes.Class
+		var projectSequenceCoverage = Math.Round(module.Classes.Class
 			.Select(x => double.Parse(x.Summary.SequenceCoverage, CultureInfo.InvariantCulture.NumberFormat))
 			.Average());
 
@@ -279,9 +277,9 @@ public static partial class DotNetTasks
 			module.Classes.Class
 				.Select(classDto =>
 				{
-					string className = Path.GetFileNameWithoutExtension(classDto.FullName + ".cs");
-					double branchCoverage = ParseDouble(classDto.Summary.BranchCoverage);
-					double sequenceCoverage = ParseDouble(classDto.Summary.SequenceCoverage);
+					var className = Path.GetFileNameWithoutExtension(classDto.FullName + ".cs");
+					var branchCoverage = ParseDouble(classDto.Summary.BranchCoverage);
+					var sequenceCoverage = ParseDouble(classDto.Summary.SequenceCoverage);
 
 					return new ClassCoverageReport(className, branchCoverage, sequenceCoverage, classDto.Methods.Method
 						.Select(methodDto =>

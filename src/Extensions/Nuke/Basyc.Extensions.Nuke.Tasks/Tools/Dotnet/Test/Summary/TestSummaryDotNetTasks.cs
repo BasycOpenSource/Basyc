@@ -16,27 +16,27 @@ public static partial class DotNetTasks
 	private const string oldBadColor = "darkred_1";
 	private const string newBadColor = "red1";
 
-	public static CoverageSummary BasycTestCreateSummaryMarkdown(CoverageReport coverageReport)
-	{
-		string[] coverageFilePathPatterns = coverageReport.ProjectToCoverageFileMap.Select(x => x.Value.FullPath).ToArray();
-		var summaryOutputDir = TemporaryDirectory.CreateNew($"{nameof(BasycTestCreateSummaryMarkdown)}/CoverageSummary");
-		var historyDir = Directory.CreateDirectory(TemporaryDirectory.GetNewPath($"{nameof(BasycTestCreateSummaryMarkdown)}/CoverageHistory", false));
-		var summaryGenerator = new Generator();
-		summaryGenerator.GenerateReport(new ReportConfiguration(
-			coverageFilePathPatterns,
-			summaryOutputDir.FullPath,
-			Enumerable.Empty<string>(),
-			historyDir.FullName,
-			new[] { "MarkdownSummaryGithub", "MarkdownDeltaSummary", "JsonSummary", "Html", "TextSummary", "TextDeltaSummary" },
-			Enumerable.Empty<string>(),
-			Enumerable.Empty<string>(),
-			Enumerable.Empty<string>(),
-			Enumerable.Empty<string>(),
-			"Info",
-			null));
-
-		return new CoverageSummary(summaryOutputDir.FullPath);
-	}
+	// public static CoverageSummary BasycTestCreateSummaryMarkdown(CoverageReport coverageReport)
+	// {
+	// 	string[] coverageFilePathPatterns = coverageReport.ProjectToCoverageFileMap.Select(x => x.Value.FullPath).ToArray();
+	// 	var summaryOutputDir = TemporaryDirectory.CreateNew($"{nameof(BasycTestCreateSummaryMarkdown)}/CoverageSummary");
+	// 	var historyDir = Directory.CreateDirectory(TemporaryDirectory.GetNewPath($"{nameof(BasycTestCreateSummaryMarkdown)}/CoverageHistory", false));
+	// 	var summaryGenerator = new Generator();
+	// 	summaryGenerator.GenerateReport(new ReportConfiguration(
+	// 		coverageFilePathPatterns,
+	// 		summaryOutputDir.FullPath,
+	// 		Enumerable.Empty<string>(),
+	// 		historyDir.FullName,
+	// 		new[] { "MarkdownSummaryGithub", "MarkdownDeltaSummary", "JsonSummary", "Html", "TextSummary", "TextDeltaSummary" },
+	// 		Enumerable.Empty<string>(),
+	// 		Enumerable.Empty<string>(),
+	// 		Enumerable.Empty<string>(),
+	// 		Enumerable.Empty<string>(),
+	// 		"Info",
+	// 		null));
+	//
+	// 	return new CoverageSummary(summaryOutputDir.FullPath);
+	// }
 
 	public static void BasycTestCreateSummaryConsole(CoverageReport coverageReport, double minSequenceCoverage, double minBranchCoverage,
 		CoverageReport? oldCoverageReport = null)

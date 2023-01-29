@@ -6,26 +6,25 @@ using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.ProjectModel;
 
-#pragma warning disable CS8618
 [BasycContinuousPipeline(
-	CiProviders.GithubActions,
+	CiProvider.GithubActions,
 	HostOs.Linux,
 	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) })]
 [BasycPullRequestPipeline(
-	CiProviders.GithubActions,
+	CiProvider.GithubActions,
 	HostOs.Linux,
 	new[] { nameof(IBasycBuildCommonAll.StaticCodeAnalysisAll), nameof(IBasycBuildCommonAll.UnitTestAll) })]
 [BasycReleasePipeline(
-	CiProviders.GithubActions,
+	CiProvider.GithubActions,
 	HostOs.Linux,
-	new[] { nameof(IBasycBuilds.NugetReleaseAll) })]
-internal class Build : NukeBuild, IBasycBuilds
+	new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) })]
+class Build : NukeBuild, IBasycBuilds
 {
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-	private readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+	readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
 	[Solution(GenerateProjects = true, SuppressBuildProjectCheck = true)]
-	public Solution Solution;
+	public Solution Solution = null!;
 
 	Nuke.Common.ProjectModel.Solution IBasycBuildBase.Solution => Solution;
 	string IBasycBuildBase.BuildProjectName => "_build";

@@ -1,6 +1,4 @@
 ﻿using Basyc.MessageBus.Manager.Application;
-using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
@@ -8,7 +6,7 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 public class RequestToTypeBinder<TMessage>
 {
 	private static readonly Type messageRuntimeType;
-	private static Type[] requestParameterTypes;
+	private static Type[]? requestParameterTypes;
 	private static readonly PropertyInfo[] messageClassProperties;
 
 	static RequestToTypeBinder()
@@ -19,7 +17,6 @@ public class RequestToTypeBinder<TMessage>
 
 	public TMessage CreateMessage(Request request)
 	{
-
 		if (TryCreateMessageWithCtor(request, out var messageInstance))
 		{
 			return messageInstance!;
@@ -75,8 +72,8 @@ public class RequestToTypeBinder<TMessage>
 			return false;
 		}
 
-		TMessage messageInstance = Activator.CreateInstance<TMessage>();
-		for (int parameterIndex = 0; parameterIndex < requestParameterTypes.Length; parameterIndex++)
+		var messageInstance = Activator.CreateInstance<TMessage>();
+		for (var parameterIndex = 0; parameterIndex < requestParameterTypes.Length; parameterIndex++)
 		{
 			var requestParameterType = requestParameterTypes[parameterIndex];
 			var messagePropertyInfo = messageClassProperties[parameterIndex];

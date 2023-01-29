@@ -1,100 +1,110 @@
-﻿@using System.Windows.Input
-@typeparam TItems
+﻿@typeparam TItems
 <tableFilterView>
-    <MudTooltip Text="@Tooltip" Placement="Placement.Top">
-        <MudIconButton Icon="@Icons.Material.Filled.FilterList" Size="Size.Small" OnClick="(a)=>ToggleSelection()" />
-    </MudTooltip>
-    @{
-        var display = showSelection ? "" : "none";
-        var selectionStyle = $"display: {display};";
-        <selectionPositioner>
-            <selection style="@selectionStyle">
-                @{
-                    <MudCheckBox T="bool"
-                         Checked="isAllItemsSelected"
-                         Size="Size.Small"
-                         Dense="true"
-                         CheckedChanged="async (isSelected)=>await AllItemsCheckedChanged(isSelected)">
-                        all
-                    </MudCheckBox>
+	<MudTooltip Text="@Tooltip" Placement="Placement.Top">
+		<MudIconButton Icon="@Icons.Material.Filled.FilterList" Size="Size.Small" OnClick="a => ToggleSelection()"/>
+	</MudTooltip>
+	@{
+		var display = showSelection ? "" : "none";
+		var selectionStyle = $"display: {display};";
+		<selectionPositioner>
+			<selection style="@selectionStyle">
+				@{
+					<MudCheckBox T="bool"
+					             Checked="isAllItemsSelected"
+					             Size="Size.Small"
+					             Dense="true"
+					             CheckedChanged="async isSelected => await AllItemsCheckedChanged(isSelected)">
+						all
+					</MudCheckBox>
 
-                    foreach (var itemToSelect in ItemsToSelect)
-                    {
-                        <MudCheckBox T="bool"
-                         Checked="SelectedItems.Contains((TItems)itemToSelect)"
-                         Size="Size.Small"
-                         Dense="true"
-                         CheckedChanged="async (isSelected)=>await ItemCheckedChanged((TItems)itemToSelect, isSelected)">
-                            @ItemsToSelectDisplayConverter.Invoke(itemToSelect)
-                        </MudCheckBox>
-                    }
-                }
-            </selection>
-        </selectionPositioner>
+					foreach (var itemToSelect in ItemsToSelect)
+					{
+						<MudCheckBox T="bool"
+						             Checked="SelectedItems.Contains(itemToSelect)"
+						             Size="Size.Small"
+						             Dense="true"
+						             CheckedChanged="async isSelected => await ItemCheckedChanged((TItems)itemToSelect, isSelected)">
+							@ItemsToSelectDisplayConverter.Invoke(itemToSelect)
+						</MudCheckBox>
+					}
+				}
+			</selection>
+		</selectionPositioner>
 
-    }
+	}
 
 </tableFilterView>
 
 @code {
 
-    [Parameter] public string Tooltip { get; set; }
-    [Parameter] public List<TItems> SelectedItems { get; set; } = new List<TItems>();
-    [Parameter] public EventCallback<List<TItems>> SelectedItemsChanged { get; set; }
-    [Parameter] public TItems[] ItemsToSelect { get; set; }
-    [Parameter] public Func<TItems, string> ItemsToSelectDisplayConverter { get; set; } = (x) => x.ToString();
-    private bool showSelection;
-    private void ToggleSelection()
-    {
-        showSelection = !showSelection;
-    }
+	[Parameter]
+	public string Tooltip { get; set; } = null!;
 
-    private async Task ItemCheckedChanged(TItems selectedItem, bool isSelected)
-    {
-        if (isSelected)
-        {
-            if (SelectedItems.Contains(selectedItem) is false)
-                SelectedItems.Add(selectedItem);
+	[Parameter]
+	public List<TItems> SelectedItems { get; set; } = new();
 
-            if (SelectedItems.Count == ItemsToSelect.Length)
-                isAllItemsSelected = true;
-        }
-        else
-        {
-            if (SelectedItems.Contains(selectedItem) is true)
-                SelectedItems.Remove(selectedItem);
+	[Parameter]
+	public EventCallback<List<TItems>> SelectedItemsChanged { get; set; }
 
-            isAllItemsSelected = false;
-        }
-        await SelectedItemsChanged.InvokeAsync(SelectedItems);
-    }
+	[Parameter]
+	public TItems[] ItemsToSelect { get; set; } = null!;
 
-    private async Task AllItemsCheckedChanged(bool isSelected)
-    {
-        isAllItemsSelected = isSelected;
-        if (isSelected)
-        {
-            SelectedItems.Clear();
-            SelectedItems.AddRange(ItemsToSelect);
-        }
-        else
-        {
-            SelectedItems.Clear();
-        }
+	[Parameter]
+	public Func<TItems, string> ItemsToSelectDisplayConverter { get; set; } = x => x!.ToString()!;
 
-        await SelectedItemsChanged.InvokeAsync(SelectedItems);
-    }
+	private bool showSelection;
 
-    protected override void OnParametersSet()
-    {
-        if (typeof(TItems).IsEnum && ItemsToSelect is null)
-        {
-            ItemsToSelect = Enum.GetValues(typeof(TItems)).Cast<TItems>().ToArray();
-        }
-        isAllItemsSelected = SelectedItems.Count == ItemsToSelect.Length;
+	private void ToggleSelection()
+	{
+		showSelection = !showSelection;
+	}
 
-        base.OnParametersSet();
-    }
+	private async Task ItemCheckedChanged(TItems selectedItem, bool isSelected)
+	{
+		if (isSelected)
+		{
+			if (SelectedItems.Contains(selectedItem) is false)
+				SelectedItems.Add(selectedItem);
 
-    private bool isAllItemsSelected;
+			if (SelectedItems.Count == ItemsToSelect.Length)
+				isAllItemsSelected = true;
+		}
+		else
+		{
+			if (SelectedItems.Contains(selectedItem) is true)
+				SelectedItems.Remove(selectedItem);
+
+			isAllItemsSelected = false;
+		}
+		await SelectedItemsChanged.InvokeAsync(SelectedItems);
+	}
+
+	private async Task AllItemsCheckedChanged(bool isSelected)
+	{
+		isAllItemsSelected = isSelected;
+		if (isSelected)
+		{
+			SelectedItems.Clear();
+			SelectedItems.AddRange(ItemsToSelect);
+		}
+		else
+		{
+			SelectedItems.Clear();
+		}
+
+		await SelectedItemsChanged.InvokeAsync(SelectedItems);
+	}
+
+	protected override void OnParametersSet()
+	{
+		if (typeof(TItems).IsEnum && ItemsToSelect is null)
+		{
+			ItemsToSelect = Enum.GetValues(typeof(TItems)).Cast<TItems>().ToArray();
+		}
+		isAllItemsSelected = SelectedItems.Count == ItemsToSelect.Length;
+
+		base.OnParametersSet();
+	}
+
+	private bool isAllItemsSelected;
 }

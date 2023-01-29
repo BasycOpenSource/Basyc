@@ -1,8 +1,6 @@
 ﻿using Basyc.MessageBus.Shared;
 using Basyc.Serialization.Abstraction;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using Throw;
 
 namespace Basyc.MessageBus.Client;
 
@@ -20,7 +18,9 @@ public class ObjectFromByteMessageBusClient : IObjectMessageBusClient
 	public void Dispose()
 	{
 		if (byteMessageBusClient is IDisposable disposable)
+		{
 			disposable.Dispose();
+		}
 	}
 
 	public BusTask PublishAsync(string eventType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
@@ -40,16 +40,23 @@ public class ObjectFromByteMessageBusClient : IObjectMessageBusClient
 		var busTask = innerBusTask.ContinueWith<object>(x =>
 		{
 			var deseriResult = objectToByteSerailizer.Deserialize(x.ResponseBytes, x.ResposneType);
+			deseriResult.ThrowIfNull();
 			return deseriResult;
 		});
 		return busTask;
 	}
 
-	public BusTask<object> RequestAsync(string requestType, object requestData, RequestContext requestContext = default, CancellationToken cancellationToken = default)
+	public BusTask<object> RequestAsync(string requestType, object requestData, RequestContext requestContext = default,
+		CancellationToken cancellationToken = default)
 	{
 		var requestBytes = objectToByteSerailizer.Serialize(requestData, requestType);
 		var innerBusTask = byteMessageBusClient.RequestAsync(requestType, requestBytes, requestContext, cancellationToken);
-		var busTask = BusTask<object>.FromBusTask(innerBusTask, byteResponse => objectToByteSerailizer.Deserialize(byteResponse.ResponseBytes, byteResponse.ResposneType));
+		var busTask = BusTask<object>.FromBusTask(innerBusTask, byteResponse =>
+		{
+			var deseriliazed = objectToByteSerailizer.Deserialize(byteResponse.ResponseBytes, byteResponse.ResposneType);
+			deseriliazed.ThrowIfNull();
+			return deseriliazed;
+		});
 		return busTask;
 	}
 

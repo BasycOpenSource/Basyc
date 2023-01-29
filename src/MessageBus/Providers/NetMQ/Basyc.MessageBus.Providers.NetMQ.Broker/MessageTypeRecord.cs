@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Basyc.MessageBus.Broker.NetMQ;
+﻿namespace Basyc.MessageBus.Broker.NetMQ;
 
 public class MessageTypeRecord
 {
-	public MessageTypeRecord(string MessageType, List<string> WorkerAddresses, int LastUsedWorker)
+	public MessageTypeRecord(string messageType, List<string> workerAddresses, int lastUsedWorker)
 	{
-		this.MessageType = MessageType;
-		this.WorkerIds = WorkerAddresses;
-		this.LastUsedWorkerId = LastUsedWorker;
+		MessageType = messageType;
+		WorkerIds = workerAddresses;
+		LastUsedWorkerId = lastUsedWorker;
 	}
 
 	public string MessageType { get; }

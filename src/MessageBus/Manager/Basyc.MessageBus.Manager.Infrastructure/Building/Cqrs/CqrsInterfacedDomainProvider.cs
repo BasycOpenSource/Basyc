@@ -3,9 +3,7 @@ using Basyc.MessageBus.Manager.Application.Initialization;
 using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Throw;
 using static Basyc.MessageBus.Manager.Infrastructure.CqrsInterfacedDomainProviderOptions;
 
 namespace Basyc.MessageBus.Manager.Infrastructure;
@@ -13,12 +11,12 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 public class CqrsInterfacedDomainProvider : IDomainInfoProvider
 {
 	private readonly ITypedDomainNameFormatter domainNameFormatter;
-	private readonly ITypedRequestNameFormatter requestNameFormatter;
-	private readonly ITypedParameterNameFormatter parameterNameFormatter;
-	private readonly ITypedResponseNameFormatter responseNameFormatter;
-	private readonly IRequestInfoTypeStorage requestInfoTypeStorage;
 	private readonly IOptions<CqrsInterfacedDomainProviderOptions> options;
+	private readonly ITypedParameterNameFormatter parameterNameFormatter;
 	private readonly IRequesterSelector requesterSelector;
+	private readonly IRequestInfoTypeStorage requestInfoTypeStorage;
+	private readonly ITypedRequestNameFormatter requestNameFormatter;
+	private readonly ITypedResponseNameFormatter responseNameFormatter;
 
 	public CqrsInterfacedDomainProvider(
 		ITypedDomainNameFormatter domainNameFormatter,
@@ -28,7 +26,7 @@ public class CqrsInterfacedDomainProvider : IDomainInfoProvider
 		IRequestInfoTypeStorage requestInfoTypeStorage,
 		IOptions<CqrsInterfacedDomainProviderOptions> options,
 		IRequesterSelector requesterSelector
-		)
+	)
 	{
 		this.parameterNameFormatter = parameterNameFormatter;
 		this.responseNameFormatter = responseNameFormatter;
@@ -44,8 +42,9 @@ public class CqrsInterfacedDomainProvider : IDomainInfoProvider
 		//var domains = new List<DomainInfo>();
 		var domains = new Dictionary<string, List<RequestInfo>>();
 
-		foreach (var registration in options.Value.GetCQRSRegistrations())
+		foreach (var registration in options.Value.GetcqrsRegistrations())
 		{
+			registration.DomainName.ThrowIfNull();
 			domains.TryAdd(registration.DomainName, new List<RequestInfo>());
 			var requestInfos = domains[registration.DomainName];
 
@@ -53,12 +52,12 @@ public class CqrsInterfacedDomainProvider : IDomainInfoProvider
 			{
 				foreach (var type in assemblyWithMessages.GetTypes())
 				{
-					if (TryParseRequestType(registration, type, out RequestType requestType, out bool hasResponse, out Type responseType))
+					if (TryParseRequestType(registration, type, out var requestType, out var hasResponse, out var responseType))
 					{
-						List<ParameterInfo> paramInfos = TypedProviderHelper.HarvestParameterInfos(type, parameterNameFormatter);
-
-						RequestInfo requestInfo = hasResponse
-							? new RequestInfo(requestType, paramInfos, responseType, requestNameFormatter.GetFormattedName(type), responseNameFormatter.GetFormattedName(responseType))
+						var paramInfos = TypedProviderHelper.HarvestParameterInfos(type, parameterNameFormatter);
+						var requestInfo = hasResponse
+							? new RequestInfo(requestType, paramInfos, responseType!, requestNameFormatter.GetFormattedName(type),
+								responseNameFormatter.GetFormattedName(responseType!))
 							: new RequestInfo(requestType, paramInfos, requestNameFormatter.GetFormattedName(type));
 						requestInfos.Add(requestInfo);
 
@@ -74,57 +73,65 @@ public class CqrsInterfacedDomainProvider : IDomainInfoProvider
 	}
 
 	/// <summary>
-	/// False if type is not a request
+	///     False if type is not a request
 	/// </summary>
 	/// <param name="type"></param>
-	/// <param name="requesType"></param>
+	/// <param name="requestType"></param>
 	/// <param name="hasResponse"></param>
 	/// <param name="responseType"></param>
 	/// <returns></returns>
-	private bool TryParseRequestType(CQRSRegistration cQRSRegistration, Type type, out RequestType requesType, out bool hasResponse, out Type responseType)
+	private bool TryParseRequestType(CqrsRegistration cqrsRegistration, Type type, out RequestType requestType, out bool hasResponse,
+		out Type? responseType)
 	{
 		responseType = null;
 		hasResponse = false;
-		requesType = default;
+		requestType = default;
 
 		if (type.IsClass is false)
+		{
 			return false;
+		}
+
 		if (type.IsAbstract is true)
+		{
 			return false;
+		}
 
-		if (cQRSRegistration.IQueryType is not null && type.GetInterface(cQRSRegistration.IQueryType.Name) is not null)
+		if (cqrsRegistration.QueryInterfaceType is not null && type.GetInterface(cqrsRegistration.QueryInterfaceType.Name) is not null)
 		{
-			requesType = RequestType.Query;
+			requestType = RequestType.Query;
 			hasResponse = true;
-			responseType = GenericsHelper.GetTypeArgumentsFromParent(type, cQRSRegistration.IQueryType)[0];
+			responseType = type.GetTypeArgumentsFromParent(cqrsRegistration.QueryInterfaceType)[0];
 			return true;
 		}
 
-		if (cQRSRegistration.ICommandType is not null && type.GetInterface(cQRSRegistration.ICommandType.Name) is not null)
+		if (cqrsRegistration.CommandInterfaceType is not null && type.GetInterface(cqrsRegistration.CommandInterfaceType.Name) is not null)
 		{
-			requesType = RequestType.Command;
+			requestType = RequestType.Command;
 			return true;
 		}
 
-		if (cQRSRegistration.ICommandWithResponseType is not null && type.GetInterface(cQRSRegistration.ICommandWithResponseType.Name) is not null)
+		if (cqrsRegistration.CommandWithResponseInterfaceType is not null &&
+			type.GetInterface(cqrsRegistration.CommandWithResponseInterfaceType.Name) is not null)
 		{
-			requesType = RequestType.Command;
+			requestType = RequestType.Command;
 			hasResponse = true;
-			responseType = GenericsHelper.GetTypeArgumentsFromParent(type, cQRSRegistration.ICommandWithResponseType)[0];
+			responseType = type.GetTypeArgumentsFromParent(cqrsRegistration.CommandWithResponseInterfaceType)[0];
 			return true;
 		}
 
-		if (cQRSRegistration.IMessageType is not null && type.GetInterface(cQRSRegistration.IMessageType.Name) is not null)
+		if (cqrsRegistration.MessageInterfaceType is not null && type.GetInterface(cqrsRegistration.MessageInterfaceType.Name) is not null)
 		{
-			requesType = RequestType.Generic;
+			requestType = RequestType.Generic;
 			return true;
 		}
 
-		if (cQRSRegistration.IMessageWithResponseType is not null && type.GetInterface(cQRSRegistration.IMessageWithResponseType.Name) is not null)
+		if (cqrsRegistration.MessageWithResponseInterfaceType is not null &&
+			type.GetInterface(cqrsRegistration.MessageWithResponseInterfaceType.Name) is not null)
 		{
-			requesType = RequestType.Generic;
+			requestType = RequestType.Generic;
 			hasResponse = true;
-			responseType = GenericsHelper.GetTypeArgumentsFromParent(type, cQRSRegistration.IMessageWithResponseType)[0];
+			responseType = type.GetTypeArgumentsFromParent(cqrsRegistration.MessageWithResponseInterfaceType)[0];
 			return true;
 		}
 

@@ -8,23 +8,23 @@ namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
 
 public static class DotnetWrapper
 {
-
-	public static bool FormatVerifyNoChanges(string workingDirectory, string project, IEnumerable<string> filesTocheck, out DotnetFormatReport report, out ProcessException? processException)
+	public static bool FormatVerifyNoChanges(string workingDirectory, string project, IEnumerable<string> filesToCheck, out DotnetFormatReport report,
+		out ProcessException? processException)
 	{
-		filesTocheck = filesTocheck.Select(x => Path.GetRelativePath(Path.GetDirectoryName(project)!, x).Replace('\\', '/'));
+		filesToCheck = filesToCheck.Select(x => Path.GetRelativePath(Path.GetDirectoryName(project)!, x).Replace('\\', '/'));
 
 		string formatReportFilePath = Path.GetTempPath() + $"dotnetFormatReport-{Random.Shared.Next()}.json";
 
-		bool isFormated;
+		bool isFormatted;
 		try
 		{
-			string includeParam = string.Join(' ', filesTocheck);
-			string include = filesTocheck.Any() ? $" --include {includeParam}" : "";
+			string includeParam = string.Join(' ', filesToCheck);
+			string include = filesToCheck.Any() ? $" --include {includeParam}" : "";
 			DotNet($"format \"{project}\"{include} --verify-no-changes --no-restore --report \"{formatReportFilePath}\" --verbosity quiet",
-			logOutput: false,
-			workingDirectory: workingDirectory);
+				logOutput: false,
+				workingDirectory: workingDirectory);
 
-			isFormated = true;
+			isFormatted = true;
 			processException = null;
 			report = new DotnetFormatReport(Array.Empty<ReportRecord>());
 		}
@@ -36,25 +36,29 @@ public static class DotnetWrapper
 				throw;
 			}
 
-			isFormated = false;
+			isFormatted = false;
 			processException = ex;
 			string fileContent = File.ReadAllText(formatReportFilePath);
-			report = new(JsonConvert.DeserializeObject<ReportRecord[]>(fileContent));
+			report = new DotnetFormatReport(JsonConvert.DeserializeObject<ReportRecord[]>(fileContent));
 		}
 
 		File.Delete(formatReportFilePath);
-		return isFormated;
+		return isFormatted;
 	}
 
 	public static void NugetSignWithFile(IEnumerable<string> packagesPaths, string certPath, string? certPassword)
 	{
-		DotNet($"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {certPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite", logOutput: false);
+		DotNet(
+			$"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {certPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite",
+			logOutput: false);
 	}
 
 	public static void NugetSignWithBase64(IEnumerable<string> packagesPaths, string base64Cert, string? certPassword)
 	{
 		byte[] certContent = Convert.FromBase64String(base64Cert);
 		using var cert = TemporaryFile.CreateNewWith(fileExtension: "pfx", content: certContent);
-		DotNet($"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {cert.FullPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite", logOutput: false);
+		DotNet(
+			$"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {cert.FullPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite",
+			logOutput: false);
 	}
 }

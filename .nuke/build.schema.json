@@ -72,12 +72,15 @@
           "items": {
             "type": "string",
             "enum": [
+              "BranchCheckAffected",
+              "BranchCheckAll",
               "CleanAll",
               "CompileAffected",
               "CompileAll",
               "NugetReleaseAll",
               "NugetReleaseCheck",
-              "PullRequestCheck",
+              "PullRequestCheckAffected",
+              "PullRequestCheckAll",
               "RestoreAffected",
               "RestoreAll",
               "StaticCodeAnalysisAffected",
@@ -97,12 +100,15 @@
           "items": {
             "type": "string",
             "enum": [
+              "BranchCheckAffected",
+              "BranchCheckAll",
               "CleanAll",
               "CompileAffected",
               "CompileAll",
               "NugetReleaseAll",
               "NugetReleaseCheck",
-              "PullRequestCheck",
+              "PullRequestCheckAffected",
+              "PullRequestCheckAll",
               "RestoreAffected",
               "RestoreAll",
               "StaticCodeAnalysisAffected",

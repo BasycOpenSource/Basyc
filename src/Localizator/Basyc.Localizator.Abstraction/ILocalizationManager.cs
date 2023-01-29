@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basyc.Localizator.Abstraction;
 
@@ -12,14 +9,18 @@ public interface ILocalizationManager
 
 	IDictionary<string, ILocalizatedSection> GetSections();
 	ILocalizatedSection GetSection(string sectionName);
+
 	/// <summary>
-	/// Returns false if section does not exist.
+	///     Returns false if section does not exist.
 	/// </summary>
 	/// <param name="sectionName"></param>
 	/// <returns></returns>
-	bool TryGetSection(string sectionName, out ILocalizatedSection localizatedSection);
+	bool TryGetSection(string sectionName, [NotNullWhen(true)] out ILocalizatedSection? localizatedSection);
+
 	Task SaveOrUpdateLocalizators(params ILocalizator[] localizators);
+
 	event EventHandler<SectionCultureChangedArgs> SectionCultureChanged;
+
 	//void ChangeDefaultCulture(CultureInfo newCulture);
 	void ChangeDefaultSectionCulture(string sectionName, CultureInfo newCulture);
 }

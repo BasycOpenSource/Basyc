@@ -11,4 +11,8 @@
 		<ProjectReference Include="..\..\..\..\Serialization\Basyc.Serialization.ProtobufNet\Basyc.Serialization.ProtobufNet.csproj" />
 		<ProjectReference Include="..\..\..\Basyc.MessageBus.Shared\Basyc.MessageBus.Shared.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Throw" Version="1.3.1" />
+	</ItemGroup>
 </Project>

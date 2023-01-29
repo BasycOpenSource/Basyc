@@ -3,7 +3,7 @@ using Basyc.MessageBus.Client.Building;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class IServiceCollectionMessageBusExtensions
+public static class ServiceCollectionMessageBusExtensions
 {
 	public static BusClientSetupHandlersStage AddBasycMessageBus(this IServiceCollection services)
 	{

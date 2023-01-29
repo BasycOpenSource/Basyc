@@ -2,29 +2,28 @@
 
 public static class CorrectMethodsClientCanCallHubs
 {
-	public static Type[] CorrectMethodsClientCanCallTypes = new Type[]
+	public static Type[] CorrectMethodsClientCanCallTypes =
 	{
-		typeof(ICorrectMethodsClientCanCall_NoMethods),
-		typeof(ICorrectMethodsClientCanCall_Voids),
-		typeof(ICorrectMethodsClientCanCall_Tasks),
-		typeof(ICorrectMethodsClientCanCall_Inherited_Voids),
-		typeof(ICorrectMethodsClientCanCall_AllCorrect),
+		typeof(ICorrectMethodsClientCanCallNoMethods),
+		typeof(ICorrectMethodsClientCanCallVoids),
+		typeof(ICorrectMethodsClientCanCallTasks),
+		typeof(ICorrectMethodsClientCanCallInheritedVoids),
+		typeof(ICorrectMethodsClientCanCallAllCorrect)
 	};
 }
 
-public interface ICorrectMethodsClientCanCall_NoMethods
+public interface ICorrectMethodsClientCanCallNoMethods
 {
-
 }
 
-public interface ICorrectMethodsClientCanCall_Voids
+public interface ICorrectMethodsClientCanCallVoids
 {
 	void SendNothing();
 	void SendNumber(int number);
 	void SendIntString(int number, string name);
 }
 
-public interface ICorrectMethodsClientCanCall_Tasks
+public interface ICorrectMethodsClientCanCallTasks
 {
 	Task SendNothingAsync();
 	Task SendIntAsync(int number);
@@ -32,14 +31,13 @@ public interface ICorrectMethodsClientCanCall_Tasks
 	Task SendIntStringCancelAsync(int number, string name, CancellationToken cancellationToken);
 }
 
-public interface ICorrectMethodsClientCanCall_Inherited_Voids : ICorrectMethodsClientCanCall_Voids
+public interface ICorrectMethodsClientCanCallInheritedVoids : ICorrectMethodsClientCanCallVoids
 {
-
 }
 
-public interface ICorrectMethodsClientCanCall_AllCorrect :
-	ICorrectMethodsClientCanCall_NoMethods,
-	ICorrectMethodsClientCanCall_Voids,
-	ICorrectMethodsClientCanCall_Tasks
+public interface ICorrectMethodsClientCanCallAllCorrect :
+	ICorrectMethodsClientCanCallNoMethods,
+	ICorrectMethodsClientCanCallVoids,
+	ICorrectMethodsClientCanCallTasks
 {
 }
