@@ -7,64 +7,44 @@ namespace Basyc.Extensions.Nuke.Targets;
 
 public interface IBasycBuildCommonAffected : IBasycBuildBase
 {
-	[AffectedReport] AffectedReport AffectedReport => TryGetValue(() => AffectedReport)!;
+	[AffectedReport] RepositoryChangeReport RepositoryChangeReport => TryGetValue(() => RepositoryChangeReport)!;
 
 	Target BranchCheckAffected => _ => _
 		.DependentFor(StaticCodeAnalysisAffected, RestoreAffected, CompileAffected, UnitTestAffected, RestoreAffected)
 		.Executes(BranchCheck);
 
-	Target PullRequestCheckAffected => _ => _
+	Target ChangeReportCheck => _ => _
 		.DependentFor(StaticCodeAnalysisAffected, RestoreAffected, CompileAffected, UnitTestAffected, RestoreAffected)
-		.OnlyWhenStatic(() => IsPullRequest)
-		.Executes(PullRequestCheck);
+		.Executes(RepositoryChangeReport.ThrowIfNotValid);
 
 	Target StaticCodeAnalysisAffected => _ => _
 		.Before(CompileAffected)
 		.Executes(() =>
 		{
-			AffectedReport.ThrowIfNotValid();
-			BasycDotNetFormatVerifyNoChangesAffected(AffectedReport!);
+			BasycDotNetFormatVerifyNoChangesAffected(RepositoryChangeReport!);
 		});
 
 	Target RestoreAffected => _ => _
 		.Before(CompileAffected)
 		.Executes(() =>
 		{
-			AffectedReport.ThrowIfNotValid();
-			BasycDotNetRestoreAffected(AffectedReport, UnitTestSettings.UnitTestSuffix, BuildProjectName, Solution);
+			BasycDotNetRestoreAffected(RepositoryChangeReport, UnitTestSettings.UnitTestSuffix, BuildProjectName, Solution);
 		});
 
 	Target CompileAffected => _ => _
 		.DependsOn(RestoreAffected)
 		.Executes(() =>
 		{
-			AffectedReport.ThrowIfNotValid();
-			BasycDotNetBuildAffected(AffectedReport, UnitTestSettings.UnitTestSuffix, BuildProjectName, Solution);
+			BasycDotNetBuildAffected(RepositoryChangeReport, UnitTestSettings.UnitTestSuffix, BuildProjectName, Solution);
 		});
 
 	Target UnitTestAffected => _ => _
 		.DependsOn(CompileAffected)
 		.Executes(() =>
 		{
-			AffectedReport.ThrowIfNotValid();
-			var oldCoverageFile =
-				$"{TestHistoryDirectory / GitFlowHelper.GetGitFlowSourceBranch(Repository.Branch!).ToString()}.json";
-			using var coverageReport = BasycUnitTestAffected(Solution, AffectedReport, UnitTestSettings.UnitTestSuffix,
-				UnitTestSettings);
-			if (File.Exists(oldCoverageFile))
-			{
-				var newCoverageFile = $"{TestHistoryDirectory / Repository.Branch!.Replace('/', '-')}.json";
-				using var oldCoverage = BasycCoverageLoadFromFile(oldCoverageFile);
-				BasycCoverageSaveToFile(oldCoverage, newCoverageFile);
-				BasycTestCreateSummaryConsole(coverageReport, UnitTestSettings.SequenceMinimum,
-					UnitTestSettings.BranchMinimum, oldCoverage);
-			}
-			else
-			{
-				BasycTestCreateSummaryConsole(coverageReport, UnitTestSettings.SequenceMinimum,
-					UnitTestSettings.BranchMinimum);
-			}
-
-			BasycTestAssertMinimum(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
+			using var newCoverageReport = BasycUnitTestAffected(Solution, RepositoryChangeReport, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
+			Repository.TestsHistory.TryGetHistory(GitFlowHelper.GetSourceBranchType(GitRepository.Branch!).ToString(), out var oldCoverageReport);
+			BasycTestCreateSummaryConsole(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum, oldCoverageReport);
+			BasycTestAssertMinimum(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
 		});
 }

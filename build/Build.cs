@@ -8,15 +8,15 @@ using Nuke.Common.ProjectModel;
 
 [BasycContinuousPipeline(
 	CiProvider.GithubActions,
-	HostOs.Linux,
+	PipelineOs.Linux,
 	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) })]
 [BasycPullRequestPipeline(
 	CiProvider.GithubActions,
-	HostOs.Linux,
+	PipelineOs.Linux,
 	new[] { nameof(IBasycBuildCommonAll.StaticCodeAnalysisAll), nameof(IBasycBuildCommonAll.UnitTestAll) })]
 [BasycReleasePipeline(
 	CiProvider.GithubActions,
-	HostOs.Linux,
+	PipelineOs.Linux,
 	new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) })]
 class Build : NukeBuild, IBasycBuilds
 {
@@ -27,20 +27,28 @@ class Build : NukeBuild, IBasycBuilds
 	public Solution Solution = null!;
 
 	Nuke.Common.ProjectModel.Solution IBasycBuildBase.Solution => Solution;
+
 	string IBasycBuildBase.BuildProjectName => "_build";
-	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance is not null && GitHubActions.Instance.IsPullRequest;
-	string IBasycBuildBase.PullRequestSourceBranch => GitHubActions.Instance.GetPullRequestSourceBranch();
-	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.GetPullRequestTargetBranch();
 	string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 	string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
 
 	UnitTestSettings IBasycBuildBase.UnitTestSettings => UnitTestSettings.Create()
-		.SetBranchMinimum(50)
-		.SetSequenceMinimum(50)
+		.SetBranchMinimum(0)
+		.SetSequenceMinimum(0)
 		.Exclude(Solution.buildFolder._build);
+
+	PullRequestSettings IBasycBuildBase.PullRequestSettings => PullRequestSettings.Create()
+		.SetIsPullRequest(GitHubActions.Instance is not null && GitHubActions.Instance.IsPullRequest)
+		.SetSourceBranch(GitHubActions.Instance?.GetPullRequestSourceBranch())
+		.SetTargetBranch(GitHubActions.Instance?.GetPullRequestTargetBranch());
+
+	// PullRequestSettings IBasycBuildBase.PullRequestSettings => PullRequestSettings.Create()
+	// 	.SetIsPullRequest(true)
+	// 	.SetSourceBranch("feature/GitOps")
+	// 	.SetTargetBranch("develop");
 
 	public static int Main()
 	{
-		return Execute<Build>(x => ((IBasycBuilds)x).UnitTestAffected);
+		return Execute<Build>(x => ((IBasycBuilds)x).UnitTestAll);
 	}
 }

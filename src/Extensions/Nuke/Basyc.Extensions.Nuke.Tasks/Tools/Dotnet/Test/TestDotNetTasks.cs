@@ -23,7 +23,7 @@ public static partial class DotNetTasks
 {
 	private static readonly XmlSerializer xmlSerializer = new(typeof(CoverageSession));
 
-	public static CoverageReport BasycUnitTestAffected(Solution solution, AffectedReport gitCompareReport, string testProjectSuffix,
+	public static CoverageReport BasycUnitTestAffected(Solution solution, RepositoryChangeReport gitCompareReport, string testProjectSuffix,
 		UnitTestSettings projectTestException)
 	{
 		var projectsToTestPaths = gitCompareReport.ChangedSolutions
@@ -39,14 +39,12 @@ public static partial class DotNetTasks
 			.ToArray();
 
 		if (changedTestProjectPaths.Any())
-		{
 			foreach (var changedTestProjectPath in changedTestProjectPaths)
 			{
 				var projectName = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(changedTestProjectPath));
 				var projectPath = solution.GetProject(projectName).Path.ToString().NormalizePath();
 				projectsToTestPaths.Add(projectPath);
 			}
-		}
 
 		return UnitTest(solution, projectsToTestPaths, testProjectSuffix, projectTestException);
 	}
@@ -67,28 +65,20 @@ public static partial class DotNetTasks
 		report.Projects.ForEach(projectReport =>
 		{
 			if (projectReport.CoverageExcluded)
-			{
 				return;
-			}
 
 			if (projectReport.SequenceCoverage >= minSequenceCoverage && projectReport.BranchCoverage >= minBranchCoverage)
-			{
 				return;
-			}
 
 			classErrorStringBuilder.AppendLine($"Project '{projectReport.Name}'");
 			projectReport.Classes.ForEach(classReport =>
 			{
 				var classErrors = new List<string>();
 				if (classReport.SequenceCoverage < minSequenceCoverage)
-				{
 					classErrors.Add($"Sequence coverage {classReport.SequenceCoverage}% should be {minSequenceCoverage}%");
-				}
 
 				if (classReport.BranchCoverage < minBranchCoverage)
-				{
 					classErrors.Add($"Branch coverage {classReport.BranchCoverage}% should be {minBranchCoverage}%");
-				}
 
 				if (classErrors.Any())
 				{
@@ -102,23 +92,17 @@ public static partial class DotNetTasks
 				}
 
 				if (classReport.Methods.Any())
-				{
 					classErrorStringBuilder.AppendLine();
-				}
 
 				classReport.Methods.ForEach(method =>
 				{
 					var methodErrors = new List<string>();
 
 					if (method.SequenceCoverage < minSequenceCoverage)
-					{
 						methodErrors.Add($"Sequence coverage {method.SequenceCoverage}% should be {minSequenceCoverage}%.");
-					}
 
 					if (method.BranchCoverage < minBranchCoverage)
-					{
 						methodErrors.Add($"Branch coverage {method.BranchCoverage}% should be {minBranchCoverage}%.");
-					}
 
 					if (methodErrors.Any())
 					{
@@ -143,9 +127,7 @@ public static partial class DotNetTasks
 		});
 
 		if (errors.Any())
-		{
 			throw new Exception("Some projects do not meet coverage minimum.");
-		}
 	}
 
 	public static void BasycCoverageSaveToFile(CoverageReport coverageReport, string path)
@@ -198,17 +180,13 @@ public static partial class DotNetTasks
 				.FirstOrDefault();
 
 			if (openCoverReport == default)
-			{
 				//When parsing a open cover file returns 0 modules.
 				//It means that there are 0 tests inside the test project
 				//that is testing project to test.
 				inProgressReport.Complete(testProjectReport.ProjectToTestName,
 					new ProjectCoverageReport(testProjectReport.ProjectToTestName, true, false, 0, 0, Array.Empty<ClassCoverageReport>()));
-			}
 			else
-			{
 				inProgressReport.Complete(testProjectReport.ProjectToTestName, openCoverReport);
-			}
 		}
 
 		//for all bacthes etc. :
@@ -230,10 +208,8 @@ public static partial class DotNetTasks
 			{
 				Log.Debug($"			Class: {classReport.Name} BranchCoverage: {classReport.BranchCoverage}% SequenceCoverage: {classReport.SequenceCoverage}%");
 				foreach (var methodReport in classReport.Methods)
-				{
 					Log.Debug(
 						$"				Method: {classReport.Name} BranchCoverage: {methodReport.BranchCoverage}% SequenceCoverage: {methodReport.SequenceCoverage}%");
-				}
 			}
 		}
 	}
@@ -289,8 +265,8 @@ public static partial class DotNetTasks
 				.ToArray());
 	}
 
-	private static double ParseDouble(string nubmer)
+	private static double ParseDouble(string number)
 	{
-		return double.Parse(nubmer, CultureInfo.InvariantCulture.NumberFormat);
+		return double.Parse(number, CultureInfo.InvariantCulture.NumberFormat);
 	}
 }

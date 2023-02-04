@@ -1,24 +1,23 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
-using Nuke.Common.Git;
 using Nuke.Common.Tools.DotNet;
 using static Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.DotNetTasks;
+using static Basyc.Extensions.Nuke.Tasks.Tools.Git.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+
 
 namespace Basyc.Extensions.Nuke.Targets;
 
 public interface IBasycBuildCommonAll : IBasycBuildBase
 {
-	[GitRepository] protected new GitRepository Repository => TryGetValue(() => Repository)!;
-
 	Target BranchCheckAll => _ => _
 		.DependentFor(StaticCodeAnalysisAll, CleanAll, RestoreAll, CompileAll, UnitTestAll, RestoreAll)
 		.Executes(BranchCheck);
 
 	Target PullRequestCheckAll => _ => _
 		.DependentFor(StaticCodeAnalysisAll, CleanAll, RestoreAll, CompileAll, UnitTestAll, RestoreAll)
-		.OnlyWhenStatic(() => IsPullRequest)
+		.OnlyWhenStatic(() => PullRequestSettings.IsPullRequest)
 		.Executes(PullRequestCheck);
 
 	Target StaticCodeAnalysisAll => _ => _
@@ -49,7 +48,7 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 		.After(StaticCodeAnalysisAll, RestoreAll)
 		.Executes(() =>
 		{
-			using var solutionToBuild = SolutionHelper.NewTempSolution(Solution, BuildProjectName);
+			using var solutionToBuild = TemporarySolution.CreateNew(Solution, BuildProjectName);
 			DotNetBuild(_ => _
 				.EnableNoRestore()
 				.SetProjectFile(solutionToBuild.Solution));
@@ -59,24 +58,17 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 		.DependsOn(CompileAll)
 		.Executes(() =>
 		{
-			var oldCoverageFile = $"{TestHistoryDirectory / GitFlowHelper.GetGitFlowSourceBranch(Repository.Branch!).ToString()}.json";
-			using var coverageReport = BasycUnitTestAll(Solution, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
-			if (File.Exists(oldCoverageFile))
+			using var newCoverageReport = BasycUnitTestAll(Solution, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
+			if (PullRequestSettings.IsPullRequest)
 			{
-				var newCoverageFile = $"{TestHistoryDirectory / Repository.Branch!.Replace('/', '-')}.json";
-				using var oldCoverage = BasycCoverageLoadFromFile(oldCoverageFile);
-				BasycTestCreateSummaryConsole(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum, oldCoverage);
-			}
-			else
-			{
-				BasycTestCreateSummaryConsole(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
+				Repository.TestsHistory.AddOrUpdateHistory(GitRepository.Branch!, newCoverageReport);
+				Commit("[Automated] Adding test history ");
+				Push();
 			}
 
-			if (IsPullRequest)
-			{
-				BasycCoverageSaveToFile(coverageReport, oldCoverageFile);
-			}
 
-			BasycTestAssertMinimum(coverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
+			Repository.TestsHistory.TryGetHistory(GitFlowHelper.GetSourceBranchType(GitRepository.Branch!).ToString(), out var oldCoverageReport);
+			BasycTestCreateSummaryConsole(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum, oldCoverageReport);
+			BasycTestAssertMinimum(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
 		});
 }

@@ -11,9 +11,9 @@ namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
 [ExcludeFromCodeCoverage]
 public static partial class DotNetTasks
 {
-	public static void BasycDotNetBuildAffected(AffectedReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
+	public static void BasycDotNetBuildAffected(RepositoryChangeReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
 	{
-		using var solutionToUse = SolutionHelper.GetAffectedAsSolution(gitCompareReport, unitTestSuffix, buildProjectName, solution);
+		using var solutionToUse = TemporarySolution.GetAffectedAsSolution(gitCompareReport, unitTestSuffix, buildProjectName, solution);
 
 		DotNetBuild(_ => _
 			.EnableNoRestore()

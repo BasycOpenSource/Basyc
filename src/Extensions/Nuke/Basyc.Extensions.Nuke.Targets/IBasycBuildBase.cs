@@ -1,8 +1,8 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
+using Basyc.Extensions.Nuke.Tasks.Tools.Structure;
 using Nuke.Common;
 using Nuke.Common.Git;
-using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.GitVersion;
 using Serilog;
@@ -13,37 +13,32 @@ public interface IBasycBuildBase : INukeBuild
 {
 	string BuildProjectName { get; }
 	UnitTestSettings UnitTestSettings { get; }
-	public Solution Solution { get; }
-	[GitVersion] public GitVersion GitVersion => TryGetValue(() => GitVersion)!;
-	[GitRepository] public GitRepository Repository => TryGetValue(() => Repository)!;
-
-	public AbsolutePath OutputDirectory => RootDirectory / "output";
-	public AbsolutePath OutputPackagesDirectory => OutputDirectory / "nugetPackages";
-	public AbsolutePath TestHistoryDirectory => RootDirectory / "tests" / "history";
-
-	public bool IsPullRequest { get; }
-	public string PullRequestTargetBranch { get; }
-	public string PullRequestSourceBranch { get; }
+	PullRequestSettings PullRequestSettings { get; }
+	Solution Solution { get; }
+	[GitVersion] GitVersion GitVersion => TryGetValue(() => GitVersion)!;
+	[GitRepository] GitRepository GitRepository => TryGetValue(() => GitRepository)!;
+	[Repository] Repository Repository => TryGetValue(() => Repository)!;
 
 	protected void BranchCheck()
 	{
-		if (GitFlowHelper.IsGitFlowBranch(Repository.Branch!) is false)
-		{
+		if (GitFlowHelper.IsGitFlowBranch(GitRepository.Branch!) is false)
 			throw new InvalidOperationException(
-				$"Branch '{Repository.Branch!}' is not allowed branch name according git flow");
-		}
+				$"Branch '{GitRepository.Branch!}' is not allowed branch name according git flow");
 
-		Log.Information($"Branch name '{Repository.Branch!}' is valid git flow branch");
+		Log.Information($"Branch name '{GitRepository.Branch!}' is valid git flow branch");
 	}
 
 	protected void PullRequestCheck()
 	{
-		if (GitFlowHelper.IsPullRequestAllowed(PullRequestSourceBranch, PullRequestTargetBranch) is false)
-		{
-			throw new InvalidOperationException(
-				$"Pull request between {PullRequestSourceBranch} and {PullRequestTargetBranch} is not allowed according git flow");
-		}
+		PullRequestSettings.AsserIfValid();
 
-		Log.Information($"Pull request between '{PullRequestSourceBranch}' nad '{PullRequestTargetBranch}' and is valid according git flow");
+		if (PullRequestSettings.IsPullRequest is false)
+			throw new InvalidOperationException("Can't perform pull request check if this run is not marked as pull request");
+
+		if (GitFlowHelper.IsPullRequestAllowed(PullRequestSettings.SourceBranch!, PullRequestSettings.TargetBranch!) is false)
+			throw new InvalidOperationException(
+				$"Pull request between {PullRequestSettings.SourceBranch!} and {PullRequestSettings.TargetBranch!} is not allowed according git flow");
+
+		Log.Information($"Pull request between '{PullRequestSettings.SourceBranch!}' and '{PullRequestSettings.TargetBranch!}' and is valid according git flow");
 	}
 }

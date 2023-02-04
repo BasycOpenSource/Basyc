@@ -2,10 +2,10 @@
 
 namespace Basyc.Extensions.Nuke.Tasks.CI;
 
-public class BasycContinuousPipeline : BasycPipelineAttribute
+public class BasycContinuousPipeline : BasycPipeline
 {
-	public BasycContinuousPipeline(CiProvider provider, HostOs hostOs, string[] targets)
-		: base("continuous", provider, hostOs, new[] { GitFlowBranches.Feature, GitFlowBranches.Release, GitFlowBranches.HotFix }, Trigger.Push, targets)
+	public BasycContinuousPipeline(CiProvider provider, PipelineOs pipelineOs, string[] targets)
+		: base("continuous", provider, pipelineOs, new[] { GitFlowBranchType.Feature, GitFlowBranchType.Release, GitFlowBranchType.HotFix }, Trigger.Push, targets)
 	{
 	}
 }

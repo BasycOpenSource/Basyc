@@ -3,7 +3,7 @@ using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.ValueInjection;
 using System.Reflection;
-using static Basyc.Extensions.Nuke.Tasks.GitTasks;
+using static Basyc.Extensions.Nuke.Tasks.Tools.Git.GitTasks;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 

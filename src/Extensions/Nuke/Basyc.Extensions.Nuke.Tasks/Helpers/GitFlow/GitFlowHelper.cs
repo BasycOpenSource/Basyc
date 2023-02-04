@@ -5,118 +5,61 @@ public static class GitFlowHelper
 	public static bool IsPullRequestAllowed(string sourceBranch, string targetBranch, bool canSkipReleaseBranch = false)
 	{
 		if (sourceBranch.IsMainOrMasterBranch())
-		{
 			return false;
-		}
 
 		if (sourceBranch.IsDevelopBranch())
 		{
 			if (targetBranch.IsReleaseBranch())
-			{
 				return true;
-			}
 
 			if (canSkipReleaseBranch)
-			{
 				if (targetBranch.IsMainOrMasterBranch())
-				{
 					return true;
-				}
-			}
 
 			return false;
 		}
 
 		if (sourceBranch.IsReleaseBranch())
-		{
-			if (targetBranch.IsMainOrMasterBranch())
-			{
-				return true;
-			}
-
-			if (targetBranch.IsDevelopBranch())
-			{
-				return true;
-			}
-
-			return false;
-		}
+			return targetBranch.IsMainOrMasterBranch() || targetBranch.IsDevelopBranch();
 
 		if (sourceBranch.IsFeatureBranch())
-		{
-			if (targetBranch.IsDevelopBranch())
-			{
-				return true;
-			}
-
-			if (targetBranch.IsReleaseBranch())
-			{
-				return true;
-			}
-
-			return false;
-		}
+			return targetBranch.IsDevelopBranch() || targetBranch.IsReleaseBranch();
 
 		if (sourceBranch.IsHotfixBranch())
-		{
-			if (targetBranch.IsMainOrMasterBranch())
-			{
-				return true;
-			}
-
-			if (targetBranch.IsDevelopBranch())
-			{
-				return true;
-			}
-
-			return false;
-		}
+			return targetBranch.IsMainOrMasterBranch() || targetBranch.IsDevelopBranch();
 
 		throw new InvalidOperationException($"Failed to check '{sourceBranch}' against '{targetBranch}'");
 	}
 
 	public static bool IsReleaseAllowed(string currentBranch)
 	{
-		if (currentBranch.IsMainOrMasterBranch() || currentBranch.IsDevelopBranch())
-		{
-			return true;
-		}
-
-		return false;
+		return currentBranch.IsMainOrMasterBranch() || currentBranch.IsDevelopBranch();
 	}
 
-	public static GitFlowBranches GetGitFlowSourceBranch(string currentBranch)
+	public static GitFlowBranchType GetSourceBranchType(string branch)
 	{
-		if (currentBranch.IsFeatureBranch())
-		{
-			return GitFlowBranches.Develop;
-		}
+		if (branch.IsFeatureBranch())
+			return GitFlowBranchType.Develop;
 
-		if (currentBranch.IsDevelopBranch())
-		{
-			return GitFlowBranches.Main;
-		}
+		if (branch.IsDevelopBranch())
+			return GitFlowBranchType.Main;
 
-		if (currentBranch.IsReleaseBranch())
-		{
-			return GitFlowBranches.Develop;
-		}
+		if (branch.IsReleaseBranch())
+			return GitFlowBranchType.Develop;
 
-		if (currentBranch.IsHotfixBranch())
-		{
-			return GitFlowBranches.Release;
-		}
+		if (branch.IsHotfixBranch())
+			return GitFlowBranchType.Release;
 
-		throw new ArgumentException($"Branch '{currentBranch}' cant be converted to git flow branches", nameof(currentBranch));
+		throw new StringNotGitFlowBranch($"Cant determine source branch for '{branch}'");
 	}
 
 	public static bool IsGitFlowBranch(string branch)
 	{
 		try
 		{
-			GetGitFlowSourceBranch(branch);
+			GetSourceBranchType(branch);
 		}
-		catch (ArgumentException)
+		catch (StringNotGitFlowBranch)
 		{
 			return false;
 		}

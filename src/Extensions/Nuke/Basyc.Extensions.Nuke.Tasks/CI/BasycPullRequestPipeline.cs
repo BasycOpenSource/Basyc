@@ -2,10 +2,10 @@
 
 namespace Basyc.Extensions.Nuke.Tasks.CI;
 
-public class BasycPullRequestPipeline : BasycPipelineAttribute
+public class BasycPullRequestPipeline : BasycPipeline
 {
-	public BasycPullRequestPipeline(CiProvider provider, HostOs hostOs, string[] targets)
-		: base("pullRequest", provider, hostOs, new[] { GitFlowBranches.Develop, GitFlowBranches.Main }, Trigger.PullRequest, targets)
+	public BasycPullRequestPipeline(CiProvider provider, PipelineOs pipelineOs, string[] targets)
+		: base("pullRequest", provider, pipelineOs, new[] { GitFlowBranchType.Develop, GitFlowBranchType.Main }, Trigger.PullRequest, targets)
 	{
 	}
 }

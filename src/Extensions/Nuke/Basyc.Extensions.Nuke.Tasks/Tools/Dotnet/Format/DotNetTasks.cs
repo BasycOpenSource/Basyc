@@ -14,7 +14,7 @@ public static partial class DotNetTasks
 	private static bool DotnetFormatVerifyNoChanges(string workingDirectory, string projectOrSolutionPath, IEnumerable<string> filesTocheck,
 		[NotNullWhen(false)] out AggregatedDotnetFormatReport? aggregatedReport, out ProcessException? processException)
 	{
-		bool isFormated = DotnetWrapper.FormatVerifyNoChanges(workingDirectory, projectOrSolutionPath, filesTocheck, out var report, out processException);
+		var isFormated = DotnetWrapper.FormatVerifyNoChanges(workingDirectory, projectOrSolutionPath, filesTocheck, out var report, out processException);
 		if (isFormated)
 		{
 			Log.Information("Files formatted correctly");
@@ -24,15 +24,13 @@ public static partial class DotNetTasks
 
 		Log.Information("Not formatted file(s) found");
 
-		bool isSolution = projectOrSolutionPath.EndsWith(".sln");
+		var isSolution = projectOrSolutionPath.EndsWith(".sln");
 
 		if (isSolution)
-		{
 			aggregatedReport = AggregatedDotnetFormatReport.CreateForSolution(projectOrSolutionPath, report!);
-		}
 		else
 		{
-			string projectName = new FileInfo(projectOrSolutionPath).Name;
+			var projectName = new FileInfo(projectOrSolutionPath).Name;
 			aggregatedReport = AggregatedDotnetFormatReport.CreateForProject(projectName, report!);
 		}
 
@@ -42,11 +40,11 @@ public static partial class DotNetTasks
 	public static IReadOnlyCollection<Output> DotnetFormatVerifyNoChanges(DotNetFormatSettings? toolSettings = null)
 	{
 		toolSettings ??= new DotNetFormatSettings();
-		bool isFormated = DotnetFormatVerifyNoChanges(toolSettings.ProcessWorkingDirectory, toolSettings!.Project!, toolSettings.Include, out var report,
+		var isFormated = DotnetFormatVerifyNoChanges(toolSettings.ProcessWorkingDirectory, toolSettings!.Project!, toolSettings.Include, out var report,
 			out var processException);
 		if (isFormated is false)
 		{
-			string[] outputMessages = CreateOutputMessages(toolSettings.Project!, report!);
+			var outputMessages = CreateOutputMessages(toolSettings.Project!, report!);
 			ProcessExceptionHelper.Throw(processException!, outputMessages);
 		}
 
@@ -65,16 +63,14 @@ public static partial class DotNetTasks
 	}
 
 	public static IEnumerable<(DotNetFormatSettings Settings, IReadOnlyCollection<Output> Output)> BasycDotNetFormatVerifyNoChangesAffected(
-		AffectedReport report)
+		RepositoryChangeReport report)
 	{
 		if (report.CouldCompare is false)
-		{
 			throw new ArgumentException("Passed invalid report");
-		}
 
 		var batchedReport = CreateBatchedReport(report);
 
-		int totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Count();
+		var totalFilesToCheck = batchedReport.Batches.SelectMany(x => x.FilesToInclude).Count();
 		Log.Information(
 			$"Solutions to check: {report.ChangedSolutions.Length}, projects to check: {report.ChangedSolutions.Select(x => x.ChangedProjects.Length).Sum()}, total files to check: {totalFilesToCheck}. Batching dotnet format into {batchedReport.Batches.Length} batches.");
 
@@ -93,13 +89,13 @@ public static partial class DotNetTasks
 				.SetProject(solutionFullPath)));
 	}
 
-	private static BatchedReport CreateBatchedReport(AffectedReport report)
+	private static BatchedReport CreateBatchedReport(RepositoryChangeReport report)
 	{
 		var batches = new List<ReportBatch>();
 
 		foreach (var solution in report.ChangedSolutions)
 		{
-			string[] changedFilesInSolution = solution.GetChangedFilesFullPath();
+			var changedFilesInSolution = solution.GetChangedFilesFullPath();
 			var chunks = ChunkBy(changedFilesInSolution, 250);
 			batches.AddRange(chunks.Select(x => new ReportBatch(solution.SolutionFullPath, x.ToArray())));
 		}
@@ -110,7 +106,11 @@ public static partial class DotNetTasks
 	private static List<List<T>> ChunkBy<T>(this ICollection<T> source, int chunkSize)
 	{
 		return source
-			.Select((x, i) => new { Index = i, Value = x })
+			.Select((x, i) => new
+			{
+				Index = i,
+				Value = x
+			})
 			.GroupBy(x => x.Index / chunkSize)
 			.Select(x => x.Select(v => v.Value).ToList())
 			.ToList();
@@ -125,10 +125,8 @@ public static partial class DotNetTasks
 		foreach (var document in report.Documents)
 		{
 			stringBuilder.AppendLine($"{document.FileName} required changes: {document.Changes.Length}");
-			foreach (string change in document.Changes)
-			{
+			foreach (var change in document.Changes)
 				stringBuilder.AppendLine(change);
-			}
 
 			errorMessages.Add(stringBuilder.ToString());
 			stringBuilder.Clear();
