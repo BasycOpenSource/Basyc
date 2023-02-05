@@ -6,14 +6,17 @@ namespace Basyc.Extensions.SignalR.Client;
 
 internal class HubClientInteceptor : IInterceptor
 {
-	internal List<InterceptedMethodMetadata> InterceptedMethods { get; } = new();
+	private static readonly MethodInfo[] methodsToIgnore = new object().GetType().GetMethodsRecursive(BindingFlags.Public | BindingFlags.Instance);
 	private readonly Dictionary<MethodInfo, InterceptedMethodMetadata> methodInfoToMethodMetadataMap = new();
+	private readonly bool usingBaseClass;
 
 	public HubClientInteceptor(HubConnection connection, Type hubClientInterfaceType, bool usingBaseClass = false)
 	{
 		this.usingBaseClass = usingBaseClass;
 		CreateInteceptorsForPublicMethods(connection, hubClientInterfaceType);
 	}
+
+	internal List<InterceptedMethodMetadata> InterceptedMethods { get; } = new();
 
 	public void Intercept(IInvocation invocation)
 	{
@@ -33,29 +36,30 @@ internal class HubClientInteceptor : IInterceptor
 			invocation.ReturnValue = continuation();
 		}
 	}
+
 	private void CreateInteceptorsForPublicMethods(HubConnection connection, Type methodsClientCanCallType)
 	{
 		CheckAndThrowType(methodsClientCanCallType, out var isClass);
-		MethodInfo[] methodsToIntercept = GetMethodsToIntercept(methodsClientCanCallType, isClass);
+		var methodsToIntercept = GetMethodsToIntercept(methodsClientCanCallType, isClass);
 		foreach (var methodInfo in methodsToIntercept)
 		{
 			CheckAndThrowMethodSignatures(methodInfo, out var returnsVoid, out var returnsTask);
-			ParameterInfo[] methodParamInfos = methodInfo.GetParameters();
+			var methodParamInfos = methodInfo.GetParameters();
 			var paramTypes = methodParamInfos.Select(x => x.ParameterType).ToArray();
 			var hasCancelToken = HasCancelToken(methodParamInfos, out var cancelTokenParamIndex);
 			Func<InterceptedMethodMetadata, object?[], Task?> sendCoreCall = (metadata, arguments) =>
 			{
-				CancellationToken cancelToken = metadata.HasCancelToken ? GetCancelToken(arguments, metadata.CancelTokenIndex) : default;
+				var cancelToken = metadata.HasCancelToken ? GetCancelToken(arguments, metadata.CancelTokenIndex) : default;
 				var argumentsToSend = FilterArgumentsToSend(arguments, metadata.HasCancelToken, metadata.CancelTokenIndex);
 				return connection.SendCoreAsync(methodInfo.Name, argumentsToSend, cancelToken);
 			};
 			InterceptedMethodMetadata methodMetadata = new(methodInfo,
-											   hasCancelToken,
-											   cancelTokenParamIndex,
-											   paramTypes,
-											   returnsTask,
-											   returnsVoid,
-											   sendCoreCall);
+				hasCancelToken,
+				cancelTokenParamIndex,
+				paramTypes,
+				returnsTask,
+				returnsVoid,
+				sendCoreCall);
 			InterceptedMethods.Add(methodMetadata);
 			methodInfoToMethodMetadataMap.Add(methodInfo, methodMetadata);
 		}
@@ -68,14 +72,9 @@ internal class HubClientInteceptor : IInterceptor
 		{
 			return publicMethods;
 		}
-		else
-		{
-			return FilterObjectMethods(FilterObjectMethods(publicMethods));
-		}
-	}
 
-	private static readonly MethodInfo[] MethodsToIgnore = new object().GetType().GetMethodsRecursive(BindingFlags.Public | BindingFlags.Instance);
-	private readonly bool usingBaseClass;
+		return FilterObjectMethods(FilterObjectMethods(publicMethods));
+	}
 
 	private static MethodInfo[] FilterObjectMethods(MethodInfo[] methodsTofilter)
 	{
@@ -83,8 +82,11 @@ internal class HubClientInteceptor : IInterceptor
 			.Where(methodInfo =>
 			{
 				if (methodInfo.IsSpecialName)
+				{
 					return false;
-				return MethodsToIgnore.All(methodToIgnore => methodToIgnore.Name != methodInfo.Name);
+				}
+
+				return methodsToIgnore.All(methodToIgnore => methodToIgnore.Name != methodInfo.Name);
 			})
 			.ToArray();
 		return filteredMethods;
@@ -95,21 +97,27 @@ internal class HubClientInteceptor : IInterceptor
 		isClass = false;
 		if (methodsClientCanCallType.IsClass)
 		{
-
 			isClass = true;
 		}
 
 		if (usingBaseClass != isClass)
+		{
 			throw new ArgumentException("Settings does not match provided type");
+		}
 	}
 
 	public bool HasCancelToken(ParameterInfo[] paramInfos, out int cancelTokenParamIndex)
 	{
 		var cancelTokenParamInfo = paramInfos.FirstOrDefault(x => x.ParameterType == typeof(CancellationToken));
 		if (cancelTokenParamInfo is null)
+		{
 			cancelTokenParamIndex = -1;
+		}
 		else
+		{
 			cancelTokenParamIndex = cancelTokenParamInfo.Position;
+		}
+
 		return cancelTokenParamInfo != null;
 	}
 
@@ -121,11 +129,13 @@ internal class HubClientInteceptor : IInterceptor
 	private static object?[] FilterArgumentsToSend(object?[] arguments, bool hasCancelToken, int cancelTokenIndex)
 	{
 		if (hasCancelToken is false)
+		{
 			return arguments;
+		}
 
-		object?[] filteredArguments = new object?[arguments.Length - 1];
-		bool cancelTokenFound = false;
-		for (int argIndex = 0; argIndex < arguments.Length; argIndex++)
+		var filteredArguments = new object?[arguments.Length - 1];
+		var cancelTokenFound = false;
+		for (var argIndex = 0; argIndex < arguments.Length; argIndex++)
 		{
 			if (argIndex == cancelTokenIndex)
 			{
@@ -155,9 +165,11 @@ internal class HubClientInteceptor : IInterceptor
 			return true;
 		}
 
-		throw new ArgumentException($"Only interfaces that have only methods with return values of types {typeof(void).Name} or {typeof(Task).Name} can be interceted.");
+		throw new ArgumentException(
+			$"Only interfaces that have only methods with return values of types {typeof(void).Name} or {typeof(Task).Name} can be interceted.");
 	}
 }
+
 internal class HubClientInteceptor<THubClient> : HubClientInteceptor
 {
 	public HubClientInteceptor(HubConnection connection) : base(connection, typeof(THubClient))

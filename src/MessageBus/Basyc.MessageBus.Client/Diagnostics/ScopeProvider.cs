@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Basyc.MessageBus.Client.Diagnostics;
 
 public class HandlerLoggerScopeProvider
 {
-	private readonly AsyncLocal<Stack<ScopeWrapper>> scopes = new AsyncLocal<Stack<ScopeWrapper>>();
-	private readonly AsyncLocal<HandlerScopeState> handlerScopeState = new AsyncLocal<HandlerScopeState>();
+	private readonly AsyncLocal<HandlerScopeState?> handlerScopeState = new();
+	private readonly AsyncLocal<Stack<ScopeWrapper>> scopes = new();
 
 	public IDisposable BeginHandlerScope(HandlerScopeState state, IDisposable normalLoggerScope)
 	{
@@ -22,7 +20,7 @@ public class HandlerLoggerScopeProvider
 		return new HandlerScopeEnder(scopes.Value, handlerScopeState);
 	}
 
-	public bool TryGetHandlerScope(out HandlerScopeState handlerScopeState)
+	public bool TryGetHandlerScope([NotNullWhen(true)] out HandlerScopeState? handlerScopeState)
 	{
 		handlerScopeState = this.handlerScopeState.Value;
 		return this.handlerScopeState.Value != null;
@@ -30,11 +28,11 @@ public class HandlerLoggerScopeProvider
 
 	private class HandlerScopeEnder : IDisposable
 	{
-		private bool isDisposed = false;
+		private readonly AsyncLocal<HandlerScopeState?> handlerScopeState;
 		private readonly Stack<ScopeWrapper> scopes;
-		private readonly AsyncLocal<HandlerScopeState> handlerScopeState;
+		private bool isDisposed;
 
-		public HandlerScopeEnder(Stack<ScopeWrapper> scopes, AsyncLocal<HandlerScopeState> handlerScopeState)
+		public HandlerScopeEnder(Stack<ScopeWrapper> scopes, AsyncLocal<HandlerScopeState?> handlerScopeState)
 		{
 			this.scopes = scopes;
 			this.handlerScopeState = handlerScopeState;
@@ -55,5 +53,4 @@ public class HandlerLoggerScopeProvider
 	}
 
 	private record ScopeWrapper(HandlerScopeState State, IDisposable NormalLoggerScope);
-
 }

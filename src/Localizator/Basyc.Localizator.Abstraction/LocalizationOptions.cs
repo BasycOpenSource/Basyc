@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 
 namespace Basyc.Localizator.Abstraction;
 
 public class LocalizationOptions
 {
-	public LocalizationOptions()
+	public LocalizationOptions(CultureInfo sharedDefaultCulture)
 	{
-
+		SharedDefaultCulture = sharedDefaultCulture;
 	}
+
 	/// <summary>
-	/// Initial culture when no other value is specified
+	///     Initial culture when no other value is specified
 	/// </summary>
-	public CultureInfo SharedDefaultCulture { get; set; }
+	public CultureInfo SharedDefaultCulture { get; init; }
+
 	/// <summary>
-	/// Overriding <see cref="SharedDefaultCulture"/>. String key is <see cref="ILocalizatedSection.SectionUniqueName"/>
+	///     Overriding <see cref="SharedDefaultCulture" />. String key is <see cref="ILocalizatedSection.SectionUniqueName" />
 	/// </summary>
-	public Dictionary<string, CultureInfo> SectionsDefaultCultures { get; set; }
+	public Dictionary<string, CultureInfo> SectionsDefaultCultures { get; } = new();
 }

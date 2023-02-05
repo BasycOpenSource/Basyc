@@ -7,10 +7,9 @@ public class MicroserviceBuilder<TParentBuilder> : DependencyBuilderBase<TParent
 {
 	public MicroserviceBuilder(IServiceCollection services, TParentBuilder parentBuilder) : base(services, parentBuilder)
 	{
-
 	}
 
-	public IMicroserviceProvider MicroserviceProvider { get; private set; }
+	public IMicroserviceProvider? MicroserviceProvider { get; private set; }
 
 	public MicroserviceBuilder<TParentBuilder> AddProvider(IMicroserviceProvider provider)
 	{

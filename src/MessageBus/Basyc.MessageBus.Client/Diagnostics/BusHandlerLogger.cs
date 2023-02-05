@@ -2,20 +2,19 @@
 using Basyc.Diagnostics.Shared.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Basyc.MessageBus.Client.Diagnostics;
 
-public class DummyLoggerCategory { };
+public class DummyLoggerCategory
+{
+}
 
 public class BusHandlerLogger : ILogger
 {
-	private readonly ILogger normalLogger;
 	private readonly IOptions<BusDiagnosticsOptions> busDiagnosticOptions;
 	private readonly IDiagnosticsExporter[] logSinks;
+	private readonly ILogger normalLogger;
 
 	public BusHandlerLogger(ILogger normalLogger, IEnumerable<IDiagnosticsExporter> logSinks, IOptions<BusDiagnosticsOptions> busDiagnosticOptions)
 	{
@@ -35,11 +34,12 @@ public class BusHandlerLogger : ILogger
 		return true;
 	}
 
-	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
 	{
 		if (BusHandlerLoggerSessionManager.HasSession(out var session) is false)
 		{
-			throw new InvalidOperationException($"Can't log without starting {nameof(BusHandlerLoggerSessionManager.StartSession)}. This logger should be only used for bus handlers");
+			throw new InvalidOperationException(
+				$"Can't log without starting {nameof(BusHandlerLoggerSessionManager.StartSession)}. This logger should be only used for bus handlers");
 		}
 
 		if (normalLogger.IsEnabled(logLevel))

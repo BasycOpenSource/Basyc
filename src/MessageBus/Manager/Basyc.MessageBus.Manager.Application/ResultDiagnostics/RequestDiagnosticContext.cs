@@ -1,36 +1,33 @@
 ﻿using Basyc.Diagnostics.Shared.Durations;
 using Basyc.Diagnostics.Shared.Logging;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
 public class RequestDiagnosticContext
 {
-	private readonly object lockObject = new object();
-
-	private readonly List<LogEntry> logEntries = new List<LogEntry>();
-	public IReadOnlyList<LogEntry> LogEntries { get => logEntries; }
-
 	private readonly Dictionary<string, ActivityContext> activityIdToActivityMap = new();
-	private readonly Dictionary<string, List<ActivityContext>> missingParentIdToNestedActivityMap = new();
+	private readonly object lockObject = new();
+
+	private readonly List<LogEntry> logEntries = new();
 	private readonly Dictionary<string, List<LogEntry>> missingActivityIdToLogsMap = new();
+	private readonly Dictionary<string, List<ActivityContext>> missingParentIdToNestedActivityMap = new();
 
-	public List<ServiceIdentityContext> services = new List<ServiceIdentityContext>();
-	public IReadOnlyList<ServiceIdentityContext> Services { get => services; }
-
-	public string TraceId { get; init; }
-	public event EventHandler<LogEntry>? LogReceived;
-	public event EventHandler<ActivityStart>? ActivityStartReceived;
-	public event EventHandler<ActivityEnd>? ActivityEndReceived;
+	public List<ServiceIdentityContext> services = new();
 
 	public RequestDiagnosticContext(string traceId)
 	{
 		TraceId = traceId;
 	}
+
+	public IReadOnlyList<LogEntry> LogEntries => logEntries;
+	public IReadOnlyList<ServiceIdentityContext> Services => services;
+
+	public string TraceId { get; init; }
+	public event EventHandler<LogEntry>? LogReceived;
+	public event EventHandler<ActivityStart>? ActivityStartReceived;
+	public event EventHandler<ActivityEnd>? ActivityEndReceived;
 
 	public void Log(ServiceIdentity service, LogLevel logLevel, string message, string? spanId)
 	{
@@ -46,7 +43,9 @@ public class RequestDiagnosticContext
 	public void Log(LogEntry newLogEntry)
 	{
 		if (newLogEntry.TraceId != TraceId)
+		{
 			throw new ArgumentException("Request id does not match context reuqest result id", nameof(newLogEntry));
+		}
 
 		logEntries.Add(newLogEntry);
 		logEntries.Sort((x, y) => x.Time.CompareTo(y.Time));
@@ -68,9 +67,10 @@ public class RequestDiagnosticContext
 
 	public ActivityContext StartActivity(ActivityStart activityStart)
 	{
-		ServiceIdentityContext serviceContext = EnsureServiceCreated(activityStart.Service);
-		bool hasParent = activityStart.ParentId is not null;
-		ActivityContext newActivityContext = new ActivityContext(activityStart.Service, activityStart.TraceId, hasParent, activityStart.ParentId, activityStart.Id, activityStart.Name, activityStart.StartTime);
+		var serviceContext = EnsureServiceCreated(activityStart.Service);
+		var hasParent = activityStart.ParentId is not null;
+		var newActivityContext = new ActivityContext(activityStart.Service, activityStart.TraceId, hasParent, activityStart.ParentId, activityStart.Id,
+			activityStart.Name, activityStart.StartTime);
 		activityIdToActivityMap.Add(newActivityContext.Id, newActivityContext);
 		if (missingActivityIdToLogsMap.TryGetValue(newActivityContext.Id, out var logs))
 		{
@@ -81,7 +81,9 @@ public class RequestDiagnosticContext
 		if (hasParent)
 		{
 			if (activityStart.ParentId is null)
+			{
 				throw new InvalidOperationException($"{nameof(ActivityStart.ParentId)} cant be null when {nameof(ActivityStart.HasParent)} is true");
+			}
 
 			if (activityIdToActivityMap.TryGetValue(activityStart.ParentId, out var parentActivity))
 			{
@@ -109,7 +111,7 @@ public class RequestDiagnosticContext
 		var isMissingParent = missingParentIdToNestedActivityMap.TryGetValue(activityStart.Id, out var nestedActivities);
 		if (isMissingParent)
 		{
-			for (int nestedActivityIndex = 0; nestedActivityIndex < nestedActivities!.Count; nestedActivityIndex++)
+			for (var nestedActivityIndex = 0; nestedActivityIndex < nestedActivities!.Count; nestedActivityIndex++)
 			{
 				var nestedActivity = nestedActivities![nestedActivityIndex];
 				nestedActivity.AssignParentData(newActivityContext);
@@ -117,19 +119,18 @@ public class RequestDiagnosticContext
 			}
 
 			missingParentIdToNestedActivityMap.Remove(activityStart.Id);
-
 		}
 
 		OnActivityStartReceived(activityStart);
 		return newActivityContext;
-
 	}
 
 	public void EndActivity(ActivityEnd activityEnd)
 	{
 		if (activityIdToActivityMap.TryGetValue(activityEnd.Id, out var activity) is false)
 		{
-			activity = StartActivity(new ActivityStart(activityEnd.Service, activityEnd.TraceId, activityEnd.ParentId, activityEnd.Id, activityEnd.Name, activityEnd.StartTime));
+			activity = StartActivity(new ActivityStart(activityEnd.Service, activityEnd.TraceId, activityEnd.ParentId, activityEnd.Id, activityEnd.Name,
+				activityEnd.StartTime));
 		}
 
 		activity.End(activityEnd.EndTime, activityEnd.Status);
@@ -153,14 +154,14 @@ public class RequestDiagnosticContext
 
 	private ServiceIdentityContext EnsureServiceCreated(ServiceIdentity serviceIdentity)
 	{
-		ServiceIdentityContext? serviceVM = Services.FirstOrDefault(x => x.ServiceIdentity == serviceIdentity);
-		if (serviceVM == null)
+		var serviceVm = Services.FirstOrDefault(x => x.ServiceIdentity == serviceIdentity);
+		if (serviceVm == null)
 		{
-			serviceVM = new ServiceIdentityContext(serviceIdentity);
-			services.Add(serviceVM);
+			serviceVm = new ServiceIdentityContext(serviceIdentity);
+			services.Add(serviceVm);
 		}
 
-		return serviceVM;
+		return serviceVm;
 	}
 
 	public ActivityContext GetActivity(string activityId)

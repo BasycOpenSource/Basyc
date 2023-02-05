@@ -1,18 +1,12 @@
 ﻿using Basyc.MessageBus.HttpProxy.Server.Asp.Http;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using System;
-using System.IO;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class IEnpointBuilderHttpProxyServerExtensions
+public static class EndpointBuilderHttpProxyServerExtensions
 {
-
 	public static void MapHttpMessageBusProxyServer(this IEndpointRouteBuilder endpoints)
 	{
-		endpoints.MapPost("", async (HttpContext context) =>
+		endpoints.MapPost("", async context =>
 		{
 			var httpHandler = context.RequestServices.GetRequiredService<ProxyHttpRequestHandler>();
 			try

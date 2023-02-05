@@ -4,13 +4,16 @@ namespace Basyc.Serialization.Abstraction;
 
 public interface ISerializer<TDeserialized, TSerialized, TSerializationMetadata>
 {
-	public bool TrySerialize(TDeserialized deserializedObject, TSerializationMetadata dataType, [NotNullWhen(true)] out TSerialized? serializedObject, [NotNullWhen(false)] out SerializationFailure? error)
+	public bool TrySerialize(TDeserialized deserializedObject, TSerializationMetadata dataType, [NotNullWhen(true)] out TSerialized? serializedObject,
+		[NotNullWhen(false)] out SerializationFailure? error)
 	{
 		try
 		{
 			serializedObject = Serialize(deserializedObject, dataType);
 			error = null;
+#pragma warning disable CS8762
 			return true;
+#pragma warning restore CS8762
 		}
 		catch (Exception ex)
 		{
@@ -19,13 +22,17 @@ public interface ISerializer<TDeserialized, TSerialized, TSerializationMetadata>
 			return false;
 		}
 	}
-	bool TryDeserialize(TSerialized serializedObject, TSerializationMetadata dataType, [NotNullWhen(true)] out TDeserialized? deserializedObject, [NotNullWhen(false)] out SerializationFailure? error)
+
+	bool TryDeserialize(TSerialized serializedObject, TSerializationMetadata dataType, [NotNullWhen(true)] out TDeserialized? deserializedObject,
+		[NotNullWhen(false)] out SerializationFailure? error)
 	{
 		try
 		{
 			deserializedObject = Deserialize(serializedObject, dataType);
 			error = null;
+#pragma warning disable CS8762
 			return true;
+#pragma warning restore CS8762
 		}
 		catch (Exception ex)
 		{
@@ -36,14 +43,15 @@ public interface ISerializer<TDeserialized, TSerialized, TSerializationMetadata>
 	}
 
 	/// <summary>
-	/// Throws <see cref="SerializationFailureException"/> exception when fails
+	///     Throws <see cref="SerializationFailureException" /> exception when fails
 	/// </summary>
 	/// <param name="deserializedObject"></param>
 	/// <param name="dataType"></param>
 	/// <returns></returns>
 	TSerialized Serialize(TDeserialized deserializedObject, TSerializationMetadata dataType);
+
 	/// <summary>
-	/// Throws <see cref="SerializationFailureException"/> exception when fails
+	///     Throws <see cref="SerializationFailureException" /> exception when fails
 	/// </summary>
 	/// <param name="serializedInput"></param>
 	/// <param name="dataType"></param>

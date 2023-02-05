@@ -1,37 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Basyc.MessageBus.Manager.Infrastructure;
+﻿namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class TypedDomainSettings
 {
 	/// <summary>
-	/// Name of request group, usually name of a service e.g CustomerService
+	///     Name of request group, usually name of a service e.g CustomerService
 	/// </summary>
-	public string DomainName { get; set; }
+	public string? DomainName { get; set; }
 
 	/// <summary>
-	/// If you dont know waht CQRS is, use only <see cref="GenericRequestTypes"/> and <see cref="GenericRequestWithResponseTypes"/> properties
+	///     If you dont know waht CQRS is, use only <see cref="GenericRequestTypes" /> and <see cref="GenericRequestWithResponseTypes" /> properties
 	/// </summary>
-	public List<Type> GenericRequestTypes { get; set; } = new List<Type>();
+	public List<Type> GenericRequestTypes { get; set; } = new();
 
 	/// <summary>
-	/// If you dont know waht CQRS is, use only <see cref="GenericRequestTypes"/> and <see cref="GenericRequestWithResponseTypes"/> properties
+	///     If you dont know waht CQRS is, use only <see cref="GenericRequestTypes" /> and <see cref="GenericRequestWithResponseTypes" /> properties
 	/// </summary>
-	public List<TypedReqeustResponseTypePair> GenericRequestWithResponseTypes { get; set; } = new List<TypedReqeustResponseTypePair>();
+	public List<TypedReqeustResponseTypePair> GenericRequestWithResponseTypes { get; set; } = new();
 
 	/// <summary>
-	/// Use when your system implements CQRS
+	///     Use when your system implements CQRS
 	/// </summary>
-	public List<TypedReqeustResponseTypePair> QueryTypes { get; set; } = new List<TypedReqeustResponseTypePair>();
+	public List<TypedReqeustResponseTypePair> QueryTypes { get; set; } = new();
 
 	/// <summary>
-	/// Use when your system implements CQRS
+	///     Use when your system implements CQRS
 	/// </summary>
-	public List<Type> CommandTypes { get; set; } = new List<Type>();
+	public List<Type> CommandTypes { get; set; } = new();
 
 	/// <summary>
-	/// Use when your system implements CQRS
+	///     Use when your system implements CQRS
 	/// </summary>
-	public List<TypedReqeustResponseTypePair> CommandWithResponseTypes { get; set; } = new List<TypedReqeustResponseTypePair>();
+	public List<TypedReqeustResponseTypePair> CommandWithResponseTypes { get; set; } = new();
 }

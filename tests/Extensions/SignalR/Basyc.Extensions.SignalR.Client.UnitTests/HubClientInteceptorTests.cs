@@ -1,14 +1,13 @@
 ﻿using Basyc.Extensions.SignalR.Client.Tests.Helpers;
 using Basyc.Extensions.SignalR.Client.Tests.Mocks;
-using System.Data;
 using System.Reflection;
 
 namespace Basyc.Extensions.SignalR.Client.Tests;
 
 public class HubClientInteceptorTests
 {
-
 	private readonly HubConnectionMock connection;
+
 	public HubClientInteceptorTests()
 	{
 		connection = new HubConnectionMockBuilder().BuildAsMock();
@@ -22,7 +21,7 @@ public class HubClientInteceptorTests
 			var publicMethods = correctHubType.GetMethodsRecursive(BindingFlags.Public | BindingFlags.Instance);
 			var inteceptor = new HubClientInteceptor(connection, correctHubType);
 			inteceptor.InterceptedMethods.Count.Should().Be(publicMethods.Length);
-			for (int methodIndex = 0; methodIndex < publicMethods.Length; methodIndex++)
+			for (var methodIndex = 0; methodIndex < publicMethods.Length; methodIndex++)
 			{
 				var publicMethod = publicMethods[methodIndex];
 				var methodMetadata = inteceptor.InterceptedMethods[methodIndex];
@@ -30,13 +29,13 @@ public class HubClientInteceptorTests
 
 				methodMetadata.ReturnsVoid.Should().Be(publicMethod.ReturnType == typeof(void));
 				methodMetadata.ReturnsTask.Should().Be(publicMethod.ReturnType == typeof(Task));
-				ParameterInfo[] parameterInfos = publicMethod.GetParameters();
+				var parameterInfos = publicMethod.GetParameters();
 				methodMetadata.Parameters.Should().Equal(parameterInfos.Select(x => x.ParameterType));
 				methodMetadata.HasCancelToken.Should().Be(parameterInfos.Any(x => x.ParameterType == typeof(CancellationToken)));
 				if (methodMetadata.HasCancelToken)
 				{
 					var cancelTokenIndex = -1;
-					for (int paramIndex = 0; paramIndex < parameterInfos.Length; paramIndex++)
+					for (var paramIndex = 0; paramIndex < parameterInfos.Length; paramIndex++)
 					{
 						var paraInfo = parameterInfos[paramIndex];
 						if (paraInfo.ParameterType == typeof(CancellationToken))
@@ -55,7 +54,7 @@ public class HubClientInteceptorTests
 	[Fact]
 	public void Should_Include_Inherited_Public_Methods()
 	{
-		var hubClientType = typeof(ICorrectMethodsClientCanCall_Inherited_Voids);
+		var hubClientType = typeof(ICorrectMethodsClientCanCallInheritedVoids);
 		var publicMethods = hubClientType.GetMethodsRecursive(BindingFlags.Public | BindingFlags.Instance);
 
 		var inteceptor = new HubClientInteceptor(connection, hubClientType);
@@ -72,7 +71,6 @@ public class HubClientInteceptorTests
 				var inteceptor = new HubClientInteceptor(connection, hubType);
 			};
 			action.Should().Throw<ArgumentException>();
-
 		}
 	}
 }

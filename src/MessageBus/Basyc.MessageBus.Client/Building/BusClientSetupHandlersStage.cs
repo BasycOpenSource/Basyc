@@ -4,8 +4,6 @@ using Basyc.MessageBus.Client.RequestResponse;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Basyc.MessageBus.Client.Building;
@@ -28,26 +26,23 @@ public class BusClientSetupHandlersStage : BuilderStageBase
 
 	public BusClientSetupProviderStage RegisterBasycTypedHandlers(params Assembly[] assembliesToScan)
 	{
-
 		foreach (var assembly in assembliesToScan)
 		{
-			Type[] typesInAssembly = assembly.GetTypes();
+			var typesInAssembly = assembly.GetTypes();
 			var handlerTypesInAssembly = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<>)));
 			foreach (var handlerType in handlerTypesInAssembly)
 			{
-				var serviceType = typeof(IMessageHandler<>).MakeGenericType(GenericsHelper.GetTypeArgumentsFromParent(handlerType, typeof(IMessageHandler<>)));
+				var serviceType = typeof(IMessageHandler<>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<>)));
 				services.AddScoped(serviceType, serviceProvider => CreateHandlerWithDecoratedLoggerT(handlerType, serviceProvider));
 				EnsureHandlerLoggerRegistered(services, handlerType);
-
 			}
 
 			var handlerTypesInAssembly2 = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<,>)));
 			foreach (var handlerType in handlerTypesInAssembly2)
 			{
-				var serviceType = typeof(IMessageHandler<,>).MakeGenericType(GenericsHelper.GetTypeArgumentsFromParent(handlerType, typeof(IMessageHandler<,>)));
+				var serviceType = typeof(IMessageHandler<,>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<,>)));
 				services.AddScoped(serviceType, serviceProvider => CreateHandlerWithDecoratedLoggerT(handlerType, serviceProvider));
 				EnsureHandlerLoggerRegistered(services, handlerType);
-
 			}
 		}
 
@@ -56,13 +51,13 @@ public class BusClientSetupHandlersStage : BuilderStageBase
 
 	private static object CreateHandlerWithDecoratedLoggerT(Type handlerType, IServiceProvider services)
 	{
-		ConstructorInfo handlerConstrucor = getHandlerConstructor(handlerType);
+		var handlerConstrucor = GetHandlerConstructor(handlerType);
 
 		var ctorParams = handlerConstrucor.GetParameters();
-		object[] ctorArguments = new object[ctorParams.Length];
-		for (int paramIndex = 0; paramIndex < ctorParams.Length; paramIndex++)
+		var ctorArguments = new object[ctorParams.Length];
+		for (var paramIndex = 0; paramIndex < ctorParams.Length; paramIndex++)
 		{
-			ParameterInfo ctorParam = ctorParams[paramIndex];
+			var ctorParam = ctorParams[paramIndex];
 			if (ctorParam.ParameterType == typeof(ILogger))
 			{
 				var handlerLogger = services.GetRequiredService(typeof(BusHandlerLogger));
@@ -86,26 +81,31 @@ public class BusClientSetupHandlersStage : BuilderStageBase
 		return handlerInstance;
 	}
 
-	private static ConstructorInfo getHandlerConstructor(Type handlerType)
+	private static ConstructorInfo GetHandlerConstructor(Type handlerType)
 	{
 		var handlerConstructors = handlerType.GetConstructors();
 		if (handlerConstructors.Length > 1)
+		{
 			throw new Exception("Multiple contructors not supported");
-		ConstructorInfo handlerConstrucor = handlerConstructors[0];
+		}
+
+		var handlerConstrucor = handlerConstructors[0];
 		return handlerConstrucor;
 	}
 
 	private static void EnsureHandlerLoggerRegistered(IServiceCollection services, Type originalHandlerType)
 	{
-
-		var ctor = getHandlerConstructor(originalHandlerType);
+		var ctor = GetHandlerConstructor(originalHandlerType);
 		var ctorParams = ctor.GetParameters();
 		var loggerParam = ctorParams.FirstOrDefault(x => x.ParameterType == typeof(ILogger));
 		if (loggerParam is null)
 		{
 			loggerParam = ctorParams.FirstOrDefault(x => x.ParameterType.IsAssignableToGenericType(typeof(ILogger<>)));
 			if (loggerParam is null)
+			{
 				return; //Handler does not have logger, we can skip
+			}
+
 			var loggerCategory = loggerParam.ParameterType.GetTypeArgumentsFromParent(typeof(ILogger<>))[0];
 
 			var busLoggerType = typeof(BusHandlerLogger<>).MakeGenericType(loggerCategory);

@@ -1,54 +1,55 @@
-// https://github.com/dotnet/format/issues/1094
-// https://docs.github.com/en/get-started/getting-started-with-git/configuring-git-to-handle-line-endings
-
 using Basyc.Extensions.Nuke.Targets;
 using Basyc.Extensions.Nuke.Targets.Nuget;
+using Basyc.Extensions.Nuke.Tasks.CI;
+using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
+using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
+using Basyc.Extensions.Nuke.Tasks.Tools.GitFlow;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
-using Nuke.Common.Git;
-///Nuke support plugins are available for:
-///   - JetBrains ReSharper        https://nuke.build/resharper
-///   - JetBrains Rider            https://nuke.build/rider
-///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-///   - Microsoft VSCode           https://nuke.build/vscode 
-[GitHubActions(
-	"continuous",
-	GitHubActionsImage.UbuntuLatest,
-	OnPushBranches = new[] { "feature/*", "release/*", "hotfix/*" },
-	InvokedTargets = new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) },
-	EnableGitHubToken = false,
-	FetchDepth = 0)]
-[GitHubActions(
-	"pullRequest",
-	GitHubActionsImage.UbuntuLatest,
-	OnPullRequestBranches = new[] { "develop", "main" },
-	InvokedTargets = new[] { nameof(IBasycBuildCommonAll.StaticCodeAnalysisAll), nameof(IBasycBuildCommonAll.UnitTestAll) },
-	EnableGitHubToken = false,
-	FetchDepth = 0)]
-[GitHubActions(
-	"release",
-	GitHubActionsImage.UbuntuLatest,
-	OnPushBranches = new[] { "develop", "main" },
-	InvokedTargets = new[] { nameof(IBasycBuilds.NugetReleaseAll) },
-	EnableGitHubToken = true,
-	FetchDepth = 0)]
+using Nuke.Common.ProjectModel;
 
-internal class Build : NukeBuild, IBasycBuilds
+[BasycContinuousPipeline(
+	CiProvider.GithubActions,
+	PipelineOs.Linux,
+	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) })]
+[BasycPullRequestPipeline(
+	CiProvider.GithubActions,
+	PipelineOs.Linux,
+	new[] { nameof(IBasycBuildCommonAll.StaticCodeAnalysisAll), nameof(IBasycBuildCommonAll.UnitTestAll) })]
+[BasycReleasePipeline(
+	CiProvider.GithubActions,
+	PipelineOs.Linux,
+	new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) })]
+class Build : NukeBuild, IBasycBuilds
 {
-
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-	private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
-	[GitRepository] private readonly GitRepository? Repository;
+	readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
+	[GitFlow]
+	public GitFlow GitFlow = null!;
+
+	[Solution(GenerateProjects = true, SuppressBuildProjectCheck = true)]
+	public Solution Solution = null!;
+
+	Nuke.Common.ProjectModel.Solution IBasycBuildBase.Solution => Solution;
+
 	string IBasycBuildBase.BuildProjectName => "_build";
-	string IBasycBuildBase.UnitTestSuffix => ".UnitTests";
-	bool IBasycBuildBase.IsPullRequest => GitHubActions.Instance is not null && GitHubActions.Instance.IsPullRequest;
-	string IBasycBuildBase.PullRequestSourceBranch => GitHubActions.Instance.GetPullRequestSourceBranch();
-	string IBasycBuildBase.PullRequestTargetBranch => GitHubActions.Instance.GetPullRequestTargetBranch();
 	string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 	string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
 
+	UnitTestSettings IBasycBuildBase.UnitTestSettings => UnitTestSettings.Create()
+		.SetPublishResults(GitFlow.Branch is GitFlowBranch.Develop or GitFlowBranch.Main)
+		.SetBranchMinimum(0)
+		.SetSequenceMinimum(0)
+		.Exclude(Solution.buildFolder._build);
+
+	PullRequestSettings IBasycBuildBase.PullRequestSettings => PullRequestSettings.Create()
+		.SetIsPullRequest(GitHubActions.Instance.IsPullRequest())
+		.SetSourceBranch(GitHubActions.Instance?.GetPullRequestSourceBranch())
+		.SetTargetBranch(GitHubActions.Instance?.GetPullRequestTargetBranch());
+
 	public static int Main()
 	{
-		return Execute<Build>(x => ((IBasycBuilds)x).CompileAffected);
+		return Execute<Build>(x => ((IBasycBuilds)x).UnitTestAll);
 	}
 }

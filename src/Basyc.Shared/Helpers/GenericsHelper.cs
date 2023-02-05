@@ -9,15 +9,21 @@ public static class GenericsHelper
 		foreach (var it in interfaceTypes)
 		{
 			if (it.IsGenericType && it.GetGenericTypeDefinition() == parentType)
+			{
 				return true;
+			}
 		}
 
 		if (childType.IsGenericType && childType.GetGenericTypeDefinition() == parentType)
+		{
 			return true;
+		}
 
-		Type baseType = childType.BaseType;
+		var baseType = childType.BaseType;
 		if (baseType == null)
+		{
 			return false;
+		}
 
 		return IsAssignableToGenericType(baseType, parentType);
 	}
@@ -36,16 +42,17 @@ public static class GenericsHelper
 	}
 
 	/// <summary>
-	/// Get generic argument from base class
+	///     Get generic argument from base class
 	/// </summary>
 	/// <param name="childType"></param>
 	/// <param name="parentType">parent type that should contain generic parameters</param>
 	/// <returns></returns>
-
 	public static Type[] GetTypeArgumentsFromParent(this Type childType, Type parentType)
 	{
 		if (parentType.IsGenericTypeDefinition is false)
+		{
 			parentType = parentType.GetGenericTypeDefinition();
+		}
 
 		if (childType.IsGenericType)
 		{
@@ -79,9 +86,7 @@ public static class GenericsHelper
 		{
 			throw new InvalidOperationException("Class does not have specified base class/interface");
 		}
-		else
-		{
-			return new Type[0];
-		}
+
+		return Type.EmptyTypes;
 	}
 }

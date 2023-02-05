@@ -2,6 +2,6 @@
 
 public class SignalROptions
 {
-	public string SignalRServerUri { get; set; }
-	public string ProxyClientHubPattern { get; set; }
+	public string? SignalRServerUri { get; set; }
+	public string? ProxyClientHubPattern { get; set; }
 }

@@ -8,7 +8,6 @@ namespace Basyc.Diagnostics.SignalR.Server;
 
 public class SignalRServerDiagnosticPusher : IServerDiagnosticPusher
 {
-
 	private readonly IHubContext<LoggingReceiversHub, IReceiversMethodsServerCanCall> receiversHubContext;
 
 	public SignalRServerDiagnosticPusher(IHubContext<LoggingReceiversHub, IReceiversMethodsServerCanCall> receiversHubContext)
@@ -18,8 +17,7 @@ public class SignalRServerDiagnosticPusher : IServerDiagnosticPusher
 
 	public Task PushChangesToReceivers(DiagnosticChanges changes)
 	{
-		var changeDTO = ChangesSignalRDTO.ToDto(changes);
-		return receiversHubContext.Clients.All.ReceiveChangesFromServer(changeDTO);
-
+		var changeDto = ChangesSignalRDto.ToDto(changes);
+		return receiversHubContext.Clients.All.ReceiveChangesFromServer(changeDto);
 	}
 }

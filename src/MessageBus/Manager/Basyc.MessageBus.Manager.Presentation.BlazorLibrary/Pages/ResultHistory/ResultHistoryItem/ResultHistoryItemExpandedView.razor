@@ -1,114 +1,110 @@
 ﻿@using Basyc.Blazor.Controls.TooltippedText
-@using Basyc.Diagnostics.Shared.Logging
-@using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Application
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogWindow
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html
-
 <resultHistoryItemExpandedView>
-    <basicSection>
-        <basicTable>
-            <MudGrid Spacing="0">
-                <MudItem lg="6">
-                    <MudStack Spacing="2">
-                        <formLabel>StartTime</formLabel>
-                        <formLabel>State</formLabel>
-                        <formLabel>Duration</formLabel>
-                        <formLabel>TraceId</formLabel>
-                    </MudStack>
-                </MudItem>
-                <MudItem lg="6">
-                    <MudStack Spacing="2">
-                        <formValue>
-                            @Html.Time(RequestContext.CreationTime)
-                        </formValue>
-                        <formValue>
-                            @RequestContext.State.ToString()
-                        </formValue>
-                        <formValue>
-                            <LatencyView RequestContext="RequestContext" />
-                        </formValue>
-                        <formValue>
-                            <BasycTooltippedText Text="@RequestContext.TraceId" />
-                        </formValue>
-                    </MudStack>
-                </MudItem>
-            </MudGrid>
-        </basicTable>
+	<basicSection>
+		<basicTable>
+			<MudGrid Spacing="0">
+				<MudItem lg="6">
+					<MudStack Spacing="2">
+						<formLabel>StartTime</formLabel>
+						<formLabel>State</formLabel>
+						<formLabel>Duration</formLabel>
+						<formLabel>TraceId</formLabel>
+					</MudStack>
+				</MudItem>
+				<MudItem lg="6">
+					<MudStack Spacing="2">
+						<formValue>
+							@Html.Time(RequestContext.CreationTime)
+						</formValue>
+						<formValue>
+							@RequestContext.State.ToString()
+						</formValue>
+						<formValue>
+							<LatencyView RequestContext="RequestContext"/>
+						</formValue>
+						<formValue>
+							<BasycTooltippedText Text="@RequestContext.TraceId"/>
+						</formValue>
+					</MudStack>
+				</MudItem>
+			</MudGrid>
+		</basicTable>
 
-        <dataSubSection>
-            <requestBox>
-                <textValue>
-                    @ResponseResultConverter.CreateInputOverview(RequestContext.Request.Parameters)
-                </textValue>
-            </requestBox>
-            <arrow>
-                <MudIcon Icon="@Icons.Material.Rounded.Forward" />
-            </arrow>
+		<dataSubSection>
+			<requestBox>
+				<textValue>
+					@ResponseResultConverter.CreateInputOverview(RequestContext.Request.Parameters)
+				</textValue>
+			</requestBox>
+			<arrow>
+				<MudIcon Icon="@Icons.Material.Rounded.Forward"/>
+			</arrow>
 
-            <responseBox>
-                @if (RequestContext.State == RequestResultState.Started)
-                {
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
-                }
-                else
-                {
-                    <textValue>
-                        @if (RequestContext.State == RequestResultState.Completed)
-                        {
-                            if (RequestContext.Request.RequestInfo.HasResponse)
-                            {
-                                @RequestContext.Response
-                            }
-                            else
-                            {
-                                <ghostLabel>
-                                    Result does not have an output
-                                </ghostLabel>
-                            }
-                        }
-                        @if (RequestContext.State == RequestResultState.Failed)
-                        {
-                            @RequestContext.ErrorMessage
-                        }
-                    </textValue>
-                }
-            </responseBox>
-        </dataSubSection>
-    </basicSection>
+			<responseBox>
+				@if (RequestContext.State == RequestResultState.Started)
+				{
+					<MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%"/>
+				}
+				else
+				{
+					<textValue>
+						@if (RequestContext.State == RequestResultState.Completed)
+						{
+							if (RequestContext.Request.RequestInfo.HasResponse)
+							{
+								@RequestContext.Response
+							}
+							else
+							{
+								<ghostLabel>
+									Result does not have an output
+								</ghostLabel>
+							}
+						}
+						@if (RequestContext.State == RequestResultState.Failed)
+						{
+							@RequestContext.ErrorMessage
+						}
+					</textValue>
+				}
+			</responseBox>
+		</dataSubSection>
+	</basicSection>
 
-    <tabs>
-        <MudTabs Color="@Color.Dark">
-            <MudTabPanel>
-                <TabContent>
-                    <MudText Typo="Typo.body1">Logs</MudText>
-                </TabContent>
-                <ChildContent>
-                    <LogWindowView DiagnosticsContext="RequestContext.Diagnostics" />
-                </ChildContent>
-            </MudTabPanel>
-            <MudTabPanel>
-                <TabContent>
-                    <MudText Typo="Typo.body1">Traces</MudText>
-                </TabContent>
-                <ChildContent>
-                    <HorizontalDurationMapView RequestContext="RequestContext" />
-                </ChildContent>
-            </MudTabPanel>
-        </MudTabs>
-    </tabs>
+	<tabs>
+		<MudTabs Color="@Color.Dark">
+			<MudTabPanel>
+				<TabContent>
+					<MudText Typo="Typo.body1">Logs</MudText>
+				</TabContent>
+				<ChildContent>
+					<LogWindowView DiagnosticsContext="RequestContext.Diagnostics"/>
+				</ChildContent>
+			</MudTabPanel>
+			<MudTabPanel>
+				<TabContent>
+					<MudText Typo="Typo.body1">Traces</MudText>
+				</TabContent>
+				<ChildContent>
+					<HorizontalDurationMapView RequestContext="RequestContext"/>
+				</ChildContent>
+			</MudTabPanel>
+		</MudTabs>
+	</tabs>
 
 </resultHistoryItemExpandedView>
 
 
 @code {
 
-    [Parameter]
-    [EditorRequired]
-    public RequestContext RequestContext { get; set; }
+	[Parameter]
+	[EditorRequired]
+	public RequestContext RequestContext { get; set; } = null!;
 
 }

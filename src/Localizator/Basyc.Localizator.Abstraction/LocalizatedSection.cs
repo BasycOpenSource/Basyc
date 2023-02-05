@@ -1,36 +1,51 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basyc.Localizator.Abstraction;
 
 public class LocalizatedSection<TSection> : LocalizatedSection
 {
-	public LocalizatedSection(ILocalizatorStorage storage, IOptionsMonitor<LocalizationOptions> options, CultureInfo defaultCulture) : base(nameof(TSection), storage, options, defaultCulture = null)
+	public LocalizatedSection(ILocalizatorStorage storage, IOptionsMonitor<LocalizationOptions> options, CultureInfo? defaultCulture) : base(nameof(TSection),
+		storage, options, defaultCulture = null)
 	{
-
 	}
 }
 
 public class LocalizatedSection : ILocalizatedSection
 {
-	protected IOptionsMonitor<LocalizationOptions> options;
-	public string SectionUniqueName { get; private init; }
 	private readonly bool contructorFinished;
+	protected readonly IOptionsMonitor<LocalizationOptions> options;
+	private readonly ILocalizatorStorage storage;
+
+	private readonly Dictionary<string, CultureInfo> supportedCultures;
 	private CultureInfo defaultCulture;
-	private readonly ILocalizatorStorage _storage;
 	private bool inheritsDefaultCulture = true;
-	private Dictionary<string, CultureInfo> supportedCultures { get; set; }
-	public IReadOnlyDictionary<string, CultureInfo> SupportedCultures { get => supportedCultures; }
+
+	public LocalizatedSection(string sectionUniqueName, ILocalizatorStorage storage, IOptionsMonitor<LocalizationOptions> options,
+		CultureInfo? defaultCulture = null)
+	{
+		this.options = options;
+		SectionUniqueName = sectionUniqueName;
+		this.storage = storage;
+		DefaultCulture = defaultCulture ?? options.CurrentValue.SharedDefaultCulture;
+		this.defaultCulture = DefaultCulture;
+		supportedCultures = new Dictionary<string, CultureInfo>();
+	}
+
+	public string SectionUniqueName { get; }
+	public IReadOnlyDictionary<string, CultureInfo> SupportedCultures => supportedCultures;
+
 	public CultureInfo DefaultCulture
 	{
 		get => defaultCulture;
 		set
 		{
+			if (value is null)
+			{
+				throw new ArgumentException("cant be null");
+			}
+
 			if (SupportedCultures.ContainsKey(value.Name))
 			{
 				var oldCulture = defaultCulture;
@@ -41,12 +56,10 @@ public class LocalizatedSection : ILocalizatedSection
 			{
 				if (contructorFinished)
 				{
-					throw new Exception($"Can't change section default culture. Section with name {SectionUniqueName} does not support culture \"{value.Name}\"");
+					throw new Exception(
+						$"Can't change section default culture. Section with name {SectionUniqueName} does not support culture \"{value.Name}\"");
 				}
-				else
-				{
-					//Because initial default culture is not support by this section, default localizazor should return keys.
-				}
+				//Because initial default culture is not support by this section, default localizazor should return keys.
 			}
 		}
 	}
@@ -57,32 +70,21 @@ public class LocalizatedSection : ILocalizatedSection
 		set
 		{
 			inheritsDefaultCulture = value;
-			if (inheritsDefaultCulture == true && DefaultCulture != options.CurrentValue.SharedDefaultCulture)
+			if (inheritsDefaultCulture && DefaultCulture != options.CurrentValue.SharedDefaultCulture)
 			{
 				DefaultCulture = options.CurrentValue.SharedDefaultCulture;
 			}
 		}
 	}
 
-	public LocalizatedSection(string sectionUniqueName, ILocalizatorStorage storage, IOptionsMonitor<LocalizationOptions> options, CultureInfo defaultCulture = null)
-	{
-		IOptionsMonitor<LocalizationOptions>
-		_optionsMonitor = options;
-		SectionUniqueName = sectionUniqueName;
-		_storage = storage;
-		DefaultCulture = defaultCulture ?? options.CurrentValue.SharedDefaultCulture;
-		supportedCultures = new Dictionary<string, CultureInfo>();
-
-	}
-
 	public async Task<ILocalizator> GetLocalizatorAsync(CultureInfo culture)
 	{
-		GetLocalizatorResult getResult = await TryGetLocalizatorAsync(culture, false);
-		ILocalizator localizator = getResult.localizator;
+		var getResult = await TryGetLocalizatorAsync(culture, false);
+		var localizator = getResult.Localizator;
 
-		if (getResult.localizatorFound == false)
+		if (getResult.LocalizatorFound == false)
 		{
-			if (InheritsDefaultCulture == true & DefaultCulture == culture)
+			if (InheritsDefaultCulture & (DefaultCulture == culture))
 			{
 				localizator = new Localizator(culture, SectionUniqueName, new Dictionary<string, string>());
 				localizator.CanGetReturnKey = true;
@@ -107,28 +109,28 @@ public class LocalizatedSection : ILocalizatedSection
 	public async Task<GetLocalizatorResult> TryGetLocalizatorAsync(CultureInfo culture, bool canReturnDefault = true)
 	{
 		bool isCultureSupported;
-		ILocalizator localizator = null;
+		ILocalizator localizator;
 
 		isCultureSupported = SupportedCultures.ContainsKey(culture.Name);
 
 		if (isCultureSupported)
 		{
-			localizator = await _storage.LoadLocalizatorAsync(culture, SectionUniqueName);
+			localizator = await storage.LoadLocalizatorAsync(culture, SectionUniqueName);
 			localizator = new Localizator(localizator.Culture, localizator.SectionUniqueName, localizator.GetAll());
 		}
 		else
 		{
 			if (canReturnDefault)
 			{
-				if (localizator == null || localizator.Culture.Name != DefaultCulture.Name)
-				{
-					localizator = await GetLocalizatorAsync();
-				}
+				localizator = await GetLocalizatorAsync();
+			}
+			else
+			{
+				throw new InvalidOperationException("Could not return localizator");
 			}
 		}
 
 		return new GetLocalizatorResult(isCultureSupported, localizator);
-
 	}
 
 	public async Task AddLocalizatorsAsync(params ILocalizator[] localizators)
@@ -143,10 +145,11 @@ public class LocalizatedSection : ILocalizatedSection
 			}
 		}
 
-		await _storage.SaveOrUpdateLocalizatorsAsync(localizators);
+		await storage.SaveOrUpdateLocalizatorsAsync(localizators);
 	}
 
-	public event EventHandler<SectionCultureChangedArgs> SectionCultureChanged;
+	public event EventHandler<SectionCultureChangedArgs>? SectionCultureChanged;
+
 	private void OnSectionCultureChanged(CultureInfo oldCulture, CultureInfo newCulture)
 	{
 		SectionCultureChanged?.Invoke(this, new SectionCultureChangedArgs(SectionUniqueName, oldCulture, newCulture));

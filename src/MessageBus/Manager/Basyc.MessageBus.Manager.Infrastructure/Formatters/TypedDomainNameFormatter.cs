@@ -1,10 +1,6 @@
 ﻿using Basyc.MessageBus.Manager.Application;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using Throw;
 
 namespace Basyc.MessageBus.Manager.Infrastructure;
 
@@ -12,6 +8,9 @@ public class TypedDomainNameFormatter : ITypedDomainNameFormatter
 {
 	public string GetFormattedName(Assembly assembly)
 	{
-		return assembly.GetName().Name;
+		var assemblyName = assembly.GetName();
+		assemblyName.ThrowIfNull();
+		assemblyName.Name.ThrowIfNull();
+		return assemblyName.Name;
 	}
 }

@@ -5,83 +5,28 @@ using Basyc.Serialization.Abstraction;
 using Basyc.Serializaton.Abstraction;
 using Microsoft.Extensions.Options;
 using Polly;
+using Polly.Timeout;
 using Polly.Wrap;
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
+using Throw;
 
 namespace Basyc.MessageBus.HttpProxy.Client.Http;
 
 public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
 {
-	private static readonly string proxyResponseSimpleDataType = TypedToSimpleConverter.ConvertTypeToSimple(typeof(ResponseHttpDTO));
-	private readonly AsyncPolicyWrap retryPolicy;
+	private static readonly string proxyResponseSimpleDataType = TypedToSimpleConverter.ConvertTypeToSimple(typeof(ResponseHttpDto));
 	private readonly HttpClient httpClient;
-	private readonly IOptions<HttpProxyObjectMessageBusClientOptions> options;
 	private readonly IObjectToByteSerailizer objectToByteSerializer;
-	private readonly string wrapperMessageType = TypedToSimpleConverter.ConvertTypeToSimple(typeof(RequestHttpDTO));
+	private readonly IOptions<HttpProxyObjectMessageBusClientOptions> options;
+	private readonly AsyncPolicyWrap retryPolicy;
+	private readonly string wrapperMessageType = TypedToSimpleConverter.ConvertTypeToSimple(typeof(RequestHttpDto));
 
 	public HttpProxyObjectMessageBusClient(IOptions<HttpProxyObjectMessageBusClientOptions> options,
 		IObjectToByteSerailizer byteSerializer)
 	{
-		retryPolicy = Policy.Handle<Exception>().RetryAsync(0).WrapAsync(Policy.TimeoutAsync(10, Polly.Timeout.TimeoutStrategy.Pessimistic));
-		httpClient = new HttpClient() { BaseAddress = options.Value.ProxyHostUri };
+		retryPolicy = Policy.Handle<Exception>().RetryAsync(0).WrapAsync(Policy.TimeoutAsync(10, TimeoutStrategy.Pessimistic));
+		httpClient = new HttpClient { BaseAddress = options.Value.ProxyHostUri };
 		this.options = options;
 		objectToByteSerializer = byteSerializer;
-	}
-
-	private BusTask<ProxyResponse> HttpCallToProxyServer(string messageType, object? messageData, Type? responseType = null, CancellationToken cancellationToken = default)
-	{
-		if (objectToByteSerializer.TrySerialize(messageData, messageType, out var requestBytes, out var seriError) is false)
-		{
-			return BusTask<ProxyResponse>.FromValue("-1", new ProxyResponse(seriError, true, true, null));
-		}
-
-		var responseTypeString = responseType?.AssemblyQualifiedName;
-		var hasResponse = responseType != null;
-		var proxyRequest = new RequestHttpDTO(messageType, hasResponse, requestBytes, responseTypeString);
-
-		if (objectToByteSerializer.TrySerialize(proxyRequest, wrapperMessageType, out var proxyRequestBytes, out var error) is false)
-		{
-			return BusTask<ProxyResponse>.FromValue("-1", new ProxyResponse(error, true, true, null));
-
-		}
-
-		var httpContent = new ByteArrayContent(proxyRequestBytes);
-		//var httpResult = retryPolicy.ExecuteAsync(async () => await httpClient.PostAsync("", httpContent)).GetAwaiter().GetResult();
-		var httpResultTask = retryPolicy.ExecuteAsync(async () => await httpClient.PostAsync("", httpContent));
-		httpResultTask.Wait();
-		var httpResult = httpResultTask.Result;
-
-		if (httpResult.IsSuccessStatusCode is false)
-		{
-			var httpErrorContent = httpResult.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-			var errorMessageText = $"Message bus response failure, code: {(int)httpResult.StatusCode},\nreason: {httpResult.ReasonPhrase},\ncontent: {httpErrorContent}";
-			//throw new Exception($"Message bus response failure, code: {(int)httpResult.StatusCode},\nreason: {httpResult.ReasonPhrase},\ncontent: {httpErrorContent}");
-			return BusTask<ProxyResponse>.FromValue("-1", new ProxyResponse(new ErrorMessage(errorMessageText), true, true, null));
-		}
-
-		cancellationToken.ThrowIfCancellationRequested();
-
-		using MemoryStream httpMemomoryStream = new MemoryStream();
-		httpResult.Content.CopyToAsync(httpMemomoryStream).GetAwaiter().GetResult();
-		var proxyResponseResponseBytes = httpMemomoryStream.ToArray();
-
-		cancellationToken.ThrowIfCancellationRequested();
-
-		var proxyResponse = (ResponseHttpDTO)objectToByteSerializer.Deserialize(proxyResponseResponseBytes, proxyResponseSimpleDataType);
-		if (hasResponse is false)
-			return BusTask<ProxyResponse>.FromValue(proxyResponse.TraceId, new ProxyResponse(null, false, false, proxyResponse.TraceId));
-
-		var deserializedResponse = objectToByteSerializer.Deserialize(proxyResponse.ResponseBytes, proxyResponse.ResponseType);
-		return BusTask<ProxyResponse>.FromValue(proxyResponse.TraceId, new ProxyResponse(deserializedResponse, true, false, proxyResponse.TraceId));
-	}
-
-	public void Dispose()
-	{
-
 	}
 
 	public BusTask PublishAsync(string eventType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
@@ -107,13 +52,14 @@ public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
 	public BusTask<object> RequestAsync(string requestType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
 	{
 		var innerBusTask = HttpCallToProxyServer(requestType, null, typeof(UknownResponseType), cancellationToken);
-		return innerBusTask.ContinueWith<object>(x => (object)x);
+		return innerBusTask.ContinueWith<object>(x => x);
 	}
 
-	public BusTask<object> RequestAsync(string requestType, object requestData, RequestContext requestContext = default, CancellationToken cancellationToken = default)
+	public BusTask<object> RequestAsync(string requestType, object requestData, RequestContext requestContext = default,
+		CancellationToken cancellationToken = default)
 	{
 		var innerBusTask = HttpCallToProxyServer(requestType, requestData, typeof(UknownResponseType), cancellationToken);
-		return innerBusTask.ContinueWith<object>(x => (object)x);
+		return innerBusTask.ContinueWith<object>(x => x);
 	}
 
 	public Task StartAsync(CancellationToken cancellationToken)
@@ -123,8 +69,65 @@ public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
 
 	void IDisposable.Dispose()
 	{
-
 	}
 
-	private class UknownResponseType { };
+	private BusTask<ProxyResponse> HttpCallToProxyServer(string messageType, object? messageData, Type? responseType = null,
+		CancellationToken cancellationToken = default)
+	{
+		if (objectToByteSerializer.TrySerialize(messageData, messageType, out var requestBytes, out var seriError) is false)
+		{
+			return BusTask<ProxyResponse>.FromValue("-1", new ProxyResponse(seriError, true, true, null));
+		}
+
+		var responseTypeString = responseType?.AssemblyQualifiedName;
+		var hasResponse = responseType != null;
+		var proxyRequest = new RequestHttpDto(messageType, hasResponse, requestBytes, responseTypeString);
+
+		if (objectToByteSerializer.TrySerialize(proxyRequest, wrapperMessageType, out var proxyRequestBytes, out var error) is false)
+		{
+			return BusTask<ProxyResponse>.FromValue("-1", new ProxyResponse(error, true, true, null));
+		}
+
+		var httpContent = new ByteArrayContent(proxyRequestBytes);
+		//var httpResult = retryPolicy.ExecuteAsync(async () => await httpClient.PostAsync("", httpContent)).GetAwaiter().GetResult();
+		var httpResultTask = retryPolicy.ExecuteAsync(async () => await httpClient.PostAsync("", httpContent));
+		httpResultTask.Wait();
+		var httpResult = httpResultTask.Result;
+
+		if (httpResult.IsSuccessStatusCode is false)
+		{
+			var httpErrorContent = httpResult.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+			var errorMessageText =
+				$"Message bus response failure, code: {(int)httpResult.StatusCode},\nreason: {httpResult.ReasonPhrase},\ncontent: {httpErrorContent}";
+			//throw new Exception($"Message bus response failure, code: {(int)httpResult.StatusCode},\nreason: {httpResult.ReasonPhrase},\ncontent: {httpErrorContent}");
+			return BusTask<ProxyResponse>.FromValue("-1", new ProxyResponse(new ErrorMessage(errorMessageText), true, true, null));
+		}
+
+		cancellationToken.ThrowIfCancellationRequested();
+
+		using var httpMemomoryStream = new MemoryStream();
+		httpResult.Content.CopyToAsync(httpMemomoryStream).GetAwaiter().GetResult();
+		var proxyResponseResponseBytes = httpMemomoryStream.ToArray();
+
+		cancellationToken.ThrowIfCancellationRequested();
+
+		var proxyResponse = (ResponseHttpDto)objectToByteSerializer.Deserialize(proxyResponseResponseBytes, proxyResponseSimpleDataType)!;
+		if (hasResponse is false)
+		{
+			return BusTask<ProxyResponse>.FromValue(proxyResponse.TraceId, new ProxyResponse(null, false, false, proxyResponse.TraceId));
+		}
+
+		proxyResponse.ResponseBytes.ThrowIfNull();
+		proxyResponse.ResponseType.ThrowIfNull();
+		var deserializedResponse = objectToByteSerializer.Deserialize(proxyResponse.ResponseBytes, proxyResponse.ResponseType);
+		return BusTask<ProxyResponse>.FromValue(proxyResponse.TraceId, new ProxyResponse(deserializedResponse, true, false, proxyResponse.TraceId));
+	}
+
+	public void Dispose()
+	{
+	}
+
+	private class UknownResponseType
+	{
+	}
 }

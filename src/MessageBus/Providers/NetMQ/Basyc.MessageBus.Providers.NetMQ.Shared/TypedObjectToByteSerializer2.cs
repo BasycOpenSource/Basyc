@@ -1,9 +1,5 @@
-﻿using Basyc.Shared.Helpers;
-using ProtoBuf;
+﻿using ProtoBuf;
 using ProtoBuf.Meta;
-using System;
-using System.IO;
-using System.Runtime.Serialization;
 
 namespace Basyc.MessageBus.NetMQ.Shared;
 
@@ -17,10 +13,14 @@ public static class TypedObjectToByteSerializer2
 	public static byte[] Serialize(object objectData, Type objectType)
 	{
 		if (objectData == null)
+		{
 			return new byte[0];
+		}
 
 		if (objectData.GetType().GetProperties().Length == 0)
+		{
 			return new byte[0];
+		}
 
 		using var stream = new MemoryStream();
 		PrepareSerializer(objectType);
@@ -41,17 +41,19 @@ public static class TypedObjectToByteSerializer2
 		}
 	}
 
-	public static T Deserialize<T>(byte[] objectData)
+	public static T? Deserialize<T>(byte[] objectData)
 	{
-		return (T)Deserialize(objectData, typeof(T));
+		return (T?)Deserialize(objectData, typeof(T));
 	}
 
-	public static object Deserialize(byte[] objectData, Type objectClrType)
+	public static object? Deserialize(byte[] objectData, Type objectClrType)
 	{
 		PrepareSerializer(objectClrType);
 
 		if (objectData == null)
+		{
 			return objectClrType.GetDefaultValue();
+		}
 
 		if (objectData.Length == 0)
 		{

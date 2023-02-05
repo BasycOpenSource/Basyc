@@ -15,9 +15,9 @@ namespace Basyc.MessageBus.HttpProxy.Server.Asp.Tests;
 
 public class ProxyHttpReqeustHandlerTests
 {
-	private readonly Mock<IByteMessageBusClient> messageBusMock;
 	private readonly ProxyHttpRequestHandler handler;
 	private readonly Mock<HttpContext> httpContextMock;
+	private readonly Mock<IByteMessageBusClient> messageBusMock;
 	private readonly IObjectToByteSerailizer serializer;
 
 	public ProxyHttpReqeustHandlerTests()
@@ -33,13 +33,13 @@ public class ProxyHttpReqeustHandlerTests
 	{
 		var dummyRequestType = TypedToSimpleConverter.ConvertTypeToSimple<DummyRequest>();
 		var ser = serializer.Serialize(new DummyRequest(), dummyRequestType);
-		var proxyRequest = new RequestHttpDTO(dummyRequestType, false);
+		var proxyRequest = new RequestHttpDto(dummyRequestType, false);
 		var proxyBytes = JsonSerializer.SerializeToUtf8Bytes(proxyRequest);
 		var proxyMemory = new MemoryStream(proxyBytes);
 
-		httpContextMock.SetupGet((x) => x.Request.Body).Returns(proxyMemory);
+		httpContextMock.SetupGet(x => x.Request.Body).Returns(proxyMemory);
 
-		string busErrorMessage = "BUS_ERROR_MESSAGE";
+		var busErrorMessage = "BUS_ERROR_MESSAGE";
 		messageBusMock
 			.Setup(x => x.SendAsync(It.IsAny<string>(), It.IsAny<byte[]>(), default, default))
 			.Throws(new Exception(busErrorMessage));

@@ -1,46 +1,50 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
+﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
+using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common;
-using Nuke.Common.CI.GitHubActions;
-using Serilog;
-using static Basyc.Extensions.Nuke.Tasks.DotNetTasks;
+using static Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.DotNetTasks;
 
 namespace Basyc.Extensions.Nuke.Targets;
+
 public interface IBasycBuildCommonAffected : IBasycBuildBase
 {
-	[GitCompareReport] GitCompareReport GitCompareReport => TryGetValue(() => GitCompareReport);
+	[AffectedReport] RepositoryChangeReport RepositoryChangeReport => TryGetValue(() => RepositoryChangeReport)!;
+
+	Target BranchCheckAffected => _ => _
+		.DependentFor(StaticCodeAnalysisAffected, RestoreAffected, CompileAffected, UnitTestAffected, RestoreAffected)
+		.Executes(BranchCheck);
+
+	Target ChangeReportCheck => _ => _
+		.DependentFor(StaticCodeAnalysisAffected, RestoreAffected, CompileAffected, UnitTestAffected, RestoreAffected)
+		.Executes(RepositoryChangeReport.ThrowIfNotValid);
 
 	Target StaticCodeAnalysisAffected => _ => _
-	.Before(CompileAffected)
-	.Executes(() =>
-	{
-		Log.Information(GitHubActions.Instance.ServerUrl);
-		Log.Information(GitHubActions.Instance.Repository);
-		GitCompareReport.ThrowIfNotValid();
-		BasycFormatVerifyNoChangesAffected(GitCompareReport!);
-	});
+		.Before(CompileAffected)
+		.Executes(() =>
+		{
+			BasycDotNetFormatVerifyNoChangesAffected(RepositoryChangeReport!);
+		});
+
 	Target RestoreAffected => _ => _
 		.Before(CompileAffected)
 		.Executes(() =>
 		{
-			GitCompareReport.ThrowIfNotValid();
-			BasycRestoreAffected(GitCompareReport, UnitTestSuffix, BuildProjectName, Solution);
+			BasycDotNetRestoreAffected(RepositoryChangeReport, UnitTestSettings.UnitTestSuffix, BuildProjectName, Solution);
 		});
 
 	Target CompileAffected => _ => _
-		   .DependsOn(RestoreAffected)
-		   .Executes(() =>
-		   {
-			   GitCompareReport.ThrowIfNotValid();
-			   BasycBuildAffected(GitCompareReport, UnitTestSuffix, BuildProjectName, Solution);
-		   });
+		.DependsOn(RestoreAffected)
+		.Executes(() =>
+		{
+			BasycDotNetBuildAffected(RepositoryChangeReport, UnitTestSettings.UnitTestSuffix, BuildProjectName, Solution);
+		});
 
-	//https://github.com/danielpalme/ReportGenerator
 	Target UnitTestAffected => _ => _
-		   .DependsOn(CompileAffected)
-		   .Executes(() =>
-		   {
-			   GitCompareReport.ThrowIfNotValid();
-			   BasycUnitTestAndCoverageAffected(Solution, GitCompareReport, UnitTestSuffix);
-		   });
-
+		.DependsOn(CompileAffected)
+		.Executes(() =>
+		{
+			using var newCoverageReport = BasycUnitTestAffected(Solution, RepositoryChangeReport, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
+			Repository.TestsHistory.TryGetHistory(GitFlowHelper.GetSourceBranch(GitRepository.Branch.Value()).Name, out var oldCoverageReport);
+			BasycTestCreateSummaryConsole(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum, oldCoverageReport);
+			BasycTestAssertMinimum(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
+		});
 }

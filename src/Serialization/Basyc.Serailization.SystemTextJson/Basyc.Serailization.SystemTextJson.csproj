@@ -10,4 +10,8 @@
     <ProjectReference Include="..\Basyc.Serialization.Abstraction\Basyc.Serialization.Abstraction.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Throw" Version="1.3.1" />
+  </ItemGroup>
+
 </Project>

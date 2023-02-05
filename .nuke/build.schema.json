@@ -6,7 +6,7 @@
     "build": {
       "type": "object",
       "properties": {
-        "Configuration": {
+        "configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
           "enum": [
@@ -72,12 +72,15 @@
           "items": {
             "type": "string",
             "enum": [
+              "BranchCheckAffected",
+              "BranchCheckAll",
               "CleanAll",
               "CompileAffected",
               "CompileAll",
+              "ChangeReportCheck",
               "NugetReleaseAll",
               "NugetReleaseCheck",
-              "PullRequestCheck",
+              "PullRequestCheckAll",
               "RestoreAffected",
               "RestoreAll",
               "StaticCodeAnalysisAffected",
@@ -97,12 +100,15 @@
           "items": {
             "type": "string",
             "enum": [
+              "BranchCheckAffected",
+              "BranchCheckAll",
               "CleanAll",
               "CompileAffected",
               "CompileAll",
+              "ChangeReportCheck",
               "NugetReleaseAll",
               "NugetReleaseCheck",
-              "PullRequestCheck",
+              "PullRequestCheckAll",
               "RestoreAffected",
               "RestoreAll",
               "StaticCodeAnalysisAffected",

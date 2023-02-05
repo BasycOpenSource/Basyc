@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Basyc.Localizator.Infrastructure.EF;
 
 public class LocalizatorSectionEntity
 {
-	public LocalizatorSectionEntity()
+	public LocalizatorSectionEntity(string uniqueSectionName)
 	{
-
+		UniqueSectionName = uniqueSectionName;
 	}
 
-	[Key]
-	public string UniqueSectionName { get; set; }
-	public List<LocalizatorEntity> Localizators { get; set; }
+	[Key] public string UniqueSectionName { get; init; }
+
+	public List<LocalizatorEntity> Localizators { get; } = new();
 }

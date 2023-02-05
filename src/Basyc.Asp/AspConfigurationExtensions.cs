@@ -7,7 +7,7 @@ namespace Basyc.Asp;
 public static class AspConfigurationExtensions
 {
 	/// <summary>
-	/// Register generic services for all ASP project (e.g. swagger)
+	///     Register generic services for all ASP project (e.g. swagger)
 	/// </summary>
 	public static IWebHostBuilder ConfigureAsp<TStartup>(this IWebHostBuilder webBuilder, string assemblyName)
 		where TStartup : class, IStartupClass
@@ -19,7 +19,11 @@ public static class AspConfigurationExtensions
 			services.AddControllers().FixJsonSerialization(); //Required for swagger
 			services.AddSwaggerGen(c =>
 			{
-				c.SwaggerDoc("v1", new OpenApiInfo { Title = context.HostingEnvironment.ApplicationName, Version = "v1" });
+				c.SwaggerDoc("v1", new OpenApiInfo
+				{
+					Title = context.HostingEnvironment.ApplicationName,
+					Version = "v1"
+				});
 			});
 			services.AddHealthChecks();
 		});
@@ -28,9 +32,9 @@ public static class AspConfigurationExtensions
 	}
 
 	/// <summary>
-	/// Workaround to setup Startup class from different assembly. Bug described here: https://github.com/dotnet/aspnetcore/issues/7315
+	///     Workaround to setup Startup class from different assembly. Bug described here: https://github.com/dotnet/aspnetcore/issues/7315
 	/// </summary>
-	public static IWebHostBuilder UseStartupWorkaround<TStartup>(this IWebHostBuilder webBuilder, string assemblyName = null)
+	public static IWebHostBuilder UseStartupWorkaround<TStartup>(this IWebHostBuilder webBuilder, string? assemblyName = null)
 		where TStartup : class, IStartupClass
 	{
 		webBuilder.UseSetting(WebHostDefaults.ApplicationKey, assemblyName);
@@ -39,7 +43,7 @@ public static class AspConfigurationExtensions
 	}
 
 	/// <summary>
-	/// Using the old school NewtonsoftJson istead of new microsoft seriliazer
+	///     Using the old school NewtonsoftJson istead of new microsoft seriliazer
 	/// </summary>
 	public static IMvcBuilder FixJsonSerialization(this IMvcBuilder mvcBuilder)
 	{

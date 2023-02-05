@@ -1,32 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class CqrsInterfacedDomainProviderOptions
 {
-	public class CQRSRegistration
+	private readonly List<CqrsRegistration> cqrsRegistrations = new();
+
+	public void AddcqrsRegistration(CqrsRegistration cqrsRegistration)
 	{
-		public Type IQueryType { get; set; }
-		public Type ICommandType { get; set; }
-		public Type ICommandWithResponseType { get; set; }
-		public Type IMessageType { get; set; }
-		public Type IMessageWithResponseType { get; set; }
-		public string DomainName { get; set; }
+		cqrsRegistrations.Add(cqrsRegistration);
+	}
+
+	public List<CqrsRegistration> GetcqrsRegistrations()
+	{
+		return cqrsRegistrations;
+	}
+
+	public class CqrsRegistration
+	{
+		public Type? QueryInterfaceType { get; set; }
+		public Type? CommandInterfaceType { get; set; }
+		public Type? CommandWithResponseInterfaceType { get; set; }
+		public Type? MessageInterfaceType { get; set; }
+		public Type? MessageWithResponseInterfaceType { get; set; }
+		public string? DomainName { get; set; }
 
 		public IEnumerable<Assembly> AssembliesToScan { get; set; } = new List<Assembly>();
-
-	}
-
-	private readonly List<CQRSRegistration> cQRSRegistrations = new List<CQRSRegistration>();
-	public void AddCQRSRegistration(CQRSRegistration cQRSRegistration)
-	{
-		cQRSRegistrations.Add(cQRSRegistration);
-	}
-
-	public List<CQRSRegistration> GetCQRSRegistrations()
-	{
-		return cQRSRegistrations;
 	}
 }

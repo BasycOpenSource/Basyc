@@ -1,28 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Basyc.Shared.Models.Pricing;
+﻿namespace Basyc.Shared.Models.Pricing;
 
 public enum Currencies
 {
 	/// <summary>
-	/// Euro
+	///     Euro
 	/// </summary>
-	EUR = 1,
-	/// <summary>
-	/// Dollar
-	/// </summary>
-	USD = 2,
-	/// <summary>
-	/// Czech crown
-	/// </summary>
-	CZK = 3,
-	/// <summary>
-	/// 
-	/// </summary>
-	PLN = 4,
+	Eur = 1,
 
+	/// <summary>
+	///     Dollar
+	/// </summary>
+	Usd = 2,
+
+	/// <summary>
+	///     Czech crown
+	/// </summary>
+	Czk = 3,
+
+	/// <summary>
+	/// </summary>
+	Pln = 4
 }
