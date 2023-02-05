@@ -1,4 +1,5 @@
 ﻿using Nuke.Common.Utilities;
+using System.IO.Enumeration;
 
 namespace Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 
@@ -52,6 +53,7 @@ public static class GitFlowBranchStringExtensions
 
 	public static bool IsPullRequestBranch(this string branch)
 	{
-		return branch?.StartsWithOrdinalIgnoreCase("pull/") ?? false;
+		bool isMatch = FileSystemName.MatchesSimpleExpression("*pull/*/merge", branch);
+		return isMatch;
 	}
 }
