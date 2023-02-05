@@ -41,12 +41,14 @@ public record Tests(string RootDirectory)
 
 public record TestsHistory(string RootDirectory)
 {
-	public AbsolutePath DirectoryPath => RepositoryStructureHelper.GetTestsFolder(RootDirectory);
+	public AbsolutePath DirectoryPath => RepositoryStructureHelper.GetTestsHistoryFolder(RootDirectory);
 
-	public void AddOrUpdateHistory(string branchName, CoverageReport coverageReport)
+	/// <returns>File path to new history file</returns>
+	public string AddOrUpdateHistory(string branchName, CoverageReport coverageReport)
 	{
 		var newCoverageFilePath = GetHistoryFile(branchName);
 		BasycCoverageSaveToFile(coverageReport, newCoverageFilePath);
+		return newCoverageFilePath;
 	}
 
 	public bool TryGetHistory(string branchName, [NotNullWhen(true)] out CoverageReport? report)

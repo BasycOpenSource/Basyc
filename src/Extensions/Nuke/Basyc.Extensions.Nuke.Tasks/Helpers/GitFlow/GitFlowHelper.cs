@@ -36,28 +36,52 @@ public static class GitFlowHelper
 		return currentBranch.IsMainOrMasterBranch() || currentBranch.IsDevelopBranch();
 	}
 
-	public static GitFlowBranchType GetSourceBranchType(string branch)
+	public static GitFlowBranchType GetSourceBranchType(string branchName)
 	{
-		if (branch.IsFeatureBranch())
+		if (branchName.IsFeatureBranch())
 			return GitFlowBranchType.Develop;
 
-		if (branch.IsDevelopBranch())
+		if (branchName.IsDevelopBranch())
 			return GitFlowBranchType.Main;
 
-		if (branch.IsReleaseBranch())
+		if (branchName.IsReleaseBranch())
 			return GitFlowBranchType.Develop;
 
-		if (branch.IsHotfixBranch())
+		if (branchName.IsHotfixBranch())
 			return GitFlowBranchType.Release;
 
-		throw new StringNotGitFlowBranch($"Cant determine source branch for '{branch}'");
+
+		throw new StringNotGitFlowBranch($"Cant determine source branch for '{branchName}'");
+	}
+
+	public static GitFlowBranch GetBranch(string branchName)
+	{
+		if (branchName.IsMainBranch())
+			return new GitFlowBranch.Main();
+
+		if (branchName.IsDevelopBranch())
+			return new GitFlowBranch.Develop();
+
+		if (branchName.IsFeatureBranch())
+			return new GitFlowBranch.Feature(branchName);
+
+		if (branchName.IsReleaseBranch())
+			return new GitFlowBranch.Release(branchName);
+
+		if (branchName.IsHotfixBranch())
+			return new GitFlowBranch.Hotfix(branchName);
+
+		if (branchName.IsPullRequestBranch())
+			return new GitFlowBranch.PullRequest(branchName);
+
+		throw new StringNotGitFlowBranch($"Cant determine source branch for '{branchName}'");
 	}
 
 	public static bool IsGitFlowBranch(string branch)
 	{
 		try
 		{
-			GetSourceBranchType(branch);
+			GetBranch(branch);
 		}
 		catch (StringNotGitFlowBranch)
 		{

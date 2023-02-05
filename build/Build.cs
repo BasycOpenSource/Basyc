@@ -1,7 +1,9 @@
 using Basyc.Extensions.Nuke.Targets;
 using Basyc.Extensions.Nuke.Targets.Nuget;
 using Basyc.Extensions.Nuke.Tasks.CI;
+using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
+using Basyc.Extensions.Nuke.Tasks.Tools.GitFlow;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.ProjectModel;
@@ -23,6 +25,9 @@ class Build : NukeBuild, IBasycBuilds
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
+	[GitFlow]
+	public GitFlow GitFlow = null!;
+
 	[Solution(GenerateProjects = true, SuppressBuildProjectCheck = true)]
 	public Solution Solution = null!;
 
@@ -33,19 +38,16 @@ class Build : NukeBuild, IBasycBuilds
 	string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
 
 	UnitTestSettings IBasycBuildBase.UnitTestSettings => UnitTestSettings.Create()
+		.SetPublishResults(GitFlow.Branch is GitFlowBranch.Develop or GitFlowBranch.Main)
+		// .SetPublishResults(GitFlow.Branch is GitFlowBranch.Feature)
 		.SetBranchMinimum(0)
 		.SetSequenceMinimum(0)
 		.Exclude(Solution.buildFolder._build);
 
 	PullRequestSettings IBasycBuildBase.PullRequestSettings => PullRequestSettings.Create()
-		.SetIsPullRequest(GitHubActions.Instance is not null && GitHubActions.Instance.IsPullRequest)
+		.SetIsPullRequest(GitHubActions.Instance.IsPullRequest())
 		.SetSourceBranch(GitHubActions.Instance?.GetPullRequestSourceBranch())
 		.SetTargetBranch(GitHubActions.Instance?.GetPullRequestTargetBranch());
-
-	// PullRequestSettings IBasycBuildBase.PullRequestSettings => PullRequestSettings.Create()
-	// 	.SetIsPullRequest(true)
-	// 	.SetSourceBranch("feature/GitOps")
-	// 	.SetTargetBranch("develop");
 
 	public static int Main()
 	{

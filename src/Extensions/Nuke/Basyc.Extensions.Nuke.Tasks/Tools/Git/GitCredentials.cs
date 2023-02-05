@@ -1,6 +1,3 @@
 ﻿namespace Basyc.Extensions.Nuke.Tasks.Tools.Git;
 
-public class GitCredentials
-{
-	
-}
+public record GitCredentials(string UserName, string Password);

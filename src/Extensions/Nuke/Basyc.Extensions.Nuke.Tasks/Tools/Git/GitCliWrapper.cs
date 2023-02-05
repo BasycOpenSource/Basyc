@@ -1,64 +1,29 @@
-﻿using Basyc.Extensions.IO;
-using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
-using Newtonsoft.Json;
-using Nuke.Common.Tooling;
-using static Nuke.Common.Tools.DotNet.DotNetTasks;
+﻿using CliWrap;
+using System.Text;
 
-namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
+namespace Basyc.Extensions.Nuke.Tasks.Tools.Git;
 
 public static class GitCliWrapper
 {
-	public static bool FormatVerifyNoChanges(string workingDirectory, string project, IEnumerable<string> filesToCheck, out DotnetFormatReport report,
-		out ProcessException? processException)
+	public static async Task<GitCredentials> GetCredentialsWindows()
 	{
-		filesToCheck = filesToCheck.Select(x => Path.GetRelativePath(Path.GetDirectoryName(project)!, x).Replace('\\', '/'));
+		var stdOutBuffer = new StringBuilder();
+		var stdErrBuffer = new StringBuilder();
+		var result = await Cli.Wrap(global::Nuke.Common.Tools.Git.GitTasks.GitPath)
+			.WithArguments("credential-wincred get")
+			.WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+			.WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+			.WithStandardInputPipe(PipeSource.FromString("protocol=https\nhost=github.com\n\n"))
+			.ExecuteAsync();
 
-		string formatReportFilePath = Path.GetTempPath() + $"dotnetFormatReport-{Random.Shared.Next()}.json";
+		var outputStr = stdOutBuffer.ToString();
+		var errorStr = stdErrBuffer.ToString();
+		if (errorStr != "")
+			throw new Exception(errorStr);
 
-		bool isFormatted;
-		try
-		{
-			string includeParam = string.Join(' ', filesToCheck);
-			string include = filesToCheck.Any() ? $" --include {includeParam}" : "";
-			DotNet($"format \"{project}\"{include} --verify-no-changes --no-restore --report \"{formatReportFilePath}\" --verbosity quiet",
-				logOutput: false,
-				workingDirectory: workingDirectory);
-
-			isFormatted = true;
-			processException = null;
-			report = new DotnetFormatReport(Array.Empty<ReportRecord>());
-		}
-		catch (ProcessException ex)
-		{
-			if (ex.Message.StartsWith("Process 'dotnet.exe' exited with code 2.") is false)
-			{
-				File.Delete(formatReportFilePath);
-				throw;
-			}
-
-			isFormatted = false;
-			processException = ex;
-			string fileContent = File.ReadAllText(formatReportFilePath);
-			report = new DotnetFormatReport(JsonConvert.DeserializeObject<ReportRecord[]>(fileContent));
-		}
-
-		File.Delete(formatReportFilePath);
-		return isFormatted;
-	}
-
-	public static void NugetSignWithFile(IEnumerable<string> packagesPaths, string certPath, string? certPassword)
-	{
-		DotNet(
-			$"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {certPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite",
-			logOutput: false);
-	}
-
-	public static void NugetSignWithBase64(IEnumerable<string> packagesPaths, string base64Cert, string? certPassword)
-	{
-		byte[] certContent = Convert.FromBase64String(base64Cert);
-		using var cert = TemporaryFile.CreateNewWith(fileExtension: "pfx", content: certContent);
-		DotNet(
-			$"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {cert.FullPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite",
-			logOutput: false);
+		var credentials = outputStr.Split('\n');
+		var userName = credentials[0].Split('=')[1];
+		var password = credentials[1].Split('=')[1];
+		return new GitCredentials(userName, password);
 	}
 }

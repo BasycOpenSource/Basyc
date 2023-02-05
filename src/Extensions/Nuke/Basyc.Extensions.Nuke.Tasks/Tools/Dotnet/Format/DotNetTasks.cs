@@ -14,7 +14,7 @@ public static partial class DotNetTasks
 	private static bool DotnetFormatVerifyNoChanges(string workingDirectory, string projectOrSolutionPath, IEnumerable<string> filesTocheck,
 		[NotNullWhen(false)] out AggregatedDotnetFormatReport? aggregatedReport, out ProcessException? processException)
 	{
-		var isFormated = DotnetWrapper.FormatVerifyNoChanges(workingDirectory, projectOrSolutionPath, filesTocheck, out var report, out processException);
+		var isFormated = DotnetCliWrapper.FormatVerifyNoChanges(workingDirectory, projectOrSolutionPath, filesTocheck, out var report, out processException);
 		if (isFormated)
 		{
 			Log.Information("Files formatted correctly");

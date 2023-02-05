@@ -1,15 +1,17 @@
 ﻿namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
+
 public class UnitTestSettings
 {
-	public static UnitTestSettings Create()
-	{
-		return new UnitTestSettings();
-	}
-
 	public List<ProjectTestException> ProjectExceptions { get; init; } = new();
 	public double BranchMinimum { get; private set; } = 50;
 	public double SequenceMinimum { get; private set; } = 50;
 	public string UnitTestSuffix { get; private set; } = ".UnitTests";
+	public bool PublishResults { get; private set; }
+
+	public static UnitTestSettings Create()
+	{
+		return new UnitTestSettings();
+	}
 
 	public UnitTestSettings Exclude(string projectPath)
 	{
@@ -32,6 +34,12 @@ public class UnitTestSettings
 	public UnitTestSettings SetUnitTestSuffix(string testSuffix)
 	{
 		UnitTestSuffix = testSuffix;
+		return this;
+	}
+
+	public UnitTestSettings SetPublishResults(bool publishResults)
+	{
+		PublishResults = publishResults;
 		return this;
 	}
 }

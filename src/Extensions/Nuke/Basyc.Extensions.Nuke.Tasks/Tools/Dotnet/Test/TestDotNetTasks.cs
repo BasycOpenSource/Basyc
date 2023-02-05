@@ -135,6 +135,8 @@ public static partial class DotNetTasks
 		var dto = CoverageReportJsonDto.ToDto(coverageReport);
 		var json = JsonSerializer.Serialize(dto);
 		Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+		if (File.Exists(path))
+			File.Delete(path);
 		File.CreateText(path).Dispose();
 		File.WriteAllText(path, json);
 	}

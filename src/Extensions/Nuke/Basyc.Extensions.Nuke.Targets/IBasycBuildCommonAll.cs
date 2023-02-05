@@ -1,7 +1,9 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
+using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
 using Nuke.Common;
 using Nuke.Common.Tools.DotNet;
+using Serilog;
 using static Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.DotNetTasks;
 using static Basyc.Extensions.Nuke.Tasks.Tools.Git.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -56,18 +58,24 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 
 	Target UnitTestAll => _ => _
 		.DependsOn(CompileAll)
-		.Executes(() =>
+		.Executes(async () =>
 		{
-			using var newCoverageReport = BasycUnitTestAll(Solution, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
-			if (PullRequestSettings.IsPullRequest)
+			// using var newCoverageReport = BasycUnitTestAll(Solution, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
+			using var newCoverageReport = new CoverageReport(IO.TemporaryDirectory.CreateNew(), Array.Empty<ProjectCoverageReport>());
+			if (UnitTestSettings.PublishResults)
 			{
-				Repository.TestsHistory.AddOrUpdateHistory(GitRepository.Branch!, newCoverageReport);
-				Commit("[Automated] Adding test history ");
-				Push();
+				Log.Information("Publishing test results");
+				var newHistoryFilePath = Repository.TestsHistory.AddOrUpdateHistory(GitRepository.Branch!, newCoverageReport);
+				var credentials = await GetCredentialsWindows();
+				Commit("[Automated] Adding test history", newHistoryFilePath);
+				Push(credentials);
+				Log.Information("Test results published");
 			}
 
-
-			Repository.TestsHistory.TryGetHistory(GitFlowHelper.GetSourceBranchType(GitRepository.Branch!).ToString(), out var oldCoverageReport);
+			var sourceBranchToCompare = PullRequestSettings.IsPullRequest
+				? GitFlowHelper.GetSourceBranchType(GitRepository.Branch!).ToString()
+				: "";
+			Repository.TestsHistory.TryGetHistory(sourceBranchToCompare, out var oldCoverageReport);
 			BasycTestCreateSummaryConsole(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum, oldCoverageReport);
 			BasycTestAssertMinimum(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
 		});

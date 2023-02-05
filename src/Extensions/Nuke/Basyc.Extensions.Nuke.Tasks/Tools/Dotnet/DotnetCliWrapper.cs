@@ -6,20 +6,20 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
 
-public static class DotnetWrapper
+public static class DotnetCliWrapper
 {
 	public static bool FormatVerifyNoChanges(string workingDirectory, string project, IEnumerable<string> filesToCheck, out DotnetFormatReport report,
 		out ProcessException? processException)
 	{
 		filesToCheck = filesToCheck.Select(x => Path.GetRelativePath(Path.GetDirectoryName(project)!, x).Replace('\\', '/'));
 
-		string formatReportFilePath = Path.GetTempPath() + $"dotnetFormatReport-{Random.Shared.Next()}.json";
+		var formatReportFilePath = Path.GetTempPath() + $"dotnetFormatReport-{Random.Shared.Next()}.json";
 
 		bool isFormatted;
 		try
 		{
-			string includeParam = string.Join(' ', filesToCheck);
-			string include = filesToCheck.Any() ? $" --include {includeParam}" : "";
+			var includeParam = string.Join(' ', filesToCheck);
+			var include = filesToCheck.Any() ? $" --include {includeParam}" : "";
 			DotNet($"format \"{project}\"{include} --verify-no-changes --no-restore --report \"{formatReportFilePath}\" --verbosity quiet",
 				logOutput: false,
 				workingDirectory: workingDirectory);
@@ -38,7 +38,7 @@ public static class DotnetWrapper
 
 			isFormatted = false;
 			processException = ex;
-			string fileContent = File.ReadAllText(formatReportFilePath);
+			var fileContent = File.ReadAllText(formatReportFilePath);
 			report = new DotnetFormatReport(JsonConvert.DeserializeObject<ReportRecord[]>(fileContent));
 		}
 
@@ -55,7 +55,7 @@ public static class DotnetWrapper
 
 	public static void NugetSignWithBase64(IEnumerable<string> packagesPaths, string base64Cert, string? certPassword)
 	{
-		byte[] certContent = Convert.FromBase64String(base64Cert);
+		var certContent = Convert.FromBase64String(base64Cert);
 		using var cert = TemporaryFile.CreateNewWith(fileExtension: "pfx", content: certContent);
 		DotNet(
 			$"nuget sign {string.Join(' ', packagesPaths)} --certificate-path {cert.FullPath} --certificate-password {certPassword} --timestamper http://timestamp.digicert.com  --overwrite",

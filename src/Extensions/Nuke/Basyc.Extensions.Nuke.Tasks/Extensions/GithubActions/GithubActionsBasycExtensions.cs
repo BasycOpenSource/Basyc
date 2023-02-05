@@ -6,7 +6,7 @@ namespace Nuke.Common.CI.GitHubActions;
 public static class GithubActionsBasycExtensions
 {
 	/// <summary>
-	/// Returns nuget feed url in format: https://nuget.pkg.github.com/<OWNER>/index.json
+	///     Returns nuget feed url in format: https://nuget.pkg.github.com/<OWNER>/index.json
 	/// </summary>
 	/// <param name="gitHubActions"></param>
 	/// <returns></returns>
@@ -23,5 +23,10 @@ public static class GithubActionsBasycExtensions
 	public static string GetPullRequestSourceBranch(this GitHubActions gitHubActions)
 	{
 		return gitHubActions.HeadRef;
+	}
+
+	public static bool IsPullRequest(this GitHubActions? gitHubActions)
+	{
+		return gitHubActions is not null && gitHubActions.IsPullRequest;
 	}
 }
