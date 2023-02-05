@@ -39,7 +39,6 @@ class Build : NukeBuild, IBasycBuilds
 
 	UnitTestSettings IBasycBuildBase.UnitTestSettings => UnitTestSettings.Create()
 		.SetPublishResults(GitFlow.Branch is GitFlowBranch.Develop or GitFlowBranch.Main)
-		// .SetPublishResults(GitFlow.Branch is GitFlowBranch.Feature)
 		.SetBranchMinimum(0)
 		.SetSequenceMinimum(0)
 		.Exclude(Solution.buildFolder._build);

@@ -36,22 +36,25 @@ public static class GitFlowHelper
 		return currentBranch.IsMainOrMasterBranch() || currentBranch.IsDevelopBranch();
 	}
 
-	public static GitFlowBranchType GetSourceBranchType(string branchName)
+
+	/// <param name="branchName"></param>
+	/// <returns>Branch from which provided branch should be based on according the GitFlow</returns>
+	/// <exception cref="StringNotGitFlowBranch"></exception>
+	public static GitFlowBranch GetSourceBranch(string branchName)
 	{
 		if (branchName.IsFeatureBranch())
-			return GitFlowBranchType.Develop;
+			return new GitFlowBranch.Develop();
 
 		if (branchName.IsDevelopBranch())
-			return GitFlowBranchType.Main;
+			return new GitFlowBranch.Main();
 
 		if (branchName.IsReleaseBranch())
-			return GitFlowBranchType.Develop;
+			return new GitFlowBranch.Develop();
 
 		if (branchName.IsHotfixBranch())
-			return GitFlowBranchType.Release;
+			return new GitFlowBranch.Release(branchName);
 
-
-		throw new StringNotGitFlowBranch($"Cant determine source branch for '{branchName}'");
+		throw new StringNotGitFlowBranch($"Can't determine source branch for '{branchName}'");
 	}
 
 	public static GitFlowBranch GetBranch(string branchName)
@@ -74,7 +77,7 @@ public static class GitFlowHelper
 		if (branchName.IsPullRequestBranch())
 			return new GitFlowBranch.PullRequest(branchName);
 
-		throw new StringNotGitFlowBranch($"Cant determine source branch for '{branchName}'");
+		throw new StringNotGitFlowBranch($"Can't create branch for branch name '{branchName}'");
 	}
 
 	public static bool IsGitFlowBranch(string branch)

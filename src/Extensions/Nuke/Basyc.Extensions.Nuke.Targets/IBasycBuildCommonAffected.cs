@@ -43,7 +43,7 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 		.Executes(() =>
 		{
 			using var newCoverageReport = BasycUnitTestAffected(Solution, RepositoryChangeReport, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
-			Repository.TestsHistory.TryGetHistory(GitFlowHelper.GetSourceBranchType(GitRepository.Branch!).ToString(), out var oldCoverageReport);
+			Repository.TestsHistory.TryGetHistory(GitFlowHelper.GetSourceBranch(GitRepository.Branch.Value()).Name, out var oldCoverageReport);
 			BasycTestCreateSummaryConsole(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum, oldCoverageReport);
 			BasycTestAssertMinimum(newCoverageReport, UnitTestSettings.SequenceMinimum, UnitTestSettings.BranchMinimum);
 		});

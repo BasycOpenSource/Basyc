@@ -9,7 +9,7 @@ internal static class RepositoryBasycExtensions
 	public static bool HasUncommitedChanges(this Repository repo)
 	{
 		var giStatus = repo.RetrieveStatus();
-		bool hasUncommitedChanges = giStatus.Any();
+		var hasUncommitedChanges = giStatus.Any();
 		return hasUncommitedChanges;
 	}
 
@@ -30,5 +30,16 @@ internal static class RepositoryBasycExtensions
 			.Concat(gitStatus.RenamedInWorkDir);
 
 		return uncommitedChanges.Select(x => x.FilePath);
+	}
+
+	public static Commit GetFirstSharedCommit(this Repository repo, Branch oldBranch, Branch newBranch)
+	{
+		var filter = new CommitFilter
+		{
+			ExcludeReachableFrom = oldBranch,
+			IncludeReachableFrom = newBranch
+		};
+		var newBranchFirstCommit = repo.Commits.QueryBy(filter).Last();
+		return newBranchFirstCommit.Parents.First();
 	}
 }

@@ -26,164 +26,161 @@ public static partial class GitTasks
 			if (TryGetBranchToCompareName(out oldBranchName) is false)
 				return new RepositoryChangeReport(localGitFolder, false, Array.Empty<SolutionChangeReport>());
 
-		using (var repo = new Repository(localGitFolder))
+		using var repo = new Repository(localGitFolder);
+		GetBranchesToCompare(repo, oldBranchName, out var newBranchLocal, out var oldBranchLocal);
+		Log.Information(
+			$"Creating change report between '{newBranchLocal.FriendlyName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{newBranchLocal.FriendlyName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
+		List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)>
+			projectChanges)> solutionChanges = new();
+		var commitNewBranchBasedOn = repo.GetFirstSharedCommit(oldBranchLocal, newBranchLocal);
+		var paths = repo.Diff.Compare<TreeChanges>(commitNewBranchBasedOn.Tree, newBranchLocal.Tip.Tree)
+			.Where(x => x.Exists)
+			.Select(x => x.Path);
+
+		SortedSet<string> changesGitRelativePaths = new(paths);
+
+		if (repo.HasUncommitedChanges())
 		{
-			GetBranchesToCompare(repo, oldBranchName, out var newBranchLocal, out var oldBranchLocal);
-			Log.Information(
-				$"Creating change report between '{newBranchLocal.FriendlyName}:{newBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{newBranchLocal.Tip.MessageShort}' -> '{newBranchLocal.FriendlyName}:{oldBranchLocal.Tip.Id.ToString().Substring(0, 6)}:{oldBranchLocal.Tip.MessageShort}'");
-			List<(string solutionPath, bool solutionChanged, List<string> solutionItems, List<(string projectPath, bool projectChanged, List<string> fileChanges)>
-				projectChanges)> solutionChanges = new();
-
-			var paths = repo.Diff.Compare<TreeChanges>(oldBranchLocal.Tip.Tree, newBranchLocal.Tip.Tree)
-				.Where(x => x.Exists)
-				.Select(x => x.Path);
-			SortedSet<string> changesGitRelativePaths = new(paths);
-
-			if (repo.HasUncommitedChanges())
-			{
-				repo.GetUncommitedRemovedChanges()
-					.ForEach(x => changesGitRelativePaths.Remove(x));
-				repo.GetUncommitedChanges()
-					.ForEach(x => changesGitRelativePaths.Add(x));
-			}
-
-			string? projectDirectoryRelativePath = null;
-			var projectAlreadyFound = false;
-			string? solutionDirectoryRelativePath = null;
-			var solutionAlreadyFound = false;
-			string? lastCheckedDirectoryGitRelativePath = null;
-
-			foreach (var changeRelativePath in changesGitRelativePaths)
-			{
-				var changeFullPath = $"{localGitFolder}/{changeRelativePath}";
-
-				if (changeRelativePath.EndsWith(solutionExtension))
-				{
-					var isChangeInGitRoot = changeRelativePath.IndexOf("/") == -1;
-					var solutionIsInGitRoot = solutionDirectoryRelativePath == gitRoot && isChangeInGitRoot;
-					var changeParentDir = GetGitParentDirectoryRelativePath(changeRelativePath);
-					if (solutionIsInGitRoot || solutionDirectoryRelativePath == changeParentDir)
-					{
-						var sol = solutionChanges.Last();
-						sol.solutionChanged = true;
-						continue;
-					}
-
-					Log.Debug(
-						$"Adding solution because: Solution found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
-					solutionChanges.Add((changeFullPath, true, new List<string>(), new List<(string projectPath, bool projectChanged, List<string> fileChanges)>()));
-					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
-					solutionAlreadyFound = true;
-					continue;
-				}
-
-				if (changeRelativePath.EndsWith(projectExtension))
-				{
-					if (projectDirectoryRelativePath == GetGitParentDirectoryRelativePath(changeRelativePath))
-					{
-						var (projectPath, projectChanged, fileChanges) = solutionChanges.Last().projectChanges.Last();
-						projectChanged = true;
-						continue;
-					}
-
-					var solutionFilePath = GetSolution(changeFullPath);
-
-					var solRelativePath = GetGitRelativePath(solutionFilePath!, localGitFolder);
-					var solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == gitRoot && solRelativePath.IndexOf("/") == -1;
-					if (!((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) ||
-						GetGitParentDirectoryRelativePath(solRelativePath) == solutionDirectoryRelativePath))
-					{
-						Log.Debug(
-							$"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
-						solutionChanges.Add((solutionFilePath!, false, new List<string>(),
-							new List<(string projectPath, bool projectChanged, List<string> fileChanges)>()));
-						solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solutionFilePath!, localGitFolder));
-						solutionAlreadyFound = true;
-					}
-
-					solutionChanges.Last().projectChanges.Add((changeFullPath, true, new List<string>()));
-					projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
-					projectAlreadyFound = true;
-					lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
-					continue;
-				}
-
-				if (lastCheckedDirectoryGitRelativePath is not null)
-				{
-					if (solutionAlreadyFound is false)
-						throw new NotImplementedException("Unexpected scenario. Items without solution are not supported");
-
-					if (projectAlreadyFound is false)
-					{
-						if (TryGetProject(changeFullPath, out var projectFullPath2))
-						{
-							solutionChanges.Last().projectChanges.Add((projectFullPath2, false, new List<string>()));
-							projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(projectFullPath2, localGitFolder));
-							projectAlreadyFound = true;
-							lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
-						}
-						else
-						{
-							solutionChanges.Last().solutionItems.Add(changeFullPath);
-							projectDirectoryRelativePath = null;
-							projectAlreadyFound = false;
-							lastCheckedDirectoryGitRelativePath = solutionDirectoryRelativePath;
-							continue;
-						}
-					}
-
-					if (changeRelativePath.StartsWith(projectDirectoryRelativePath!))
-					{
-						solutionChanges.Last().projectChanges.Last().fileChanges.Add(changeFullPath);
-						continue;
-					}
-
-					lastCheckedDirectoryGitRelativePath = null;
-				}
-
-				var solutionFilePath2 = GetSolution(changeFullPath);
-
-				if (!solutionChanges.Any() || solutionChanges.Last().solutionPath != solutionFilePath2)
-				{
-					Log.Debug(
-						$"Adding solution because: Nothing cached and last solution does not match. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
-					solutionChanges.Add((solutionFilePath2!, false, new List<string>(), new List<(string projectPath, bool projectChanged, List<string> fileChanges)>()));
-					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solutionFilePath2!, localGitFolder));
-					solutionAlreadyFound = true;
-				}
-
-				if (TryGetProject(changeFullPath, out var projectFullPath))
-				{
-					solutionChanges.Last().projectChanges.Add((projectFullPath, false, new List<string>()));
-					solutionChanges.Last().projectChanges.Last().fileChanges.Add(changeFullPath);
-					projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(projectFullPath, localGitFolder));
-					projectAlreadyFound = true;
-					lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
-				}
-				else
-				{
-					solutionChanges.Last().solutionItems.Add(changeFullPath);
-					projectDirectoryRelativePath = null;
-					projectAlreadyFound = false;
-					lastCheckedDirectoryGitRelativePath = solutionDirectoryRelativePath;
-				}
-			}
-
-			var projectChanges = solutionChanges
-				.Select(
-					solutionChanges => new SolutionChangeReport(solutionChanges.solutionPath, solutionChanges.solutionChanged, solutionChanges.solutionItems
-						.Select(filePath => new FileChange(filePath))
-						.ToArray(), solutionChanges.projectChanges
-						.Select(projectChanges => new ProjectChangeReport(projectChanges.projectPath, projectChanges.projectChanged, projectChanges.fileChanges
-							.Select(filePath => new FileChange(filePath))
-							.ToArray()))
-						.ToArray()))
-				.ToArray();
-
-			var report = new RepositoryChangeReport(localGitFolder, true, projectChanges);
-			LogReport(report);
-			return report;
+			repo.GetUncommitedRemovedChanges().ForEach(x => changesGitRelativePaths.Remove(x));
+			repo.GetUncommitedChanges().ForEach(x => changesGitRelativePaths.Add(x));
 		}
+
+		string? projectDirectoryRelativePath = null;
+		var projectAlreadyFound = false;
+		string? solutionDirectoryRelativePath = null;
+		var solutionAlreadyFound = false;
+		string? lastCheckedDirectoryGitRelativePath = null;
+
+		foreach (var changeRelativePath in changesGitRelativePaths)
+		{
+			var changeFullPath = $"{localGitFolder}/{changeRelativePath}";
+
+			if (changeRelativePath.EndsWith(solutionExtension))
+			{
+				var isChangeInGitRoot = changeRelativePath.IndexOf("/") == -1;
+				var solutionIsInGitRoot = solutionDirectoryRelativePath == gitRoot && isChangeInGitRoot;
+				var changeParentDir = GetGitParentDirectoryRelativePath(changeRelativePath);
+				if (solutionIsInGitRoot || solutionDirectoryRelativePath == changeParentDir)
+				{
+					var sol = solutionChanges.Last();
+					sol.solutionChanged = true;
+					continue;
+				}
+
+				Log.Debug(
+					$"Adding solution because: Solution found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
+				solutionChanges.Add((changeFullPath, true, new List<string>(), new List<(string projectPath, bool projectChanged, List<string> fileChanges)>()));
+				solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
+				solutionAlreadyFound = true;
+				continue;
+			}
+
+			if (changeRelativePath.EndsWith(projectExtension))
+			{
+				if (projectDirectoryRelativePath == GetGitParentDirectoryRelativePath(changeRelativePath))
+				{
+					var (projectPath, projectChanged, fileChanges) = solutionChanges.Last().projectChanges.Last();
+					projectChanged = true;
+					continue;
+				}
+
+				var solutionFilePath = GetSolution(changeFullPath);
+
+				var solRelativePath = GetGitRelativePath(solutionFilePath!, localGitFolder);
+				var solutionIsInGitRootSameAsLastOne = solutionDirectoryRelativePath == gitRoot && solRelativePath.IndexOf("/") == -1;
+				if (!((solutionAlreadyFound && solutionIsInGitRootSameAsLastOne) ||
+					GetGitParentDirectoryRelativePath(solRelativePath) == solutionDirectoryRelativePath))
+				{
+					Log.Debug(
+						$"Adding solution because: Project found. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
+					solutionChanges.Add((solutionFilePath!, false, new List<string>(),
+						new List<(string projectPath, bool projectChanged, List<string> fileChanges)>()));
+					solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solutionFilePath!, localGitFolder));
+					solutionAlreadyFound = true;
+				}
+
+				solutionChanges.Last().projectChanges.Add((changeFullPath, true, new List<string>()));
+				projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(changeRelativePath);
+				projectAlreadyFound = true;
+				lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
+				continue;
+			}
+
+			if (lastCheckedDirectoryGitRelativePath is not null)
+			{
+				if (solutionAlreadyFound is false)
+					throw new NotImplementedException("Unexpected scenario. Items without solution are not supported");
+
+				if (projectAlreadyFound is false)
+				{
+					if (TryGetProject(changeFullPath, out var projectFullPath2))
+					{
+						solutionChanges.Last().projectChanges.Add((projectFullPath2, false, new List<string>()));
+						projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(projectFullPath2, localGitFolder));
+						projectAlreadyFound = true;
+						lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
+					}
+					else
+					{
+						solutionChanges.Last().solutionItems.Add(changeFullPath);
+						projectDirectoryRelativePath = null;
+						projectAlreadyFound = false;
+						lastCheckedDirectoryGitRelativePath = solutionDirectoryRelativePath;
+						continue;
+					}
+				}
+
+				if (changeRelativePath.StartsWith(projectDirectoryRelativePath!))
+				{
+					solutionChanges.Last().projectChanges.Last().fileChanges.Add(changeFullPath);
+					continue;
+				}
+
+				lastCheckedDirectoryGitRelativePath = null;
+			}
+
+			var solutionFilePath2 = GetSolution(changeFullPath);
+
+			if (!solutionChanges.Any() || solutionChanges.Last().solutionPath != solutionFilePath2)
+			{
+				Log.Debug(
+					$"Adding solution because: Nothing cached and last solution does not match. Old solution relative path: '{solutionDirectoryRelativePath}'. Change path: '{changeRelativePath}'. Full change path: '{changeFullPath}'");
+				solutionChanges.Add((solutionFilePath2!, false, new List<string>(), new List<(string projectPath, bool projectChanged, List<string> fileChanges)>()));
+				solutionDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(solutionFilePath2!, localGitFolder));
+				solutionAlreadyFound = true;
+			}
+
+			if (TryGetProject(changeFullPath, out var projectFullPath))
+			{
+				solutionChanges.Last().projectChanges.Add((projectFullPath, false, new List<string>()));
+				solutionChanges.Last().projectChanges.Last().fileChanges.Add(changeFullPath);
+				projectDirectoryRelativePath = GetGitParentDirectoryRelativePath(GetGitRelativePath(projectFullPath, localGitFolder));
+				projectAlreadyFound = true;
+				lastCheckedDirectoryGitRelativePath = projectDirectoryRelativePath;
+			}
+			else
+			{
+				solutionChanges.Last().solutionItems.Add(changeFullPath);
+				projectDirectoryRelativePath = null;
+				projectAlreadyFound = false;
+				lastCheckedDirectoryGitRelativePath = solutionDirectoryRelativePath;
+			}
+		}
+
+		var projectChanges = solutionChanges
+			.Select(
+				solutionChanges => new SolutionChangeReport(solutionChanges.solutionPath, solutionChanges.solutionChanged, solutionChanges.solutionItems
+					.Select(filePath => new FileChange(filePath))
+					.ToArray(), solutionChanges.projectChanges
+					.Select(projectChanges => new ProjectChangeReport(projectChanges.projectPath, projectChanges.projectChanged, projectChanges.fileChanges
+						.Select(filePath => new FileChange(filePath))
+						.ToArray()))
+					.ToArray()))
+			.ToArray();
+
+		var report = new RepositoryChangeReport(localGitFolder, true, projectChanges);
+		LogReport(report);
+		return report;
 	}
 
 	private static void LogReport(RepositoryChangeReport report)
