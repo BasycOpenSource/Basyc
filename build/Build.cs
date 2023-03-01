@@ -26,8 +26,8 @@ class Build : NukeBuild, IBasycBuilds
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-	[Parameter][Secret] readonly string nugetApiKey;
-	[Parameter("Nuget source url")] readonly string nugetSource;
+	[Parameter(Name = "NUGETAPIKEY")][Secret] readonly string nugetApiKey;
+	[Parameter("Nuget source url", Name= "NUGETSOURCE")] readonly string nugetSource;
 	[GitFlow] public GitFlow GitFlow = null!;
 
 	[Solution(GenerateProjects = true, SuppressBuildProjectCheck = true)]
