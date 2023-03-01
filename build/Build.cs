@@ -19,7 +19,8 @@ using Nuke.Common.ProjectModel;
 [BasycReleasePipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
-	new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) })]
+	new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) },
+	new[] { nameof(nugetApiKey) })]
 class Build : NukeBuild, IBasycBuilds
 {
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
@@ -38,7 +39,6 @@ class Build : NukeBuild, IBasycBuilds
 
 	// string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 	// string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
-
 	string IBasycBuildNugetAll.NugetSourceUrl => nugetSource;
 	string IBasycBuildNugetAll.NuGetApiKey => nugetApiKey;
 

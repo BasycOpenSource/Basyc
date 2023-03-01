@@ -12,12 +12,13 @@ public class BasycPipeline : ConfigurationAttributeBase
 {
 	private readonly ConfigurationAttributeBase baseProvider;
 
-	public BasycPipeline(string name, CiProvider provider, PipelineOs pipelineOs, GitFlowBranchType[] gitFlowBranches, Trigger trigger, string[] targets)
+	public BasycPipeline(string name, CiProvider provider, PipelineOs pipelineOs, GitFlowBranchType[] gitFlowBranches, Trigger trigger, string[] targets,  string[]? importSecrets = null)
 	{
+		importSecrets ??= Array.Empty<string>();
 		var branches = GetBranchesPatterns(gitFlowBranches);
 		baseProvider = provider switch
 		{
-			CiProvider.GithubActions => UseGithub(name, pipelineOs, trigger, branches, targets),
+			CiProvider.GithubActions => UseGithub(name, pipelineOs, trigger, branches, targets, importSecrets),
 			CiProvider.AzurePipelines => throw new NotImplementedException(),
 			_ => throw new NotImplementedException()
 		};
@@ -57,13 +58,14 @@ public class BasycPipeline : ConfigurationAttributeBase
 		return patterns.ToArray();
 	}
 
-	private static ConfigurationAttributeBase UseGithub(string name, PipelineOs pipelineOs, Trigger trigger, string[] branches, string[] targets)
+	private static ConfigurationAttributeBase UseGithub(string name, PipelineOs pipelineOs, Trigger trigger, string[] branches, string[] targets, string[] importSecrets)
 	{
 		var githubImage = pipelineOs == PipelineOs.Windows ? GitHubActionsImage.WindowsLatest : GitHubActionsImage.UbuntuLatest;
 		var githubAttribute = new GitHubActionsAttribute(name, githubImage)
 		{
 			FetchDepth = 0,
-			EnableGitHubToken = true
+			EnableGitHubToken = true,
+			ImportSecrets = importSecrets
 		};
 		if (trigger == Trigger.Push)
 			githubAttribute.OnPushBranches = branches;
