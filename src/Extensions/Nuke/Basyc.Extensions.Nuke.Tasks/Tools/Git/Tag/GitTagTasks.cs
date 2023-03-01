@@ -9,6 +9,6 @@ public static partial class GitTasks
 		global::Nuke.Common.Tools.Git.GitTasks.Git("config --global user.email \"bot@dummyemail.com\"");
 		global::Nuke.Common.Tools.Git.GitTasks.Git("config --global user.name \"Automated Bot\"");
 		global::Nuke.Common.Tools.Git.GitTasks.Git($"tag -a {tagName} -m \"Setting git tag on commit to '{tagName}'\"");
-		global::Nuke.Common.Tools.Git.GitTasks.Git("push  --tags");
+		global::Nuke.Common.Tools.Git.GitTasks.Git("push --tags");
 	}
 }

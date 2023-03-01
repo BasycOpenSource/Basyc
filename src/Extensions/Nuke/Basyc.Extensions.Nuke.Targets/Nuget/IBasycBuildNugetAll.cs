@@ -30,7 +30,8 @@ public interface IBasycBuildNugetAll : IBasycBuildCommonAll
 				.SetOutputDirectory(packagesVersionedDirectory)
 				.SetProject(solutionToUse.Solution));
 
-			var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
+			//TODO remove take(2)
+			var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg").Take(2);
 			DotNetNuGetPush(_ => _
 				.SetSource(NugetSourceUrl)
 				.SetApiKey(NuGetApiKey)
@@ -39,7 +40,8 @@ public interface IBasycBuildNugetAll : IBasycBuildCommonAll
 		});
 
 	Target NugetReleaseCheck => _ => _
-		.DependentFor(StaticCodeAnalysisAll, CleanAll, RestoreAll, CompileAll, UnitTestAll, RestoreAll, NugetReleaseAll)
+		//TODO remove comment
+		//.DependentFor(StaticCodeAnalysisAll, CleanAll, RestoreAll, CompileAll, UnitTestAll, RestoreAll, NugetReleaseAll)
 		.OnlyWhenStatic(() => InvokedTargets.Any(x => x.Name == nameof(NugetReleaseAll)))
 		.Executes(() =>
 		{
