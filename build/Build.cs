@@ -11,11 +11,13 @@ using Nuke.Common.ProjectModel;
 [BasycContinuousPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
-	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) })]
+	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) },
+	new[] { nameof(nugetApiKey) })]
 [BasycPullRequestPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
-	new[] { nameof(IBasycBuildCommonAll.StaticCodeAnalysisAll), nameof(IBasycBuildCommonAll.UnitTestAll) })]
+	new[] { nameof(IBasycBuildCommonAll.StaticCodeAnalysisAll), nameof(IBasycBuildCommonAll.UnitTestAll) },
+	new[] { nameof(nugetApiKey) })]
 [BasycReleasePipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
