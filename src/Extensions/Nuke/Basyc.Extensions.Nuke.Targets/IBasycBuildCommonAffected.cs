@@ -23,10 +23,9 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 		.Before(CompileAffected)
 		.Executes(() =>
 		{
+			//TODO remove logging env vars
 			foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())
-			{
 				Log.Information($"{environmentVariable.Key}-{environmentVariable.Value}");
-			}
 
 			BasycDotNetFormatVerifyNoChangesAffected(RepositoryChangeReport!);
 		});

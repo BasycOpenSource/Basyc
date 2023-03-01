@@ -12,7 +12,7 @@ using Nuke.Common.ProjectModel;
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
 	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) },
-	new[] { nameof(nugetApiKey) })]
+	new[] { nameof(nugetSource), nameof(nugetApiKey) })]
 [BasycPullRequestPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
@@ -28,8 +28,14 @@ class Build : NukeBuild, IBasycBuilds
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-	/*[Parameter][Secret]*/ readonly string nugetApiKey;
-	/*[Parameter("Nuget source url")]*/ readonly string nugetSource;
+	//TODO remove comments
+	/*[Parameter][Secret]*/
+	readonly string nugetApiKey;
+
+	/*[Parameter("Nuget source url")]*/
+	readonly string nugetSource;
+
+	/*[Parameter("Nuget source url")]*/
 	[GitFlow] public GitFlow GitFlow = null!;
 
 	[Solution(GenerateProjects = true, SuppressBuildProjectCheck = true)]
@@ -42,6 +48,7 @@ class Build : NukeBuild, IBasycBuilds
 	// string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 	// string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
 	string IBasycBuildNugetAll.NugetSourceUrl => nugetSource;
+
 	string IBasycBuildNugetAll.NuGetApiKey => nugetApiKey;
 
 	UnitTestSettings IBasycBuildBase.UnitTestSettings => UnitTestSettings.Create()
