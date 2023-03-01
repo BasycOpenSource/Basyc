@@ -40,4 +40,5 @@ jobs:
       - name: Run './build.cmd NugetReleaseAll'
         run: ./build.cmd NugetReleaseAll
         env:
+          nugetApiKey: ${{ secrets.NUGET_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
