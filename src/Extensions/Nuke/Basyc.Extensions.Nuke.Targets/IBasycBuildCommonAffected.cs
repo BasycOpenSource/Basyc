@@ -1,6 +1,8 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common;
+using Serilog;
+using System.Collections;
 using static Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.DotNetTasks;
 
 namespace Basyc.Extensions.Nuke.Targets;
@@ -21,6 +23,11 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 		.Before(CompileAffected)
 		.Executes(() =>
 		{
+			foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())
+			{
+				Log.Information($"{environmentVariable.Key}-{environmentVariable.Value}");
+			}
+
 			BasycDotNetFormatVerifyNoChangesAffected(RepositoryChangeReport!);
 		});
 
