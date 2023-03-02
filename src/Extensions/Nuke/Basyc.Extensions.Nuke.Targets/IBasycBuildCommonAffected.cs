@@ -12,7 +12,7 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 	[AffectedReport] RepositoryChangeReport RepositoryChangeReport => TryGetValue(() => RepositoryChangeReport)!;
 
 	[Parameter]
-	string nugetSource => TryGetValue(() => nugetSource);
+	string NugetSource => TryGetValue(() => NugetSource);
 
 	Target BranchCheckAffected => _ => _
 		.DependentFor(StaticCodeAnalysisAffected, RestoreAffected, CompileAffected, UnitTestAffected, RestoreAffected)
@@ -26,9 +26,9 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 		.Before(CompileAffected)
 		.Executes(() =>
 		{
-			Log.Information($"nugetSource is : {nugetSource}");
-			Log.Information($"nugetSource contains dummy : {nugetSource.Contains("DUMMY VALUE")}");
-			Log.Information($"nugetSource contains _ : {nugetSource.Contains("_")}");
+			Log.Information($"nugetSource is : {NugetSource}");
+			Log.Information($"nugetSource contains dummy : {NugetSource.Contains("DUMMY VALUE")}");
+			Log.Information($"nugetSource contains _ : {NugetSource.Contains("_")}");
 
 			//TODO remove logging env vars
 			foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())

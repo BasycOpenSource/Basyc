@@ -47,7 +47,7 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
-        "nugetSource": {
+        "NugetSource": {
           "type": "string"
         },
         "Partition": {
