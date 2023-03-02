@@ -12,7 +12,8 @@ public class BasycPipeline : ConfigurationAttributeBase
 {
 	private readonly ConfigurationAttributeBase baseProvider;
 
-	public BasycPipeline(string name, CiProvider provider, PipelineOs pipelineOs, GitFlowBranchType[] gitFlowBranches, Trigger trigger, string[] targets,  string[]? importSecrets = null)
+	public BasycPipeline(string name, CiProvider provider, PipelineOs pipelineOs, GitFlowBranchType[] gitFlowBranches, Trigger trigger, string[] targets,
+		string[]? importSecrets = null)
 	{
 		importSecrets ??= Array.Empty<string>();
 		var branches = GetBranchesPatterns(gitFlowBranches);
