@@ -27,6 +27,9 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 		.Executes(() =>
 		{
 			Log.Information($"nugetSource is : {nugetSource}");
+			Log.Information($"nugetSource contains dummy : {nugetSource.Contains("DUMMY VALUE")}");
+			Log.Information($"nugetSource contains _ : {nugetSource.Contains("_")}");
+
 			//TODO remove logging env vars
 			foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())
 				Log.Information($"{environmentVariable.Key}-{environmentVariable.Value}");
