@@ -11,9 +11,7 @@ using Nuke.Common.ProjectModel;
 [BasycContinuousPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
-	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) },
-	new[] { nameof(nugetApiKey) },
-	new[] { nameof(nugetSource) })]
+	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) })]
 [BasycPullRequestPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
@@ -45,11 +43,9 @@ class Build : NukeBuild, IBasycBuilds
 
 	string IBasycBuildBase.BuildProjectName => "_build";
 
-	// string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
-	// string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
-	string IBasycBuildNugetAll.NugetSourceUrl => nugetSource;
-
-	string IBasycBuildNugetAll.NuGetApiKey => nugetApiKey;
+	NugetSettings IBasycBuildNugetAll.NugetSettings => NugetSettings.Create()
+		.SetSourceUrl(nugetSource)
+		.SetSourceApiKey(nugetApiKey);
 
 	UnitTestSettings IBasycBuildBase.UnitTestSettings => UnitTestSettings.Create()
 		.SetPublishResults(GitFlow.Branch is GitFlowBranch.Develop or GitFlowBranch.Main)

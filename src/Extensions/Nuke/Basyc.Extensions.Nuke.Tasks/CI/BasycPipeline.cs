@@ -30,7 +30,6 @@ public class BasycPipeline : ConfigurationAttributeBase
 		baseProvider = provider switch
 		{
 			CiProvider.GithubActions => UseGithub(name, pipelineOs, trigger, branches, targets, importSecrets, importParameters),
-			CiProvider.AzurePipelines => throw new NotImplementedException(),
 			_ => throw new NotImplementedException()
 		};
 	}
