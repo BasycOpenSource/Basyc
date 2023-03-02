@@ -11,8 +11,7 @@ namespace Basyc.Extensions.Nuke.Targets.Nuget;
 
 public interface IBasycBuildNugetAll : IBasycBuildCommonAll
 {
-	protected string NugetSourceUrl { get; }
-	protected string NuGetApiKey { get; }
+	protected NugetSettings NugetSettings { get; }
 
 	Target NugetReleaseAll => _ => _
 		.DependsOn(CompileAll)
@@ -32,8 +31,8 @@ public interface IBasycBuildNugetAll : IBasycBuildCommonAll
 
 			var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
 			DotNetNuGetPush(_ => _
-				.SetSource(NugetSourceUrl)
-				.SetApiKey(NuGetApiKey)
+				.SetSource(NugetSettings.SourceUrl)
+				.SetApiKey(NugetSettings.SourceApiKey)
 				.CombineWith(nugetPackages, (_, nugetPackage) => _
 					.SetTargetPath(nugetPackage)));
 		});
