@@ -26,14 +26,16 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 		.Before(CompileAffected)
 		.Executes(() =>
 		{
-			Log.Information($"nugetSource is : {NugetSource}");
-			Log.Information($"nugetSource contains dummy : {NugetSource.Contains("DUMMY VALUE")}");
-			Log.Information($"nugetSource contains _ : {NugetSource.Contains("_")}");
+
 
 			//TODO remove logging env vars
 			foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())
 				Log.Information($"{environmentVariable.Key}-{environmentVariable.Value}");
 
+
+			Log.Information($"nugetSource is : {NugetSource}");
+			Log.Information($"nugetSource contains dummy : {NugetSource.Contains("DUMMY VALUE")}");
+			Log.Information($"nugetSource contains _ : {NugetSource.Contains("_")}");
 			BasycDotNetFormatVerifyNoChangesAffected(RepositoryChangeReport!);
 		});
 
