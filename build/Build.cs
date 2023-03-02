@@ -13,6 +13,7 @@ using Nuke.Common.ProjectModel;
 	PipelineOs.Linux,
 	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) },
 	// new[] { nameof(nugetApiKey) },
+	new string[] { },
 	new[] { nameof(nugetSource) })]
 [BasycPullRequestPipeline(
 	CiProvider.GithubActions,
