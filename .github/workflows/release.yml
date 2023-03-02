@@ -42,3 +42,4 @@ jobs:
         env:
           nugetApiKey: ${{ secrets.NUGET_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          nugetSource: ${{ vars.NUGET_SOURCE }}

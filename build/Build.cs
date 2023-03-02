@@ -17,26 +17,24 @@ using Nuke.Common.ProjectModel;
 [BasycPullRequestPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
-	new[] { nameof(IBasycBuildCommonAll.StaticCodeAnalysisAll), nameof(IBasycBuildCommonAll.UnitTestAll) },
-	new[] { nameof(nugetApiKey) })]
+	new[] { nameof(IBasycBuildCommonAll.StaticCodeAnalysisAll), nameof(IBasycBuildCommonAll.UnitTestAll) })]
 [BasycReleasePipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
 	new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) },
-	new[] { nameof(nugetApiKey) })]
+	new[] { nameof(nugetApiKey) },
+	new[] { nameof(nugetSource) })]
 class Build : NukeBuild, IBasycBuilds
 {
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-	//TODO remove comments
-	/*[Parameter][Secret]*/
-	readonly string nugetApiKey;
+	[Parameter][Secret]
+	readonly string nugetApiKey = null!;
 
 	[Parameter("Nuget source url")]
-	readonly string nugetSource;
+	readonly string nugetSource = null!;
 
-	/*[Parameter("Nuget source url")]*/
 	[GitFlow] public GitFlow GitFlow = null!;
 
 	[Solution(GenerateProjects = true, SuppressBuildProjectCheck = true)]
