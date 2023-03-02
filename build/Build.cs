@@ -11,7 +11,9 @@ using Nuke.Common.ProjectModel;
 [BasycContinuousPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
-	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) })]
+	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) },
+	new[] { nameof(nugetApiKey) },
+	new[] { nameof(nugetSource) })]
 [BasycPullRequestPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
@@ -19,14 +21,21 @@ using Nuke.Common.ProjectModel;
 [BasycReleasePipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
-	new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) })]
+	new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) },
+	new[] { nameof(nugetApiKey) },
+	new[] { nameof(nugetSource) })]
 class Build : NukeBuild, IBasycBuilds
 {
 	[Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 	readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-	[GitFlow]
-	public GitFlow GitFlow = null!;
+	// [Parameter][Secret]
+	readonly string nugetApiKey = null!;
+
+	[Parameter("Nuget source url")]
+	readonly string nugetSource = null!;
+
+	[GitFlow] public GitFlow GitFlow = null!;
 
 	[Solution(GenerateProjects = true, SuppressBuildProjectCheck = true)]
 	public Solution Solution = null!;
@@ -34,8 +43,12 @@ class Build : NukeBuild, IBasycBuilds
 	Nuke.Common.ProjectModel.Solution IBasycBuildBase.Solution => Solution;
 
 	string IBasycBuildBase.BuildProjectName => "_build";
-	string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
-	string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
+
+	// string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
+	// string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
+	string IBasycBuildNugetAll.NugetSourceUrl => nugetSource;
+
+	string IBasycBuildNugetAll.NuGetApiKey => nugetApiKey;
 
 	UnitTestSettings IBasycBuildBase.UnitTestSettings => UnitTestSettings.Create()
 		.SetPublishResults(GitFlow.Branch is GitFlowBranch.Develop or GitFlowBranch.Main)
@@ -50,6 +63,6 @@ class Build : NukeBuild, IBasycBuilds
 
 	public static int Main()
 	{
-		return Execute<Build>(x => ((IBasycBuilds)x).UnitTestAll);
+		return Execute<Build>(x => ((IBasycBuilds)x).StaticCodeAnalysisAffected);
 	}
 }

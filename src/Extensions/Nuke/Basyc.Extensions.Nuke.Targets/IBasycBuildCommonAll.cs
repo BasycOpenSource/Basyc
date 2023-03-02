@@ -59,8 +59,8 @@ public interface IBasycBuildCommonAll : IBasycBuildBase
 		.DependsOn(CompileAll)
 		.Executes(async () =>
 		{
-			using var newCoverageReport = BasycUnitTestAll(Solution, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
 			// using var newCoverageReport = new CoverageReport(IO.TemporaryDirectory.CreateNew(), Array.Empty<ProjectCoverageReport>());
+			using var newCoverageReport = BasycUnitTestAll(Solution, UnitTestSettings.UnitTestSuffix, UnitTestSettings);
 			if (UnitTestSettings.PublishResults)
 			{
 				Log.Information("Publishing test results");

@@ -109,7 +109,7 @@ public static partial class GitTasks
 			if (lastCheckedDirectoryGitRelativePath is not null)
 			{
 				if (solutionAlreadyFound is false)
-					throw new NotImplementedException("Unexpected scenario. Items without solution are not supported");
+					throw new NotSupportedException("Unexpected scenario. Items without solution are not supported");
 
 				if (projectAlreadyFound is false)
 				{

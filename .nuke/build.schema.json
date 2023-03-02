@@ -47,6 +47,10 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
+        "nugetSource": {
+          "type": "string",
+          "description": "Nuget source url"
+        },
         "Partition": {
           "type": "string",
           "description": "Partition to use on CI"

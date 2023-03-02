@@ -1,4 +1,5 @@
-﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
+﻿using Basyc.Extensions.Nuke.CI.GithubActions;
+using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.CI.GitHubActions;
@@ -12,12 +13,23 @@ public class BasycPipeline : ConfigurationAttributeBase
 {
 	private readonly ConfigurationAttributeBase baseProvider;
 
-	public BasycPipeline(string name, CiProvider provider, PipelineOs pipelineOs, GitFlowBranchType[] gitFlowBranches, Trigger trigger, string[] targets)
+	public BasycPipeline(
+		string name,
+		CiProvider provider,
+		PipelineOs pipelineOs,
+		GitFlowBranchType[] gitFlowBranches,
+		Trigger trigger,
+		string[] targets,
+		string[]? importSecrets,
+		string[]? importParameters)
 	{
+		importSecrets ??= Array.Empty<string>();
+		importParameters ??= Array.Empty<string>();
+
 		var branches = GetBranchesPatterns(gitFlowBranches);
 		baseProvider = provider switch
 		{
-			CiProvider.GithubActions => UseGithub(name, pipelineOs, trigger, branches, targets),
+			CiProvider.GithubActions => UseGithub(name, pipelineOs, trigger, branches, targets, importSecrets, importParameters),
 			CiProvider.AzurePipelines => throw new NotImplementedException(),
 			_ => throw new NotImplementedException()
 		};
@@ -57,13 +69,15 @@ public class BasycPipeline : ConfigurationAttributeBase
 		return patterns.ToArray();
 	}
 
-	private static ConfigurationAttributeBase UseGithub(string name, PipelineOs pipelineOs, Trigger trigger, string[] branches, string[] targets)
+	private static ConfigurationAttributeBase UseGithub(string name, PipelineOs pipelineOs, Trigger trigger, string[] branches, string[] targets, string[] importSecrets, string[] importParameters)
 	{
 		var githubImage = pipelineOs == PipelineOs.Windows ? GitHubActionsImage.WindowsLatest : GitHubActionsImage.UbuntuLatest;
-		var githubAttribute = new GitHubActionsAttribute(name, githubImage)
+		var githubAttribute = new BasycGitHubActionsAttribute(name, githubImage)
 		{
 			FetchDepth = 0,
-			EnableGitHubToken = true
+			EnableGitHubToken = true,
+			ImportSecrets = importSecrets,
+			ImportParameters = importParameters
 		};
 		if (trigger == Trigger.Push)
 			githubAttribute.OnPushBranches = branches;

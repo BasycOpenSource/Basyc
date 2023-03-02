@@ -39,7 +39,18 @@ internal static class RepositoryBasycExtensions
 			ExcludeReachableFrom = oldBranch,
 			IncludeReachableFrom = newBranch
 		};
-		var newBranchFirstCommit = repo.Commits.QueryBy(filter).Last();
+		var newBranchFirstCommit = repo.Commits.QueryBy(filter).LastOrDefault();
+		if (newBranchFirstCommit == default)
+		{
+			//If new branch does not contain any commit we check if old branch last commit (excluding merge commit) is new branch last commit
+			var newBranchLastCommit = newBranch.Commits.First();
+			var oldBranchLastCommit = oldBranch.Commits.First();
+			if (oldBranchLastCommit.Parents.Contains(newBranchLastCommit) is false)
+				throw new InvalidOperationException("Could not find first shared commit");
+
+			return newBranchLastCommit;
+		}
+
 		return newBranchFirstCommit.Parents.First();
 	}
 }
