@@ -4,8 +4,8 @@ namespace Basyc.Extensions.Nuke.Tasks.CI;
 
 public class BasycPullRequestPipeline : BasycPipeline
 {
-	public BasycPullRequestPipeline(CiProvider provider, PipelineOs pipelineOs, string[] targets, string[]? importSecrets = null)
-		: base("pullRequest", provider, pipelineOs, new[] { GitFlowBranchType.Develop, GitFlowBranchType.Main }, Trigger.PullRequest, targets, importSecrets)
+	public BasycPullRequestPipeline(CiProvider provider, PipelineOs pipelineOs, string[] targets, string[]? importSecrets = null, string[]? importParameters = null)
+		: base("pullRequest", provider, pipelineOs, new[] { GitFlowBranchType.Develop, GitFlowBranchType.Main }, Trigger.PullRequest, targets, importSecrets, importParameters)
 	{
 	}
 }

@@ -29,15 +29,10 @@ public static class ProcessExceptionHelper
 		const string indentation = "   ";
 
 		var messageBuilder = new StringBuilder()
-			.AppendLine($"Task throwed exception.");
+			.AppendLine($"Task thrown exception.");
 
 		string[] errorOutput = errors;
 		if (errorOutput.Length > 0)
-		{
-			messageBuilder.AppendLine("Error output:");
-			errorOutput.ForEach(x => messageBuilder.Append(indentation).AppendLine(x));
-		}
-		else if (Logger.LogLevel <= LogLevel.Trace)
 		{
 			messageBuilder.AppendLine("Error output:");
 			errorOutput.ForEach(x => messageBuilder.Append(indentation).AppendLine(x));

@@ -12,7 +12,8 @@ using Nuke.Common.ProjectModel;
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
 	new[] { nameof(IBasycBuildCommonAffected.StaticCodeAnalysisAffected), nameof(IBasycBuildCommonAffected.UnitTestAffected) },
-	new[] { nameof(nugetApiKey) })]
+	new[] { nameof(nugetApiKey) },
+	new[] { nameof(nugetSource) })]
 [BasycPullRequestPipeline(
 	CiProvider.GithubActions,
 	PipelineOs.Linux,
@@ -33,8 +34,7 @@ class Build : NukeBuild, IBasycBuilds
 	readonly string nugetApiKey;
 
 	[Parameter("Nuget source url")]
-	// ReSharper disable once InconsistentNaming
-	readonly string NugetSource;
+	readonly string nugetSource;
 
 	/*[Parameter("Nuget source url")]*/
 	[GitFlow] public GitFlow GitFlow = null!;
@@ -48,7 +48,7 @@ class Build : NukeBuild, IBasycBuilds
 
 	// string IBasycBuildNugetAll.NugetSourceUrl => GitHubActions.Instance.GetNugetSourceUrl();
 	// string IBasycBuildNugetAll.NuGetApiKey => GitHubActions.Instance.Token;
-	string IBasycBuildNugetAll.NugetSourceUrl => NugetSource;
+	string IBasycBuildNugetAll.NugetSourceUrl => nugetSource;
 
 	string IBasycBuildNugetAll.NuGetApiKey => nugetApiKey;
 

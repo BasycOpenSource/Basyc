@@ -12,7 +12,7 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 	[AffectedReport] RepositoryChangeReport RepositoryChangeReport => TryGetValue(() => RepositoryChangeReport)!;
 
 	[Parameter]
-	string NugetSource => TryGetValue(() => NugetSource);
+	string nugetSource => TryGetValue(() => nugetSource);
 
 	Target BranchCheckAffected => _ => _
 		.DependentFor(StaticCodeAnalysisAffected, RestoreAffected, CompileAffected, UnitTestAffected, RestoreAffected)
@@ -33,9 +33,9 @@ public interface IBasycBuildCommonAffected : IBasycBuildBase
 				Log.Information($"{environmentVariable.Key}-{environmentVariable.Value}");
 
 
-			Log.Information($"nugetSource is : {NugetSource}");
-			Log.Information($"nugetSource contains dummy : {NugetSource.Contains("DUMMY VALUE")}");
-			Log.Information($"nugetSource contains _ : {NugetSource.Contains("_")}");
+			Log.Information($"nugetSource is : {nugetSource}");
+			Log.Information($"nugetSource contains dummy : {nugetSource.Contains("DUMMY VALUE")}");
+			Log.Information($"nugetSource contains _ : {nugetSource.Contains("_")}");
 			BasycDotNetFormatVerifyNoChangesAffected(RepositoryChangeReport!);
 		});
 
