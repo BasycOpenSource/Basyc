@@ -41,6 +41,5 @@ jobs:
       - name: Run './build.cmd StaticCodeAnalysisAffected UnitTestAffected'
         run: ./build.cmd StaticCodeAnalysisAffected UnitTestAffected
         env:
-          nugetApiKey: ${{ secrets.NUGET_API_KEY }}
+          nugetSource: ${{ secrets.NUGET_SOURCE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          nugetSource: ${{ vars.NUGET_SOURCE }}

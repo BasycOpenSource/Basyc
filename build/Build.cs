@@ -63,6 +63,6 @@ class Build : NukeBuild, IBasycBuilds
 
 	public static int Main()
 	{
-		return Execute<Build>(x => ((IBasycBuilds)x).NugetReleaseAll);
+		return Execute<Build>(x => ((IBasycBuilds)x).StaticCodeAnalysisAffected);
 	}
 }
