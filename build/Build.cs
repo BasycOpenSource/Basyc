@@ -32,7 +32,7 @@ class Build : NukeBuild, IBasycBuilds
 	/*[Parameter][Secret]*/
 	readonly string nugetApiKey;
 
-	/*[Parameter("Nuget source url")]*/
+	[Parameter("Nuget source url")]
 	readonly string nugetSource;
 
 	/*[Parameter("Nuget source url")]*/
