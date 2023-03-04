@@ -29,12 +29,18 @@ public interface IBasycBuildNugetAll : IBasycBuildCommonAll
 				.SetOutputDirectory(packagesVersionedDirectory)
 				.SetProject(solutionToUse.Solution));
 
-			var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
+			// var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
+			// DotNetNuGetPush(_ => _
+			// 	.SetSource(NugetSettings.SourceUrl)
+			// 	.SetApiKey(NugetSettings.SourceApiKey)
+			// 	.CombineWith(nugetPackages, (_, nugetPackage) => _
+			// 		.SetTargetPath(nugetPackage)));
+
+			var nugetPackages = packagesVersionedDirectory / "*.nupkg";
 			DotNetNuGetPush(_ => _
 				.SetSource(NugetSettings.SourceUrl)
 				.SetApiKey(NugetSettings.SourceApiKey)
-				.CombineWith(nugetPackages, (_, nugetPackage) => _
-					.SetTargetPath(nugetPackage)));
+				.SetTargetPath(nugetPackages));
 		});
 
 	Target NugetReleaseCheck => _ => _
