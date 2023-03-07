@@ -1,5 +1,4 @@
-﻿using Basyc.MessageBus.Manager.Application.Building.Stages.MessageRegistration;
-using Basyc.MessageBus.Manager.Application.Requesting;
+﻿using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,11 +9,16 @@ public static class ServiceCollectionMessageManagerExtensions
 	public static BusManagerApplicationBuilder AddBasycBusManager(this IServiceCollection services)
 	{
 		services.AddSingleton<IRequestManager, RequestManager>();
+
 		services.AddSingleton<IRequestDiagnosticsManager, RequestDiagnosticsManager>();
 
+		services.AddSingleton<InMemoryRequestHandler>();
+		services.AddSingleton<IRequestHandler, InMemoryRequestHandler>(x => x.GetRequiredService<InMemoryRequestHandler>());
+
 		services.AddSingleton<InMemoryRequestDiagnosticsSource>();
-		services.AddSingleton<IRequestDiagnosticsSource>(serviceProvider => serviceProvider.GetRequiredService<InMemoryRequestDiagnosticsSource>());
-		var builder = new BusManagerApplicationBuilder(services);
-		return builder;
+		services.AddSingleton<IRequestDiagnosticsSource, InMemoryRequestDiagnosticsSource>(serviceProvider =>
+			serviceProvider.GetRequiredService<InMemoryRequestDiagnosticsSource>());
+
+		return new BusManagerApplicationBuilder(services);
 	}
 }

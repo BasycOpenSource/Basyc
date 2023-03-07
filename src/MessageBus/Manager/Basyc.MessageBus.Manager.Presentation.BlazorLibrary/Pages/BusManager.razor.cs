@@ -14,11 +14,11 @@ public partial class BusManager
 	private readonly Dictionary<RequestItemViewModel, List<RequestContext>> resultHistory = new();
 
 	private RequestItemViewModel? selectedRequestViewModel;
-	[Inject] private IDomainInfoProviderManager DomainInfoProviderManager { get; } = null!;
-	[Inject] private ITypedMessageBusClient MessageBusManager { get; } = null!;
-	[Inject] private IDialogService DialogService { get; } = null!;
-	[Inject] private IRequestManager RequestClient { get; } = null!;
-	[Inject] private BusManagerJsInterop BusManagerJSInterop { get; } = null!;
+	[Inject] private IDomainInfoProviderManager DomainInfoProviderManager { get; set; } = null!;
+	[Inject] private ITypedMessageBusClient MessageBusManager { get; set; } = null!;
+	[Inject] private IDialogService DialogService { get; set; } = null!;
+	[Inject] private IRequestManager RequestClient { get; set; } = null!;
+	[Inject] private BusManagerJsInterop BusManagerJSInterop { get; set; } = null!;
 
 	public List<DomainItemViewModel> DomainInfoViewModel { get; private set; } = new();
 
@@ -28,15 +28,11 @@ public partial class BusManager
 		private set
 		{
 			if (selectedRequestViewModel is not null)
-			{
 				selectedRequestViewModel.IsSelected = false;
-			}
 
 			selectedRequestViewModel = value;
 			if (value is null)
-			{
 				return;
-			}
 
 			value.IsSelected = true;
 			resultHistory.TryAdd(value, new List<RequestContext>());
@@ -69,9 +65,7 @@ public partial class BusManager
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
-		{
 			await BusManagerJSInterop.ApplyChangesToIndexHtml();
-		}
 
 		await base.OnAfterRenderAsync(firstRender);
 	}
@@ -101,19 +95,13 @@ public partial class BusManager
 	private static object? ParseParamInputValue(string paramStringValue, ParameterInfo parameterInfo)
 	{
 		if (paramStringValue == "@null")
-		{
 			return null;
-		}
 
 		if (paramStringValue == string.Empty)
-		{
 			return parameterInfo.Type.GetDefaultValue();
-		}
 
 		if (parameterInfo.Type == typeof(string))
-		{
 			return paramStringValue;
-		}
 
 		var converter = TypeDescriptor.GetConverter(parameterInfo.Type);
 		object? castedParam;

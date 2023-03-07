@@ -1,24 +1,22 @@
 ﻿using Basyc.MessageBus.Manager.Application.Initialization;
 using Basyc.MessageBus.Manager.Application.Requesting;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Basyc.MessageBus.Manager.Application.Building;
 
 public class FluentApiDomainInfoProvider : IDomainInfoProvider
 {
+	private readonly InMemoryRequestHandler inMemoryRequestHandler;
 	private readonly IOptions<FluentApiDomainInfoProviderOptions> options;
-	private readonly InMemoryDelegateRequester inMemoryDelegateRequester;
 	private readonly IRequesterSelector requesterSelector;
 
 	public FluentApiDomainInfoProvider(IOptions<FluentApiDomainInfoProviderOptions> options,
-		InMemoryDelegateRequester inMemoryDelegateRequester,
+		InMemoryRequestHandler inMemoryRequestHandler,
 		IRequesterSelector requesterSelector
-		)
+	)
 	{
 		this.options = options;
-		this.inMemoryDelegateRequester = inMemoryDelegateRequester;
+		this.inMemoryRequestHandler = inMemoryRequestHandler;
 		this.requesterSelector = requesterSelector;
 	}
 
@@ -29,25 +27,20 @@ public class FluentApiDomainInfoProvider : IDomainInfoProvider
 		{
 			var requestInfos = domain.InProgressMessages.Select(inProgressMessage =>
 			{
-
 				RequestInfo requestInfo;
 				if (inProgressMessage.HasResponse)
-				{
-					requestInfo = new RequestInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.ResponseRunTimeType!, inProgressMessage.MessagDisplayName!, inProgressMessage.ResponseRunTimeTypeDisplayName!);
-				}
+					requestInfo = new RequestInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.ResponseRunTimeType!,
+						inProgressMessage.MessagDisplayName!, inProgressMessage.ResponseRunTimeTypeDisplayName!);
 				else
-				{
 					requestInfo = new RequestInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.MessagDisplayName!);
-				}
 
-				inMemoryDelegateRequester.AddHandler(requestInfo, inProgressMessage.RequestHandler!);
-				requesterSelector.AssignRequester(requestInfo, InMemoryDelegateRequester.InMemoryDelegateRequesterUniqueName);
+				inMemoryRequestHandler.AddHandler(requestInfo, inProgressMessage.RequestHandler!);
+				requesterSelector.AssignRequester(requestInfo, InMemoryRequestHandler.InMemoryDelegateRequesterUniqueName);
 				return requestInfo;
 			}).ToList();
-			domainInfos.Add(new(domain.DomainName!, requestInfos));
+			domainInfos.Add(new DomainInfo(domain.DomainName!, requestInfos));
 		}
 
 		return domainInfos;
-
 	}
 }

@@ -19,7 +19,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\Basyc.DependencyInjection\Basyc.DependencyInjection.csproj" />
 		<ProjectReference Include="..\..\Basyc.Shared\Basyc.Shared.csproj" />
-		<ProjectReference Include="..\..\Diagnostics\Basyc.Diagnostics.Producing.Shared\Basyc.Diagnostics.Producing.Shared.csproj" />
+		<ProjectReference Include="..\..\Diagnostics\Basyc.Diagnostics.Producing.Abstractions\Basyc.Diagnostics.Producing.Abstractions.csproj" />
 		<ProjectReference Include="..\..\Serialization\Basyc.Serialization.Abstraction\Basyc.Serialization.Abstraction.csproj" />
 		<ProjectReference Include="..\Basyc.MessageBus.Shared\Basyc.MessageBus.Shared.csproj" />
 	</ItemGroup>

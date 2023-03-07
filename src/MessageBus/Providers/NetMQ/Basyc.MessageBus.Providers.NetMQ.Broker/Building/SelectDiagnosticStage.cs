@@ -1,5 +1,5 @@
 ﻿using Basyc.DependencyInjection;
-using Basyc.Diagnostics.Producing.Shared;
+using Basyc.Diagnostics.Producing.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

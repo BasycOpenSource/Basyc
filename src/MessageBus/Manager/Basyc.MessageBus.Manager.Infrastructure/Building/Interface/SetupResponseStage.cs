@@ -12,9 +12,9 @@ public class SetupResponseStage : BuilderStageBase
 		this.registration = registration;
 	}
 
-	public SelectRequesterStage SetResponseDisplayName(string responseTypeDislpayName)
+	public SelectHandlerStage SetResponseDisplayName(string responseTypeDislpayName)
 	{
 		registration.ResponseDisplayName = responseTypeDislpayName;
-		return new SelectRequesterStage(services, registration);
+		return new SelectHandlerStage(services, registration);
 	}
 }

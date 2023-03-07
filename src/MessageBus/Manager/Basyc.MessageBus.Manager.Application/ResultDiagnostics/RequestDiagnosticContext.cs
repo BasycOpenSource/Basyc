@@ -44,7 +44,7 @@ public class RequestDiagnosticContext
 	{
 		if (newLogEntry.TraceId != TraceId)
 		{
-			throw new ArgumentException("Request id does not match context reuqest result id", nameof(newLogEntry));
+			throw new ArgumentException("Request id does not match context request result id", nameof(newLogEntry));
 		}
 
 		logEntries.Add(newLogEntry);

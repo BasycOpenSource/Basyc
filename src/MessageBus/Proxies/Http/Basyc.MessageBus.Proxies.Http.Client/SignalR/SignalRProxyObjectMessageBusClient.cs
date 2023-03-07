@@ -77,10 +77,11 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 		var createAndStartBusTaskActivity = DiagnosticHelper.Start("SignalRProxyObjectMessageBusClient.CreateAndStartBusTask", requestContext.TraceId,
 			requestContext.ParentSpanId);
 		var session = sessionManager.StartSession(requestContext.TraceId);
-		var waintingForTaskRunActivity = DiagnosticHelper.Start("Waiting for Task.Run");
-		var reqeustTask = Task.Run(async () =>
-			await BustaskMethod(requestType, requestData, requestContext, createAndStartBusTaskActivity, session, waintingForTaskRunActivity));
-		return BusTask<object?>.FromTask(session.TraceId, reqeustTask);
+		var waitingForTaskRunActivity = DiagnosticHelper.Start("Waiting for Task.Run");
+		var requestTask = Task.Run(async () =>
+				await BustaskMethod(requestType, requestData, requestContext, createAndStartBusTaskActivity, session, waitingForTaskRunActivity),
+			cancellationToken);
+		return BusTask<object?>.FromTask(session.TraceId, requestTask);
 	}
 
 	private async Task<OneOf<object?, ErrorMessage>> BustaskMethod(string requestType, object? requestData, RequestContext requestContext,

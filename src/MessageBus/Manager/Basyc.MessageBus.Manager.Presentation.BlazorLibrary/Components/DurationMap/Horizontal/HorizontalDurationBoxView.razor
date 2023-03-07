@@ -7,8 +7,8 @@
 	var width = "5rem";
 	if (Activity.HasEnded)
 	{
-		width = DurationViewHelper.GetCssDurationValue(Activity.EndTime - Activity.StartTime, PixelsPerMs, out var remNumber);
-		if (remNumber < 0.2)
+		width = DurationViewHelper.GetCssDurationValue(Activity.EndTime - Activity.StartTime, PixelsPerMs, out var widthNumber);
+		if (widthNumber < 0.2)
 		{
 			width = "0.1px";
 		}

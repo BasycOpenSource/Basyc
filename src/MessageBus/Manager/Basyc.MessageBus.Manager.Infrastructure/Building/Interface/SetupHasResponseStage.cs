@@ -1,6 +1,5 @@
 ﻿using Basyc.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.Interface;
 
@@ -13,17 +12,17 @@ public class SetupHasResponseStage : BuilderStageBase
 		this.registration = registration;
 	}
 
-	public SelectRequesterStage NoResponse()
+	public SelectHandlerStage NoResponse()
 	{
 		registration.HasResponse = false;
-		return new SelectRequesterStage(services, registration);
+		return new SelectHandlerStage(services, registration);
 	}
 
 	public SetupResponseStage HasResponse(Type responseType)
 	{
 		registration.HasResponse = true;
 		registration.ResponseType = responseType;
-		return new(services, registration);
+		return new SetupResponseStage(services, registration);
 	}
 
 	public SetupResponseStage HasResponse<TResponse>()

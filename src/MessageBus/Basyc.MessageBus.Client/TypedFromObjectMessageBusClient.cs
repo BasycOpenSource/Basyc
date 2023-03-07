@@ -1,21 +1,18 @@
-﻿using Basyc.Diagnostics.Producing.Shared;
+﻿using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.MessageBus.Shared;
 using Basyc.Serializaton.Abstraction;
 using OneOf;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Basyc.MessageBus.Client;
 
 public sealed class TypedFromObjectMessageBusClient : ITypedMessageBusClient
 {
-	private readonly IObjectMessageBusClient objectBusClient;
 	private readonly IDiagnosticsExporter diagnosticExporter;
+	private readonly IObjectMessageBusClient objectBusClient;
 
 	public TypedFromObjectMessageBusClient(IObjectMessageBusClient messageBusClient, IDiagnosticsExporter diagnosticExporter)
 	{
-		this.objectBusClient = messageBusClient;
+		objectBusClient = messageBusClient;
 		this.diagnosticExporter = diagnosticExporter;
 	}
 
@@ -50,7 +47,8 @@ public sealed class TypedFromObjectMessageBusClient : ITypedMessageBusClient
 		return objectBusClient.RequestAsync(TypedToSimpleConverter.ConvertTypeToSimple(requestType), cancellationToken);
 	}
 
-	BusTask<object> ITypedMessageBusClient.RequestAsync(Type requestType, object requestData, Type responseType, RequestContext requestContext, CancellationToken cancellationToken)
+	BusTask<object> ITypedMessageBusClient.RequestAsync(Type requestType, object requestData, Type responseType, RequestContext requestContext,
+		CancellationToken cancellationToken)
 	{
 		return objectBusClient.RequestAsync(TypedToSimpleConverter.ConvertTypeToSimple(requestType), requestData, requestContext, cancellationToken);
 	}
@@ -59,7 +57,6 @@ public sealed class TypedFromObjectMessageBusClient : ITypedMessageBusClient
 	{
 		var innerBusTask = objectBusClient.RequestAsync(TypedToSimpleConverter.ConvertTypeToSimple<TRequest>(), requestData, requestContext, cancellationToken);
 		return innerBusTask.ContinueWith(x => (OneOf<TResponse, ErrorMessage>)x);
-
 	}
 
 	BusTask ITypedMessageBusClient.SendAsync<TCommand>(RequestContext requestContext, CancellationToken cancellationToken)

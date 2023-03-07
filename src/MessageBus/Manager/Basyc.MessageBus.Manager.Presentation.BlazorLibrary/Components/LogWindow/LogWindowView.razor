@@ -11,7 +11,7 @@
 			<TableFilter TItems="ServiceIdentity"
 			             Tooltip="tooltip"
 			             ItemsToSelect="@DiagnosticsContext.Services.Select(x => x.ServiceIdentity).ToArray()"
-			             SelectedItems="SelectedServiceIdentities"
+			             SelectedItems="@SelectedServiceIdentities"
 			             SelectedItemsChanged="SelectedServiceIdentitiesChanged"
 			             ItemsToSelectDisplayConverter="x => x.ServiceName"/>
 		</filterService>
@@ -59,8 +59,8 @@
 
 	protected override void OnParametersSet()
 	{
-		SelectedLogLevels ??= Enum.GetValues<LogLevel>().ToList();
-		SelectedServiceIdentities ??= DiagnosticsContext.Services.Select(x => x.ServiceIdentity).ToList();
+		SelectedLogLevels = Enum.GetValues<LogLevel>().ToList();
+		SelectedServiceIdentities = DiagnosticsContext.Services.Select(x => x.ServiceIdentity).ToList();
 		UpdateFilteredLogs();
 		base.OnParametersSet();
 	}

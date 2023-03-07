@@ -15,11 +15,11 @@ public class FluentSetupDomainPostStage : BuilderStageBase
 
 	public FluentSetupMessageStage AddMessage(string messageDisplayName, RequestType messageType = RequestType.Generic)
 	{
-		return new FluentSetupDomainStage(services, inProgressDomain).AddMessage(messageDisplayName, messageType);
+		return new FluentSetupGroupStage(services, inProgressDomain).AddMessage(messageDisplayName, messageType);
 	}
 
-	public FluentSetupDomainStage AddDomain(string domainName)
+	public FluentSetupGroupStage AddDomain(string domainName)
 	{
-		return new RegisterMessagesFromFluentApiStage(services).AddDomain(domainName);
+		return new RegisterMessagesFromFluentApiStage(services).InGroup(domainName);
 	}
 }

@@ -1,9 +1,9 @@
-﻿using Basyc.MessageBus.Manager.Application.Building.Stages.MessageRegistration;
-using Basyc.MessageBus.Manager.Application.Requesting;
+﻿using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure;
 using Basyc.MessageBus.Manager.Infrastructure.MassTransit;
-//using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
+
+//using MassTransit;
 
 namespace Basyc.MessageBus.Manager;
 
@@ -18,7 +18,7 @@ public static class MassTransitMessageManagerBuilderExtensions
 
 	public static BusManagerApplicationBuilder UseMasstransitReqeustClient(this BusManagerApplicationBuilder managerBuilder)
 	{
-		managerBuilder.services.AddSingleton<IRequester, MassTransitRequester>();
+		managerBuilder.services.AddSingleton<IRequestHandler, MassTransitRequestHandler>();
 		return managerBuilder;
 	}
 }

@@ -1,4 +1,4 @@
-﻿using Basyc.Diagnostics.Producing.Shared;
+﻿using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Shared.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -37,15 +37,11 @@ public class BusHandlerLogger : ILogger
 	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
 	{
 		if (BusHandlerLoggerSessionManager.HasSession(out var session) is false)
-		{
 			throw new InvalidOperationException(
 				$"Can't log without starting {nameof(BusHandlerLoggerSessionManager.StartSession)}. This logger should be only used for bus handlers");
-		}
 
 		if (normalLogger.IsEnabled(logLevel))
-		{
 			normalLogger.Log(logLevel, eventId, state, exception, formatter);
-		}
 
 		foreach (var logSink in logSinks)
 		{
