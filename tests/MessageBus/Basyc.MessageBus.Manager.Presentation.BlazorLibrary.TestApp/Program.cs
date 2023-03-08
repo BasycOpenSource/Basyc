@@ -5,7 +5,6 @@ using Basyc.Diagnostics.Shared;
 using Basyc.DomainDrivenDesign.Domain;
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.Manager;
-using Basyc.MessageBus.Manager.Application;
 using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
@@ -93,7 +92,7 @@ busManagerBuilder.RegisterMessages()
 busManagerBuilder.RegisterMessages()
 	.FromFluentApi()
 	.InGroup("FromFluentApi")
-	.AddMessage("Fluent Message 1", RequestType.Command)
+	.AddMessage("Fluent Message 1")
 	.NoReturn()
 	.HandledBy(x =>
 	{

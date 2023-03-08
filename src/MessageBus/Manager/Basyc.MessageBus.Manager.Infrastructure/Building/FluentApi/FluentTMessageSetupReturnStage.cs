@@ -8,21 +8,21 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 {
 	private readonly RequestToTypeBinder<TMessage> binder;
-	private readonly InProgressDomainRegistration inProgressDomain;
+	private readonly InProgressGroupRegistration inProgressGroup;
 	private readonly InProgressMessageRegistration inProgressMessage;
 
 	public FluentTMessageSetupReturnStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage,
-		InProgressDomainRegistration inProgressDomain) : base(services)
+		InProgressGroupRegistration inProgressGroup) : base(services)
 	{
 		this.inProgressMessage = inProgressMessage;
-		this.inProgressDomain = inProgressDomain;
+		this.inProgressGroup = inProgressGroup;
 		binder = new RequestToTypeBinder<TMessage>();
 	}
 
 	public FluentSetupDomainPostStage HandeledBy(Action<RequestContext> handler)
 	{
 		inProgressMessage.RequestHandler = handler;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<Request, TReturn> handler)
@@ -34,7 +34,7 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 			requestResult.Complete(returnObject);
 		};
 		inProgressMessage.RequestHandler = handlerWrapper;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy(Func<TMessage, object> handlerWithTReturn)
@@ -47,7 +47,7 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 			result.Complete(returnObject!);
 		};
 		inProgressMessage.RequestHandler = wrapperHandler;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<TMessage, TReturn> handlerWithTReturn)
@@ -61,6 +61,6 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 			result.Complete(returnObject!);
 		};
 		inProgressMessage.RequestHandler = wrapperHandler;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 }

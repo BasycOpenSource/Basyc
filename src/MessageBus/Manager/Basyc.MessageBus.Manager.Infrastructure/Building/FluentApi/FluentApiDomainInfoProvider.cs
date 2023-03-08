@@ -23,16 +23,16 @@ public class FluentApiDomainInfoProvider : IDomainInfoProvider
 	public List<DomainInfo> GenerateDomainInfos()
 	{
 		List<DomainInfo> domainInfos = new();
-		foreach (var domain in options.Value.DomainRegistrations)
+		foreach (var domain in options.Value.GroupRegistrations)
 		{
 			var requestInfos = domain.InProgressMessages.Select(inProgressMessage =>
 			{
 				RequestInfo requestInfo;
 				if (inProgressMessage.HasResponse)
 					requestInfo = new RequestInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.ResponseRunTimeType!,
-						inProgressMessage.MessagDisplayName!, inProgressMessage.ResponseRunTimeTypeDisplayName!);
+						inProgressMessage.MessageDisplayName!, inProgressMessage.ResponseRunTimeTypeDisplayName!);
 				else
-					requestInfo = new RequestInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.MessagDisplayName!);
+					requestInfo = new RequestInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.MessageDisplayName!);
 
 				inMemoryRequestHandler.AddHandler(requestInfo, inProgressMessage.RequestHandler!);
 				requesterSelector.AssignRequester(requestInfo, InMemoryRequestHandler.InMemoryDelegateRequesterUniqueName);

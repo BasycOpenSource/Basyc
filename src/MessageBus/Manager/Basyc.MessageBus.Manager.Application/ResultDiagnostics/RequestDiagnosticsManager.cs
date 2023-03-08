@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
@@ -17,6 +16,18 @@ public class RequestDiagnosticsManager : IRequestDiagnosticsManager
 		}
 	}
 
+	public RequestDiagnosticContext CreateDiagnostics(string traceId)
+	{
+		var loggingContext = new RequestDiagnosticContext(traceId);
+		traceIdToContextMap.Add(traceId, loggingContext);
+		return loggingContext;
+	}
+
+	public bool TryGetDiagnostics(string traceId, [NotNullWhen(true)] out RequestDiagnosticContext? diagnosticContext)
+	{
+		return traceIdToContextMap.TryGetValue(traceId, out diagnosticContext);
+	}
+
 	private void LogSource_ActivityStartsReceived(object? sender, ActivityStartsReceivedArgs e)
 	{
 		foreach (var activityStart in e.ActivityStarts)
@@ -24,7 +35,7 @@ public class RequestDiagnosticsManager : IRequestDiagnosticsManager
 			if (TryGetDiagnostics(activityStart.TraceId, out var loggingContext) is false)
 				return;
 
-			loggingContext.StartActivity(activityStart);
+			loggingContext.AddStartActivity(activityStart);
 		}
 	}
 
@@ -35,7 +46,7 @@ public class RequestDiagnosticsManager : IRequestDiagnosticsManager
 			if (TryGetDiagnostics(activityEnd.TraceId, out var loggingContext) is false)
 				return;
 
-			loggingContext.EndActivity(activityEnd);
+			loggingContext.AddEndActivity(activityEnd);
 		}
 	}
 
@@ -45,19 +56,7 @@ public class RequestDiagnosticsManager : IRequestDiagnosticsManager
 		{
 			if (TryGetDiagnostics(logEntry.TraceId, out var loggingContext) is false)
 				return;
-			loggingContext.Log(logEntry);
+			loggingContext.AddLog(logEntry);
 		}
-	}
-
-	public RequestDiagnosticContext CreateDiagnostics(string traceId)
-	{
-		RequestDiagnosticContext loggingContext = new RequestDiagnosticContext(traceId);
-		traceIdToContextMap.Add(traceId, loggingContext);
-		return loggingContext;
-	}
-
-	public bool TryGetDiagnostics(string traceId, [NotNullWhen(true)] out RequestDiagnosticContext? diagnosticContext)
-	{
-		return traceIdToContextMap.TryGetValue(traceId, out diagnosticContext);
 	}
 }

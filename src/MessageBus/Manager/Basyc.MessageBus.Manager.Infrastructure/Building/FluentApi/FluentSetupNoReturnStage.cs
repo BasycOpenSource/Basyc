@@ -6,20 +6,20 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentSetupNoReturnStage : BuilderStageBase
 {
-	private readonly InProgressDomainRegistration inProgressDomain;
+	private readonly InProgressGroupRegistration inProgressGroup;
 	private readonly InProgressMessageRegistration inProgressMessage;
 
-	public FluentSetupNoReturnStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressDomainRegistration inProgressDomain) :
+	public FluentSetupNoReturnStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressGroupRegistration inProgressGroup) :
 		base(services)
 	{
 		this.inProgressMessage = inProgressMessage;
-		this.inProgressDomain = inProgressDomain;
+		this.inProgressGroup = inProgressGroup;
 	}
 
 	public FluentSetupDomainPostStage HandledBy(Action<RequestContext> handler)
 	{
 		inProgressMessage.RequestHandler = handler;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
 	public FluentSetupDomainPostStage HandledBy(Action<Request> handler)
@@ -32,6 +32,6 @@ public class FluentSetupNoReturnStage : BuilderStageBase
 		}
 
 		inProgressMessage.RequestHandler = ToRequestContextAction;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 }

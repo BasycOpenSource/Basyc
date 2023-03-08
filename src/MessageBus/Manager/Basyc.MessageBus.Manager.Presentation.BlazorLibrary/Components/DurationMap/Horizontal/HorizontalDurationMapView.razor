@@ -68,19 +68,19 @@
 
 	protected override void OnParametersSet()
 	{
-		RequestContext.Diagnostics.ActivityStartReceived -= OnActivityStartReceived;
-		RequestContext.Diagnostics.ActivityStartReceived += OnActivityStartReceived;
-		RequestContext.Diagnostics.ActivityEndReceived -= OnActivityEneReceived;
-		RequestContext.Diagnostics.ActivityEndReceived += OnActivityEneReceived;
+		RequestContext.Diagnostics.ActivityStartAdded -= OnActivityStartAdded;
+		RequestContext.Diagnostics.ActivityStartAdded += OnActivityStartAdded;
+		RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
+		RequestContext.Diagnostics.ActivityEndAdded += OnActivityEneAdded;
 		base.OnParametersSet();
 	}
 
-	private void OnActivityStartReceived(object? sender, ActivityStart activityStart)
+	private void OnActivityStartAdded(object? sender, ActivityStart activityStart)
 	{
 		StateHasChanged();
 	}
 
-	private void OnActivityEneReceived(object? sender, ActivityEnd activityEnd)
+	private void OnActivityEneAdded(object? sender, ActivityEnd activityEnd)
 	{
 		StateHasChanged();
 	}

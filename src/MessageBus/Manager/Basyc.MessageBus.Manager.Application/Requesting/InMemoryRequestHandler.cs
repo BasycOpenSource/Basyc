@@ -32,8 +32,6 @@ public class InMemoryRequestHandler : IRequestHandler
 		var handlerFound = handlersMap.TryGetValue(requestResult.Request.RequestInfo, out var handler);
 		if (handlerFound is false)
 		{
-			// throw new InvalidOperationException(
-			//	$"Requester: '{nameof(InMemoryRequestHandler)}' doesn't have handler for message with display name: '{requestResult.Request.RequestInfo.RequestDisplayName}'");
 			requestResult.Fail(
 				$"Requester: '{nameof(InMemoryRequestHandler)}' doesn't have handler for message with display name: '{requestResult.Request.RequestInfo.RequestDisplayName}'");
 			findingHandlerActivity.Stop();
@@ -41,20 +39,21 @@ public class InMemoryRequestHandler : IRequestHandler
 		}
 
 		findingHandlerActivity.Stop();
-
 		var waitingForTaskRun = DiagnosticHelper.Start("Waiting for Task.Run");
 		Task.Run(() =>
 		{
 			waitingForTaskRun.Stop();
-			using var invokingHandlerActivity = DiagnosticHelper.Start("Invoking handler");
+			using var startActivity = requestResult.StartDurationMap();
+			using var invokingHandlerActivity = DiagnosticHelper.Start("Invoking handler", startActivity.TraceId, startActivity.Id);
 			handler.Value().Invoke(requestResult);
+			logger.LogInformation("Handler finished");
 			invokingHandlerActivity.Stop();
-			logger.LogInformation("In-memory delegate completed");
+			requestResult.FinishDurationMap();
 		}).ContinueWith(x =>
 		{
 			if (x.Status is TaskStatus.Faulted)
 			{
-				logger.LogError("In-memory delegate failed");
+				logger.LogError("Handler failed");
 				requestResult.Fail(x.Exception.Value().Message);
 			}
 		});

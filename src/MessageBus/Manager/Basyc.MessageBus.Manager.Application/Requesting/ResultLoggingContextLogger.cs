@@ -1,7 +1,6 @@
 ﻿using Basyc.Diagnostics.Shared.Durations;
 using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Diagnostics;
 
 namespace Basyc.MessageBus.Manager.Application.Requesting;
@@ -16,6 +15,7 @@ public class ResultLoggingContextLogger : ILogger
 		this.loggingContext = loggingContext;
 		this.serviceIdentity = serviceIdentity;
 	}
+
 	public IDisposable BeginScope<TState>(TState state)
 	{
 		return NullScope.Instance;
@@ -30,6 +30,6 @@ public class ResultLoggingContextLogger : ILogger
 	{
 		var spanId = Activity.Current?.SpanId.ToString();
 		var message = formatter.Invoke(state, exception);
-		loggingContext.Log(serviceIdentity, logLevel, message, spanId);
+		loggingContext.AddLog(serviceIdentity, logLevel, message, spanId);
 	}
 }

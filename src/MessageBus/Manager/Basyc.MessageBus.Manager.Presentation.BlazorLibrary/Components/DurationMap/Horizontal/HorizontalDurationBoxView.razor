@@ -4,13 +4,17 @@
 @using Color = Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors.Color
 @implements IDisposable
 @{
-	var width = "5rem";
+	var width = "5rem"; //default lenght when not finished
 	if (Activity.HasEnded)
 	{
 		width = DurationViewHelper.GetCssDurationValue(Activity.EndTime - Activity.StartTime, PixelsPerMs, out var widthNumber);
 		if (widthNumber < 0.2)
 		{
 			width = "0.1px";
+		}
+		if (widthNumber < 2)
+		{
+			width = "2px";
 		}
 	}
 	//var opacity = Color.Opacity - (((double)NestingLevel / 5) * Color.Opacity);

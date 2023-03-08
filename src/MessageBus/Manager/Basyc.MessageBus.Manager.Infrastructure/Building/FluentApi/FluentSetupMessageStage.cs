@@ -9,18 +9,18 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 public class FluentSetupMessageStage : BuilderStageBase
 {
 	private readonly InProgressMessageRegistration inProgressMessage;
-	private readonly InProgressDomainRegistration inProgressDomain;
+	private readonly InProgressGroupRegistration inProgressGroup;
 
-	public FluentSetupMessageStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressDomainRegistration inProgressDomain) : base(services)
+	public FluentSetupMessageStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressGroupRegistration inProgressGroup) : base(services)
 	{
 		this.inProgressMessage = inProgressMessage;
-		this.inProgressDomain = inProgressDomain;
+		this.inProgressGroup = inProgressGroup;
 	}
 
 	public FluentSetupMessageStage WithParameter<TParameter>(string parameterDisplayName)
 	{
 		inProgressMessage.Parameters.Add(new ParameterInfo(typeof(TParameter), parameterDisplayName, typeof(TParameter).Name));
-		return new FluentSetupMessageStage(services, inProgressMessage, inProgressDomain);
+		return new FluentSetupMessageStage(services, inProgressMessage, inProgressGroup);
 	}
 
 	/// <summary>
@@ -35,19 +35,19 @@ public class FluentSetupMessageStage : BuilderStageBase
 			inProgressMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
 		}
 
-		return new FluentTMessageSetupMessageStage<TMessage>(services, inProgressMessage, inProgressDomain);
+		return new FluentTMessageSetupMessageStage<TMessage>(services, inProgressMessage, inProgressGroup);
 	}
 
 	public FluentSetupNoReturnStage NoReturn()
 	{
-		return new FluentSetupNoReturnStage(services, inProgressMessage, inProgressDomain);
+		return new FluentSetupNoReturnStage(services, inProgressMessage, inProgressGroup);
 	}
 
 	public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)
 	{
 		inProgressMessage.ResponseRunTimeType = messageResponseRuntimeType;
 		inProgressMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
-		return new FluentSetupTypeOfReturnStage(services, inProgressMessage, inProgressDomain);
+		return new FluentSetupTypeOfReturnStage(services, inProgressMessage, inProgressGroup);
 	}
 
 	public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType)

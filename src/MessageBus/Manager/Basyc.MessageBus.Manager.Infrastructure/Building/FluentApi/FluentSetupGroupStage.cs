@@ -6,19 +6,19 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentSetupGroupStage : BuilderStageBase
 {
-	private readonly InProgressDomainRegistration inProgressDomain;
+	private readonly InProgressGroupRegistration inProgressGroup;
 
-	public FluentSetupGroupStage(IServiceCollection services, InProgressDomainRegistration inProgressDomain) : base(services)
+	public FluentSetupGroupStage(IServiceCollection services, InProgressGroupRegistration inProgressGroup) : base(services)
 	{
-		this.inProgressDomain = inProgressDomain;
+		this.inProgressGroup = inProgressGroup;
 	}
 
 	public FluentSetupMessageStage AddMessage(string messageDisplayName, RequestType messageType = RequestType.Generic)
 	{
 		var newMessage = new InProgressMessageRegistration();
-		newMessage.MessagDisplayName = messageDisplayName;
+		newMessage.MessageDisplayName = messageDisplayName;
 		newMessage.MessageType = messageType;
-		inProgressDomain.InProgressMessages.Add(newMessage);
-		return new FluentSetupMessageStage(services, newMessage, inProgressDomain);
+		inProgressGroup.InProgressMessages.Add(newMessage);
+		return new FluentSetupMessageStage(services, newMessage, inProgressGroup);
 	}
 }
