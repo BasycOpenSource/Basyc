@@ -17,6 +17,7 @@
 		<ProjectReference Include="..\..\..\Basyc.Shared\Basyc.Shared.csproj" />
 		<ProjectReference Include="..\..\..\Diagnostics\Basyc.Diagnostics.Receiving.Abstractions\Basyc.Diagnostics.Receiving.Abstractions.csproj" />
 		<ProjectReference Include="..\..\..\Diagnostics\Basyc.Diagnostics.Shared\Basyc.Diagnostics.Shared.csproj" />
+		<ProjectReference Include="..\..\..\Extensions\Basyc.Extensions.System\Basyc.Extensions.System.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

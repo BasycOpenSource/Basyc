@@ -1,4 +1,4 @@
-﻿using Basyc.Diagnostics.Producing.Shared;
+﻿using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.MessageBus.Shared;
 using Basyc.Serialization.Abstraction;
 using Basyc.Serializaton.Abstraction;
@@ -23,9 +23,7 @@ public class TypedFromByteMessageBusClient : ITypedMessageBusClient
 	public void Dispose()
 	{
 		if (byteMessageBusClient is IDisposable disposable)
-		{
 			disposable.Dispose();
-		}
 	}
 
 	public BusTask PublishAsync<TEvent>(TEvent eventData, RequestContext requestContext = default, CancellationToken cancellationToken = default)

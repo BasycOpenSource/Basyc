@@ -98,9 +98,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 			}
 
 			foreach (var requestInfo in requestInfos)
-			{
-				requesterSelector.AssignRequester(requestInfo, BasycTypedMessageBusRequester.BasycTypedMessageBusRequesterUniqueName);
-			}
+				requesterSelector.AssignRequester(requestInfo, BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
 
 			domainOption.DomainName.ThrowIfNull();
 			domains.Add(new DomainInfo(domainOption.DomainName, requestInfos));

@@ -1,7 +1,4 @@
 ﻿using Basyc.MessageBus.Manager.Application.Requesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Basyc.MessageBus.Manager.Application.Initialization;
 
@@ -26,7 +23,6 @@ public class RequestInfo
 		RequestDisplayName = requestDisplayName;
 		HasResponse = hasResponse;
 		ResponseType = responseType;
-
 	}
 
 	public string RequestDisplayName { get; init; }
@@ -35,8 +31,9 @@ public class RequestInfo
 	public bool HasResponse { get; init; }
 	public Type? ResponseType { get; init; }
 	public string ResponseDisplayName { get; init; } = string.Empty;
+
 	/// <summary>
-	/// Custom metadata that can be created in custom <see cref="IDomainInfoProvider"/> and later be used in custom <see cref="IRequester."/>
+	///     Custom metadata that can be created in custom <see cref="IDomainInfoProvider" /> and later be used in custom <see cref="IRequestHandler." />
 	/// </summary>
 	public Dictionary<string, object> AdditionalMetadata { get; } = new();
 }

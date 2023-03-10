@@ -1,4 +1,4 @@
-﻿using Basyc.Diagnostics.Producing.Shared;
+﻿using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Shared;
 using Basyc.MessageBus.NetMQ.Shared;
 using Basyc.MessageBus.NetMQ.Shared.Cases;
@@ -120,7 +120,6 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
 					logger.LogInformation($"Received event {@event.EventType} from producer {senderAddressString}:{@event.SessionId}");
 
 					if (workerRegistry.TryGetWorkersFor(@event.EventType, out var workers))
-					{
 						foreach (var worker in workers)
 						{
 							var eventData = recievedMessageFrame[2].Buffer;
@@ -135,11 +134,8 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
 							brokerSocket.SendMultipartMessage(messageToProducer);
 							logger.LogInformation($"Sent event {@event.EventType} to consumer {worker}:{@event.SessionId}");
 						}
-					}
 					else
-					{
 						logger.LogInformation($"No worker for {@event.EventType} checked in");
-					}
 
 					eventStartActivity.Stop();
 				},

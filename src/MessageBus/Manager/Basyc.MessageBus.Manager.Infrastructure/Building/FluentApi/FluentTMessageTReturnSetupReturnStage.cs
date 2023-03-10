@@ -9,13 +9,13 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderStageBase
 {
 	private readonly InProgressMessageRegistration inProgressMessage;
-	private readonly InProgressDomainRegistration inProgressDomain;
+	private readonly InProgressGroupRegistration inProgressGroup;
 	private readonly RequestToTypeBinder<TMessage> messageBinder;
 
-	public FluentTMessageTReturnSetupReturnStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressDomainRegistration inProgressDomain) : base(services)
+	public FluentTMessageTReturnSetupReturnStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressGroupRegistration inProgressGroup) : base(services)
 	{
 		this.inProgressMessage = inProgressMessage;
-		this.inProgressDomain = inProgressDomain;
+		this.inProgressGroup = inProgressGroup;
 
 		messageBinder = new RequestToTypeBinder<TMessage>();
 	}
@@ -23,7 +23,7 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 	public FluentSetupDomainPostStage HandeledBy(Action<RequestContext> handler)
 	{
 		inProgressMessage.RequestHandler = handler;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy(Func<Request, TReturn> handler)
@@ -34,7 +34,7 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 			requestResult.Complete(returnObject);
 		};
 		inProgressMessage.RequestHandler = handlerWrapper;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy(Func<TMessage, TReturn> handlerWithTReturn)
@@ -46,6 +46,6 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 			result.Complete(returnObject!);
 		};
 		inProgressMessage.RequestHandler = wrapperHandler;
-		return new FluentSetupDomainPostStage(services, inProgressDomain);
+		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 }

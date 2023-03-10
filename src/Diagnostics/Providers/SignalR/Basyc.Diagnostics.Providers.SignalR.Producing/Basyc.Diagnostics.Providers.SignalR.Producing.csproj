@@ -17,7 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Basyc.DependencyInjection\Basyc.DependencyInjection.csproj" />
     <ProjectReference Include="..\..\..\..\Extensions\SignalR\Basyc.Extensions.SignalR.Client\Basyc.Extensions.SignalR.Client.csproj" />
-    <ProjectReference Include="..\..\..\Basyc.Diagnostics.Producing.Shared\Basyc.Diagnostics.Producing.Shared.csproj" />
+    <ProjectReference Include="..\..\..\Basyc.Diagnostics.Producing.Abstractions\Basyc.Diagnostics.Producing.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Basyc.Diagnostics.Shared\Basyc.Diagnostics.Shared.csproj" />
     <ProjectReference Include="..\Basyc.Diagnostics.Providers.SignalR.Shared\Basyc.Diagnostics.Providers.SignalR.Shared.csproj" />
   </ItemGroup>

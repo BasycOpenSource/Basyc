@@ -1,4 +1,4 @@
-﻿using Basyc.Diagnostics.Producing.Shared;
+﻿using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Providers.SignalR.Shared.DTOs;
 using Basyc.Diagnostics.Receiving.SignalR;
 using Basyc.Diagnostics.Shared.Logging;
@@ -84,20 +84,16 @@ public class SignalRDiagnosticsExporter : IDiagnosticsExporter
 
 		using (var linkedCts =
 				CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSrc.Token, cancellationToken))
-		{
 			try
 			{
 				await foreach (var item in reader.ReadAllAsync(linkedCts.Token))
-				{
 					messages.Add(item);
-					//linkedCts.Token.ThrowIfCancellationRequested();
-				}
+				//linkedCts.Token.ThrowIfCancellationRequested();
 			}
 			catch (OperationCanceledException)
 			{
 				//cancellationToken.ThrowIfCancellationRequested();
 			}
-		}
 
 		timeoutTokenSrc.Dispose();
 		return messages;

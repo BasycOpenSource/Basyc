@@ -7,24 +7,24 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 public class FluentTMessageSetupMessageStage<TMessage> : BuilderStageBase
 {
 	private readonly InProgressMessageRegistration inProgressMessage;
-	private readonly InProgressDomainRegistration inProgressDomain;
+	private readonly InProgressGroupRegistration inProgressGroup;
 
-	public FluentTMessageSetupMessageStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressDomainRegistration inProgressDomain) : base(services)
+	public FluentTMessageSetupMessageStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressGroupRegistration inProgressGroup) : base(services)
 	{
 		this.inProgressMessage = inProgressMessage;
-		this.inProgressDomain = inProgressDomain;
+		this.inProgressGroup = inProgressGroup;
 	}
 
 	public FluentSetupNoReturnStage NoReturn()
 	{
-		return new FluentSetupNoReturnStage(services, inProgressMessage, inProgressDomain);
+		return new FluentSetupNoReturnStage(services, inProgressMessage, inProgressGroup);
 	}
 
 	public FluentTMessageSetupReturnStage<TMessage> Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)
 	{
 		inProgressMessage.ResponseRunTimeType = messageResponseRuntimeType;
 		inProgressMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
-		return new FluentTMessageSetupReturnStage<TMessage>(services, inProgressMessage, inProgressDomain);
+		return new FluentTMessageSetupReturnStage<TMessage>(services, inProgressMessage, inProgressGroup);
 	}
 
 	public FluentTMessageSetupReturnStage<TMessage> Returns(Type messageResponseRuntimeType)
@@ -42,7 +42,7 @@ public class FluentTMessageSetupMessageStage<TMessage> : BuilderStageBase
 	{
 		inProgressMessage.ResponseRunTimeType = typeof(TResponse);
 		inProgressMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
-		return new FluentTMessageTReturnSetupReturnStage<TMessage, TResponse>(services, inProgressMessage, inProgressDomain);
+		return new FluentTMessageTReturnSetupReturnStage<TMessage, TResponse>(services, inProgressMessage, inProgressGroup);
 
 	}
 }

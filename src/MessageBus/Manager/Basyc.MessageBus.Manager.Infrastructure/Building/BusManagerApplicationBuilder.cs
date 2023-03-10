@@ -1,12 +1,12 @@
 ﻿using Basyc.DependencyInjection;
+using Basyc.MessageBus.Manager.Application;
 using Basyc.MessageBus.Manager.Application.Initialization;
 using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure;
+using Basyc.MessageBus.Manager.Infrastructure.Building;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Interface;
-using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
-namespace Basyc.MessageBus.Manager.Application.Building.Stages.MessageRegistration;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public class BusManagerApplicationBuilder : BuilderStageBase
 {
@@ -16,16 +16,10 @@ public class BusManagerApplicationBuilder : BuilderStageBase
 		services.AddSingleton<IDomainInfoProviderManager, DomainInfoProviderManager>();
 		services.AddSingleton<IRequestInfoTypeStorage, InMemoryRequestInfoTypeStorage>();
 		services.AddSingleton<IDomainInfoProvider, InterfaceDomainProvider>();
-
 	}
 
-	public SetupDomainStage RegisterMessagesFromAssembly(params Assembly[] assembliesToScan)
+	public SetupMessagesStage RegisterMessages()
 	{
-		return new SetupDomainStage(services, assembliesToScan);
-	}
-
-	public void RegisterRequester<TRequester>() where TRequester : class, IRequester
-	{
-		services.AddSingleton<IRequester, TRequester>();
+		return new SetupMessagesStage(services);
 	}
 }

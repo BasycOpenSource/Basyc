@@ -19,12 +19,12 @@ public class BusClientSetupHandlersStage : BuilderStageBase
 		return new BusClientSetupProviderStage(services);
 	}
 
-	public BusClientSetupProviderStage RegisterBasycTypedHandlers<THandlerAssemblyMarker>()
+	public BusClientSetupProviderStage RegisterHandlersFromAssembly<THandlerAssemblyMarker>()
 	{
-		return RegisterBasycTypedHandlers(typeof(THandlerAssemblyMarker).Assembly);
+		return RegisterHandlersFromAssembly(typeof(THandlerAssemblyMarker).Assembly);
 	}
 
-	public BusClientSetupProviderStage RegisterBasycTypedHandlers(params Assembly[] assembliesToScan)
+	public BusClientSetupProviderStage RegisterHandlersFromAssembly(params Assembly[] assembliesToScan)
 	{
 		foreach (var assembly in assembliesToScan)
 		{
@@ -85,9 +85,7 @@ public class BusClientSetupHandlersStage : BuilderStageBase
 	{
 		var handlerConstructors = handlerType.GetConstructors();
 		if (handlerConstructors.Length > 1)
-		{
 			throw new Exception("Multiple contructors not supported");
-		}
 
 		var handlerConstrucor = handlerConstructors[0];
 		return handlerConstrucor;
@@ -102,9 +100,7 @@ public class BusClientSetupHandlersStage : BuilderStageBase
 		{
 			loggerParam = ctorParams.FirstOrDefault(x => x.ParameterType.IsAssignableToGenericType(typeof(ILogger<>)));
 			if (loggerParam is null)
-			{
 				return; //Handler does not have logger, we can skip
-			}
 
 			var loggerCategory = loggerParam.ParameterType.GetTypeArgumentsFromParent(typeof(ILogger<>))[0];
 
@@ -112,8 +108,6 @@ public class BusClientSetupHandlersStage : BuilderStageBase
 			services.TryAddSingleton(busLoggerType);
 		}
 		else
-		{
 			services.TryAddSingleton(typeof(BusHandlerLogger));
-		}
 	}
 }

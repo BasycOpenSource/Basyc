@@ -1,4 +1,4 @@
-﻿using Basyc.Diagnostics.Producing.Shared;
+﻿using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Producing.Shared.Building;
 using Basyc.Diagnostics.Producing.SignalR;
 using Basyc.Diagnostics.Producing.SignalR.Shared;
@@ -20,7 +20,7 @@ public static class SetupSignalRLogProducerStageExtensions
 
 	public static SetupProducersStage AddSignalRExporter(this SetupProducersStage parent, Action<SignalRLogReceiverOptions> optionSetup)
 	{
-		parent.services.Configure<SignalRLogReceiverOptions>(optionSetup);
+		parent.services.Configure(optionSetup);
 		return AddSignalRExporter(parent);
 	}
 

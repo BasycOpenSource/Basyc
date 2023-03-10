@@ -8,13 +8,10 @@ namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 public class RequestDiagnosticContext
 {
 	private readonly Dictionary<string, ActivityContext> activityIdToActivityMap = new();
-	private readonly object lockObject = new();
-
 	private readonly List<LogEntry> logEntries = new();
 	private readonly Dictionary<string, List<LogEntry>> missingActivityIdToLogsMap = new();
 	private readonly Dictionary<string, List<ActivityContext>> missingParentIdToNestedActivityMap = new();
-
-	public List<ServiceIdentityContext> services = new();
+	private readonly List<ServiceIdentityContext> services = new();
 
 	public RequestDiagnosticContext(string traceId)
 	{
@@ -25,36 +22,32 @@ public class RequestDiagnosticContext
 	public IReadOnlyList<ServiceIdentityContext> Services => services;
 
 	public string TraceId { get; init; }
-	public event EventHandler<LogEntry>? LogReceived;
-	public event EventHandler<ActivityStart>? ActivityStartReceived;
-	public event EventHandler<ActivityEnd>? ActivityEndReceived;
+	public event EventHandler<LogEntry>? LogAdded;
+	public event EventHandler<ActivityStart>? ActivityStartAdded;
+	public event EventHandler<ActivityEnd>? ActivityEndAdded;
 
-	public void Log(ServiceIdentity service, LogLevel logLevel, string message, string? spanId)
+	public void AddLog(ServiceIdentity service, LogLevel logLevel, string message, string? spanId)
 	{
-		Log(service, DateTimeOffset.UtcNow, logLevel, message, spanId);
+		AddLog(service, DateTimeOffset.UtcNow, logLevel, message, spanId);
 	}
 
-	public void Log(ServiceIdentity service, DateTimeOffset time, LogLevel logLevel, string message, string? spanId)
+	public void AddLog(ServiceIdentity service, DateTimeOffset time, LogLevel logLevel, string message, string? spanId)
 	{
 		LogEntry newLogEntry = new(service, TraceId, time, logLevel, message, spanId);
-		Log(newLogEntry);
+		AddLog(newLogEntry);
 	}
 
-	public void Log(LogEntry newLogEntry)
+	public void AddLog(LogEntry newLogEntry)
 	{
 		if (newLogEntry.TraceId != TraceId)
-		{
-			throw new ArgumentException("Request id does not match context reuqest result id", nameof(newLogEntry));
-		}
+			throw new ArgumentException("Request id does not match context request result id", nameof(newLogEntry));
 
 		logEntries.Add(newLogEntry);
 		logEntries.Sort((x, y) => x.Time.CompareTo(y.Time));
 		if (newLogEntry.SpanId is not null)
 		{
 			if (activityIdToActivityMap.TryGetValue(newLogEntry.SpanId, out var activity))
-			{
 				activity.AddLog(newLogEntry);
-			}
 			else
 			{
 				missingActivityIdToLogsMap.TryAdd(newLogEntry.SpanId, new List<LogEntry>());
@@ -65,7 +58,7 @@ public class RequestDiagnosticContext
 		OnLogAdded(newLogEntry);
 	}
 
-	public ActivityContext StartActivity(ActivityStart activityStart)
+	public ActivityContext AddStartActivity(ActivityStart activityStart)
 	{
 		var serviceContext = EnsureServiceCreated(activityStart.Service);
 		var hasParent = activityStart.ParentId is not null;
@@ -81,21 +74,15 @@ public class RequestDiagnosticContext
 		if (hasParent)
 		{
 			if (activityStart.ParentId is null)
-			{
 				throw new InvalidOperationException($"{nameof(ActivityStart.ParentId)} cant be null when {nameof(ActivityStart.HasParent)} is true");
-			}
 
 			if (activityIdToActivityMap.TryGetValue(activityStart.ParentId, out var parentActivity))
 			{
 				newActivityContext.AssignParentData(parentActivity);
 				if (newActivityContext.Service == parentActivity.Service)
-				{
 					parentActivity.AddNestedActivity(newActivityContext);
-				}
 				else
-				{
 					serviceContext.AddActivity(newActivityContext);
-				}
 			}
 			else
 			{
@@ -104,9 +91,7 @@ public class RequestDiagnosticContext
 			}
 		}
 		else
-		{
 			serviceContext.AddActivity(newActivityContext);
-		}
 
 		var isMissingParent = missingParentIdToNestedActivityMap.TryGetValue(activityStart.Id, out var nestedActivities);
 		if (isMissingParent)
@@ -121,35 +106,33 @@ public class RequestDiagnosticContext
 			missingParentIdToNestedActivityMap.Remove(activityStart.Id);
 		}
 
-		OnActivityStartReceived(activityStart);
+		OnActivityStartAdded(activityStart);
 		return newActivityContext;
 	}
 
-	public void EndActivity(ActivityEnd activityEnd)
+	public void AddEndActivity(ActivityEnd activityEnd)
 	{
 		if (activityIdToActivityMap.TryGetValue(activityEnd.Id, out var activity) is false)
-		{
-			activity = StartActivity(new ActivityStart(activityEnd.Service, activityEnd.TraceId, activityEnd.ParentId, activityEnd.Id, activityEnd.Name,
+			activity = AddStartActivity(new ActivityStart(activityEnd.Service, activityEnd.TraceId, activityEnd.ParentId, activityEnd.Id, activityEnd.Name,
 				activityEnd.StartTime));
-		}
 
 		activity.End(activityEnd.EndTime, activityEnd.Status);
-		OnActivityEndReceived(activityEnd);
+		OnActivityEndAdded(activityEnd);
 	}
 
 	private void OnLogAdded(LogEntry newLogEntry)
 	{
-		LogReceived?.Invoke(this, newLogEntry);
+		LogAdded?.Invoke(this, newLogEntry);
 	}
 
-	private void OnActivityStartReceived(ActivityStart activityStart)
+	private void OnActivityStartAdded(ActivityStart activityStart)
 	{
-		ActivityStartReceived?.Invoke(this, activityStart);
+		ActivityStartAdded?.Invoke(this, activityStart);
 	}
 
-	private void OnActivityEndReceived(ActivityEnd activityEnd)
+	private void OnActivityEndAdded(ActivityEnd activityEnd)
 	{
-		ActivityEndReceived?.Invoke(this, activityEnd);
+		ActivityEndAdded?.Invoke(this, activityEnd);
 	}
 
 	private ServiceIdentityContext EnsureServiceCreated(ServiceIdentity serviceIdentity)

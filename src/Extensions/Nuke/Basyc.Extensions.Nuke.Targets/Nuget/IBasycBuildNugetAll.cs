@@ -1,8 +1,6 @@
 ﻿using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 using Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 using Nuke.Common;
-using Nuke.Common.IO;
-using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using static Basyc.Extensions.Nuke.Tasks.Tools.Git.GitTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -28,13 +26,6 @@ public interface IBasycBuildNugetAll : IBasycBuildCommonAll
 				.EnableNoBuild()
 				.SetOutputDirectory(packagesVersionedDirectory)
 				.SetProject(solutionToUse.Solution));
-
-			// var nugetPackages = packagesVersionedDirectory.GlobFiles("*.nupkg");
-			// DotNetNuGetPush(_ => _
-			// 	.SetSource(NugetSettings.SourceUrl)
-			// 	.SetApiKey(NugetSettings.SourceApiKey)
-			// 	.CombineWith(nugetPackages, (_, nugetPackage) => _
-			// 		.SetTargetPath(nugetPackage)));
 
 			var nugetPackages = packagesVersionedDirectory / "*.nupkg";
 			DotNetNuGetPush(_ => _

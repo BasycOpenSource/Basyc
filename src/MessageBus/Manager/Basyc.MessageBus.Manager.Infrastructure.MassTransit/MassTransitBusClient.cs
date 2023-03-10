@@ -5,9 +5,9 @@ using Basyc.MessageBus.Manager.Infrastructure.Formatters;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.MassTransit;
 
-public class MassTransitRequester : BasycTypedMessageBusRequester, IRequester
+public class MassTransitRequestHandler : BasycTypedMessageBusRequestHandler, IRequestHandler
 {
-	public MassTransitRequester(ITypedMessageBusClient messageBusManager, IRequestInfoTypeStorage requestInfoTypeStorage, IResponseFormatter responseFormatter)
+	public MassTransitRequestHandler(ITypedMessageBusClient messageBusManager, IRequestInfoTypeStorage requestInfoTypeStorage, IResponseFormatter responseFormatter)
 		: base(messageBusManager, requestInfoTypeStorage, responseFormatter, null!, null!, null!)
 	{
 		throw new NotImplementedException();

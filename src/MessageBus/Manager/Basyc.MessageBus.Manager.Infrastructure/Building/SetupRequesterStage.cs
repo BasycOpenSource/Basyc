@@ -1,6 +1,5 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.MessageBus.Manager.Application.Requesting;
-using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -12,9 +11,10 @@ public class SetupRequesterStage : BuilderStageBase
 	{
 	}
 
-	public SetupTypeFormattingStage UseBasycTypedMessageBusRequester()
+	public SetupTypeFormattingStage UseHandler<TRequestHandler>()
+		where TRequestHandler : class, IRequestHandler
 	{
-		services.TryAddSingleton<IRequester, BasycTypedMessageBusRequester>();
+		services.TryAddSingleton<IRequestHandler, TRequestHandler>();
 		return new SetupTypeFormattingStage(services);
 	}
 }

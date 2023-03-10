@@ -13,10 +13,10 @@ public class SelectMessageTypeStage : BuilderStageBase
 		this.interfaceRegistration = interfaceRegistration;
 	}
 
-	public SelectRequesterStage AsEvents()
+	public SelectHandlerStage AsEvents()
 	{
 		interfaceRegistration.RequestType = RequestType.Event;
-		return new SelectRequesterStage(services, interfaceRegistration);
+		return new SelectHandlerStage(services, interfaceRegistration);
 	}
 
 	public SetupHasResponseStage AsQueries()

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Diagnostics\Basyc.Diagnostics.Producing.Shared\Basyc.Diagnostics.Producing.Shared.csproj" />
+    <ProjectReference Include="..\..\..\..\Diagnostics\Basyc.Diagnostics.Producing.Abstractions\Basyc.Diagnostics.Producing.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Basyc.MessageBus.Broker\Basyc.MessageBus.Broker.csproj" />
     <ProjectReference Include="..\Basyc.MessageBus.Providers.NetMQ.Shared\Basyc.MessageBus.Providers.NetMQ.Shared.csproj" />
   </ItemGroup>

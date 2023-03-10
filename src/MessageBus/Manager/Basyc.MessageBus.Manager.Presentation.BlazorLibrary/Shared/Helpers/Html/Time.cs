@@ -9,11 +9,11 @@ public static partial class Html
 
 	public static string Time(DateTime dateTime)
 	{
-		return dateTime.ToString("hh:mm:ss:ffff");
+		return dateTime.ToString("HH:mm:ss:ffff");
 	}
 
 	public static string Time(DateTimeOffset dateTimeOffset)
 	{
-		return dateTimeOffset.LocalDateTime.ToString("hh:mm:ss:ffff");
+		return dateTimeOffset.LocalDateTime.ToString("HH:mm:ss:ffff");
 	}
 }

@@ -28,6 +28,5 @@ public struct DiagnosticHelperActivityDisposer : IDisposable
 	public void Dispose()
 	{
 		Stop();
-
 	}
 }
