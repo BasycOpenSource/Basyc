@@ -11,5 +11,5 @@ public interface IRequestHandler
 	/// </summary>
 	/// <param name="requestResult"></param>
 	/// <returns></returns>
-	void StartRequest(RequestContext requestResult, ILogger logger);
+	void StartRequest(MessageRequest requestResult, ILogger logger);
 }

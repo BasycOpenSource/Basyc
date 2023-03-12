@@ -1,4 +1,5 @@
 ﻿using Basyc.MessageBus.Manager.Application;
+using Basyc.MessageBus.Manager.Application.Building;
 using Basyc.MessageBus.Manager.Application.Initialization;
 using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
@@ -41,11 +42,11 @@ public class TypedDomainProvider : IDomainInfoProvider
 		var domains = new List<DomainInfo>();
 		foreach (var domainOption in options.Value.TypedDomainOptions)
 		{
-			var requestInfos = new List<RequestInfo>();
+			var requestInfos = new List<MessageInfo>();
 			foreach (var genericRequestType in domainOption.GenericRequestTypes)
 			{
 				var paramInfos = TypedProviderHelper.HarvestParameterInfos(genericRequestType, parameterNameFormatter);
-				var requestInfo = new RequestInfo(RequestType.Command, paramInfos, requestNameFormatter.GetFormattedName(genericRequestType));
+				var requestInfo = new MessageInfo(MessageType.Command, paramInfos, requestNameFormatter.GetFormattedName(genericRequestType));
 				requestInfos.Add(requestInfo);
 				requestInfoTypeStorage.AddRequest(requestInfo, genericRequestType);
 			}
@@ -53,7 +54,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 			foreach (var typePair in domainOption.GenericRequestWithResponseTypes)
 			{
 				var paramInfos = TypedProviderHelper.HarvestParameterInfos(typePair.RequestType, parameterNameFormatter);
-				var requestInfo = new RequestInfo(RequestType.Generic,
+				var requestInfo = new MessageInfo(MessageType.Generic,
 					paramInfos,
 					typePair.ResponseType,
 					requestNameFormatter.GetFormattedName(typePair.RequestType),
@@ -66,7 +67,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 			foreach (var commandType in domainOption.CommandTypes)
 			{
 				var paramInfos = TypedProviderHelper.HarvestParameterInfos(commandType, parameterNameFormatter);
-				var requestInfo = new RequestInfo(RequestType.Command, paramInfos, requestNameFormatter.GetFormattedName(commandType));
+				var requestInfo = new MessageInfo(MessageType.Command, paramInfos, requestNameFormatter.GetFormattedName(commandType));
 				requestInfos.Add(requestInfo);
 				requestInfoTypeStorage.AddRequest(requestInfo, commandType);
 			}
@@ -74,7 +75,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 			foreach (var typePair in domainOption.CommandWithResponseTypes)
 			{
 				var paramInfos = TypedProviderHelper.HarvestParameterInfos(typePair.RequestType, parameterNameFormatter);
-				var requestInfo = new RequestInfo(RequestType.Command,
+				var requestInfo = new MessageInfo(MessageType.Command,
 					paramInfos,
 					typePair.ResponseType,
 					requestNameFormatter.GetFormattedName(typePair.RequestType),
@@ -87,7 +88,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 			foreach (var typePair in domainOption.QueryTypes)
 			{
 				var paramInfos = TypedProviderHelper.HarvestParameterInfos(typePair.RequestType, parameterNameFormatter);
-				var requestInfo = new RequestInfo(RequestType.Query,
+				var requestInfo = new MessageInfo(MessageType.Query,
 					paramInfos,
 					typePair.ResponseType,
 					requestNameFormatter.GetFormattedName(typePair.RequestType),
@@ -98,7 +99,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 			}
 
 			foreach (var requestInfo in requestInfos)
-				requesterSelector.AssignRequester(requestInfo, BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
+				requesterSelector.AssignRequesterForMessage(requestInfo, BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
 
 			domainOption.DomainName.ThrowIfNull();
 			domains.Add(new DomainInfo(domainOption.DomainName, requestInfos));

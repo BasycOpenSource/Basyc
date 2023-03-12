@@ -1,5 +1,5 @@
 ﻿using Basyc.Diagnostics.Shared;
-using Basyc.MessageBus.Manager.Application.Initialization;
+using Basyc.MessageBus.Manager.Application.Building;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -10,9 +10,8 @@ public class InMemoryRequestHandler : IRequestHandler
 	public const string InMemoryDelegateRequesterUniqueName = nameof(InMemoryRequestHandler);
 	public static int ctorCounter;
 
-	private readonly Dictionary<RequestInfo, Action<RequestContext>> handlersMap;
+	private readonly Dictionary<MessageInfo, Action<MessageRequest>> handlersMap;
 	private readonly IOptions<InMemoryRequestHandlerOptions> options;
-
 
 	public InMemoryRequestHandler(IOptions<InMemoryRequestHandlerOptions> options)
 	{
@@ -23,17 +22,16 @@ public class InMemoryRequestHandler : IRequestHandler
 
 	public string UniqueName => InMemoryDelegateRequesterUniqueName;
 
-
-	public void StartRequest(RequestContext requestResult, ILogger logger)
+	public void StartRequest(MessageRequest requestResult, ILogger logger)
 	{
 		logger.LogInformation("Starting invoking in-memory delegate");
 		// var handler = handlersMap[requestResult.Request.RequestInfo];
 		using var findingHandlerActivity = DiagnosticHelper.Start("Finding handler");
-		var handlerFound = handlersMap.TryGetValue(requestResult.Request.RequestInfo, out var handler);
+		var handlerFound = handlersMap.TryGetValue(requestResult.Request.MessageInfo, out var handler);
 		if (handlerFound is false)
 		{
 			requestResult.Fail(
-				$"Requester: '{nameof(InMemoryRequestHandler)}' doesn't have handler for message with display name: '{requestResult.Request.RequestInfo.RequestDisplayName}'");
+				$"Requester: '{nameof(InMemoryRequestHandler)}' doesn't have handler for message with display name: '{requestResult.Request.MessageInfo.RequestDisplayName}'");
 			findingHandlerActivity.Stop();
 			return;
 		}
@@ -59,7 +57,7 @@ public class InMemoryRequestHandler : IRequestHandler
 		});
 	}
 
-	public void AddHandler(RequestInfo requestInfo, Action<RequestContext> handler)
+	public void AddHandler(MessageInfo requestInfo, Action<MessageRequest> handler)
 	{
 		handlersMap.Add(requestInfo, handler);
 	}

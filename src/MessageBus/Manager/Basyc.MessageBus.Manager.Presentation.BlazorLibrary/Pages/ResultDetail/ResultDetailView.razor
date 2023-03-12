@@ -67,7 +67,7 @@
 					}
 					@if (RequestResult.State == RequestResultState.Completed)
 					{
-						@if (RequestResult.Request.RequestInfo.HasResponse)
+						@if (RequestResult.Request.MessageInfo.HasResponse)
 						{
 							@RequestResult.Response
 						}
@@ -115,10 +115,10 @@
 </requestDetailView>
 
 @code {
-	private RequestContext requestResult = null!;
+	private MessageRequest requestResult = null!;
 
 	[Parameter]
-	public RequestContext RequestResult
+	public MessageRequest RequestResult
 	{
 		get => requestResult;
 		set

@@ -1,0 +1,46 @@
+﻿@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Application.Building;
+@using Basyc.MessageBus.Manager.Application.Initialization;
+@using Basyc.MessageBus.Manager.Application.Requesting;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.SideBar
+@using System.Text.Json;
+@using System.ComponentModel;
+@using System.Collections.ObjectModel;
+
+<messagePageView>
+    <requestFormPage>
+        <MessagePageSidebar MessageInfo="@MessageInfo" />
+    </requestFormPage>
+</messagePageView>
+
+@code {
+
+    [Inject] private IDomainInfoProviderManager DomainInfoProviderManager { get; set; } = null!;
+
+    //private readonly Dictionary<SidebarMessageItemViewModel, List<MessageRequest>> resultHistory = new();
+    //private SidebarMessageItemViewModel? selectedRequestViewModel;
+
+    //public SidebarMessageItemViewModel? SelectedRequestViewModel
+    //{
+    //    get => selectedRequestViewModel;
+    //    private set
+    //    {
+    //        if (selectedRequestViewModel is not null)
+    //            selectedRequestViewModel.IsSelected = false;
+
+    //        selectedRequestViewModel = value;
+    //        if (value is null)
+    //            return;
+
+    //        value.IsSelected = true;
+    //        resultHistory.TryAdd(value, new List<MessageRequest>());
+    //    }
+    //}
+
+    [Parameter]
+    public MessageInfo MessageInfo { get; set; } = null!;
+
+
+
+
+}

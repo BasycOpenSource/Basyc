@@ -1,7 +1,7 @@
 ﻿@{
-    int commandCount = @DomainItemViewModel.RequestItemViewModels.Where(x => x.RequestInfo.RequestType == Application.RequestType.Command).Count();
-    int queryCount = @DomainItemViewModel.RequestItemViewModels.Where(x => x.RequestInfo.RequestType == Application.RequestType.Query).Count();
-    int genericCount = @DomainItemViewModel.RequestItemViewModels.Where(x => x.RequestInfo.RequestType == Application.RequestType.Generic).Count();
+    int commandCount = @DomainItemViewModel.RequestItemViewModels.Where(x => x.RequestInfo.RequestType == Application.MessageType.Command).Count();
+    int queryCount = @DomainItemViewModel.RequestItemViewModels.Where(x => x.RequestInfo.RequestType == Application.MessageType.Query).Count();
+    int genericCount = @DomainItemViewModel.RequestItemViewModels.Where(x => x.RequestInfo.RequestType == Application.MessageType.Generic).Count();
 }
 <MudExpansionPanel @bind-IsExpanded="isExpanded" Class="m-0" IsInitiallyExpanded="true" Dense="true" DisableGutters="true" HideIcon="true">
     <TitleContent>

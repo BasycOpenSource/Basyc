@@ -1,8 +1,8 @@
 ﻿using Basyc.Diagnostics.Shared.Durations;
-using Basyc.MessageBus.Manager.Application.Initialization;
 using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 using Basyc.MessageBus.Manager.Application.ResultDiagnostics.Durations;
 using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 
 namespace Basyc.MessageBus.Manager.Application.Requesting;
 
@@ -21,26 +21,30 @@ public class RequestManager : IRequestManager
 		requestDiagnosticsManager = loggingManager;
 		this.inMemoryRequestDiagnosticsSource = inMemoryRequestDiagnosticsSource;
 		requestManagerServiceIdentity = ServiceIdentity.ApplicationWideIdentity;
+		Requests = new ReadOnlyCollection<MessageContext>(requests);
 	}
 
-	public Dictionary<RequestInfo, List<RequestContext>> Results { get; } = new();
+	//public Dictionary<MessageInfo, List<RequestContext>> Requests { get; } = new();
+	private List<MessageContext> requests { get; } = new();
+	public ReadOnlyCollection<MessageContext> Requests { get; }
 
-	public RequestContext StartRequest(Request request)
+	public MessageRequest StartRequest(RequestInput request)
 	{
 		var traceId = Interlocked.Increment(ref requestCounter).ToString().PadLeft(32, '0');
-		if (Results.TryGetValue(request.RequestInfo, out var requestContexts) is false)
+		var messageContext = Requests.FirstOrDefault(x => x.MessageInfo == request.MessageInfo);
+		if (messageContext == default)
 		{
-			requestContexts = new List<RequestContext>();
-			Results.Add(request.RequestInfo, requestContexts);
+			messageContext = new MessageContext(request.MessageInfo);
+			requests.Add(messageContext);
 		}
 
 		var requestDiagnostics = requestDiagnosticsManager.CreateDiagnostics(traceId);
 		requestDiagnostics.AddLog(requestManagerServiceIdentity, DateTimeOffset.UtcNow, LogLevel.Information, "Choosing requester", null);
-		var requester = requesterSelector.PickRequester(request.RequestInfo);
+		var requester = requesterSelector.PickRequester(request.MessageInfo);
 		IDurationMapBuilder durationMapBuilder =
 			new InMemoryDiagnosticsSourceDurationMapBuilder(requestManagerServiceIdentity, traceId, "root", inMemoryRequestDiagnosticsSource);
-		var requestContext = new RequestContext(request, DateTime.Now, traceId, durationMapBuilder, requestDiagnostics);
-		requestContexts.Add(requestContext);
+		var requestContext = new MessageRequest(request, DateTime.Now, traceId, durationMapBuilder, requestDiagnostics);
+		messageContext.MessageRequests.Add(requestContext);
 		requestDiagnostics.AddLog(requestManagerServiceIdentity, DateTimeOffset.UtcNow, LogLevel.Information, "Giving request to requester", null);
 		// var dummyStartSegment = durationMapBuilder.StartNewSegment("StartRequest1");
 		// var startRequestActivity = DiagnosticHelper.Start("StartRequest2", dummyStartSegment.TraceId, dummyStartSegment.Id);

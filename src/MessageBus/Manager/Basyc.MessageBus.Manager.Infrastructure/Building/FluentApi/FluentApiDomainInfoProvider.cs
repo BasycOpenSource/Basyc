@@ -1,8 +1,10 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
+﻿using Basyc.MessageBus.Manager.Application;
+using Basyc.MessageBus.Manager.Application.Building;
+using Basyc.MessageBus.Manager.Application.Initialization;
 using Basyc.MessageBus.Manager.Application.Requesting;
 using Microsoft.Extensions.Options;
 
-namespace Basyc.MessageBus.Manager.Application.Building;
+namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentApiDomainInfoProvider : IDomainInfoProvider
 {
@@ -27,15 +29,12 @@ public class FluentApiDomainInfoProvider : IDomainInfoProvider
 		{
 			var requestInfos = domain.InProgressMessages.Select(inProgressMessage =>
 			{
-				RequestInfo requestInfo;
-				if (inProgressMessage.HasResponse)
-					requestInfo = new RequestInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.ResponseRunTimeType!,
-						inProgressMessage.MessageDisplayName!, inProgressMessage.ResponseRunTimeTypeDisplayName!);
-				else
-					requestInfo = new RequestInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.MessageDisplayName!);
-
+				var requestInfo = inProgressMessage.HasResponse
+					? new MessageInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.ResponseRunTimeType!,
+						inProgressMessage.MessageDisplayName!, inProgressMessage.ResponseRunTimeTypeDisplayName!)
+					: new MessageInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.MessageDisplayName!);
 				inMemoryRequestHandler.AddHandler(requestInfo, inProgressMessage.RequestHandler!);
-				requesterSelector.AssignRequester(requestInfo, InMemoryRequestHandler.InMemoryDelegateRequesterUniqueName);
+				requesterSelector.AssignRequesterForMessage(requestInfo, InMemoryRequestHandler.InMemoryDelegateRequesterUniqueName);
 				return requestInfo;
 			}).ToList();
 			domainInfos.Add(new DomainInfo(domain.DomainName!, requestInfos));

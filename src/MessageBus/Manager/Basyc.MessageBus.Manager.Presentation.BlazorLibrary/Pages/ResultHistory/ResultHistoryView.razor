@@ -31,12 +31,12 @@
 @code {
 
 	[Parameter]
-	public List<RequestContext>? RequestContexts { get; set; }
+	public List<MessageRequest>? RequestContexts { get; set; }
 
-	private RequestContext? selectedRequestResults;
+	private MessageRequest? selectedRequestResults;
 
 	[Parameter]
-	public RequestContext? SelectedRequestResults
+	public MessageRequest? SelectedRequestResults
 	{
 		get => selectedRequestResults;
 		set

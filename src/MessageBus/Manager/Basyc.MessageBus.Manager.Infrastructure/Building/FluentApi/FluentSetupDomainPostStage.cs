@@ -13,7 +13,7 @@ public class FluentSetupDomainPostStage : BuilderStageBase
 		this.inProgressGroup = inProgressGroup;
 	}
 
-	public FluentSetupMessageStage AddMessage(string messageDisplayName, RequestType messageType = RequestType.Generic)
+	public FluentSetupMessageStage AddMessage(string messageDisplayName, MessageType messageType = MessageType.Generic)
 	{
 		return new FluentSetupGroupStage(services, inProgressGroup).AddMessage(messageDisplayName, messageType);
 	}

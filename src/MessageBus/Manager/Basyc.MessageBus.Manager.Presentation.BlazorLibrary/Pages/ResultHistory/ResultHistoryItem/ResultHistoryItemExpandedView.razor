@@ -56,7 +56,7 @@
 					<textValue>
 						@if (RequestContext.State == RequestResultState.Completed)
 						{
-							if (RequestContext.Request.RequestInfo.HasResponse)
+							if (RequestContext.Request.MessageInfo.HasResponse)
 							{
 								@RequestContext.Response
 							}
@@ -105,6 +105,6 @@
 
 	[Parameter]
 	[EditorRequired]
-	public RequestContext RequestContext { get; set; } = null!;
+	public MessageRequest RequestContext { get; set; } = null!;
 
 }

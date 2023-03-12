@@ -1,4 +1,5 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
+﻿using Basyc.MessageBus.Manager.Application.Building;
+using Basyc.MessageBus.Manager.Application.Initialization;
 using Basyc.MessageBus.Manager.Application.Requesting;
 using Microsoft.Extensions.Options;
 using Throw;
@@ -23,12 +24,12 @@ public class InterfaceDomainProvider : IDomainInfoProvider
 
 	public List<DomainInfo> GenerateDomainInfos()
 	{
-		var domains = new Dictionary<string, List<RequestInfo>>();
+		var domains = new Dictionary<string, List<MessageInfo>>();
 
 		foreach (var registration in options.Value.InterfaceRegistrations)
 		{
 			registration.GroupName.ThrowIfNull();
-			domains.TryAdd(registration.GroupName, new List<RequestInfo>());
+			domains.TryAdd(registration.GroupName, new List<MessageInfo>());
 			var infos = domains[registration.GroupName];
 			foreach (var assemblyType in registration.AssembliesToScan.SelectMany(assembly => assembly.GetTypes()))
 			{
@@ -47,9 +48,9 @@ public class InterfaceDomainProvider : IDomainInfoProvider
 				var paramInfos = TypedProviderHelper.HarvestParameterInfos(assemblyType, x => x.Name);
 				var messageDisplayName = registration.DisplayNameFormatter.Invoke(assemblyType);
 				var requestInfo = registration.HasResponse
-					? new RequestInfo(registration.RequestType, paramInfos, registration.ResponseType.Value(), messageDisplayName,
+					? new MessageInfo(registration.RequestType, paramInfos, registration.ResponseType.Value(), messageDisplayName,
 						registration.ResponseDisplayName.Value())
-					: new RequestInfo(registration.RequestType, paramInfos, messageDisplayName);
+					: new MessageInfo(registration.RequestType, paramInfos, messageDisplayName);
 				string requesterName;
 				if (registration.RequestHandlerUniqueName == InterfaceRegistration.DefaultRequestHandlerUniqueName)
 				{
@@ -68,7 +69,7 @@ public class InterfaceDomainProvider : IDomainInfoProvider
 					requesterName = registration.RequestHandlerUniqueName;
 				}
 
-				requesterSelector.AssignRequester(requestInfo, requesterName);
+				requesterSelector.AssignRequesterForMessage(requestInfo, requesterName);
 				requestInfoTypeStorage.AddRequest(requestInfo, assemblyType);
 				infos.Add(requestInfo);
 			}

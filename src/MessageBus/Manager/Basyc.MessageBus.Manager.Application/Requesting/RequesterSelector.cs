@@ -1,11 +1,11 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
+﻿using Basyc.MessageBus.Manager.Application.Building;
 using Microsoft.Extensions.Options;
 
 namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public class RequesterSelector : IRequesterSelector
 {
-	private readonly Dictionary<RequestInfo, string> infoToRequesterNameMap;
+	private readonly Dictionary<MessageInfo, string> infoToRequesterNameMap;
 	private readonly IOptions<RequesterSelectorOptions> options;
 	private readonly Dictionary<string, IRequestHandler> requesterToChoose;
 
@@ -26,13 +26,13 @@ public class RequesterSelector : IRequesterSelector
 		infoToRequesterNameMap = options.Value.ResolveRequesterMap();
 	}
 
-	public IRequestHandler PickRequester(RequestInfo requestInfo)
+	public IRequestHandler PickRequester(MessageInfo requestInfo)
 	{
 		var requesterName = infoToRequesterNameMap[requestInfo];
 		return requesterToChoose[requesterName];
 	}
 
-	public void AssignRequester(RequestInfo requestInfo, string requesterUniqueName)
+	public void AssignRequesterForMessage(MessageInfo requestInfo, string requesterUniqueName)
 	{
 		infoToRequesterNameMap.Add(requestInfo, requesterUniqueName);
 	}

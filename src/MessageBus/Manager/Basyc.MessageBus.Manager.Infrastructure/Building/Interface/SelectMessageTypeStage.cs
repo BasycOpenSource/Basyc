@@ -15,19 +15,19 @@ public class SelectMessageTypeStage : BuilderStageBase
 
 	public SelectHandlerStage AsEvents()
 	{
-		interfaceRegistration.RequestType = RequestType.Event;
+		interfaceRegistration.RequestType = MessageType.Event;
 		return new SelectHandlerStage(services, interfaceRegistration);
 	}
 
 	public SetupHasResponseStage AsQueries()
 	{
-		interfaceRegistration.RequestType = RequestType.Query;
+		interfaceRegistration.RequestType = MessageType.Query;
 		return new SetupHasResponseStage(services, interfaceRegistration);
 	}
 
 	public SetupHasResponseStage AsCommands()
 	{
-		interfaceRegistration.RequestType = RequestType.Command;
+		interfaceRegistration.RequestType = MessageType.Command;
 		return new SetupHasResponseStage(services, interfaceRegistration);
 	}
 }

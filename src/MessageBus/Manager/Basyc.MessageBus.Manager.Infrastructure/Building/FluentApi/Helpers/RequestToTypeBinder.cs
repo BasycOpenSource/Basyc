@@ -15,7 +15,7 @@ public class RequestToTypeBinder<TMessage>
 		messageClassProperties = messageRuntimeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
 	}
 
-	public TMessage CreateMessage(Request request)
+	public TMessage CreateMessage(RequestInput request)
 	{
 		if (TryCreateMessageWithCtor(request, out var messageInstance))
 		{
@@ -30,7 +30,7 @@ public class RequestToTypeBinder<TMessage>
 		throw new Exception("Failed to create instance of message");
 	}
 
-	public bool TryCreateMessageWithCtor(Request request, out TMessage? message)
+	public bool TryCreateMessageWithCtor(RequestInput request, out TMessage? message)
 	{
 		EnsureRequestTypeParameterTypesAreCached(request);
 
@@ -56,7 +56,7 @@ public class RequestToTypeBinder<TMessage>
 		}
 	}
 
-	private bool TryCreateMessageWithSetters(Request request, out TMessage? message)
+	private bool TryCreateMessageWithSetters(RequestInput request, out TMessage? message)
 	{
 		EnsureRequestTypeParameterTypesAreCached(request);
 
@@ -86,11 +86,11 @@ public class RequestToTypeBinder<TMessage>
 		return true;
 	}
 
-	private static void EnsureRequestTypeParameterTypesAreCached(Request request)
+	private static void EnsureRequestTypeParameterTypesAreCached(RequestInput request)
 	{
 		if (requestParameterTypes is null)
 		{
-			requestParameterTypes = request.RequestInfo.Parameters.Select(x => x.Type).ToArray();
+			requestParameterTypes = request.MessageInfo.Parameters.Select(x => x.Type).ToArray();
 		}
 	}
 }

@@ -309,7 +309,7 @@ resharper_default_internal_modifier = explicit
 
 [*.scss]
 indent_style = space
-indent_size = 2
+indent_size = 4
 
 [*.{csproj,props,targets}]
 indent_style = space

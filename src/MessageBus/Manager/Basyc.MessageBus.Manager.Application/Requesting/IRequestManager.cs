@@ -1,10 +1,10 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
-using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 
 namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public interface IRequestManager
 {
-	RequestContext StartRequest(Request request);
-	Dictionary<RequestInfo, List<RequestContext>> Results { get; }
+	MessageRequest StartRequest(RequestInput request);
+	//Dictionary<MessageInfo, List<RequestContext>> Requests { get; }
+	ReadOnlyCollection<MessageContext> Requests { get; }
 }

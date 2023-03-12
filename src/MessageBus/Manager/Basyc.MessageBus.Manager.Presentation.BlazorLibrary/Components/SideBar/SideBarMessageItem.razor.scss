@@ -1,0 +1,24 @@
+﻿
+requestItem {
+    display: flex;
+    margin: 0px;
+    padding: 0.35rem 1rem 0.35rem 2rem;
+    flex: 1;
+    border: 0.5px solid rgba(0, 0, 0, 0);
+}
+
+requestName {
+    color: #A2A2A2;
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.selected--True {
+    background-color: rgba(146, 35, 116, 0.20);
+    border: 0.5px solid rgba(146, 35, 120, 0.5);
+}
+
+tag {
+    margin-left: 0.35rem;
+}

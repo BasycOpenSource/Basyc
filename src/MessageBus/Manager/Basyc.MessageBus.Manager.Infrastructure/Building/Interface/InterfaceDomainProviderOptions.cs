@@ -18,6 +18,6 @@ public class InterfaceRegistration
 	public Type? ResponseType { get; set; }
 	public Func<Type, string>? DisplayNameFormatter { get; set; }
 	public string? ResponseDisplayName { get; set; }
-	public RequestType RequestType { get; set; }
+	public MessageType RequestType { get; set; }
 	public string? RequestHandlerUniqueName { get; set; }
 }

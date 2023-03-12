@@ -1,4 +1,4 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
+﻿using Basyc.MessageBus.Manager.Application.Building;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Specialized;
 
@@ -10,9 +10,9 @@ public partial class RequestItem
 
 	[Parameter] public EventCallback<string> OnValueChanged { get; set; }
 
-	[Parameter][EditorRequired] public RequestItemViewModel RequestItemViewModel { get; set; } = null!;
+	[Parameter][EditorRequired] public SidebarMessageItemViewModel RequestItemViewModel { get; set; } = null!;
 
-	public async Task SendMessage(RequestInfo request)
+	public async Task SendMessage(MessageInfo request)
 	{
 		await OnMessageSending.InvokeAsync(this);
 	}
@@ -22,29 +22,21 @@ public partial class RequestItem
 		if (type.IsValueType)
 		{
 			var defaultValue = type.GetDefaultValue();
-			if (defaultValue is null)
-			{
-				return "null";
-			}
-
-			return defaultValue.ToString()!;
+			return defaultValue is null ? "null" : defaultValue.ToString()!;
 		}
 
-		if (type == typeof(string))
-		{
-			return string.Empty;
-		}
-
-		return "@null";
+		return type == typeof(string) ? string.Empty : "@null";
 	}
 
 	protected override void OnInitialized()
 	{
-		RequestItemViewModel.ParameterValues.CollectionChanged += ParameterValues_CollectionChanged;
+		//TODO Should be fixed
+		//RequestItemViewModel.ParameterValues.CollectionChanged += ParameterValues_CollectionChanged;
 		for (var paramIndex = 0; paramIndex < RequestItemViewModel.RequestInfo.Parameters.Count; paramIndex++)
 		{
 			var defaultValue = GetDefaultValueString(RequestItemViewModel.RequestInfo.Parameters[paramIndex].Type);
-			RequestItemViewModel.ParameterValues[paramIndex] = defaultValue;
+			//TODO Should be fixed
+			//RequestItemViewModel.ParameterValues[paramIndex] = defaultValue;
 		}
 
 		base.OnInitialized();
@@ -56,7 +48,8 @@ public partial class RequestItem
 		var defaultValue = GetDefaultValueString(RequestItemViewModel.RequestInfo.Parameters[e.NewStartingIndex].Type);
 		if (newValue == string.Empty && newValue != defaultValue)
 		{
-			RequestItemViewModel.ParameterValues[e.NewStartingIndex] = defaultValue;
+			//TODO Should be fixed
+			//RequestItemViewModel.ParameterValues[e.NewStartingIndex] = defaultValue;
 		}
 	}
 }

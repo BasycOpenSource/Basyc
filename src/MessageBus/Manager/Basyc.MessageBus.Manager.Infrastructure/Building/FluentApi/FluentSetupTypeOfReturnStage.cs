@@ -18,20 +18,20 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
 		this.inProgressGroup = inProgressGroup;
 	}
 
-	public FluentSetupDomainPostStage HandeledBy(Action<RequestContext> handler)
+	public FluentSetupDomainPostStage HandeledBy(Action<MessageRequest> handler)
 	{
 		inProgressMessage.RequestHandler = handler;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
-	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<Request, TReturn> handler)
+	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<RequestInput, TReturn> handler)
 		where TReturn : class
 	{
-		Action<RequestContext> handlerWrapper = requestResult =>
+		Action<MessageRequest> handlerWrapper = requestResult =>
 		{
 			var returnObject = handler.Invoke(requestResult.Request);
 			returnObject.ThrowIfNull();
-			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.RequestInfo.ResponseType!);
+			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.MessageInfo.ResponseType!);
 			requestResult.Complete(returnObject);
 		};
 		inProgressMessage.RequestHandler = handlerWrapper;

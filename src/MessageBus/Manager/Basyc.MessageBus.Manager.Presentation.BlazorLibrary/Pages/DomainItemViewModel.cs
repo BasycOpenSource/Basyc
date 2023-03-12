@@ -1,15 +1,15 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
+﻿using Basyc.MessageBus.Manager.Application.Building;
 
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages;
 
 public class DomainItemViewModel
 {
-	public DomainItemViewModel(DomainInfo requestDomainInfo, IEnumerable<RequestItemViewModel> requestViewModels)
+	public DomainItemViewModel(DomainInfo requestDomainInfo, IEnumerable<SidebarMessageItemViewModel> requestViewModels)
 	{
 		RequestDomainInfo = requestDomainInfo;
-		RequestItemViewModels = new List<RequestItemViewModel>(requestViewModels);
+		RequestItemViewModels = new List<SidebarMessageItemViewModel>(requestViewModels);
 	}
 
 	public DomainInfo RequestDomainInfo { get; }
-	public IReadOnlyCollection<RequestItemViewModel> RequestItemViewModels { get; }
+	public IReadOnlyCollection<SidebarMessageItemViewModel> RequestItemViewModels { get; }
 }

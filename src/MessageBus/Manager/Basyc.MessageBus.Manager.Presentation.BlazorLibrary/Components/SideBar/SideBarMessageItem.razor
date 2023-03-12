@@ -1,0 +1,19 @@
+﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.RequestTag
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Icons;
+<requestItem class="selected--@RequestViewModel.IsSelected">
+	<requestName>
+		@RequestViewModel.RequestInfo.RequestDisplayName
+	</requestName>
+	<tag>
+		<RequestTagView RequestType="@RequestTagTypeHelper.FromRequestType(RequestViewModel.RequestInfo.RequestType)" TagStyle="TagStyle.Icon"/>
+	</tag>
+</requestItem>
+
+@code {
+
+	[Parameter]
+	[EditorRequired]
+	public SidebarMessageItemViewModel RequestViewModel { get; set; } = null!;
+
+}

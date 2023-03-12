@@ -8,9 +8,9 @@ public class NullRequestHandler : IRequestHandler
 {
 	public string UniqueName => nameof(NullRequestHandler);
 
-	public void StartRequest(RequestContext requestResult, ILogger logger)
+	public void StartRequest(MessageRequest requestResult, ILogger logger)
 	{
-		if (requestResult.Request.RequestInfo.HasResponse)
+		if (requestResult.Request.MessageInfo.HasResponse)
 			requestResult.Complete("NullRequester dummy response");
 		else
 			requestResult.Complete();

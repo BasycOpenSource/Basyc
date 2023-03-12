@@ -1,4 +1,5 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
+﻿using Basyc.MessageBus.Manager.Application.Building;
+using Basyc.MessageBus.Manager.Application.Initialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public interface IRequestInfoTypeStorage
 {
-	void AddRequest(RequestInfo requestInfo, Type requestType);
-	Type GetRequestType(RequestInfo requestInfo);
+	void AddRequest(MessageInfo requestInfo, Type requestType);
+	Type GetRequestType(MessageInfo requestInfo);
 
 }

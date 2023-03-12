@@ -16,15 +16,15 @@ public class FluentSetupNoReturnStage : BuilderStageBase
 		this.inProgressGroup = inProgressGroup;
 	}
 
-	public FluentSetupDomainPostStage HandledBy(Action<RequestContext> handler)
+	public FluentSetupDomainPostStage HandledBy(Action<MessageRequest> handler)
 	{
 		inProgressMessage.RequestHandler = handler;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
-	public FluentSetupDomainPostStage HandledBy(Action<Request> handler)
+	public FluentSetupDomainPostStage HandledBy(Action<RequestInput> handler)
 	{
-		void ToRequestContextAction(RequestContext requestResult)
+		void ToRequestContextAction(MessageRequest requestResult)
 		{
 			//requestResult.Start();
 			handler.Invoke(requestResult.Request);

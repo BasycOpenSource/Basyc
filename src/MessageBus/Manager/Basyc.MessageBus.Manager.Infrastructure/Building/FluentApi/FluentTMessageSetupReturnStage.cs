@@ -19,15 +19,15 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 		binder = new RequestToTypeBinder<TMessage>();
 	}
 
-	public FluentSetupDomainPostStage HandeledBy(Action<RequestContext> handler)
+	public FluentSetupDomainPostStage HandeledBy(Action<MessageRequest> handler)
 	{
 		inProgressMessage.RequestHandler = handler;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
-	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<Request, TReturn> handler)
+	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<RequestInput, TReturn> handler)
 	{
-		Action<RequestContext> handlerWrapper = requestResult =>
+		Action<MessageRequest> handlerWrapper = requestResult =>
 		{
 			//requestResult.Start();
 			var returnObject = handler.Invoke(requestResult.Request);
@@ -39,7 +39,7 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 
 	public FluentSetupDomainPostStage HandeledBy(Func<TMessage, object> handlerWithTReturn)
 	{
-		Action<RequestContext> wrapperHandler = result =>
+		Action<MessageRequest> wrapperHandler = result =>
 		{
 			var message = binder.CreateMessage(result.Request);
 			var returnObject = handlerWithTReturn.Invoke(message);
@@ -53,7 +53,7 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<TMessage, TReturn> handlerWithTReturn)
 		where TReturn : class
 	{
-		Action<RequestContext> wrapperHandler = result =>
+		Action<MessageRequest> wrapperHandler = result =>
 		{
 			var message = binder.CreateMessage(result.Request);
 			var returnObject = handlerWithTReturn.Invoke(message);

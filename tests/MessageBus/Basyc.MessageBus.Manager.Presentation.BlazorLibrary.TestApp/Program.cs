@@ -7,6 +7,7 @@ using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.Manager;
 using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
+using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
 using Basyc.MessageBus.Shared;
 using Microsoft.AspNetCore.Builder;
@@ -40,7 +41,6 @@ builder.Services.AddBasycMessageBus()
 	//.SelectSignalRProxyProvider("https://localhost:44310")
 	.SelectNullClient()
 	.EnableDiagnostics();
-
 
 var busManagerBuilder = builder.Services.AddBasycBusManager();
 
@@ -78,7 +78,6 @@ busManagerBuilder.RegisterMessages()
 	.SetResponseDisplayName("responseType")
 	.HandledByDefaultHandler();
 
-
 busManagerBuilder.RegisterMessages()
 	.FromAssembly(assembliesToScan)
 	.InGroup("FromAssembly")
@@ -103,6 +102,7 @@ busManagerBuilder.RegisterMessages()
 
 builder.Services.AddBasycBusManagerBlazorUi();
 
+builder.Services.AddSingleton<SidebarHistoryViewModel>();
 
 //CreateTestingMessages(busManagerBuilder);
 

@@ -6,7 +6,7 @@ using Basyc.MessageBus.Manager.Infrastructure.Formatters;
 using Basyc.MessageBus.Shared;
 using Microsoft.Extensions.Logging;
 using Throw;
-using RequestContext = Basyc.MessageBus.Manager.Application.RequestContext;
+using MessageRequest = Basyc.MessageBus.Manager.Application.MessageRequest;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 
@@ -38,30 +38,30 @@ public class BasycTypedMessageBusRequestHandler : IRequestHandler
 
 	public string UniqueName => BasycTypedMessageBusRequesterUniqueName;
 
-	public void StartRequest(RequestContext requestContext, ILogger logger)
+	public void StartRequest(MessageRequest requestContext, ILogger logger)
 	{
 		//var dummyStartSegment = requestContext.StartNewSegment("BasycTypedMessageBusRequester.StartRequest DUMMy");
 		//var startSegment = DiagnosticHelper.Start("BasycTypedMessageBusRequester.StartRequest", dummyStartSegment.TraceId, dummyStartSegment.Id);
 		var startSegment = DiagnosticHelper.Start("BasycTypedMessageBusRequester.StartRequest");
 		var busRequestContext = new Shared.RequestContext(startSegment.Activity?.SpanId.ToString()!, startSegment.Activity?.TraceId.ToString()!);
 		var prepareSegment = DiagnosticHelper.Start("Creating request instance");
-		var requestType = requestInfoTypeStorage.GetRequestType(requestContext.Request.RequestInfo);
+		var requestType = requestInfoTypeStorage.GetRequestType(requestContext.Request.MessageInfo);
 		var paramValues = requestContext.Request.Parameters.Select(x => x.Value).ToArray();
 		var requestObject = Activator.CreateInstance(requestType, paramValues);
 		requestObject.ThrowIfNull();
 		prepareSegment.Stop();
 		this.logger.LogDebug("Request instance created");
 
-		if (requestContext.Request.RequestInfo.HasResponse)
+		if (requestContext.Request.MessageInfo.HasResponse)
 		{
-			requestContext.Request.RequestInfo.ResponseType.ThrowIfNull();
+			requestContext.Request.MessageInfo.ResponseType.ThrowIfNull();
 			//var busRequestActivity = startSegment.StartNested("BasycTypedMessageBusRequester.StartRequest Bus Request");
 			var busRequestActivity = DiagnosticHelper.Start("Bus Request");
 
 			var messageBusClientRequestActivity = DiagnosticHelper.Start("MessageBusClient Request");
 			this.logger.LogInformation("Requesting to message bus");
 
-			var busTask = typedMessageBusClient.RequestAsync(requestType, requestObject, requestContext.Request.RequestInfo.ResponseType, busRequestContext);
+			var busTask = typedMessageBusClient.RequestAsync(requestType, requestObject, requestContext.Request.MessageInfo.ResponseType, busRequestContext);
 			messageBusClientRequestActivity.Stop();
 
 			inMemorySessionMapper.AddMapping(requestContext.TraceId, busTask.TraceId);

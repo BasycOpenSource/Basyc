@@ -1,0 +1,31 @@
+﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Icons;
+<sideMenu>
+    <sectionLabel>
+        Endpoints
+    </sectionLabel>
+    <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">
+        @foreach (var domainViewModel in domainInfoViewModel)
+        {
+
+            <MudList Clickable="true" Dense="true" DisablePadding=true DisableGutters=true>
+                <MudListItem InitiallyExpanded="true" Dense="true" DisableGutters="true">
+                    <ChildContent>
+                        <domainHeading>
+                            @Icon.Get(IconsEnum.folder)
+                            @domainViewModel.RequestDomainInfo.DomainName
+                        </domainHeading>
+                    </ChildContent>
+
+                    <NestedList>
+                        @foreach (var requestItemViewModel in domainViewModel.RequestItemViewModels)
+                        {
+                            <button @onclick="() => RequestSelected.InvokeAsync(requestItemViewModel.RequestInfo)" class="itemButton">
+                                <SideBarMessageItem RequestViewModel="@requestItemViewModel" />
+                            </button>
+                        }
+                    </NestedList>
+                </MudListItem>
+            </MudList>
+        }
+    </MudExpansionPanels>
+</sideMenu>

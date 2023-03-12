@@ -106,5 +106,25 @@
   {
     "outputFile": "Components/LogWindow/TableFilter.razor.css",
     "inputFile": "Components/LogWindow/TableFilter.razor.scss"
+  },
+  {
+    "outputFile": "Pages/SideBar/RequestsSideMenu.razor.css",
+    "inputFile": "Pages/SideBar/RequestsSideMenu.razor.scss"
+  },
+  {
+    "outputFile": "Pages/SideBar/SideBarRequestItem.razor.css",
+    "inputFile": "Pages/SideBar/SideBarRequestItem.razor.scss"
+  },
+  {
+    "outputFile": "Components/RequestTag/RequestTagView.razor.css",
+    "inputFile": "Components/RequestTag/RequestTagView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/RequestSideBar/RequestSideBarView.razor.css",
+    "inputFile": "Pages/RequestSideBar/RequestSideBarView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Message/MessagePageView.razor.css",
+    "inputFile": "Pages/Message/MessagePageView.razor.scss"
   }
 ]

@@ -13,14 +13,14 @@ public enum RequestTagType
 
 public static class RequestTagTypeHelper
 {
-	public static RequestTagType FromRequestType(RequestType requestType)
+	public static RequestTagType FromRequestType(MessageType requestType)
 	{
 		return requestType switch
 		{
-			RequestType.Query => RequestTagType.Query,
-			RequestType.Command => RequestTagType.Command,
-			RequestType.Generic => RequestTagType.Generic,
-			RequestType.Event => RequestTagType.Event,
+			MessageType.Query => RequestTagType.Query,
+			MessageType.Command => RequestTagType.Command,
+			MessageType.Generic => RequestTagType.Generic,
+			MessageType.Event => RequestTagType.Event,
 			_ => throw new NotImplementedException(),
 		};
 	}
