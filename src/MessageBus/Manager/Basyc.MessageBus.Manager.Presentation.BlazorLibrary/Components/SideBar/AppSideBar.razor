@@ -1,4 +1,4 @@
-﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Icons;
+﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
 <sideMenu>
     <sectionLabel>
         Endpoints
@@ -11,8 +11,9 @@
                 <MudListItem InitiallyExpanded="true" Dense="true" DisableGutters="true">
                     <ChildContent>
                         <domainHeading>
-                            @Icon.Get(IconsEnum.folder)
+                            @Html.Icon(IconsEnum.folder)
                             @domainViewModel.RequestDomainInfo.DomainName
+                            (@domainViewModel.RequestItemViewModels.Count)
                         </domainHeading>
                     </ChildContent>
 

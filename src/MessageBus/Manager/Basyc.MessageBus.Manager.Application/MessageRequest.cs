@@ -1,9 +1,11 @@
 ﻿using Basyc.Diagnostics.Shared.Durations;
 using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace Basyc.MessageBus.Manager.Application;
 
-public class MessageRequest
+public class MessageRequest : ReactiveObject
 {
 	private readonly IDurationMapBuilder durationMapBuilder;
 
@@ -36,7 +38,7 @@ public class MessageRequest
 
 	public string TraceId { get; init; }
 	public RequestDiagnosticContext Diagnostics { get; }
-	public RequestResultState State { get; private set; }
+	[Reactive] public RequestResultState State { get; private set; }
 	public object? Response { get; private set; }
 	public string? ErrorMessage { get; private set; }
 

@@ -1,0 +1,43 @@
+﻿@namespace Basyc.Blazor.Controls
+
+<basycLabelView>
+    @GetLabelTags2(Size, ChildContent)
+</basycLabelView>
+
+@code {
+    [Parameter] public LabelSize Size { get; set; }
+
+
+    public static string GetHTagNumber(LabelSize labelSize)
+    {
+        var number =  labelSize switch
+        {
+            LabelSize.H1 => 1,
+            LabelSize.H2 => 2,
+            LabelSize.H3 => 3,
+            LabelSize.H4 => 4,
+            LabelSize.H5 => 5,
+            LabelSize.H6 => 6,
+            _ => throw new ArgumentException(nameof(labelSize))
+        };
+        return number.ToString();
+    }
+
+    public RenderFragment GetLabelTags2(LabelSize labelSize, RenderFragment? content)
+    {
+        RenderFragment finalContent = builder =>
+        {
+            builder.OpenElement(1, $"h{GetHTagNumber(Size)}");
+            builder.AddContent(2, content);
+            builder.CloseElement();
+        };
+
+        return finalContent;
+    }
+
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+
+}

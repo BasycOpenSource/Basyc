@@ -7,7 +7,7 @@ using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.Manager;
 using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
-using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message;
+using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
 using Basyc.MessageBus.Shared;
 using Microsoft.AspNetCore.Builder;
@@ -101,8 +101,12 @@ busManagerBuilder.RegisterMessages()
 	});
 
 builder.Services.AddBasycBusManagerBlazorUi();
+//builder.Services.UseMicrosoftDependencyResolver(); //Splat config
+//var resolver = Locator.CurrentMutable;
+//resolver.InitializeSplat();
+//resolver.InitializeReactiveUI();
 
-builder.Services.AddSingleton<SidebarHistoryViewModel>();
+//Locator.CurrentMutable.Register(() => new SidebarHistory(), typeof(IViewFor<SidebarHistoryViewModel>)); //Splat!
 
 //CreateTestingMessages(busManagerBuilder);
 

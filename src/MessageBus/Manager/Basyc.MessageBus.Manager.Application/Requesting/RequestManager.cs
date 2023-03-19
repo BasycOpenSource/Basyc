@@ -21,17 +21,17 @@ public class RequestManager : IRequestManager
 		requestDiagnosticsManager = loggingManager;
 		this.inMemoryRequestDiagnosticsSource = inMemoryRequestDiagnosticsSource;
 		requestManagerServiceIdentity = ServiceIdentity.ApplicationWideIdentity;
-		Requests = new ReadOnlyCollection<MessageContext>(requests);
+		MessageContexts = new ReadOnlyObservableCollection<MessageContext>(requests);
 	}
 
 	//public Dictionary<MessageInfo, List<RequestContext>> Requests { get; } = new();
-	private List<MessageContext> requests { get; } = new();
-	public ReadOnlyCollection<MessageContext> Requests { get; }
+	private ObservableCollection<MessageContext> requests { get; } = new();
+	public ReadOnlyObservableCollection<MessageContext> MessageContexts { get; }
 
 	public MessageRequest StartRequest(RequestInput request)
 	{
 		var traceId = Interlocked.Increment(ref requestCounter).ToString().PadLeft(32, '0');
-		var messageContext = Requests.FirstOrDefault(x => x.MessageInfo == request.MessageInfo);
+		var messageContext = MessageContexts.FirstOrDefault(x => x.MessageInfo == request.MessageInfo);
 		if (messageContext == default)
 		{
 			messageContext = new MessageContext(request.MessageInfo);

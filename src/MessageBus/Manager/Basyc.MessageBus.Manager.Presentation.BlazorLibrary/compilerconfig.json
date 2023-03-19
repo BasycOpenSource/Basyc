@@ -126,5 +126,9 @@
   {
     "outputFile": "Pages/Message/MessagePageView.razor.css",
     "inputFile": "Pages/Message/MessagePageView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Message/Sidebar/SidebarHistoryItemView.razor.css",
+    "inputFile": "Pages/Message/Sidebar/SidebarHistoryItemView.razor.scss"
   }
 ]

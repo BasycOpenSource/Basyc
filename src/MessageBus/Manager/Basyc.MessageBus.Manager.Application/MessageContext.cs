@@ -1,5 +1,6 @@
 ﻿using Basyc.MessageBus.Manager.Application.Building;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System.Collections.ObjectModel;
 
 namespace Basyc.MessageBus.Manager.Application;
@@ -10,6 +11,6 @@ public class MessageContext : ReactiveObject
 		MessageInfo = messageInfo;
 	}
 
-	public ObservableCollection<MessageRequest> MessageRequests { get; } = new();
-	public MessageInfo MessageInfo { get; }
+	[Reactive] public ObservableCollection<MessageRequest> MessageRequests { get; init; } = new();
+	[Reactive] public MessageInfo MessageInfo { get; init; }
 }

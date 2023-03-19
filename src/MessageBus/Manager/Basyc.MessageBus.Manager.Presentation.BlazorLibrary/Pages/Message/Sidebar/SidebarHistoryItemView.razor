@@ -1,0 +1,57 @@
+﻿@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+@using Basyc.ReactiveUi.Blazor;
+@inherits BasycReactiveBlazorComponentBase<SidebarHistoryItemViewModel>
+
+<div>
+    @*    @(Index + 1)
+    @ViewModel.State
+    @Html.Time(ViewModel.Duration)*@
+    @*    <MudGrid Spacing="1" Justify="Justify.FlexStart">
+    <MudItem>
+    @(Index + 1)
+    </MudItem>
+    <MudItem>
+    @ViewModel.State
+    </MudItem>
+    <MudItem>
+    @Html.Time(ViewModel.Duration)
+    </MudItem>
+    </MudGrid>*@
+    <MudStack Row="true" AlignItems="AlignItems.Stretch">
+        <index>
+            <BasycLabel Size="LabelSize.H5">
+                #@(Index + 1)
+            </BasycLabel>
+        </index>
+        <itemBody>
+            <MudStack>
+                <div>
+                    @ViewModel.State
+                    @Html.Time(ViewModel.Duration)
+                </div>
+                <div>
+                    @ViewModel.State
+                    @Html.Time(ViewModel.Duration)
+                </div>
+            </MudStack>
+
+        </itemBody>
+    </MudStack>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public MessageRequest MessageRequest { get; set; } = null!;
+    [Parameter, EditorRequired] public int Index { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        ViewModel.MessageRequest = MessageRequest;
+        base.OnParametersSet();
+    }
+}

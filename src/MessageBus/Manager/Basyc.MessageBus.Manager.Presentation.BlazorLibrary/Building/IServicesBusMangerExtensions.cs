@@ -1,7 +1,9 @@
-﻿using Basyc.MessageBus.Manager.Presentation.BlazorLibrary;
+﻿using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message;
+using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Sidebar;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
 
 public static class ServicesBusMangerExtensions
 {
@@ -9,5 +11,10 @@ public static class ServicesBusMangerExtensions
 	{
 		services.AddMudServices();
 		services.AddSingleton<BusManagerJsInterop>();
+		//TODO Automatically register viewmodels
+		services.AddTransient<SidebarHistoryViewModel>();
+		services.AddTransient<MessagePageViewModel>();
+		services.AddTransient<SidebarHistoryItemViewModel>();
+
 	}
 }

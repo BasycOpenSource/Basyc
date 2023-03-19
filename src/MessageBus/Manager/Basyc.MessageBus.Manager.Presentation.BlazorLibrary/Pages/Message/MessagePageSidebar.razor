@@ -5,6 +5,7 @@
 @using Basyc.MessageBus.Manager.Application;
 @using Basyc.MessageBus.Manager.Application.Requesting;
 @using System.Collections.ObjectModel;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Sidebar
 <reqeustSideBarView>
     @if (MessageInfo is null)
     {
@@ -49,7 +50,7 @@
         </div>
 
         <div class="paddingContainer">
-            <SidebarHistory />
+            <SidebarHistoryView MessageInfo="@MessageInfo" />
         </div>
     }
 </reqeustSideBarView>
@@ -69,14 +70,18 @@
     protected override void OnInitialized()
     {
         if (MessageInfo is not null)
+        {
             parameterValues = new ObservableCollection<string>(Enumerable.Range(0, MessageInfo.Parameters.Count).Select(x => string.Empty).ToList());
+        }
     }
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
         if (MessageInfo is not null)
+        {
             parameterValues = new ObservableCollection<string>(Enumerable.Range(0, MessageInfo.Parameters.Count).Select(x => string.Empty).ToList());
+        }
 
     }
 

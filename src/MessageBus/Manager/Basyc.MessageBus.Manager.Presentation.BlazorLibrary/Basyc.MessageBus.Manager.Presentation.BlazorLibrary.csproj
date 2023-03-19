@@ -31,6 +31,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\Blazor\Basyc.Blazor.Controls\Basyc.Blazor.Controls.csproj" />
+		<ProjectReference Include="..\..\..\ReactiveUi\Basyc.ReactiveUi.Blazor\Basyc.ReactiveUi.Blazor.csproj" />
 		<ProjectReference Include="..\..\Basyc.MessageBus.Client\Basyc.MessageBus.Client.csproj" />
 		<ProjectReference Include="..\Basyc.MessageBus.Manager.Application\Basyc.MessageBus.Manager.Application.csproj" />
 		<ProjectReference Include="..\Basyc.MessageBus.Manager.Infrastructure\Basyc.MessageBus.Manager.Infrastructure.csproj" />

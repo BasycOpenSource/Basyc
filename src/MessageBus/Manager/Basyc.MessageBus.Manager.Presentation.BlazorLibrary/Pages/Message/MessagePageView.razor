@@ -6,6 +6,8 @@
 @using System.Text.Json;
 @using System.ComponentModel;
 @using System.Collections.ObjectModel;
+@using Basyc.ReactiveUi.Blazor;
+@inherits BasycReactiveBlazorComponentBase<MessagePageViewModel>
 
 <messagePageView>
     <requestFormPage>
@@ -15,32 +17,7 @@
 
 @code {
 
-    [Inject] private IDomainInfoProviderManager DomainInfoProviderManager { get; set; } = null!;
-
-    //private readonly Dictionary<SidebarMessageItemViewModel, List<MessageRequest>> resultHistory = new();
-    //private SidebarMessageItemViewModel? selectedRequestViewModel;
-
-    //public SidebarMessageItemViewModel? SelectedRequestViewModel
-    //{
-    //    get => selectedRequestViewModel;
-    //    private set
-    //    {
-    //        if (selectedRequestViewModel is not null)
-    //            selectedRequestViewModel.IsSelected = false;
-
-    //        selectedRequestViewModel = value;
-    //        if (value is null)
-    //            return;
-
-    //        value.IsSelected = true;
-    //        resultHistory.TryAdd(value, new List<MessageRequest>());
-    //    }
-    //}
-
     [Parameter]
     public MessageInfo MessageInfo { get; set; } = null!;
-
-
-
 
 }

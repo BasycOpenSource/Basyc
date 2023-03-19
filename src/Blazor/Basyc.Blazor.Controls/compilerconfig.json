@@ -2,5 +2,9 @@
   {
     "outputFile": "TooltippedText/BasycTooltippedText.razor.css",
     "inputFile": "TooltippedText/BasycTooltippedText.razor.scss"
+  },
+  {
+    "outputFile": "Label/BasycLabel.razor.css",
+    "inputFile": "Label/BasycLabel.razor.scss"
   }
 ]

@@ -1,0 +1,37 @@
+﻿@using Basyc.MessageBus.Manager.Application.Building;
+@using Basyc.MessageBus.Manager.Application.Requesting;
+@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+@using Basyc.ReactiveUi.Blazor;
+@using ReactiveUI.Blazor;
+@using ReactiveUI;
+@using System.Reactive.Disposables;
+
+@inherits BasycReactiveBlazorComponentBase<SidebarHistoryViewModel>
+<div>
+    <BasycLabel Size="LabelSize.H3">
+        History (@ViewModel.HistoryCount)
+    </BasycLabel>
+    @for (int requestIndex = ViewModel.History.Count-1; requestIndex >= 0; requestIndex--)
+    {
+        var messageRequest = ViewModel.History[requestIndex];
+        <SidebarHistoryItemView Index="@requestIndex" MessageRequest="@messageRequest" />
+    }
+
+</div>
+
+
+@code {
+    [Parameter, EditorRequired] public MessageInfo MessageInfo { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        ViewModel.MessageInfo = MessageInfo;
+        base.OnParametersSet();
+    }
+}
