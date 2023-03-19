@@ -1,0 +1,18 @@
+﻿@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+@inherits BasycReactiveBlazorComponentBase<MessagePageRequestPageViewModel, MessageRequest>
+<BasycSpaceBorder Size="SpacerSize.Big">
+    <h3>@MessageRequest.OrderIndex</h3>
+    <h3>@MessageRequest.CreationTime.ToString("hh:mm:ss")</h3>
+    <h3>@MessageRequest.State.ToString()</h3>
+    <h3>@Html.Time(MessageRequest.Duration)</h3>
+    <h3>@MessageRequest.TraceId.ToString()</h3>
+</BasycSpaceBorder>
+
+@code {
+    public MessageRequest MessageRequest { get; private set; } = null!;
+    public override void OnVisit(MessageRequest queryParams)
+    {
+        MessageRequest = queryParams;
+    }
+}

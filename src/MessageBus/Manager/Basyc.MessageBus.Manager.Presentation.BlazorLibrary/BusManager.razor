@@ -2,32 +2,22 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.ResultDetail
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.ResultHistory
+@inherits BasycReactiveBlazorComponentBase<BusManagerViewModel>
 
 <HeadContent>
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 </HeadContent>
 
 <busManager>
-    <MudThemeProvider Theme="@MudTheme" />
+    <MudThemeProvider Theme="@MudTheme" IsDarkMode="true" />
     <MudDialogProvider />
     <MudSnackbarProvider />
+    <BasycControls />
     <sideBar>
-        <AppSideBar RequestSelected="OnSelectedRequestMenuItemChanged" />
+        <AppSideBarView/>
     </sideBar>
 
     <messagePage>
-        <MessagePageView MessageInfo="@SelectedMessageInfo" />
+        @ViewModel.CurrentPage
     </messagePage>
-
-    @*    <historyPage>
-    @if (SelectedRequestViewModel is not null)
-    {
-    <ResultHistoryView RequestContexts="resultHistory[SelectedRequestViewModel]"/>
-    }
-    else
-    {
-    @:Select request
-    }
-    </historyPage>*@
-
 </busManager>

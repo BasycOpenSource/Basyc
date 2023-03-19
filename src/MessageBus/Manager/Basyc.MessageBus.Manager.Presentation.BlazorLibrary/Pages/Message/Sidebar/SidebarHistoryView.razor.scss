@@ -1,0 +1,25 @@
+requests {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+heading {
+    display: block;
+}
+
+
+sidebarHistoryView {
+    overflow: hidden;
+    display: grid;
+    grid-auto-rows: auto auto;
+}
+
+historyItem {
+    display: block;
+    cursor: pointer;
+}
+
+historyItem:hover {
+    background-color: #e183c839;
+}

@@ -1,4 +1,5 @@
-﻿using Basyc.MessageBus.Manager.Application.Building;
+﻿using Basyc.Blazor.Controls;
+using Basyc.MessageBus.Manager.Application.Building;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -16,13 +17,24 @@ public partial class BusManager
 		{
 			Background = "#0C0B10",
 			Primary = "#9E184A",
-			TextPrimary = Colors.Green.Default,
+			TextPrimary = new MudBlazor.Utilities.MudColor("#9F9F9F"),
 		},
 	};
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
+
+		BasycStyleSection.AddStyleSection(new Blazor.Controls.StyleSections.StyleDefinition(
+	"1",
+	"",
+	"style1"));
+
+		BasycStyleSection.AddStyleSection(new Blazor.Controls.StyleSections.StyleDefinition(
+			"2",
+			"",
+			"style2"));
+
 	}
 
 	protected override async Task OnParametersSetAsync()
@@ -43,12 +55,5 @@ public partial class BusManager
 			await BusManagerJSInterop.ApplyChangesToIndexHtml();
 
 		await base.OnAfterRenderAsync(firstRender);
-	}
-
-	private void OnSelectedRequestMenuItemChanged(MessageInfo messageInfo)
-	{
-		SelectedMessageInfo = messageInfo;
-		//SelectedRequestViewModel = newSelectedRequest;
-		StateHasChanged();
 	}
 }

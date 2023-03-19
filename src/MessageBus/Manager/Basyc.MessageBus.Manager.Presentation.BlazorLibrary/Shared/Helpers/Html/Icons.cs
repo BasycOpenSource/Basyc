@@ -8,7 +8,9 @@ public static partial class Html
 
 	public static MarkupString Icon(IconsEnum icon)
 	{
-		return (MarkupString)$"<img src=\"_content/{assemblyFolderName}/{icon}.svg\" alt=\"{icon}\">";
+		var svgFilePath = $"_content/{assemblyFolderName}/{icon}.svg";
+		//var svgCode = File.ReadAllText(svgFilePath);
+		return (MarkupString)$"<img src=\"{svgFilePath}\" alt=\"{icon}\">";
 	}
 }
 

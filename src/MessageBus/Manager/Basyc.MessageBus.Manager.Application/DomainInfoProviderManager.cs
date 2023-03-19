@@ -5,17 +5,17 @@ using System.Linq;
 
 namespace Basyc.MessageBus.Manager.Application;
 
-public class DomainInfoProviderManager : IDomainInfoProviderManager
+public class DomainInfoProviderManager : IMessagesProvider
 {
 	private readonly IDomainInfoProvider[] messageDomainLoaders;
-	private IReadOnlyList<DomainInfo>? domainInfos;
+	private IReadOnlyList<MessageGroup>? domainInfos;
 
 	public DomainInfoProviderManager(IEnumerable<IDomainInfoProvider> messageDomainLoaders)
 	{
 		this.messageDomainLoaders = messageDomainLoaders.ToArray();
 	}
 
-	public IReadOnlyList<DomainInfo> GetDomainInfos()
+	public IReadOnlyList<MessageGroup> GetMessageGroups()
 	{
 		domainInfos = messageDomainLoaders.SelectMany(x => x.GenerateDomainInfos()).ToList();
 		return domainInfos;

@@ -2,6 +2,6 @@
 
 public interface IRequestDiagnosticsManager
 {
-	RequestDiagnosticContext CreateDiagnostics(string traceId);
-	bool TryGetDiagnostics(string traceId, out RequestDiagnosticContext? diagnosticContext);
+	RequestDiagnostic CreateDiagnostics(string traceId);
+	bool TryGetDiagnostics(string traceId, out RequestDiagnostic? diagnosticContext);
 }

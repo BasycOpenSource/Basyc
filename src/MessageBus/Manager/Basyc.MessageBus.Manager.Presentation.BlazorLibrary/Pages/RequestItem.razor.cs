@@ -10,7 +10,7 @@ public partial class RequestItem
 
 	[Parameter] public EventCallback<string> OnValueChanged { get; set; }
 
-	[Parameter][EditorRequired] public SidebarMessageItemViewModel RequestItemViewModel { get; set; } = null!;
+	[Parameter][EditorRequired] public dynamic RequestItemViewModel { get; set; } = null!;
 
 	public async Task SendMessage(MessageInfo request)
 	{

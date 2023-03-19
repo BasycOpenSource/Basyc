@@ -6,5 +6,33 @@
   {
     "outputFile": "Label/BasycLabel.razor.css",
     "inputFile": "Label/BasycLabel.razor.scss"
+  },
+  {
+    "outputFile": "StyleSection/BasycStyleSection.razor.css",
+    "inputFile": "StyleSection/BasycStyleSection.razor.scss"
+  },
+  {
+    "outputFile": "Separator/BasycSeparator.razor.css",
+    "inputFile": "Separator/BasycSeparator.razor.scss"
+  },
+  {
+    "outputFile": "Spacer/BasycSpacer.razor.css",
+    "inputFile": "Spacer/BasycSpacer.razor.scss"
+  },
+  {
+    "outputFile": "SpaceLine/BasycSpaceLine.razor.css",
+    "inputFile": "SpaceLine/BasycSpaceLine.razor.scss"
+  },
+  {
+    "outputFile": "SpaceBorder/BasycSpaceBorder.razor.css",
+    "inputFile": "SpaceBorder/BasycSpaceBorder.razor.scss"
+  },
+  {
+    "outputFile": "StyleSections/BasycStyleSection.razor.css",
+    "inputFile": "StyleSections/BasycStyleSection.razor.scss"
+  },
+  {
+    "outputFile": "BasycControls.razor.css",
+    "inputFile": "BasycControls.razor.scss"
   }
 ]

@@ -88,6 +88,46 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 
 	/// <summary>
 	///     <include file="docs.xml" path='Docs/ReactiveProperty/SummaryStart' />
+	///     (property to property)
+	///     with conversion function.
+	///     <br/> Usage:
+	///     <code>
+	///         [Reactive] public int VmSourceProperty { get; init }
+	///         [Reactive] public string VmTargetProperty { get; init }
+	///         public ViewModel()
+	///         {
+	///             VmTargetProperty = this.ReactiveProperty(x=>x.VmTargetProperty, x=>x.VmSourceProperty, x => x.ToString())
+	///         }
+	///     </code>
+	/// </summary>
+	/// <include file="docs.xml" path='Docs/ReactiveProperty/Remarks' />
+	/// <include file="docs.xml" path='Docs/ReactiveProperty/Params' />
+	/// <include file="docs.xml" path='Docs/ReactiveProperty/Return' />
+	/// <param name="converter">Function transforming source property to target property.</param>
+	public static TTargetProperty ReactiveProperty<TViewModel, TSourceProperty, TSourceProperty2, TTargetProperty>(
+	this TViewModel viewModel,
+	Expression<Func<TViewModel, TTargetProperty>> targetProperty,
+	Expression<Func<TViewModel, TSourceProperty>> sourceProperty,
+	Expression<Func<TViewModel, TSourceProperty2>> sourceProperty2,
+	Func<(TSourceProperty, TSourceProperty2), TTargetProperty> converter,
+	[CallerFilePath] string sourceFilePath = "",
+	[CallerLineNumber] int sourceLineNumber = 0
+)
+	where TViewModel : BasycReactiveViewModelBase
+	{
+		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
+		var targetPropertyGetter = targetProperty.Compile();
+		viewModel.WhenAnyValue(sourceProperty, sourceProperty2)
+				.DisposeOldPropertyValue(() => targetPropertyGetter.Invoke(viewModel))
+				.Select(converter)
+				.BindTo(viewModel, targetProperty!)
+				.DisposeWithViewModel(viewModel);
+
+		return targetPropertyGetter.Invoke(viewModel);
+	}
+
+	/// <summary>
+	///     <include file="docs.xml" path='Docs/ReactiveProperty/SummaryStart' />
 	///     (collection to collection)
 	///      with conversion function.
 	///     <br/> Usage: 

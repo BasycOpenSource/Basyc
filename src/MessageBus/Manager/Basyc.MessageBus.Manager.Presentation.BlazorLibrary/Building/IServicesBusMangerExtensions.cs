@@ -1,5 +1,5 @@
-﻿using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message;
-using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Sidebar;
+﻿using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
+using Basyc.ReactiveUi;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 
@@ -11,10 +11,19 @@ public static class ServicesBusMangerExtensions
 	{
 		services.AddMudServices();
 		services.AddSingleton<BusManagerJsInterop>();
-		//TODO Automatically register viewmodels
-		services.AddTransient<SidebarHistoryViewModel>();
-		services.AddTransient<MessagePageViewModel>();
-		services.AddTransient<SidebarHistoryItemViewModel>();
+		services.AddSingleton<NavigationService>();
+		services.RegisterViewModels();
 
+	}
+
+	private static void RegisterViewModels(this IServiceCollection services)
+	{
+		var assembly = typeof(ServicesBusMangerExtensions).Assembly;
+		var viewModelTypes = assembly.GetTypes().Where(x => x.Name.EndsWith("ViewModel") && x.IsAssignableTo(typeof(BasycReactiveViewModelBase)));
+		foreach (var viewModelType in viewModelTypes)
+		{
+			services.AddTransient(viewModelType);
+
+		}
 	}
 }

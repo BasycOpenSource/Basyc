@@ -1,46 +1,34 @@
 ﻿@using Basyc.MessageBus.Manager.Application;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 @using Basyc.ReactiveUi.Blazor;
+@using MudBlazor.Utilities;
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryItemViewModel>
 
-<div>
-    @*    @(Index + 1)
-    @ViewModel.State
-    @Html.Time(ViewModel.Duration)*@
-    @*    <MudGrid Spacing="1" Justify="Justify.FlexStart">
-    <MudItem>
-    @(Index + 1)
-    </MudItem>
-    <MudItem>
-    @ViewModel.State
-    </MudItem>
-    <MudItem>
-    @Html.Time(ViewModel.Duration)
-    </MudItem>
-    </MudGrid>*@
-    <MudStack Row="true" AlignItems="AlignItems.Stretch">
-        <index>
-            <BasycLabel Size="LabelSize.H5">
-                #@(Index + 1)
-            </BasycLabel>
-        </index>
-        <itemBody>
-            <MudStack>
-                <div>
-                    @ViewModel.State
-                    @Html.Time(ViewModel.Duration)
-                </div>
-                <div>
-                    @ViewModel.State
-                    @Html.Time(ViewModel.Duration)
-                </div>
-            </MudStack>
+<sidebarHistoryItemView class="@classToRender">
+    <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
+        <MudStack Row="true" AlignItems="AlignItems.Stretch">
+            <index>
+                #@Index
+            </index>
+            <itemBody>
+                <MudStack>
+                    <div>
+                        @ViewModel.State
+                        @Html.Time(ViewModel.Duration)
+                    </div>
+                    <div>
+                        [] @ViewModel.LogsCount
+                    </div>
+                </MudStack>
+            </itemBody>
+        </MudStack>
+    </BasycSpaceBorder>
 
-        </itemBody>
-    </MudStack>
-</div>
+</sidebarHistoryItemView>
 
 @code {
+    [Parameter, EditorRequired] public NavigationService NavigationService { get; set; } = null!;
     [Parameter, EditorRequired] public MessageRequest MessageRequest { get; set; } = null!;
     [Parameter, EditorRequired] public int Index { get; set; }
 
@@ -48,10 +36,15 @@
     {
         base.OnInitialized();
     }
+    private string classToRender = "";
 
     protected override void OnParametersSet()
     {
         ViewModel.MessageRequest = MessageRequest;
+        ViewModel.NavigationService = NavigationService;
         base.OnParametersSet();
+        classToRender = new CssBuilder()
+             .AddClass("sidebarHistoryItemView--selected", ViewModel.IsSelected)
+             .Build();
     }
 }

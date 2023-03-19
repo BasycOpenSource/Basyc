@@ -24,7 +24,6 @@ public class RequestManager : IRequestManager
 		MessageContexts = new ReadOnlyObservableCollection<MessageContext>(requests);
 	}
 
-	//public Dictionary<MessageInfo, List<RequestContext>> Requests { get; } = new();
 	private ObservableCollection<MessageContext> requests { get; } = new();
 	public ReadOnlyObservableCollection<MessageContext> MessageContexts { get; }
 
@@ -43,16 +42,16 @@ public class RequestManager : IRequestManager
 		var requester = requesterSelector.PickRequester(request.MessageInfo);
 		IDurationMapBuilder durationMapBuilder =
 			new InMemoryDiagnosticsSourceDurationMapBuilder(requestManagerServiceIdentity, traceId, "root", inMemoryRequestDiagnosticsSource);
-		var requestContext = new MessageRequest(request, DateTime.Now, traceId, durationMapBuilder, requestDiagnostics);
-		messageContext.MessageRequests.Add(requestContext);
+		var messageRequest = new MessageRequest(request, DateTime.Now, traceId, durationMapBuilder, requestDiagnostics, messageContext.MessageRequests.Count + 1);
+		messageContext.MessageRequests.Add(messageRequest);
 		requestDiagnostics.AddLog(requestManagerServiceIdentity, DateTimeOffset.UtcNow, LogLevel.Information, "Giving request to requester", null);
 		// var dummyStartSegment = durationMapBuilder.StartNewSegment("StartRequest1");
 		// var startRequestActivity = DiagnosticHelper.Start("StartRequest2", dummyStartSegment.TraceId, dummyStartSegment.Id);
-		requester.StartRequest(requestContext, new ResultLoggingContextLogger(requestManagerServiceIdentity, requestDiagnostics));
+		requester.StartRequest(messageRequest, new ResultLoggingContextLogger(requestManagerServiceIdentity, requestDiagnostics));
 		// startRequestActivity.Stop();
 		// dummyStartSegment.End();
 		requestDiagnostics.AddLog(requestManagerServiceIdentity, DateTimeOffset.UtcNow, LogLevel.Information, "Requester finished", null);
 
-		return requestContext;
+		return messageRequest;
 	}
 }

@@ -7,10 +7,10 @@ namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public class ResultLoggingContextLogger : ILogger
 {
-	private readonly RequestDiagnosticContext loggingContext;
+	private readonly RequestDiagnostic loggingContext;
 	private readonly ServiceIdentity serviceIdentity;
 
-	public ResultLoggingContextLogger(ServiceIdentity serviceIdentity, RequestDiagnosticContext loggingContext)
+	public ResultLoggingContextLogger(ServiceIdentity serviceIdentity, RequestDiagnostic loggingContext)
 	{
 		this.loggingContext = loggingContext;
 		this.serviceIdentity = serviceIdentity;

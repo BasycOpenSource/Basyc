@@ -1,0 +1,37 @@
+﻿@using BlazorComponentUtilities;
+
+@namespace Basyc.Blazor.Controls
+
+<basycSpaceBorder class="@classToRender">
+    @ChildContent
+</basycSpaceBorder>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public SpacerSize Size { get; set; }
+
+    [Parameter]
+    public bool ShrinkTopBottom { get; set; }
+
+    [Parameter]
+    public bool ShrinkLeftRight { get; set; }
+
+
+    private string classToRender = "";
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        classToRender = new CssBuilder()
+            .AddClass("spacer-topBottom--small", Size == SpacerSize.Small && !ShrinkTopBottom)
+            .AddClass("spacer-topBottom--medium", Size == SpacerSize.Medium && !ShrinkTopBottom)
+            .AddClass("spacer-topBottom--big", Size == SpacerSize.Big && !ShrinkTopBottom)
+            .AddClass("spacer-leftRight--small", Size == SpacerSize.Small && !ShrinkLeftRight)
+            .AddClass("spacer-leftRight--medium", Size == SpacerSize.Medium && !ShrinkLeftRight)
+            .AddClass("spacer-leftRight--big", Size == SpacerSize.Big && !ShrinkLeftRight)
+            .Build();
+    }
+}

@@ -22,7 +22,7 @@ public class InterfaceDomainProvider : IDomainInfoProvider
 		this.requesters = requesters;
 	}
 
-	public List<DomainInfo> GenerateDomainInfos()
+	public List<MessageGroup> GenerateDomainInfos()
 	{
 		var domains = new Dictionary<string, List<MessageInfo>>();
 
@@ -75,7 +75,7 @@ public class InterfaceDomainProvider : IDomainInfoProvider
 			}
 		}
 
-		var domainInfos = domains.Select(x => new DomainInfo(x.Key, x.Value)).ToList();
+		var domainInfos = domains.Select(x => new MessageGroup(x.Key, x.Value)).ToList();
 		return domainInfos;
 	}
 }

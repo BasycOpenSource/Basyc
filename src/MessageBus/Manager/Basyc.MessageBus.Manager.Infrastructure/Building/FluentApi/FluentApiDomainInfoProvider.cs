@@ -22,9 +22,9 @@ public class FluentApiDomainInfoProvider : IDomainInfoProvider
 		this.requesterSelector = requesterSelector;
 	}
 
-	public List<DomainInfo> GenerateDomainInfos()
+	public List<MessageGroup> GenerateDomainInfos()
 	{
-		List<DomainInfo> domainInfos = new();
+		List<MessageGroup> domainInfos = new();
 		foreach (var domain in options.Value.GroupRegistrations)
 		{
 			var requestInfos = domain.InProgressMessages.Select(inProgressMessage =>
@@ -37,7 +37,7 @@ public class FluentApiDomainInfoProvider : IDomainInfoProvider
 				requesterSelector.AssignRequesterForMessage(requestInfo, InMemoryRequestHandler.InMemoryDelegateRequesterUniqueName);
 				return requestInfo;
 			}).ToList();
-			domainInfos.Add(new DomainInfo(domain.DomainName!, requestInfos));
+			domainInfos.Add(new MessageGroup(domain.DomainName!, requestInfos));
 		}
 
 		return domainInfos;

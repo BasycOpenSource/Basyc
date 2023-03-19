@@ -1,0 +1,32 @@
+﻿@using Basyc.MessageBus.Manager.Application.Building;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.RequestTag
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages;
+@using MudBlazor.Utilities;
+@inherits BasycReactiveBlazorComponentBase<AppSidebarMessageItemViewModel>
+
+<requestItem class="@classToRender">
+	<requestName>
+        @MessageInfo.RequestDisplayName
+	</requestName>
+	<tag>
+        <RequestTagView RequestType="@RequestTagTypeHelper.FromRequestType(MessageInfo.RequestType)" TagStyle="TagStyle.Icon" />
+	</tag>
+</requestItem>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public MessageInfo MessageInfo { get; set; } = null!;
+    private string classToRender = "";
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        ViewModel.MessageInfo = MessageInfo;
+
+        classToRender = new CssBuilder()
+                    .AddClass("requestItem--selected", ViewModel.IsSelected)
+                    .Build();
+
+    }
+
+}

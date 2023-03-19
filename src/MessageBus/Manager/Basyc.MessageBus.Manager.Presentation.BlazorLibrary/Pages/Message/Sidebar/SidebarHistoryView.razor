@@ -2,27 +2,39 @@
 @using Basyc.MessageBus.Manager.Application.Requesting;
 @using Basyc.MessageBus.Manager.Application;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 @using Basyc.ReactiveUi.Blazor;
 @using ReactiveUI.Blazor;
 @using ReactiveUI;
 @using System.Reactive.Disposables;
 
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryViewModel>
-<div>
-    <BasycLabel Size="LabelSize.H3">
-        History (@ViewModel.HistoryCount)
-    </BasycLabel>
-    @for (int requestIndex = ViewModel.History.Count-1; requestIndex >= 0; requestIndex--)
-    {
-        var messageRequest = ViewModel.History[requestIndex];
-        <SidebarHistoryItemView Index="@requestIndex" MessageRequest="@messageRequest" />
-    }
-
-</div>
+<sidebarHistoryView>
+    <heading>
+        <BasycSpaceBorder Size="SpacerSize.Medium">
+            <BasycHeading Size="HeadingSize.H3">
+                History
+            </BasycHeading>
+        </BasycSpaceBorder>
+    </heading>
+    <requests>
+        @for (int requestIndex = ViewModel.History.Count - 1; requestIndex >= 0; requestIndex--)
+        {
+            var messageRequest = ViewModel.History[requestIndex];
+            <historyItem @onclick="()=>Click(messageRequest)">
+                <SidebarHistoryItemView
+                    Index="@messageRequest.OrderIndex"
+                    MessageRequest="@messageRequest"
+                    NavigationService="NavigationService" />
+            </historyItem>
+        }
+    </requests>
+</sidebarHistoryView>
 
 
 @code {
     [Parameter, EditorRequired] public MessageInfo MessageInfo { get; set; } = null!;
+    [Parameter, EditorRequired] public NavigationService NavigationService { get; set; } = null!;
 
     protected override void OnInitialized()
     {
@@ -33,5 +45,10 @@
     {
         ViewModel.MessageInfo = MessageInfo;
         base.OnParametersSet();
+    }
+
+    private void Click(MessageRequest messageRequest)
+    {
+        NavigationService.GoTo<MessagePageRequestPageView, MessagePageRequestPageViewModel, MessageRequest>(messageRequest);
     }
 }

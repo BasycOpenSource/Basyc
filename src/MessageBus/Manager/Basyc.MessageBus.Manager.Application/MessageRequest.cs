@@ -10,7 +10,7 @@ public class MessageRequest : ReactiveObject
 	private readonly IDurationMapBuilder durationMapBuilder;
 
 	public MessageRequest(RequestInput request, DateTimeOffset requestCreationTime, string traceId, IDurationMapBuilder durationMapBuilder,
-		RequestDiagnosticContext requestDiagnostics)
+		RequestDiagnostic requestDiagnostics, int orderIndex)
 	{
 		Request = request;
 		this.durationMapBuilder = durationMapBuilder;
@@ -18,6 +18,7 @@ public class MessageRequest : ReactiveObject
 		CreationTime = requestCreationTime;
 		State = RequestResultState.Started;
 		TraceId = traceId;
+		OrderIndex = orderIndex;
 	}
 
 	public RequestInput Request { get; init; }
@@ -37,7 +38,8 @@ public class MessageRequest : ReactiveObject
 	public TimeSpan Duration => State == RequestResultState.Started ? default : durationMapBuilder.EndTime - durationMapBuilder.StartTime;
 
 	public string TraceId { get; init; }
-	public RequestDiagnosticContext Diagnostics { get; }
+	public int OrderIndex { get; init; }
+	public RequestDiagnostic Diagnostics { get; }
 	[Reactive] public RequestResultState State { get; private set; }
 	public object? Response { get; private set; }
 	public string? ErrorMessage { get; private set; }

@@ -3,3 +3,13 @@
     align-items: center;
     width: 30px;
 }
+
+sidebarHistoryItemView {
+    display: block;
+    border: 0.5px solid transparent;
+}
+
+.sidebarHistoryItemView--selected {
+    background-color: #20091A;
+    border: 0.5px solid #701B5C;
+}

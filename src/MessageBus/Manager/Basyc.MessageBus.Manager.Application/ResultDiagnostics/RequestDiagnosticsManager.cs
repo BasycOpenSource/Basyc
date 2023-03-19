@@ -4,7 +4,7 @@ namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
 public class RequestDiagnosticsManager : IRequestDiagnosticsManager
 {
-	private readonly Dictionary<string, RequestDiagnosticContext> traceIdToContextMap = new();
+	private readonly Dictionary<string, RequestDiagnostic> traceIdToContextMap = new();
 
 	public RequestDiagnosticsManager(IEnumerable<IRequestDiagnosticsSource> logSources)
 	{
@@ -16,14 +16,14 @@ public class RequestDiagnosticsManager : IRequestDiagnosticsManager
 		}
 	}
 
-	public RequestDiagnosticContext CreateDiagnostics(string traceId)
+	public RequestDiagnostic CreateDiagnostics(string traceId)
 	{
-		var loggingContext = new RequestDiagnosticContext(traceId);
+		var loggingContext = new RequestDiagnostic(traceId);
 		traceIdToContextMap.Add(traceId, loggingContext);
 		return loggingContext;
 	}
 
-	public bool TryGetDiagnostics(string traceId, [NotNullWhen(true)] out RequestDiagnosticContext? diagnosticContext)
+	public bool TryGetDiagnostics(string traceId, [NotNullWhen(true)] out RequestDiagnostic? diagnosticContext)
 	{
 		return traceIdToContextMap.TryGetValue(traceId, out diagnosticContext);
 	}

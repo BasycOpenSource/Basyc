@@ -1,0 +1,15 @@
+ @GetVariables()
+@code {
+    static MarkupString GetVariables()
+    {
+        return (MarkupString)@"
+<style>
+:root {
+--space-small: 8px;
+--space-medium: 32px;
+--space-big: 64px;
+}
+</style>
+";
+    }
+}

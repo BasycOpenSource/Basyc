@@ -5,5 +5,5 @@ namespace Basyc.MessageBus.Manager.Application.Initialization;
 
 public interface IDomainInfoProvider
 {
-	List<DomainInfo> GenerateDomainInfos();
+	List<MessageGroup> GenerateDomainInfos();
 }

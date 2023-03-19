@@ -1,0 +1,44 @@
+﻿@namespace Basyc.Blazor.Controls
+@using System.Collections.ObjectModel;
+@using Basyc.Blazor.Controls.StyleSections;
+@using BlazorComponentUtilities;
+@using System.Diagnostics.CodeAnalysis;
+<basycStyleSection class="@styleSection.CssClass">
+        <style>
+            @(styleSection.Style)
+        </style>
+    @ChildContent
+</basycStyleSection>
+
+@code {
+
+    public static void AddStyleSection(StyleDefinition styleSection)
+    {
+        styleSections.Add(styleSection);
+    }
+
+
+    protected override void OnInitialized()
+    {
+        styleSections.CollectionChanged += (s, a) =>
+        {
+            this.StateHasChanged();
+        };
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        styleSection = styleSections.First(x => x.Name == SectionName);
+        base.OnParametersSet();
+    }
+
+    private static ObservableCollection<StyleDefinition> styleSections = new();
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    private StyleDefinition styleSection = null!;
+
+
+    [Parameter, EditorRequired]
+    public string SectionName { get; set; } = null!;
+}

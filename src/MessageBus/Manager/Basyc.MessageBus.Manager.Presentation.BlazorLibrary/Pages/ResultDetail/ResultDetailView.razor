@@ -91,7 +91,7 @@
 			<paddedSection>
 				<label>
 					Duration
-					<LatencyView RequestResult="RequestResult"/>
+                    <LatencyView RequestContext="RequestResult" />
 				</label>
 				<durationMap>
 					@if (RequestResult.State == RequestResultState.Started)
@@ -108,7 +108,7 @@
 			<label>
 				Log
 			</label>
-			<LogWindowView LoggingContext="loggingContext"/>
+            <LogWindowView DiagnosticsContext="RequestResult.Diagnostics" />
 		</requestDetailNotEmpty>
 	}
 

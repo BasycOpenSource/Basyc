@@ -130,5 +130,29 @@
   {
     "outputFile": "Pages/Message/Sidebar/SidebarHistoryItemView.razor.css",
     "inputFile": "Pages/Message/Sidebar/SidebarHistoryItemView.razor.scss"
+  },
+  {
+    "outputFile": "BusManager.razor.css",
+    "inputFile": "BusManager.razor.scss"
+  },
+  {
+    "outputFile": "Components/SideBar/AppSideBar.razor.css",
+    "inputFile": "Components/SideBar/AppSideBar.razor.scss"
+  },
+  {
+    "outputFile": "Components/SideBar/AppSideBarMessageItemView.razor.css",
+    "inputFile": "Components/SideBar/AppSideBarMessageItemView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Message/Sidebar/SidebarView.razor.css",
+    "inputFile": "Pages/Message/Sidebar/SidebarView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Message/Sidebar/SidebarHistoryView.razor.css",
+    "inputFile": "Pages/Message/Sidebar/SidebarHistoryView.razor.scss"
+  },
+  {
+    "outputFile": "Components/SideBar/AppSideBarView.razor.css",
+    "inputFile": "Components/SideBar/AppSideBarView.razor.scss"
   }
 ]

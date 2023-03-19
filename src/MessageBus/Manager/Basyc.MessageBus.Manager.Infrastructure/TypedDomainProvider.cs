@@ -37,9 +37,9 @@ public class TypedDomainProvider : IDomainInfoProvider
 		this.requesterSelector = requesterSelector;
 	}
 
-	public List<DomainInfo> GenerateDomainInfos()
+	public List<MessageGroup> GenerateDomainInfos()
 	{
-		var domains = new List<DomainInfo>();
+		var domains = new List<MessageGroup>();
 		foreach (var domainOption in options.Value.TypedDomainOptions)
 		{
 			var requestInfos = new List<MessageInfo>();
@@ -102,7 +102,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 				requesterSelector.AssignRequesterForMessage(requestInfo, BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
 
 			domainOption.DomainName.ThrowIfNull();
-			domains.Add(new DomainInfo(domainOption.DomainName, requestInfos));
+			domains.Add(new MessageGroup(domainOption.DomainName, requestInfos));
 		}
 
 		return domains;

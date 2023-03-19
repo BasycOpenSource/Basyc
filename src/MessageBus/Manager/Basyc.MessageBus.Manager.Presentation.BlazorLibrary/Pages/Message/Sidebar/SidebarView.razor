@@ -1,0 +1,158 @@
+﻿@using Basyc.MessageBus.Manager.Application.Building;
+@using Basyc.MessageBus.Manager.Application.Initialization;
+@using System.ComponentModel;
+@using System.Text.Json;
+@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Application.Requesting;
+@using System.Collections.ObjectModel;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Sidebar
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
+@using WpfGridLayout.Blazor
+<BasycStyleSection SectionName="2">
+    <reqeustSideBarView>
+
+        <grid>
+            <BasycSpaceBorder Size="SpacerSize.Medium">
+                <requestform>
+
+                    @if (MessageInfo is null)
+                    {
+                        <ghostLabel>
+                            Select request
+                        </ghostLabel>
+                    }
+                    else
+                    {
+                        <table class="paramTable paddingContainer">
+                            @for (var i = 0; i < MessageInfo.Parameters.Count; i++)
+                            {
+                                var index = i;
+                                var paramInfo = MessageInfo.Parameters[index];
+                                var paramValue = parameterValues[index];
+                                var isPrimitive = paramInfo.Type.IsPrimitive || paramInfo.Type.IsArray || paramInfo.Type == typeof(string);
+                                <tr>
+                                    <td>
+                                        <paramType class="paramType-isPrimitive-@isPrimitive">@paramInfo.TypeDisplayName</paramType>
+                                        <paramLabel>@paramInfo.ParameterDisplayName </paramLabel>
+                                    </td>
+                                </tr>
+                                <tr class="paramRow">
+                                    <td>
+                                        <paramInput class="inputBorder">
+                                            <input class="paramTextBox" @bind-value="@parameterValues[index]" />
+                                        </paramInput>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                        @if (MessageInfo.Parameters.Count == 0)
+                        {
+                            <ghostLabel>
+                                This message does not have paramters
+                            </ghostLabel>
+
+                        }
+                        <BasycSpaceLine Start="@SpaceLineSize.Small" Visible="false" />
+                        <button @onclick="SendMessage">
+                            send
+                        </button>
+                    }
+                </requestform>
+            </BasycSpaceBorder>
+            <history>
+                <BasycSpaceLine />
+                <SidebarHistoryView MessageInfo="@MessageInfo" NavigationService="NavigationService" />
+            </history>
+
+        </grid>
+
+    </reqeustSideBarView>
+</BasycStyleSection>
+
+@code {
+
+    [Inject] private IRequestManager RequestClient { get; set; } = null!;
+
+    private ObservableCollection<string> parameterValues = new();
+
+
+    [Parameter] public MessageInfo MessageInfo { get; set; } = null!;
+    [Parameter, EditorRequired] public NavigationService NavigationService { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        if (MessageInfo is not null)
+        {
+            parameterValues = new ObservableCollection<string>(Enumerable.Range(0, MessageInfo.Parameters.Count).Select(x => string.Empty).ToList());
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (MessageInfo is not null)
+        {
+            parameterValues = new ObservableCollection<string>(Enumerable.Range(0, MessageInfo.Parameters.Count).Select(x => string.Empty).ToList());
+        }
+
+    }
+
+    private static object? ParseParamInputValue(string paramStringValue, ParameterInfo parameterInfo)
+    {
+        if (paramStringValue == "@null")
+            return null;
+
+        if (paramStringValue == string.Empty)
+            return parameterInfo.Type.GetDefaultValue();
+
+        if (parameterInfo.Type == typeof(string))
+            return paramStringValue;
+
+        var converter = TypeDescriptor.GetConverter(parameterInfo.Type);
+        object? castedParam;
+        if (converter.CanConvertFrom(typeof(string)))
+        {
+            castedParam = converter.ConvertFromInvariantString(paramStringValue);
+            return castedParam;
+        }
+
+        var converter2 = TypeDescriptor.GetConverter(typeof(string));
+        if (converter2.CanConvertFrom(parameterInfo.Type))
+        {
+            castedParam = converter2.ConvertFromInvariantString(paramStringValue);
+            return castedParam;
+        }
+
+        try
+        {
+            castedParam = Convert.ChangeType(paramStringValue, parameterInfo.Type);
+            return castedParam;
+        }
+        catch
+        {
+            //Try change type, if fails, use json Deserialize
+        }
+
+        castedParam = JsonSerializer.Deserialize(paramStringValue, parameterInfo.Type);
+        return castedParam;
+    }
+
+    public Task SendMessage()
+    {
+        var requestInfo = MessageInfo;
+        var parameters = new List<Parameter>(requestInfo.Parameters.Count);
+        for (var i = 0; i < requestInfo.Parameters.Count; i++)
+        {
+            var paramInfo = requestInfo.Parameters[i];
+            var paramStringValue = parameterValues[i];
+            var castedParamValue = ParseParamInputValue(paramStringValue, paramInfo);
+            parameters.Add(new Parameter(paramInfo, castedParamValue));
+        }
+
+        var request = new RequestInput(requestInfo, parameters.AsReadOnly());
+        var requestResult = RequestClient.StartRequest(request);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+}
