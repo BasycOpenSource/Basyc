@@ -29,7 +29,7 @@ tooltip {
   font-weight: normal;
   border-radius: 2px;
   padding: 0.2rem 0.6rem;
-  background-color: #414141df;
+  background-color: rgba(65, 65, 65, 0.8745098039);
   position: absolute;
   display: none;
   writing-mode: horizontal-tb;

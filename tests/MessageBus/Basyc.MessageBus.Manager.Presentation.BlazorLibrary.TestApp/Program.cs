@@ -2,9 +2,11 @@ using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Producing.Shared.Building;
 using Basyc.Diagnostics.Receiving.Abstractions;
 using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Durations;
 using Basyc.DomainDrivenDesign.Domain;
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.Manager;
+using Basyc.MessageBus.Manager.Application;
 using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
@@ -90,7 +92,7 @@ busManagerBuilder.RegisterMessages()
 
 busManagerBuilder.RegisterMessages()
 	.FromFluentApi()
-	.InGroup("FromFluentApi")
+	.AddGroup("FromFluentApi")
 	.AddMessage("Fluent Message 1")
 	.NoReturn()
 	.HandledBy(x =>
@@ -98,6 +100,12 @@ busManagerBuilder.RegisterMessages()
 		var activity = DiagnosticHelper.Start("Handler logic");
 		activity.Stop();
 		x.Complete();
+	})
+	.AddMessage("Fluent Message 2")
+	.NoReturn()
+	.HandledBy((MessageRequest x) =>
+	{
+		x.Diagnostics.AddLog(ServiceIdentity.ApplicationWideIdentity, LogLevel.Error, "TestError", null);
 	});
 
 builder.Services.AddBasycBusManagerBlazorUi();

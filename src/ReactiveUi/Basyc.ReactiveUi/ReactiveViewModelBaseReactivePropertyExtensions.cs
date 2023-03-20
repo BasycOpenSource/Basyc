@@ -272,7 +272,7 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 		[CallerLineNumber] int sourceLineNumber = 0
 	)
 		where TViewModel : BasycReactiveViewModelBase
-		where TSourceItem : INotifyPropertyChanged
+		//where TSourceItem : INotifyPropertyChanged
 	{
 		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
 		var targetPropertyGetter = targetProperty.Compile();

@@ -12,14 +12,20 @@
                 #@Index
             </index>
             <itemBody>
-                <MudStack>
+                <MudStack Spacing="0">
                     <div>
                         @ViewModel.State
                         @Html.Time(ViewModel.Duration)
                     </div>
-                    <div>
-                        [] @ViewModel.LogsCount
-                    </div>
+                    <itemBody>
+                        <BasycSpaceLine End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                        <logIconInfo /> @ViewModel.LogsInformationCount
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                        <logIconWarning /> @ViewModel.LogsWarningCount
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                        <logIconError /> @ViewModel.LogsErrorCount
+                        <BasycSpaceLine Start="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                    </itemBody>
                 </MudStack>
             </itemBody>
         </MudStack>

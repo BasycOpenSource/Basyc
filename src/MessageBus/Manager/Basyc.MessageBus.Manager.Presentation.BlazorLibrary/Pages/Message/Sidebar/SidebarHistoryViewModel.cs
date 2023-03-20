@@ -22,6 +22,7 @@ public class SidebarHistoryViewModel : BasycReactiveViewModelBase
 	{
 		this.requestManager = requestManager;
 
+		//TODO change, might create multiple active handlers
 		this.ReactiveHandler(x => x.MessageInfo!,
 				x =>
 			   {

@@ -10,10 +10,12 @@ public class RegisterMessagesFromFluentApiStage : BuilderStageBase
 	{
 	}
 
-	public FluentSetupGroupStage InGroup(string domainName)
+	public FluentSetupGroupStage AddGroup(string domainName)
 	{
-		var newGroup = new InProgressGroupRegistration();
-		newGroup.DomainName = domainName;
+		var newGroup = new InProgressGroupRegistration
+		{
+			DomainName = domainName
+		};
 		services.Configure<FluentApiDomainInfoProviderOptions>(x => x.GroupRegistrations.Add(newGroup));
 		return new FluentSetupGroupStage(services, newGroup);
 	}

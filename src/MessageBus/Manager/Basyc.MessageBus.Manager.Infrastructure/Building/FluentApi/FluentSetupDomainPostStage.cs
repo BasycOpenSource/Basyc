@@ -20,6 +20,6 @@ public class FluentSetupDomainPostStage : BuilderStageBase
 
 	public FluentSetupGroupStage AddDomain(string domainName)
 	{
-		return new RegisterMessagesFromFluentApiStage(services).InGroup(domainName);
+		return new RegisterMessagesFromFluentApiStage(services).AddGroup(domainName);
 	}
 }
