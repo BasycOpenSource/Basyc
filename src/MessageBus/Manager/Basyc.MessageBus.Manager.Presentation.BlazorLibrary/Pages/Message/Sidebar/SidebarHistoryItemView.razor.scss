@@ -4,7 +4,12 @@
     width: 30px;
 }
 
-itemBody{
+loggingRow {
+    display: flex;
+    align-content: center;
+}
+
+itemBody {
     display: flex;
     align-content: center;
 }
@@ -43,4 +48,16 @@ logIconWarning {
 logIconError {
     @extend logIcon;
     background-color: #AE5959;
+}
+
+.headingRowClass--started{
+
+}
+
+.headingRowClass--completed {
+    color: #5CAE59;
+}
+
+.headingRowClass--failed {
+    color: #AE5959;
 }

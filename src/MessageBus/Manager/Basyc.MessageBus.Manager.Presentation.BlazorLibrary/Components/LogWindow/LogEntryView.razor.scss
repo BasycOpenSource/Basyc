@@ -8,8 +8,8 @@ message {
 logEntryView {
     display: block;
     color: white;
-    padding: 0.3rem 1.5rem;
-    background-color: #00000012;
+    padding: 8px 16px;
+    background-color: #0F0F15;
 }
 
 logEntryView:hover {
@@ -17,13 +17,17 @@ logEntryView:hover {
 }
 
 
-.logEntryView--alternate {
+/*.logEntryView--alternate {
     background-color: #00000000;
+}*/
+
+level {
+    display: inline;
+    padding: 0px;
 }
 
 time {
-    margin-right: 0.3rem;
-    margin-left: -0.5rem;
+    margin-left: 16px;
     color: #ffffff74;
 }
 
@@ -51,10 +55,7 @@ serviceName > * {
     text-overflow: ellipsis;
 }
 
-level {
-    display: inline;
-    padding: 0px;
-}
+
 
 .level--Debug {
     color: $Log-Debug-Foreground;

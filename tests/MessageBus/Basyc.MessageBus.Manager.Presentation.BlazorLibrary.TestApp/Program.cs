@@ -3,6 +3,7 @@ using Basyc.Diagnostics.Producing.Shared.Building;
 using Basyc.Diagnostics.Receiving.Abstractions;
 using Basyc.Diagnostics.Shared;
 using Basyc.Diagnostics.Shared.Durations;
+using Basyc.Diagnostics.Shared.Logging;
 using Basyc.DomainDrivenDesign.Domain;
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.Manager;
@@ -15,6 +16,7 @@ using Basyc.MessageBus.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using System.Diagnostics;
 using ICommand = System.Windows.Input.ICommand;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -95,17 +97,33 @@ busManagerBuilder.RegisterMessages()
 	.AddGroup("FromFluentApi")
 	.AddMessage("Fluent Message 1")
 	.NoReturn()
-	.HandledBy(x =>
+	.HandledBy((MessageRequest x) =>
 	{
 		var activity = DiagnosticHelper.Start("Handler logic");
 		activity.Stop();
+		if (Random.Shared.Next(0, 100) > 50)
+		{
+			var serviceA = new ServiceIdentity("ServiceA");
+			x.Diagnostics.AddLog(ServiceIdentity.ApplicationWideIdentity, LogLevel.Error, "TestError", null);
+			x.Diagnostics.AddLog(serviceA, LogLevel.Information, "Test", null);
+			var ac = x.Diagnostics.AddStartActivity(new ActivityStart(serviceA, x.Diagnostics.TraceId, null, "1", "ServiceAStart", DateTimeOffset.UtcNow));
+			Thread.Sleep(100);
+			x.Diagnostics.AddLog(serviceA, LogLevel.Information, "Test2", null);
+
+			//x.Diagnostics.AddEndActivity(new ActivityEnd(serviceA, x.Diagnostics.TraceId, null,"2", "ServiceAStart", DateTimeOffset.UtcNow, ));
+			ac.End(DateTimeOffset.UtcNow, ActivityStatusCode.Ok);
+			x.Fail("Because");
+			return;
+		}
 		x.Complete();
+
 	})
 	.AddMessage("Fluent Message 2")
 	.NoReturn()
 	.HandledBy((MessageRequest x) =>
 	{
 		x.Diagnostics.AddLog(ServiceIdentity.ApplicationWideIdentity, LogLevel.Error, "TestError", null);
+		x.Complete();
 	});
 
 builder.Services.AddBasycBusManagerBlazorUi();

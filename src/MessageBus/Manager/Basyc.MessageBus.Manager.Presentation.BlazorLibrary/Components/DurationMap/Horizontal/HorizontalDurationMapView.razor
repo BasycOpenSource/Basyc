@@ -3,6 +3,9 @@
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
 <horizontalDurationMapView>
+    <zoomToolBar>
+        <MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="0.1" Style="color: white;" />
+    </zoomToolBar>
 	<services>
 		@{
 			if (RequestContext.Diagnostics.Services.Any())
@@ -50,9 +53,7 @@
 		}
 	</services>
 
-	<zoomToolBar>
-		<MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="0.1" Style="color: white;"/>
-	</zoomToolBar>
+
 
 </horizontalDurationMapView>
 

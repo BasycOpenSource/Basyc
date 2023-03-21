@@ -19,6 +19,7 @@ public class MessageRequest : ReactiveObject
 		State = RequestResultState.Started;
 		TraceId = traceId;
 		OrderIndex = orderIndex;
+		Duration = default;
 	}
 
 	public RequestInput Request { get; init; }
@@ -35,7 +36,8 @@ public class MessageRequest : ReactiveObject
 
 	public DateTimeOffset EndTime => durationMapBuilder.EndTime;
 
-	public TimeSpan Duration => State == RequestResultState.Started ? default : durationMapBuilder.EndTime - durationMapBuilder.StartTime;
+	//[Reactive] public TimeSpan Duration => State == RequestResultState.Started ? default : durationMapBuilder.EndTime - durationMapBuilder.StartTime;
+	[Reactive] public TimeSpan Duration { get; private set; }
 
 	public string TraceId { get; init; }
 	public int OrderIndex { get; init; }
@@ -64,8 +66,9 @@ public class MessageRequest : ReactiveObject
 		if (Request.MessageInfo.HasResponse is false)
 			throw new InvalidOperationException("Can't complete with return value becuase this message does not have return value");
 
-		State = RequestResultState.Completed;
 		Response = response;
+		Duration = durationMapBuilder.EndTime - durationMapBuilder.StartTime;
+		State = RequestResultState.Completed;
 		OnStateChanged();
 	}
 
@@ -77,6 +80,7 @@ public class MessageRequest : ReactiveObject
 			throw new InvalidOperationException(
 				$"Can't complete without return value becuase this message has return value. Use {nameof(Fail)} method when error occured and no return value is avaible");
 
+		Duration = durationMapBuilder.EndTime - durationMapBuilder.StartTime;
 		State = RequestResultState.Completed;
 		OnStateChanged();
 	}
@@ -84,8 +88,9 @@ public class MessageRequest : ReactiveObject
 	public void Fail(string errorMessage)
 	{
 		FinishDurationMap();
-		State = RequestResultState.Failed;
 		ErrorMessage = errorMessage;
+		Duration = durationMapBuilder.EndTime - durationMapBuilder.StartTime;
+		State = RequestResultState.Failed;
 		OnStateChanged();
 	}
 

@@ -7,15 +7,16 @@
     right: 0px;
     left: 0px;
     height: 100%;
+    overflow: hidden;
 }
 
 
 
 
-requestFormPage {
-    flex-shrink: 0;
+page {
     display: block;
-    width: 300px;
+    width: 100%;
+    overflow: hidden;
 }
 
 

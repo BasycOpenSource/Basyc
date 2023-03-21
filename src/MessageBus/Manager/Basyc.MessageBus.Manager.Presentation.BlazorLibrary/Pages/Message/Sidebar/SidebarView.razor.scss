@@ -67,7 +67,7 @@ heading {
 reqeustSideBarView {
     background-color: rgba(4, 3, 4, 0.4);
     display: flex;
-    width: 100%;
+    width: 280px;
     flex: 1;
     height: 100%;
     flex-direction: column;
@@ -121,7 +121,7 @@ ghostLabel {
 
 grid {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: 50fr 50fr;
     height: 100%
 }
 

@@ -4,67 +4,69 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
 @using Microsoft.Extensions.Logging
 @{
-	var logEntryViewClass = AlternateColor ? "logEntryView--alternate" : "";
-	var levelClass = $"level--{LogLevel.ToString()}";
-	ServiceName.ThrowIfNull();
-	var servicebackgroundColor = ServiceColorHelper.GetBackground(ServiceName);
-	var serviceNameStyle = $"background-color: {servicebackgroundColor};";
+    var logEntryViewClass = AlternateColor ? "logEntryView--alternate" : "";
+    var levelClass = $"level--{LogLevel.ToString()}";
+    ServiceName.ThrowIfNull();
+    var servicebackgroundColor = ServiceColorHelper.GetBackground(ServiceName);
+    var serviceNameStyle = $"background-color: {servicebackgroundColor};";
 }
 
 <logEntryView class="@logEntryViewClass">
-	<time>
-		@LogTime.ToString("HH:mm:ss:fff")
-	</time>
-	<level class="@levelClass">
-		@LogLevelToString(LogLevel)
-	</level>
-	<serviceName style="@serviceNameStyle">
-		<BasycTooltippedText Text="@ServiceName"/>
-	</serviceName>
-	@if (Activity is not null)
-	{
-		<activityName style="@serviceNameStyle">
-			<BasycTooltippedText Text="@Activity.DisplayName"/>
-		</activityName>
-	}
+    <level class="@levelClass">
+        @LogLevelToString(LogLevel)
+    </level>
+    @*<BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small" />*@
 
-	<message>
-		@LogMessage
-	</message>
+    <time>
+        @LogTime.ToString("HH:mm:ss:fff")
+    </time>
+    <serviceName style="@serviceNameStyle">
+        <BasycTooltippedText Text="@ServiceName" />
+    </serviceName>
+    @if (Activity is not null)
+    {
+        <activityName style="@serviceNameStyle">
+            <BasycTooltippedText Text="@Activity.DisplayName" />
+        </activityName>
+    }
+
+    <message>
+        @LogMessage
+    </message>
 </logEntryView>
 
 
 @code {
 
-	[Parameter]
-	public ActivityContext? Activity { get; set; }
+    [Parameter]
+    public ActivityContext? Activity { get; set; }
 
-	[Parameter]
-	public string? ServiceName { get; set; }
+    [Parameter]
+    public string? ServiceName { get; set; }
 
-	[Parameter]
-	public string? LogMessage { get; set; }
+    [Parameter]
+    public string? LogMessage { get; set; }
 
-	[Parameter]
-	public DateTimeOffset LogTime { get; set; }
+    [Parameter]
+    public DateTimeOffset LogTime { get; set; }
 
-	[Parameter]
-	public LogLevel LogLevel { get; set; }
+    [Parameter]
+    public LogLevel LogLevel { get; set; }
 
-	[Parameter]
-	public bool AlternateColor { get; set; }
+    [Parameter]
+    public bool AlternateColor { get; set; }
 
-	private static string LogLevelToString(LogLevel logLevel)
-	{
-		return logLevel switch
-		{
-			LogLevel.Warning => "warn",
-			LogLevel.Information => "info",
-			LogLevel.Debug => "dbug",
-			LogLevel.Error => "erro",
-			LogLevel.Critical => "crit",
-			_ => logLevel.ToString()
-			};
-	}
+    private static string LogLevelToString(LogLevel logLevel)
+    {
+        return logLevel switch
+        {
+            LogLevel.Warning => "warn",
+            LogLevel.Information => "info",
+            LogLevel.Debug => "dbug",
+            LogLevel.Error => "erro",
+            LogLevel.Critical => "crit",
+            _ => logLevel.ToString()
+        };
+    }
 
 }

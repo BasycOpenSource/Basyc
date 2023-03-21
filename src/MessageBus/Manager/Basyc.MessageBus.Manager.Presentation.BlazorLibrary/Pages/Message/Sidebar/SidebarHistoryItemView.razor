@@ -5,7 +5,7 @@
 @using MudBlazor.Utilities;
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryItemViewModel>
 
-<sidebarHistoryItemView class="@classToRender">
+<sidebarHistoryItemView class="@sidebarHistoryItemViewClass">
     <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
         <MudStack Row="true" AlignItems="AlignItems.Stretch">
             <index>
@@ -13,11 +13,11 @@
             </index>
             <itemBody>
                 <MudStack Spacing="0">
-                    <div>
+                    <headingRow class="@headingRowClass">
                         @ViewModel.State
                         @Html.Time(ViewModel.Duration)
-                    </div>
-                    <itemBody>
+                    </headingRow>
+                    <loggingRow>
                         <BasycSpaceLine End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
                         <logIconInfo /> @ViewModel.LogsInformationCount
                         <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
@@ -25,7 +25,7 @@
                         <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
                         <logIconError /> @ViewModel.LogsErrorCount
                         <BasycSpaceLine Start="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
-                    </itemBody>
+                    </loggingRow>
                 </MudStack>
             </itemBody>
         </MudStack>
@@ -42,15 +42,29 @@
     {
         base.OnInitialized();
     }
-    private string classToRender = "";
+    private string sidebarHistoryItemViewClass = "";
+    //private string headingRowClass = "";
+    private string headingRowClass => new CssBuilder()
+            .AddClass("headingRowClass--started", ViewModel.State == RequestResultState.Started)
+            .AddClass("headingRowClass--completed", ViewModel.State == RequestResultState.Completed)
+            .AddClass("headingRowClass--failed", ViewModel.State == RequestResultState.Failed)
+            .Build();
 
     protected override void OnParametersSet()
     {
         ViewModel.MessageRequest = MessageRequest;
         ViewModel.NavigationService = NavigationService;
         base.OnParametersSet();
-        classToRender = new CssBuilder()
+
+        sidebarHistoryItemViewClass = new CssBuilder()
              .AddClass("sidebarHistoryItemView--selected", ViewModel.IsSelected)
              .Build();
+
+        //headingRowClass = new CssBuilder()
+        //    .AddClass("headingRowClass--started", ViewModel.State == RequestResultState.Started)
+        //    .AddClass("headingRowClass--completed", ViewModel.State == RequestResultState.Completed)
+        //    .AddClass("headingRowClass--failed", ViewModel.State == RequestResultState.Failed)
+        //    .Build();
     }
+
 }

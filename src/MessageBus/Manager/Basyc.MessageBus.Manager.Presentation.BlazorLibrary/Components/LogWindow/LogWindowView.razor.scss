@@ -4,11 +4,13 @@
     flex: 1;
     font-family: Consolas;
     height: 40rem;
-    background-color: #000000a6;
 }
 
 logs {
     display: block;
+    display: flex;
+    flex-direction: column;
+    row-gap: 3px;
     overflow-y: auto;
 }
 toolBar{
@@ -26,7 +28,7 @@ filterBase {
 filterLogLevel {
     @extend filterBase;
     width: 2.5rem;
-    margin-left: 6.5rem;
+    margin-left: 0rem;
 }
 
 filterService {

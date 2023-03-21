@@ -154,5 +154,9 @@
   {
     "outputFile": "Components/SideBar/AppSideBarView.razor.css",
     "inputFile": "Components/SideBar/AppSideBarView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Message/MessagePageRequestPageView.razor.css",
+    "inputFile": "Pages/Message/MessagePageRequestPageView.razor.scss"
   }
 ]
