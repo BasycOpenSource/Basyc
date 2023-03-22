@@ -3,16 +3,19 @@ basycSpaceLine {
     border-width: 0px;
     --spaceLineEndSize: 0px;
     --spaceLineStartSize: 0px;
+    display: block;
+}
+
+.basycSpaceLine--inline {
+    display: inline;
 }
 
 .basycSpaceLine-horizontal {
-    display: block;
     width: 100%;
 }
 
 
 .basycSpaceLine-vertical {
-    display: block;
     height: 100%;
 }
 
@@ -20,9 +23,11 @@ basycSpaceLine {
 .basycSpaceLine-start--small {
     --spaceLineStartSize: var(--space-small);
 }
+
 .basycSpaceLine-start--medium {
     --spaceLineStartSize: var(--space-medium);
 }
+
 .basycSpaceLine-start--big {
     --spaceLineStartSize: var(--space-big);
 }
@@ -61,7 +66,6 @@ basycSpaceLine {
 
 line {
     background-color: rgba(255, 255, 255, 0.08);
-    
 }
 
 .line-horizontal {
@@ -75,8 +79,3 @@ line {
     width: 0.5px;
     height: 100%;
 }
-
-
-
-
-

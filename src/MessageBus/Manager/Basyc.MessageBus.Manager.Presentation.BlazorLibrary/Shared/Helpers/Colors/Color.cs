@@ -2,7 +2,7 @@
 
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors;
 
-public struct Color
+public readonly struct Color
 {
 	public Color(int red, int green, int blue, double opacity = 1)
 	{
@@ -19,7 +19,7 @@ public struct Color
 
 	private static void IsValidPercentage(double opacity)
 	{
-		if (opacity < 0 || opacity > 1)
+		if (opacity is < 0 or > 1)
 			throw new ArgumentException("bad value", nameof(opacity));
 	}
 
@@ -48,14 +48,14 @@ public struct Color
 
 	public string ToHtml()
 	{
-		int saturation255 = (int)Math.Round(255 * Opacity);
-		StringBuilder stringBuilder = new StringBuilder(6);
+		var saturation255 = (int)Math.Round(255 * Opacity);
+		var stringBuilder = new StringBuilder(6);
 		stringBuilder.Append('#');
 		stringBuilder.Append(Red.ToString("X2"));
 		stringBuilder.Append(Green.ToString("X2"));
 		stringBuilder.Append(Blue.ToString("X2"));
 		stringBuilder.Append(saturation255.ToString("X2"));
-		string finalColor = stringBuilder.ToString();
+		var finalColor = stringBuilder.ToString();
 		return finalColor;
 	}
 
@@ -63,9 +63,20 @@ public struct Color
 	{
 		IsValidPercentage(percentage);
 
-		int red = (int)Math.Round(Red - (Red) * percentage);
-		int green = (int)Math.Round(Green - (Green) * percentage);
-		int blue = (int)Math.Round(Blue - (Blue) * percentage);
+		var red = (int)Math.Round(Red - Red * percentage);
+		var green = (int)Math.Round(Green - Green * percentage);
+		var blue = (int)Math.Round(Blue - Blue * percentage);
+
+		return new Color(red, green, blue, Opacity);
+	}
+
+	public Color Brigther(double percentage = 1)
+	{
+		IsValidPercentage(percentage);
+
+		var red = (int)Math.Round(Red + Red * percentage);
+		var green = (int)Math.Round(Green + Green * percentage);
+		var blue = (int)Math.Round(Blue + Blue * percentage);
 
 		return new Color(red, green, blue, Opacity);
 	}

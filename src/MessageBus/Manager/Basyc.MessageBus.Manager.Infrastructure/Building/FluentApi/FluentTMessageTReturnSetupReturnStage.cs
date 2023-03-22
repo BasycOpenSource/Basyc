@@ -1,8 +1,9 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.MessageBus.Manager.Application;
+using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using System;
+using Microsoft.Extensions.Logging;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
@@ -20,7 +21,7 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 		messageBinder = new RequestToTypeBinder<TMessage>();
 	}
 
-	public FluentSetupDomainPostStage HandeledBy(Action<MessageRequest> handler)
+	private FluentSetupDomainPostStage HandeledBy(RequestHandlerDelegate handler)
 	{
 		inProgressMessage.RequestHandler = handler;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
@@ -28,24 +29,24 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 
 	public FluentSetupDomainPostStage HandeledBy(Func<RequestInput, TReturn> handler)
 	{
-		Action<MessageRequest> handlerWrapper = (requestResult) =>
+		object? handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
 			var returnObject = handler.Invoke(requestResult.Request);
-			requestResult.Complete(returnObject);
-		};
+			return returnObject;
+		}
 		inProgressMessage.RequestHandler = handlerWrapper;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy(Func<TMessage, TReturn> handlerWithTReturn)
 	{
-		Action<MessageRequest> wrapperHandler = (result) =>
+		object? handlerWrapper(MessageRequest result, ILogger logger)
 		{
 			var message = messageBinder.CreateMessage(result.Request);
 			var returnObject = handlerWithTReturn.Invoke(message);
-			result.Complete(returnObject!);
-		};
-		inProgressMessage.RequestHandler = wrapperHandler;
+			return returnObject!;
+		}
+		inProgressMessage.RequestHandler = handlerWrapper;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 }

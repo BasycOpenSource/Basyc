@@ -30,6 +30,19 @@ messagePage {
 .styleSharedDefaults {
     /*font-weight: 300;*/
 
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #9ab3db51;
+        border-radius: 40px;
+    }
+
     .headingDefalts {
         font-weight: 300;
     }

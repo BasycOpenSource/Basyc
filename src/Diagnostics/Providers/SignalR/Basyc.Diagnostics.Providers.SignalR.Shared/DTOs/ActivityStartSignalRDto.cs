@@ -1,4 +1,4 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
+﻿using Basyc.Diagnostics.Shared;
 using Basyc.Diagnostics.Shared.Logging;
 
 namespace Basyc.Diagnostics.SignalR.Shared.DTOs;

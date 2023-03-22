@@ -1,36 +1,39 @@
-﻿@using Throw
+﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
+@using BlazorComponentUtilities;
+@using Throw
 @using Basyc.Blazor.Controls.TooltippedText
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
 @using Microsoft.Extensions.Logging
 @{
     var logEntryViewClass = AlternateColor ? "logEntryView--alternate" : "";
-    var levelClass = $"level--{LogLevel.ToString()}";
     ServiceName.ThrowIfNull();
     var servicebackgroundColor = ServiceColorHelper.GetBackground(ServiceName);
-    var serviceNameStyle = $"background-color: {servicebackgroundColor};";
+    //var serviceNameStyle = $"background-color: {servicebackgroundColor.Edit(opacity: 0.05)}; color: {servicebackgroundColor.Edit(opacity: 0.35)}";
+    var serviceNameStyle = $"color: {servicebackgroundColor.Edit(opacity: 0.35)}";
 }
 
 <logEntryView class="@logEntryViewClass">
-    <level class="@levelClass">
-        @LogLevelToString(LogLevel)
-    </level>
-    @*<BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small" />*@
-
+    <LogIconView LogLevel="LogLevel" />
+    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small" Inline="true" />
     <time>
         @LogTime.ToString("HH:mm:ss:fff")
     </time>
+    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium" Inline="true" />
     <serviceName style="@serviceNameStyle">
         <BasycTooltippedText Text="@ServiceName" />
     </serviceName>
     @if (Activity is not null)
     {
-        <activityName style="@serviceNameStyle">
-            <BasycTooltippedText Text="@Activity.DisplayName" />
+        <slash>
+            /
+        </slash>
+        <activityName>
+            <BasycTooltippedText Text="@Activity.DisplayName" />:
         </activityName>
     }
-
-    <message>
+    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small" Inline="true" />
+    <message class="@messageClass">
         @LogMessage
     </message>
 </logEntryView>
@@ -56,6 +59,13 @@
     [Parameter]
     public bool AlternateColor { get; set; }
 
+    private string messageClass => new CssBuilder()
+                                    .SetPrefix("message")
+                                    .AddClass("--info", LogIconTypeHelper.LogLevelToLogIconType(LogLevel) == LogIconType.Info)
+                                    .AddClass("--warning", LogIconTypeHelper.LogLevelToLogIconType(LogLevel) == LogIconType.Warning)
+                                    .AddClass("--error", LogIconTypeHelper.LogLevelToLogIconType(LogLevel) == LogIconType.Error)
+                                    .Build();
+
     private static string LogLevelToString(LogLevel logLevel)
     {
         return logLevel switch
@@ -68,5 +78,8 @@
             _ => logLevel.ToString()
         };
     }
+
+
+
 
 }

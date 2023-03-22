@@ -3,13 +3,13 @@ using System.Diagnostics;
 
 namespace Basyc.Diagnostics.Producing.Abstractions;
 
-public struct ActivityDisposer : IDisposable
+public struct ActivityStartDisposer : IDisposable
 {
 	private readonly IDiagnosticsExporter diagnosticsProducer;
 	private bool isEnded = false;
 	public ActivityStart ActivityStart { get; init; }
 
-	public ActivityDisposer(IDiagnosticsExporter diagnosticsProducer, ActivityStart activityStart)
+	public ActivityStartDisposer(IDiagnosticsExporter diagnosticsProducer, ActivityStart activityStart)
 	{
 		this.diagnosticsProducer = diagnosticsProducer;
 		ActivityStart = activityStart;
@@ -24,7 +24,7 @@ public struct ActivityDisposer : IDisposable
 		isEnded = true;
 	}
 
-	public void End(DateTimeOffset endTime = default, ActivityStatusCode activityStatusCode = ActivityStatusCode.Ok)
+	public void Stop(DateTimeOffset endTime = default, ActivityStatusCode activityStatusCode = ActivityStatusCode.Ok)
 	{
 		if (isEnded)
 			throw new InvalidOperationException("Activity is already ended");
@@ -33,7 +33,7 @@ public struct ActivityDisposer : IDisposable
 		isEnded = true;
 	}
 
-	public ActivityDisposer StartNested(string name, DateTimeOffset startTime = default)
+	public ActivityStartDisposer StartNested(string name, DateTimeOffset startTime = default)
 	{
 		var nestedActivityDisposer = diagnosticsProducer.StartActivity(this, name, startTime);
 		return nestedActivityDisposer;

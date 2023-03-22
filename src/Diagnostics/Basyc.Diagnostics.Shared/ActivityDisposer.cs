@@ -2,18 +2,20 @@
 
 namespace Basyc.Diagnostics.Shared;
 
-public struct DiagnosticHelperActivityDisposer : IDisposable
+public readonly struct ActivityDisposer : IDisposable
 {
-	public DiagnosticHelperActivityDisposer(Activity? activity)
+	public ActivityDisposer(Activity? activity)
 	{
 		Activity = activity;
 	}
 
 	public Activity? Activity { get; }
 
-	public void Stop()
+	public DateTimeOffset Stop()
 	{
-		Stop(DateTimeOffset.UtcNow);
+		var endTime = DateTimeOffset.UtcNow;
+		Stop(endTime);
+		return endTime;
 	}
 
 	public void Stop(DateTimeOffset endTime)

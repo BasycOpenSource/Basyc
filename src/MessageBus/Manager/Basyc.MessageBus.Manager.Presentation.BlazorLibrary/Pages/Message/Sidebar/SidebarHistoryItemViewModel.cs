@@ -39,7 +39,7 @@ public class SidebarHistoryItemViewModel : BasycReactiveViewModelBase
 		LogsErrorCount = this.ReactiveAggregatorProperty(
 			x => x.LogsErrorCount,
 			x => x.MessageRequest!.Diagnostics.LogEntries,
-			x => x.Count(x => x.LogLevel is LogLevel.Error or LogLevel.Warning or LogLevel.Critical));
+			x => x.Count(x => x.LogLevel is LogLevel.Error or LogLevel.Critical));
 
 		IsSelected = this.ReactiveProperty(
 			x => x.IsSelected,

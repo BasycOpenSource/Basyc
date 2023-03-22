@@ -19,7 +19,9 @@
 					var backgroundColor = serviceThemeColor.Edit(opacity: 0.05);
 
 					var serviceFirstActivity = service.Activities.First();
-					var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}; box-shadow: 0px 0px 0px 1px {borderColor};";
+					//var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}";
+					var serviceStyle = $"background-color: {backgroundColor}";
+                    var durationBoxesStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)};";
 					var serviceNameStyle = $"color: {nameColor}";
 					<service style="@serviceStyle">
 						<serviceNameContainer>
@@ -27,7 +29,7 @@
 								@service.ServiceIdentity.ServiceName
 							</serviceName>
 						</serviceNameContainer>
-						<durationBoxes>
+                        <durationBoxes style="@durationBoxesStyle">
 							@{
 								ActivityContext? previousActivity = null;
 								foreach (var activity in service.Activities)

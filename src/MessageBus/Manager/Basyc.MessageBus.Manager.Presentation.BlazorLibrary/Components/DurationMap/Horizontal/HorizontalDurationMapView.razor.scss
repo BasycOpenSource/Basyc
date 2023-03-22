@@ -19,6 +19,8 @@ service {
     /*border: 3px solid black;*/
     border-radius: 2px;
     margin: 4px;
+    padding: 32px;
+    min-height: 160px;
 }
 
 serviceNameContainer {
@@ -33,6 +35,7 @@ serviceName {
     flex: 1;
     align-items: center;
     padding: 0.5rem;
+    padding-right: 32px;
     writing-mode: vertical-rl;
     white-space: nowrap;
     overflow: hidden;

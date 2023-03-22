@@ -3,15 +3,18 @@
   border-width: 0px;
   --spaceLineEndSize: 0px;
   --spaceLineStartSize: 0px;
+  display: block;
+}
+
+.basycSpaceLine--inline {
+  display: inline;
 }
 
 .basycSpaceLine-horizontal {
-  display: block;
   width: 100%;
 }
 
 .basycSpaceLine-vertical {
-  display: block;
   height: 100%;
 }
 

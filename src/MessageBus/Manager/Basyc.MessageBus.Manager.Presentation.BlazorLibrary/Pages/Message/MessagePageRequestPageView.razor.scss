@@ -2,7 +2,7 @@
     display: block;
 }
 
-infoRow{
+infoRow {
     display: flex;
     flex-direction: row;
 }
@@ -55,4 +55,22 @@ arrow {
     justify-content: center;
     color: #14161E;
     font-weight: bolder;
+}
+
+
+::deep .mud-tabs-toolbar {
+    background-color: transparent !important;
+    box-shadow: 0 0 0 0 transparent;
+}
+
+/*.mud-tab-slider.mud-tab-slider-horizontal*/
+/*--mud-palette-primary*/
+::deep .mud-tab.mud-tab-active {
+    color: #A19DA1;
+    background-color: #150914;
+}
+
+::deep .mud-tab-slider.mud-tab-slider-horizontal {
+    height: 1px;
+    background-color: #5F1950;
 }

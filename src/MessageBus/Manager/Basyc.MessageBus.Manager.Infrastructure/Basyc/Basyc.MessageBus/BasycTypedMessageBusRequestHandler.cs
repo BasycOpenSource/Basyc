@@ -98,7 +98,7 @@ public class BasycTypedMessageBusRequestHandler : IRequestHandler
 					else
 					{
 						var resultObject = x.Result.AsT0;
-						requestContext.Complete(responseFormatter.Format(resultObject));
+						requestContext.SetResponse(responseFormatter.Format(resultObject));
 						//await startSegment.Log($"Request completed", LogLevel.Information);
 						this.logger.LogInformation("Request completed");
 					}
@@ -141,7 +141,7 @@ public class BasycTypedMessageBusRequestHandler : IRequestHandler
 					}
 					else
 					{
-						requestContext.Complete();
+						requestContext.SetResponse();
 						this.logger.LogInformation("Request completed");
 					}
 				}

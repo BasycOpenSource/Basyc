@@ -11,8 +11,8 @@ public class NullRequestHandler : IRequestHandler
 	public void StartRequest(MessageRequest requestResult, ILogger logger)
 	{
 		if (requestResult.Request.MessageInfo.HasResponse)
-			requestResult.Complete("NullRequester dummy response");
+			requestResult.SetResponse("NullRequester dummy response");
 		else
-			requestResult.Complete();
+			requestResult.SetResponse();
 	}
 }

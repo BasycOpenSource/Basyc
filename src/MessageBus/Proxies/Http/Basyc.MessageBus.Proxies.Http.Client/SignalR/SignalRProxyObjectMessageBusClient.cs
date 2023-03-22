@@ -85,7 +85,7 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 	}
 
 	private async Task<OneOf<object?, ErrorMessage>> BustaskMethod(string requestType, object? requestData, RequestContext requestContext,
-		DiagnosticHelperActivityDisposer createAndStartBusTaskActivity, SignalRSession session, DiagnosticHelperActivityDisposer waintingForTaskRunActivity)
+		ActivityDisposer createAndStartBusTaskActivity, SignalRSession session, ActivityDisposer waintingForTaskRunActivity)
 	{
 		waintingForTaskRunActivity.Stop();
 		var busTaskActivity = DiagnosticHelper.Start("BustaskMethod");

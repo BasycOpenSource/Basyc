@@ -1,7 +1,10 @@
 ﻿@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 @using Basyc.ReactiveUi.Blazor;
+@using Microsoft.Extensions.Logging;
 @using MudBlazor.Utilities;
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryItemViewModel>
 
@@ -19,11 +22,11 @@
                     </headingRow>
                     <loggingRow>
                         <BasycSpaceLine End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
-                        <logIconInfo /> @ViewModel.LogsInformationCount
+                        <LogIconView LogLevel="LogLevel.Information" /> @ViewModel.LogsInformationCount
                         <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
-                        <logIconWarning /> @ViewModel.LogsWarningCount
+                        <LogIconView LogLevel="LogLevel.Warning" /> @ViewModel.LogsWarningCount
                         <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
-                        <logIconError /> @ViewModel.LogsErrorCount
+                        <LogIconView LogLevel="LogLevel.Error" /> @ViewModel.LogsErrorCount
                         <BasycSpaceLine Start="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
                     </loggingRow>
                 </MudStack>

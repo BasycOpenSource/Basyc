@@ -9,6 +9,7 @@
 </basycSpaceLine>
 @code {
     [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public bool Inline { get; set; } = false;
     [Parameter] public SpaceLineDirection Direction { get; set; } = SpaceLineDirection.Horizontal;
     [Parameter] public SpaceLineSize? Start { get; set; }
     [Parameter] public SpaceLineSize? End { get; set; }
@@ -36,7 +37,7 @@
             .AddClass("basycSpaceLine-end--small", End == SpaceLineSize.Small)
             .AddClass("basycSpaceLine-end--medium", End == SpaceLineSize.Medium)
             .AddClass("basycSpaceLine-end--big", End == SpaceLineSize.Big)
-
+            .AddClass("basycSpaceLine--inline", Inline)
             .Build();
 
         lineClass = new CssBuilder()

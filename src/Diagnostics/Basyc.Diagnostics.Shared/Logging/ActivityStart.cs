@@ -1,6 +1,4 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
-
-namespace Basyc.Diagnostics.Shared.Logging;
+﻿namespace Basyc.Diagnostics.Shared.Logging;
 
 public readonly struct ActivityStart
 {

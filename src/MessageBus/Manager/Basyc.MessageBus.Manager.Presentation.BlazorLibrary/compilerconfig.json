@@ -158,5 +158,9 @@
   {
     "outputFile": "Pages/Message/MessagePageRequestPageView.razor.css",
     "inputFile": "Pages/Message/MessagePageRequestPageView.razor.scss"
+  },
+  {
+    "outputFile": "Components/LogIcon/LogIconView.razor.css",
+    "inputFile": "Components/LogIcon/LogIconView.razor.scss"
   }
 ]

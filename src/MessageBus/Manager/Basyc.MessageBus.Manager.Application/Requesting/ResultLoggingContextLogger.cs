@@ -1,4 +1,4 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
+﻿using Basyc.Diagnostics.Shared;
 using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;

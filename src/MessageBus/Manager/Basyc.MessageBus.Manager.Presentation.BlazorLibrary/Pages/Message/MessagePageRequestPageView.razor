@@ -68,13 +68,16 @@
         </infoRow>
         <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Big" />
 
-        <MudTabs Elevation="2">
-            <MudTabPanel Text="Traces">
-                <HorizontalDurationMapView RequestContext="MessageRequest" />
-            </MudTabPanel>
-            <MudTabPanel Text="Logs">
-                <LogWindowView DiagnosticsContext="MessageRequest.Diagnostics"/>
-            </MudTabPanel>
+        <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="true" >
+            <ChildContent>
+                <MudTabPanel Text="Traces">
+                    <HorizontalDurationMapView RequestContext="MessageRequest" />
+                </MudTabPanel>
+                <MudTabPanel Text="Logs">
+                    <LogWindowView DiagnosticsContext="MessageRequest.Diagnostics" />
+                </MudTabPanel>
+            </ChildContent>
+
         </MudTabs>
     </BasycSpaceBorder>
 </messagePageRequestPageView>

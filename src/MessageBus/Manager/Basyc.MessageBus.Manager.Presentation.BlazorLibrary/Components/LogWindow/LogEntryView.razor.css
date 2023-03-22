@@ -1,1 +1,59 @@
-message{color:#d1d1d1}logEntryView{display:block;color:white;padding:8px 16px;background-color:#0F0F15}logEntryView:hover{background-color:#626262}level{display:inline;padding:0px}time{margin-left:16px;color:#ffffff74}serviceName,activityName{display:inline-flex;align-items:center;min-width:0px;min-height:0px;width:5rem;color:white;padding:0rem 0.4rem;border-radius:2px;margin-right:0.3rem}serviceName>*,activityName>*{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.level--Debug{color:#b4b4b4}.level--Information{color:#7BAFBC}.level--Warning{background-color:#BCB17B}.level--Error{background-color:#C15C5C}
+﻿/*$Error-Background: #FFFBFB;*/
+message {
+  color: #C2BEC2;
+}
+
+logEntryView {
+  display: block;
+  color: white;
+  padding: 8px 16px;
+  background-color: #0F0F15;
+}
+
+logEntryView:hover {
+  background-color: #111724;
+}
+
+/*.logEntryView--alternate {
+    background-color: #00000000;
+}*/
+time {
+  color: #646B88;
+}
+
+serviceName {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0px;
+  min-height: 0px;
+  width: 5rem;
+  color: white;
+}
+
+activityName {
+  display: inline-flex;
+  color: #575862;
+}
+
+serviceName > * {
+  min-width: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message--warning {
+  color: #AE8C59;
+}
+
+.message--error {
+  background-color: #C15C5C;
+}
+
+slash {
+  display: inline-block;
+  color: #575862;
+  margin-left: 0.3em;
+  margin-right: -0.3em;
+}

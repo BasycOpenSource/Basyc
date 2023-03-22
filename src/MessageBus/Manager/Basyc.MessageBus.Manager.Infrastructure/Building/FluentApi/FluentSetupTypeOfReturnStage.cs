@@ -1,7 +1,9 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.MessageBus.Manager.Application;
+using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Throw;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
@@ -18,22 +20,23 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
 		this.inProgressGroup = inProgressGroup;
 	}
 
-	public FluentSetupDomainPostStage HandeledBy(Action<MessageRequest> handler)
+	private FluentSetupDomainPostStage HandeledBy(RequestHandlerDelegate handler)
 	{
 		inProgressMessage.RequestHandler = handler;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
 
-	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<RequestInput, TReturn> handler)
+	public FluentSetupDomainPostStage HandledBy<TReturn>(Func<RequestInput, ILogger, TReturn> handler)
 		where TReturn : class
 	{
-		Action<MessageRequest> handlerWrapper = requestResult =>
+		object? handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
-			var returnObject = handler.Invoke(requestResult.Request);
+			var returnObject = handler.Invoke(requestResult.Request, logger);
 			returnObject.ThrowIfNull();
 			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.MessageInfo.ResponseType!);
-			requestResult.Complete(returnObject);
-		};
+			//requestResult.Complete(returnObject);
+			return returnObject;
+		}
 		inProgressMessage.RequestHandler = handlerWrapper;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
