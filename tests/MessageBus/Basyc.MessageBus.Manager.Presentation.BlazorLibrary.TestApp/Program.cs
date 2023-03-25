@@ -36,7 +36,8 @@ builder.Services.AddBasycDiagnosticReceiving()
 // 	.SetServerUri("https://localhost:44310");
 
 builder.Services.AddBasycMessageBus()
-	.NoHandlers()
+	.RegisterHandlersFromAssembly<TestCommandHandler>()
+	//.NoHandlers()
 	//.SelectSignalRProxyProvider("https://localhost:44310")
 	.SelectNullClient()
 	.EnableDiagnostics();
@@ -65,7 +66,7 @@ busManagerBuilder.RegisterMessages()
 	.UseTypeNameAsDisplayName()
 	.AsCommands()
 	.NoResponse()
-	.HandledByDefaultHandler();
+	.HandledBy(BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
 
 busManagerBuilder.RegisterMessages()
 	.FromAssembly(assembliesToScan)
@@ -103,10 +104,9 @@ busManagerBuilder.RegisterMessages()
 			Thread.Sleep(100);
 			logger.LogError("TestError");
 			throw new Exception("Test exception");
-			return;
 		}
 	})
-	.AddMessage("Fluent Message 2")
+	.AddMessage("ToUpper")
 	.WithParameter<string>("name")
 	.Returns<string>("nameToUpper")
 	.HandledBy((x, loger) =>

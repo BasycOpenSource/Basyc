@@ -17,7 +17,7 @@ public class SelectHandlerStage : BuilderStageBase
 		interfaceRegistration.RequestHandlerUniqueName = InterfaceRegistration.DefaultRequestHandlerUniqueName;
 	}
 
-	public void UseHandler(string handlerUniqueName)
+	public void HandledBy(string handlerUniqueName)
 	{
 		interfaceRegistration.RequestHandlerUniqueName = handlerUniqueName;
 	}

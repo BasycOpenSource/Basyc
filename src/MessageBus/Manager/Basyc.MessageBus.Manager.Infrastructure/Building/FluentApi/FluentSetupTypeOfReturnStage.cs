@@ -40,4 +40,10 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
 		inProgressMessage.RequestHandler = handlerWrapper;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
+
+	//public FluentSetupDomainPostStage HandledBy<TReturn>(Func<RequestInput, ILogger, TReturn> handler)
+	//where TReturn : class
+	//{
+	//	HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services,)
+	//}
 }

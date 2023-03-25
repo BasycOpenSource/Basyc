@@ -49,13 +49,10 @@ public class InMemoryRequestHandler : IRequestHandler
 			request.Stop(endTime);
 
 			if (request.Request.MessageInfo.HasResponse)
-			{
 				request.SetResponse(handlerOutput);
-			}
 			else
-			{
 				request.SetResponse();
-			}
+
 			//inMemoryRequesterAct.Stop();
 		}).ContinueWith(x =>
 		{

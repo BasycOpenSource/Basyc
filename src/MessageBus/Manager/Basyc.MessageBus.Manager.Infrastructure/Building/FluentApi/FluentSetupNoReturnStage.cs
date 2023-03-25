@@ -37,4 +37,10 @@ public class FluentSetupNoReturnStage : BuilderStageBase
 		inProgressMessage.RequestHandler = ToRequestContextAction;
 		return new FluentSetupDomainPostStage(services, inProgressGroup);
 	}
+
+	//public FluentSetupDomainPostStage HandledBy(Action<RequestInput, ILogger> handler)
+	//{
+	//	HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handler);
+	//	return new FluentSetupDomainPostStage(services, inProgressGroup);
+	//}
 }
