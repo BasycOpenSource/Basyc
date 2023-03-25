@@ -7,7 +7,7 @@ public static class MessageManagerBuilderTypedExtensions
 {
 	public static TypedProviderBuilder UseTypedProvider(this BusManagerApplicationBuilder managerBuilder)
 	{
-		managerBuilder.services.AddSingleton<IDomainInfoProvider, TypedDomainProvider>();
+		managerBuilder.services.AddSingleton<IMessageInfoProvider, TypedMessageInfoProvider>();
 
 		return new TypedProviderBuilder(managerBuilder.services);
 	}

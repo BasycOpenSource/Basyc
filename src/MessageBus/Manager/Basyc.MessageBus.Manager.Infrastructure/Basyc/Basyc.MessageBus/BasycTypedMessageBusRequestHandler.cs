@@ -18,13 +18,13 @@ public class BasycTypedMessageBusRequestHandler : IRequestHandler
 
 	private readonly IRequestInfoTypeStorage requestInfoTypeStorage;
 	private readonly IResponseFormatter responseFormatter;
-	private readonly IRequestDiagnosticsManager resultLoggingManager;
+	private readonly IRequestDiagnosticsRepository resultLoggingManager;
 	private readonly ITypedMessageBusClient typedMessageBusClient;
 
 	public BasycTypedMessageBusRequestHandler(ITypedMessageBusClient typedMessageBusClient,
 		IRequestInfoTypeStorage requestInfoTypeStorage,
 		IResponseFormatter responseFormatter,
-		IRequestDiagnosticsManager resultLoggingManager,
+		IRequestDiagnosticsRepository resultLoggingManager,
 		BusManagerBasycDiagnosticsReceiverTraceIdMapper inMemorySessionMapper,
 		ILogger<BasycTypedMessageBusRequestHandler> logger)
 	{

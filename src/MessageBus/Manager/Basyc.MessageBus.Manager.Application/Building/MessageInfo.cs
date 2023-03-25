@@ -34,7 +34,7 @@ public class MessageInfo
 	public string ResponseDisplayName { get; init; } = string.Empty;
 
 	/// <summary>
-	///     Custom metadata that can be created in custom <see cref="IDomainInfoProvider" /> and later be used in custom <see cref="IRequestHandler." />
+	///     Custom metadata that can be created in custom <see cref="IMessageInfoProvider" /> and later be used in custom <see cref="IRequestHandler." />
 	/// </summary>
 	public Dictionary<string, object> AdditionalMetadata { get; } = new();
 }

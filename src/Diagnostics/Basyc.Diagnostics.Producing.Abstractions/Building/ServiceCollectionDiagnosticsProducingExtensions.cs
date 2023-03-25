@@ -5,7 +5,7 @@ namespace Basyc.Diagnostics.Producing.Shared.Building;
 
 public static class ServiceCollectionDiagnosticsProducingExtensions
 {
-	public static SetupDefaultServiceStage AddBasycDiagnosticExporting(this IServiceCollection services)
+	public static SetupDefaultServiceStage AddBasycDiagnosticsExporting(this IServiceCollection services)
 	{
 		services.AddSingleton<DiagnosticListenerManager>();
 		return new SetupDefaultServiceStage(services);

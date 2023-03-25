@@ -8,19 +8,19 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentSetupMessageStage : BuilderStageBase
 {
-	private readonly InProgressMessageRegistration inProgressMessage;
-	private readonly InProgressGroupRegistration inProgressGroup;
+	private readonly FluentApiMessageRegistration fluentApiMessage;
+	private readonly FluentApiGroupRegistration fluentApiGroup;
 
-	public FluentSetupMessageStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressGroupRegistration inProgressGroup) : base(services)
+	public FluentSetupMessageStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) : base(services)
 	{
-		this.inProgressMessage = inProgressMessage;
-		this.inProgressGroup = inProgressGroup;
+		this.fluentApiMessage = fluentApiMessage;
+		this.fluentApiGroup = fluentApiGroup;
 	}
 
 	public FluentSetupMessageStage WithParameter<TParameter>(string parameterDisplayName)
 	{
-		inProgressMessage.Parameters.Add(new ParameterInfo(typeof(TParameter), parameterDisplayName, typeof(TParameter).Name));
-		return new FluentSetupMessageStage(services, inProgressMessage, inProgressGroup);
+		fluentApiMessage.Parameters.Add(new ParameterInfo(typeof(TParameter), parameterDisplayName, typeof(TParameter).Name));
+		return new FluentSetupMessageStage(services, fluentApiMessage, fluentApiGroup);
 	}
 
 	/// <summary>
@@ -32,22 +32,22 @@ public class FluentSetupMessageStage : BuilderStageBase
 	{
 		foreach (var parameter in typeof(TMessage).GetProperties(BindingFlags.Instance | BindingFlags.Public))
 		{
-			inProgressMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
+			fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
 		}
 
-		return new FluentTMessageSetupMessageStage<TMessage>(services, inProgressMessage, inProgressGroup);
+		return new FluentTMessageSetupMessageStage<TMessage>(services, fluentApiMessage, fluentApiGroup);
 	}
 
 	public FluentSetupNoReturnStage NoReturn()
 	{
-		return new FluentSetupNoReturnStage(services, inProgressMessage, inProgressGroup);
+		return new FluentSetupNoReturnStage(services, fluentApiMessage, fluentApiGroup);
 	}
 
 	public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)
 	{
-		inProgressMessage.ResponseRunTimeType = messageResponseRuntimeType;
-		inProgressMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
-		return new FluentSetupTypeOfReturnStage(services, inProgressMessage, inProgressGroup);
+		fluentApiMessage.ResponseRunTimeType = messageResponseRuntimeType;
+		fluentApiMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
+		return new FluentSetupTypeOfReturnStage(services, fluentApiMessage, fluentApiGroup);
 	}
 
 	public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType)
