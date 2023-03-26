@@ -89,6 +89,22 @@ busManagerBuilder.RegisterMessages()
 	.HandledByDefaultHandler();
 
 busManagerBuilder.RegisterMessages()
+	.FromAssembly2(assembliesToScan)
+	.FilterOnInterface<ICommand>()
+	.Register((x, a) =>
+	{
+		a.InGroup("FromAssembly2")
+			.AddMessage(x.Name)
+			.NoReturn()
+			.HandledBy(x =>
+			{
+				var activity = DiagnosticHelper.Start("Handler logic");
+				activity.Stop();
+				x.Complete();
+			});
+	});
+
+busManagerBuilder.RegisterMessages()
 	.FromFluentApi()
 	.InGroup("FromFluentApi")
 	.AddMessage("Fluent Message 1")

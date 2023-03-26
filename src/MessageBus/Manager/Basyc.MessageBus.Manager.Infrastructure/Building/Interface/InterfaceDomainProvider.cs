@@ -24,17 +24,18 @@ public class InterfaceDomainProvider : IDomainInfoProvider
 
 	public List<MessageGroup> GenerateDomainInfos()
 	{
-		var domains = new Dictionary<string, List<MessageInfo>>();
+		var groupss = new Dictionary<string, List<MessageInfo>>();
 
 		foreach (var registration in options.Value.InterfaceRegistrations)
 		{
 			registration.GroupName.ThrowIfNull();
-			domains.TryAdd(registration.GroupName, new List<MessageInfo>());
-			var infos = domains[registration.GroupName];
+			registration.MessageInterfaceType.ThrowIfNull();
+			registration.DisplayNameFormatter.ThrowIfNull();
+
+			groupss.TryAdd(registration.GroupName, new List<MessageInfo>());
+			var infos = groupss[registration.GroupName];
 			foreach (var assemblyType in registration.AssembliesToScan.SelectMany(assembly => assembly.GetTypes()))
 			{
-				registration.MessageInterfaceType.ThrowIfNull();
-				registration.DisplayNameFormatter.ThrowIfNull();
 				if (registration.HasResponse)
 				{
 					registration.ResponseType.ThrowIfNull();
@@ -75,7 +76,7 @@ public class InterfaceDomainProvider : IDomainInfoProvider
 			}
 		}
 
-		var domainInfos = domains.Select(x => new MessageGroup(x.Key, x.Value)).ToList();
+		var domainInfos = groupss.Select(x => new MessageGroup(x.Key, x.Value)).ToList();
 		return domainInfos;
 	}
 }

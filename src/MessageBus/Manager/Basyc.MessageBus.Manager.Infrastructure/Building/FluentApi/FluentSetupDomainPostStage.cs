@@ -13,9 +13,9 @@ public class FluentSetupDomainPostStage : BuilderStageBase
 		this.inProgressGroup = inProgressGroup;
 	}
 
-	public FluentSetupMessageStage AddMessage(string messageDisplayName, MessageType messageType = MessageType.Generic)
+	public FluentSetupMessageStage AddMessage(string messageDisplayName)
 	{
-		return new FluentSetupGroupStage(services, inProgressGroup).AddMessage(messageDisplayName, messageType);
+		return new FluentSetupGroupStage(services, inProgressGroup).AddMessage(messageDisplayName);
 	}
 
 	public FluentSetupGroupStage AddDomain(string domainName)
