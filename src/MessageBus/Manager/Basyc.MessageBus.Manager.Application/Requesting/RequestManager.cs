@@ -1,4 +1,5 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
+﻿using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Durations;
 using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 using Basyc.MessageBus.Manager.Application.ResultDiagnostics.Durations;
 using Microsoft.Extensions.Logging;
@@ -9,16 +10,16 @@ namespace Basyc.MessageBus.Manager.Application.Requesting;
 public class RequestManager : IRequestManager
 {
 	private readonly InMemoryRequestDiagnosticsSource inMemoryRequestDiagnosticsSource;
-	private readonly IRequestDiagnosticsManager requestDiagnosticsManager;
+	private readonly IRequestDiagnosticsRepository requestDiagnosticsRepository;
 	private readonly IRequesterSelector requesterSelector;
 	private readonly ServiceIdentity requestManagerServiceIdentity;
 	private int requestCounter;
 
-	public RequestManager(IRequesterSelector requesterSelector, IRequestDiagnosticsManager loggingManager,
+	public RequestManager(IRequesterSelector requesterSelector, IRequestDiagnosticsRepository loggingManager,
 		InMemoryRequestDiagnosticsSource inMemoryRequestDiagnosticsSource)
 	{
 		this.requesterSelector = requesterSelector;
-		requestDiagnosticsManager = loggingManager;
+		requestDiagnosticsRepository = loggingManager;
 		this.inMemoryRequestDiagnosticsSource = inMemoryRequestDiagnosticsSource;
 		requestManagerServiceIdentity = ServiceIdentity.ApplicationWideIdentity;
 		MessageContexts = new ReadOnlyObservableCollection<MessageContext>(requests);
@@ -37,7 +38,7 @@ public class RequestManager : IRequestManager
 			requests.Add(messageContext);
 		}
 
-		var requestDiagnostics = requestDiagnosticsManager.CreateDiagnostics(traceId);
+		var requestDiagnostics = requestDiagnosticsRepository.CreateDiagnostics(traceId);
 		requestDiagnostics.AddLog(requestManagerServiceIdentity, DateTimeOffset.UtcNow, LogLevel.Information, "Choosing requester", null);
 		var requester = requesterSelector.PickRequester(request.MessageInfo);
 		IDurationMapBuilder durationMapBuilder =

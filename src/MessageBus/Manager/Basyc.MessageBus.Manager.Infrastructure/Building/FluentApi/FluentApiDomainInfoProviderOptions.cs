@@ -5,5 +5,5 @@ namespace Basyc.MessageBus.Manager.Application;
 
 public class FluentApiDomainInfoProviderOptions
 {
-	public List<InProgressGroupRegistration> GroupRegistrations { get; } = new();
+	public List<FluentApiGroupRegistration> GroupRegistrations { get; } = new();
 }

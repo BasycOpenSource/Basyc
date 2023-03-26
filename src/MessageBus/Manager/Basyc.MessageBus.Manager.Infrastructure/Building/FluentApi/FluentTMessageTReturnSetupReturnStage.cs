@@ -1,51 +1,52 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.MessageBus.Manager.Application;
+using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using System;
+using Microsoft.Extensions.Logging;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderStageBase
 {
-	private readonly InProgressMessageRegistration inProgressMessage;
-	private readonly InProgressGroupRegistration inProgressGroup;
+	private readonly FluentApiMessageRegistration fluentApiMessage;
+	private readonly FluentApiGroupRegistration fluentApiGroup;
 	private readonly RequestToTypeBinder<TMessage> messageBinder;
 
-	public FluentTMessageTReturnSetupReturnStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressGroupRegistration inProgressGroup) : base(services)
+	public FluentTMessageTReturnSetupReturnStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) : base(services)
 	{
-		this.inProgressMessage = inProgressMessage;
-		this.inProgressGroup = inProgressGroup;
+		this.fluentApiMessage = fluentApiMessage;
+		this.fluentApiGroup = fluentApiGroup;
 
 		messageBinder = new RequestToTypeBinder<TMessage>();
 	}
 
-	public FluentSetupDomainPostStage HandeledBy(Action<MessageRequest> handler)
+	private FluentSetupDomainPostStage HandeledBy(RequestHandlerDelegate handler)
 	{
-		inProgressMessage.RequestHandler = handler;
-		return new FluentSetupDomainPostStage(services, inProgressGroup);
+		fluentApiMessage.RequestHandler = handler;
+		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy(Func<RequestInput, TReturn> handler)
 	{
-		Action<MessageRequest> handlerWrapper = (requestResult) =>
+		object? handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
 			var returnObject = handler.Invoke(requestResult.Request);
-			requestResult.Complete(returnObject);
-		};
-		inProgressMessage.RequestHandler = handlerWrapper;
-		return new FluentSetupDomainPostStage(services, inProgressGroup);
+			return returnObject;
+		}
+		fluentApiMessage.RequestHandler = handlerWrapper;
+		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy(Func<TMessage, TReturn> handlerWithTReturn)
 	{
-		Action<MessageRequest> wrapperHandler = (result) =>
+		object? handlerWrapper(MessageRequest result, ILogger logger)
 		{
 			var message = messageBinder.CreateMessage(result.Request);
 			var returnObject = handlerWithTReturn.Invoke(message);
-			result.Complete(returnObject!);
-		};
-		inProgressMessage.RequestHandler = wrapperHandler;
-		return new FluentSetupDomainPostStage(services, inProgressGroup);
+			return returnObject!;
+		}
+		fluentApiMessage.RequestHandler = handlerWrapper;
+		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 }

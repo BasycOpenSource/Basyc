@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Basyc.MessageBus.Manager.Application;
 
-public interface IMessagesProvider
+public interface IMessagesInfoProvidersAggregator
 {
 	IReadOnlyList<MessageGroup> GetMessageGroups();
 }

@@ -1,0 +1,19 @@
+﻿@using Microsoft.Extensions.Logging;
+@using MudBlazor.Utilities;
+
+<logIcon class="@Class">
+    <rectangle class="@rectangleClass" />
+</logIcon>
+@code {
+    [Parameter, EditorRequired] public LogLevel LogLevel { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    string rectangleClass => new CssBuilder()
+                            .AddClass("rectangle--info", LogIconTypeHelper.LogLevelToLogIconType(LogLevel) is LogIconType.Info)
+                            .AddClass("rectangle--warning", LogIconTypeHelper.LogLevelToLogIconType(LogLevel) is LogIconType.Warning)
+                            .AddClass("rectangle--error", LogIconTypeHelper.LogLevelToLogIconType(LogLevel) is LogIconType.Error)
+                            .Build();
+
+
+
+}

@@ -1,25 +1,34 @@
 ﻿@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 @using Basyc.ReactiveUi.Blazor;
+@using Microsoft.Extensions.Logging;
 @using MudBlazor.Utilities;
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryItemViewModel>
 
-<sidebarHistoryItemView class="@classToRender">
+<sidebarHistoryItemView class="@sidebarHistoryItemViewClass">
     <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
         <MudStack Row="true" AlignItems="AlignItems.Stretch">
             <index>
                 #@Index
             </index>
             <itemBody>
-                <MudStack>
-                    <div>
+                <MudStack Spacing="0">
+                    <headingRow class="@headingRowClass">
                         @ViewModel.State
                         @Html.Time(ViewModel.Duration)
-                    </div>
-                    <div>
-                        [] @ViewModel.LogsCount
-                    </div>
+                    </headingRow>
+                    <loggingRow>
+                        <BasycSpaceLine End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                        <LogIconView LogLevel="LogLevel.Information" /> @ViewModel.LogsInformationCount
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                        <LogIconView LogLevel="LogLevel.Warning" /> @ViewModel.LogsWarningCount
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                        <LogIconView LogLevel="LogLevel.Error" /> @ViewModel.LogsErrorCount
+                        <BasycSpaceLine Start="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                    </loggingRow>
                 </MudStack>
             </itemBody>
         </MudStack>
@@ -36,15 +45,29 @@
     {
         base.OnInitialized();
     }
-    private string classToRender = "";
+    private string sidebarHistoryItemViewClass = "";
+    //private string headingRowClass = "";
+    private string headingRowClass => new CssBuilder()
+            .AddClass("headingRowClass--started", ViewModel.State == RequestResultState.Started)
+            .AddClass("headingRowClass--completed", ViewModel.State == RequestResultState.Completed)
+            .AddClass("headingRowClass--failed", ViewModel.State == RequestResultState.Failed)
+            .Build();
 
     protected override void OnParametersSet()
     {
         ViewModel.MessageRequest = MessageRequest;
         ViewModel.NavigationService = NavigationService;
         base.OnParametersSet();
-        classToRender = new CssBuilder()
+
+        sidebarHistoryItemViewClass = new CssBuilder()
              .AddClass("sidebarHistoryItemView--selected", ViewModel.IsSelected)
              .Build();
+
+        //headingRowClass = new CssBuilder()
+        //    .AddClass("headingRowClass--started", ViewModel.State == RequestResultState.Started)
+        //    .AddClass("headingRowClass--completed", ViewModel.State == RequestResultState.Completed)
+        //    .AddClass("headingRowClass--failed", ViewModel.State == RequestResultState.Failed)
+        //    .Build();
     }
+
 }

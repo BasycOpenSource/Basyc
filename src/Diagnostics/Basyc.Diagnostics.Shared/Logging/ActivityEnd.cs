@@ -1,5 +1,4 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Basyc.Diagnostics.Shared.Logging;
 

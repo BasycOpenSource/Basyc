@@ -1,7 +1,5 @@
 using Basyc.Diagnostics.Producing.Abstractions;
-using Basyc.Diagnostics.Producing.Shared.Building;
 using Basyc.Diagnostics.Receiving.Abstractions;
-using Basyc.Diagnostics.Shared;
 using Basyc.DomainDrivenDesign.Domain;
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.Manager;
@@ -23,7 +21,7 @@ var assembliesToScan = new[] { typeof(TestCommand).Assembly };
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-builder.Services.AddBasycDiagnosticExporting()
+builder.Services.AddBasycDiagnosticsExporting()
 	.SetDefaultIdentity("BusManager")
 	//.AddSignalRExporter()
 	.AddInMemoryExporter()
@@ -31,13 +29,14 @@ builder.Services.AddBasycDiagnosticExporting()
 	.AnyActvity()
 	.AnyLog();
 
-builder.Services.AddBasycDiagnosticReceiving()
+builder.Services.AddBasycDiagnosticsReceiving()
 	.AddInMemoryReceiver();
 // 	.SelectSignalRReceiver()
 // 	.SetServerUri("https://localhost:44310");
 
 builder.Services.AddBasycMessageBus()
-	.NoHandlers()
+	.RegisterHandlersFromAssembly<TestCommandHandler>()
+	//.NoHandlers()
 	//.SelectSignalRProxyProvider("https://localhost:44310")
 	.SelectNullClient()
 	.EnableDiagnostics();
@@ -52,7 +51,7 @@ busManagerBuilder.AddRequestHandler()
 	.UseBasycMessageBusHandler();
 
 busManagerBuilder.RegisterMessages()
-	.FromAssembly(assembliesToScan)
+	.FromAssemblyScan(assembliesToScan)
 	.InGroup("FromAssembly")
 	.FromInterface<IEvent>()
 	.UseTypeNameAsDisplayName()
@@ -60,16 +59,16 @@ busManagerBuilder.RegisterMessages()
 	.HandledByDefaultHandler();
 
 busManagerBuilder.RegisterMessages()
-	.FromAssembly(assembliesToScan)
+	.FromAssemblyScan(assembliesToScan)
 	.InGroup("FromAssembly")
 	.FromInterface<ICommand>()
 	.UseTypeNameAsDisplayName()
 	.AsCommands()
 	.NoResponse()
-	.HandledByDefaultHandler();
+	.HandledBy(BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
 
 busManagerBuilder.RegisterMessages()
-	.FromAssembly(assembliesToScan)
+	.FromAssemblyScan(assembliesToScan)
 	.InGroup("FromAssembly")
 	.FromInterface(typeof(ICommand<>))
 	.UseTypeNameAsDisplayName()
@@ -79,7 +78,7 @@ busManagerBuilder.RegisterMessages()
 	.HandledByDefaultHandler();
 
 busManagerBuilder.RegisterMessages()
-	.FromAssembly(assembliesToScan)
+	.FromAssemblyScan(assembliesToScan)
 	.InGroup("FromAssembly")
 	.FromInterface(typeof(IQuery<>))
 	.UseTypeNameAsDisplayName()
@@ -93,27 +92,46 @@ busManagerBuilder.RegisterMessages()
 	.FilterOnInterface<ICommand>()
 	.Register((x, a) =>
 	{
-		a.InGroup("FromAssembly2")
+		a.AddGroup("FromAssembly2")
 			.AddMessage(x.Name)
 			.NoReturn()
-			.HandledBy(x =>
+			.HandledBy((x, logger) =>
 			{
-				var activity = DiagnosticHelper.Start("Handler logic");
-				activity.Stop();
-				x.Complete();
+				//var activity = DiagnosticHelper.Start("Handler logic");
+				//activity.Stop();
+				//x.Complete();
 			});
 	});
 
 busManagerBuilder.RegisterMessages()
 	.FromFluentApi()
-	.InGroup("FromFluentApi")
+	.AddGroup("FromFluentApi")
 	.AddMessage("Fluent Message 1")
 	.NoReturn()
-	.HandledBy(x =>
+	.HandledBy((input, logger) =>
 	{
-		var activity = DiagnosticHelper.Start("Handler logic");
-		activity.Stop();
-		x.Complete();
+		if (Random.Shared.Next(0, 100) > 50)
+		{
+			Thread.Sleep(100);
+			logger.LogError("TestError");
+			throw new Exception("Test exception");
+		}
+	})
+	.AddMessage("ToUpper")
+	.WithParameter<string>("name")
+	.Returns<string>("nameToUpper")
+	.HandledBy((x, logger) =>
+	{
+		var name = (string)x.Parameters.First().Value.Value();
+		return name.ToUpperInvariant();
+	})
+	.AddMessage("ToLower")
+	.WithParameter<string>("name")
+	.Returns<string>("nameToLower")
+	.HandledBy((x, logger) =>
+	{
+		var name = (string)x.Parameters.First().Value.Value();
+		return name.ToLowerInvariant();
 	});
 
 builder.Services.AddBasycBusManagerBlazorUi();
@@ -127,13 +145,13 @@ builder.Services.AddBasycBusManagerBlazorUi();
 //CreateTestingMessages(busManagerBuilder);
 
 var blazorApp = builder.Build();
-WireUpInMemoryProducers(blazorApp);
+WireUpInMemoryDiagnostics(blazorApp);
 await blazorApp.Services.StartBasycDiagnosticsReceivers();
 await blazorApp.Services.StartBasycDiagnosticExporters();
 await blazorApp.Services.StartBasycMessageBusClient();
 await blazorApp.RunAsync();
 
-static void WireUpInMemoryProducers(WebAssemblyHost app)
+static void WireUpInMemoryDiagnostics(WebAssemblyHost app)
 {
 	var serverReceiver = app.Services.GetRequiredService<InMemoryDiagnosticReceiver>();
 	var inMemoryProducer = app.Services.GetRequiredService<InMemoryDiagnosticsExporter>();
@@ -141,6 +159,7 @@ static void WireUpInMemoryProducers(WebAssemblyHost app)
 	{
 		serverReceiver.PushLog(a);
 	};
+
 	inMemoryProducer.StartProduced += (s, a) =>
 	{
 		serverReceiver.StartActivity(a);

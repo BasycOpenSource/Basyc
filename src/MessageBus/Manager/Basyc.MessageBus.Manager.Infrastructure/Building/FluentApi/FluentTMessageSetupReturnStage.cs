@@ -1,66 +1,68 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.MessageBus.Manager.Application;
+using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 {
 	private readonly RequestToTypeBinder<TMessage> binder;
-	private readonly InProgressGroupRegistration inProgressGroup;
-	private readonly InProgressMessageRegistration inProgressMessage;
+	private readonly FluentApiGroupRegistration fluentApiGroup;
+	private readonly FluentApiMessageRegistration fluentApiMessage;
 
-	public FluentTMessageSetupReturnStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage,
-		InProgressGroupRegistration inProgressGroup) : base(services)
+	public FluentTMessageSetupReturnStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage,
+		FluentApiGroupRegistration fluentApiGroup) : base(services)
 	{
-		this.inProgressMessage = inProgressMessage;
-		this.inProgressGroup = inProgressGroup;
+		this.fluentApiMessage = fluentApiMessage;
+		this.fluentApiGroup = fluentApiGroup;
 		binder = new RequestToTypeBinder<TMessage>();
 	}
 
-	public FluentSetupDomainPostStage HandeledBy(Action<MessageRequest> handler)
+	private FluentSetupDomainPostStage HandeledBy(RequestHandlerDelegate handler)
 	{
-		inProgressMessage.RequestHandler = handler;
-		return new FluentSetupDomainPostStage(services, inProgressGroup);
+		fluentApiMessage.RequestHandler = handler;
+		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<RequestInput, TReturn> handler)
 	{
-		Action<MessageRequest> handlerWrapper = requestResult =>
+		object? wrapperHandler(MessageRequest result, ILogger logger)
 		{
 			//requestResult.Start();
-			var returnObject = handler.Invoke(requestResult.Request);
-			requestResult.Complete(returnObject);
-		};
-		inProgressMessage.RequestHandler = handlerWrapper;
-		return new FluentSetupDomainPostStage(services, inProgressGroup);
+			var returnObject = handler.Invoke(result.Request);
+			return returnObject;
+		}
+		fluentApiMessage.RequestHandler = wrapperHandler;
+		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy(Func<TMessage, object> handlerWithTReturn)
 	{
-		Action<MessageRequest> wrapperHandler = result =>
+		object? wrapperHandler(MessageRequest result, ILogger logger)
 		{
 			var message = binder.CreateMessage(result.Request);
 			var returnObject = handlerWithTReturn.Invoke(message);
-			ReturnObjectHelper.CheckHandlerReturnType(returnObject, inProgressMessage.ResponseRunTimeType!);
-			result.Complete(returnObject!);
-		};
-		inProgressMessage.RequestHandler = wrapperHandler;
-		return new FluentSetupDomainPostStage(services, inProgressGroup);
+			ReturnObjectHelper.CheckHandlerReturnType(returnObject, fluentApiMessage.ResponseRunTimeType!);
+			return returnObject!;
+		}
+		fluentApiMessage.RequestHandler = wrapperHandler;
+		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 
 	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<TMessage, TReturn> handlerWithTReturn)
 		where TReturn : class
 	{
-		Action<MessageRequest> wrapperHandler = result =>
+		TReturn wrapperHandler(MessageRequest result, ILogger logger)
 		{
 			var message = binder.CreateMessage(result.Request);
 			var returnObject = handlerWithTReturn.Invoke(message);
-			ReturnObjectHelper.CheckHandlerReturnType(returnObject, inProgressMessage.ResponseRunTimeType!);
-			result.Complete(returnObject!);
-		};
-		inProgressMessage.RequestHandler = wrapperHandler;
-		return new FluentSetupDomainPostStage(services, inProgressGroup);
+			ReturnObjectHelper.CheckHandlerReturnType(returnObject, fluentApiMessage.ResponseRunTimeType!);
+			return returnObject!;
+		}
+		fluentApiMessage.RequestHandler = wrapperHandler;
+		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 }

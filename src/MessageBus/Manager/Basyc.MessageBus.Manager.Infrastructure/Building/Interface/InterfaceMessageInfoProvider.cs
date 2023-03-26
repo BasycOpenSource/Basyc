@@ -6,14 +6,14 @@ using Throw;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.Interface;
 
-public class InterfaceDomainProvider : IDomainInfoProvider
+public class InterfaceMessageInfoProvider : IMessageInfoProvider
 {
 	private readonly IOptions<InterfaceDomainProviderOptions> options;
 	private readonly IEnumerable<IRequestHandler> requesters;
 	private readonly IRequesterSelector requesterSelector;
 	private readonly IRequestInfoTypeStorage requestInfoTypeStorage;
 
-	public InterfaceDomainProvider(IOptions<InterfaceDomainProviderOptions> options, IRequesterSelector requesterSelector,
+	public InterfaceMessageInfoProvider(IOptions<InterfaceDomainProviderOptions> options, IRequesterSelector requesterSelector,
 		IRequestInfoTypeStorage requestInfoTypeStorage, IEnumerable<IRequestHandler> requesters)
 	{
 		this.options = options;
@@ -22,7 +22,7 @@ public class InterfaceDomainProvider : IDomainInfoProvider
 		this.requesters = requesters;
 	}
 
-	public List<MessageGroup> GenerateDomainInfos()
+	public List<MessageGroup> GetMessageInfos()
 	{
 		var groupss = new Dictionary<string, List<MessageInfo>>();
 

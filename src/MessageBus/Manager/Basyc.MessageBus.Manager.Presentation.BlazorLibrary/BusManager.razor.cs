@@ -26,14 +26,19 @@ public partial class BusManager
 		base.OnInitialized();
 
 		BasycStyleSection.AddStyleSection(new Blazor.Controls.StyleSections.StyleDefinition(
-	"1",
-	"",
-	"style1"));
+			"1",
+			"",
+			"style1"));
 
 		BasycStyleSection.AddStyleSection(new Blazor.Controls.StyleSections.StyleDefinition(
 			"2",
 			"",
 			"style2"));
+
+		BasycStyleSection.AddStyleSection(new Blazor.Controls.StyleSections.StyleDefinition(
+			"3",
+			"",
+			"style3"));
 
 	}
 

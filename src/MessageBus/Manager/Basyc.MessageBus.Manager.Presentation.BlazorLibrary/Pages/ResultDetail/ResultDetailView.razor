@@ -10,7 +10,7 @@
 	}
 }
 
-@inject IRequestDiagnosticsManager ResultLoggingManager;
+@inject IRequestDiagnosticsRepository ResultLoggingManager;
 
 <requestDetailView class="@requestDetailViewClass">
 	@if (RequestResult is null)

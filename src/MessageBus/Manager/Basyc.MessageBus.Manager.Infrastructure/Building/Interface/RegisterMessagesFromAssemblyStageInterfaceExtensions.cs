@@ -16,11 +16,11 @@ public static class RegisterMessagesFromAssemblyStageInterfaceExtensions
 		interfaceRegistration.AssembliesToScan.AddRange(fromAssemblyStage.assembliesToScan);
 		interfaceRegistration.MessageInterfaceType = interfaceType;
 		interfaceRegistration.GroupName = fromAssemblyStage.groupName;
+		interfaceRegistration.DisplayNameFormatter = x => x.Name;
 		fromAssemblyStage.services.Configure<InterfaceDomainProviderOptions>(options =>
 		{
 			options.InterfaceRegistrations.Add(interfaceRegistration);
 		});
-		interfaceRegistration.DisplayNameFormatter = x => x.Name;
 		return new SetupDisplayNameStage(fromAssemblyStage.services, interfaceRegistration);
 	}
 }

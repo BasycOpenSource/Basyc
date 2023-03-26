@@ -23,14 +23,28 @@ sideBar {
 
 messagePage {
     flex: 100;
+    overflow: hidden;
 }
 
 
 .styleSharedDefaults {
+    /*font-weight: 300;*/
+
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #9ab3db51;
+        border-radius: 40px;
+    }
+
     .headingDefalts {
         font-weight: 300;
-        /*margin-top: 2em;*/
-        /*margin-bottom: 1em;*/
     }
 
     h1 {
@@ -44,6 +58,11 @@ messagePage {
     h3 {
         @extend .headingDefalts;
         font-size: 18px;
+    }
+
+    h4 {
+        @extend .headingDefalts;
+        font-size: 16px;
     }
 
     button {
@@ -66,7 +85,6 @@ messagePage {
 
 ::deep .style1 {
     @extend .styleSharedDefaults;
-    font-weight: 300;
     color: #7a657d;
 }
 
@@ -74,9 +92,11 @@ messagePage {
     @extend .styleSharedDefaults;
     background-color: #08080B;
     color: rgba(194, 197, 212, 0.4);
-    font-weight: 300;
 
+}
 
-
-
-}     
+::deep .style3 {
+    @extend .styleSharedDefaults;
+    background-color: #0C0B10;
+    color: #636986;
+}    

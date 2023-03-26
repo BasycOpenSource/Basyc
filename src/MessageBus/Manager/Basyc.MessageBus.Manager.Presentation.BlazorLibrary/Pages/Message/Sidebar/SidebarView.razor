@@ -13,6 +13,10 @@
 
         <grid>
             <BasycSpaceBorder Size="SpacerSize.Medium">
+                <BasycHeading Size="HeadingSize.H3">
+                    Create request
+                </BasycHeading>
+                <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Start="SpaceLineSize.Medium"  Visible="false"/>
                 <requestform>
 
                     @if (MessageInfo is null)
@@ -52,7 +56,7 @@
                             </ghostLabel>
 
                         }
-                        <BasycSpaceLine Start="@SpaceLineSize.Small" Visible="false" />
+                        <BasycSpaceLine Start="@SpaceLineSize.Medium" Visible="false" />
                         <button @onclick="SendMessage">
                             send
                         </button>

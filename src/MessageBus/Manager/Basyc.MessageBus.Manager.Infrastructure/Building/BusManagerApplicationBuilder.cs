@@ -12,10 +12,7 @@ public class BusManagerApplicationBuilder : BuilderStageBase
 {
 	public BusManagerApplicationBuilder(IServiceCollection services) : base(services)
 	{
-		services.AddSingleton<IRequesterSelector, RequesterSelector>();
-		services.AddSingleton<IMessagesProvider, DomainInfoProviderManager>();
-		services.AddSingleton<IRequestInfoTypeStorage, InMemoryRequestInfoTypeStorage>();
-		services.AddSingleton<IDomainInfoProvider, InterfaceDomainProvider>();
+
 	}
 
 	public SetupMessagesStage RegisterMessages()

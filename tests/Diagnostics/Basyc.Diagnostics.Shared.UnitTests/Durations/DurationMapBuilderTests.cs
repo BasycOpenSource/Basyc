@@ -1,4 +1,5 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
+﻿using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Durations;
 
 namespace Basyc.MessageBus.Manager.Application.Tests.Durations;
 

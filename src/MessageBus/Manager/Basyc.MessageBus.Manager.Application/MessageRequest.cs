@@ -8,6 +8,7 @@ namespace Basyc.MessageBus.Manager.Application;
 public class MessageRequest : ReactiveObject
 {
 	private readonly IDurationMapBuilder durationMapBuilder;
+	private IDurationSegmentBuilder? requestActivity;
 
 	public MessageRequest(RequestInput request, DateTimeOffset requestCreationTime, string traceId, IDurationMapBuilder durationMapBuilder,
 		RequestDiagnostic requestDiagnostics, int orderIndex)
@@ -19,6 +20,7 @@ public class MessageRequest : ReactiveObject
 		State = RequestResultState.Started;
 		TraceId = traceId;
 		OrderIndex = orderIndex;
+		Duration = default;
 	}
 
 	public RequestInput Request { get; init; }
@@ -31,11 +33,11 @@ public class MessageRequest : ReactiveObject
 	/// <summary>
 	///     Time when request started
 	/// </summary>
-	public DateTimeOffset StartTime => durationMapBuilder.StartTime;
+	public DateTimeOffset StartTime => requestActivity.Value().StartTime;
 
-	public DateTimeOffset EndTime => durationMapBuilder.EndTime;
+	public DateTimeOffset EndTime => requestActivity.Value().EndTime;
 
-	public TimeSpan Duration => State == RequestResultState.Started ? default : durationMapBuilder.EndTime - durationMapBuilder.StartTime;
+	[Reactive] public TimeSpan Duration { get; private set; }
 
 	public string TraceId { get; init; }
 	public int OrderIndex { get; init; }
@@ -44,48 +46,37 @@ public class MessageRequest : ReactiveObject
 	public object? Response { get; private set; }
 	public string? ErrorMessage { get; private set; }
 
-	///// <summary>
-	///// You should call <see cref="Start"/> in moment that all internal processes are done and from now only work related to handeling a request are in process.
-	///// </summary>
-	//public void Start()
-	//{
-	//	if (durationMapBuilder.HasStarted)
-	//		throw new InvalidOperationException($"{nameof(Start)} was already called");
-	//}
-
-	//public IDurationSegmentBuilder StartNewSegment(string segmentName)
-	//{
-	//	return durationMapBuilder.StartNewSegment(segmentName);
-	//}
-
-	public void Complete(object? response)
+	public void SetResponse(object? response)
 	{
-		FinishDurationMap();
+		//FinishDurationMap();
 		if (Request.MessageInfo.HasResponse is false)
 			throw new InvalidOperationException("Can't complete with return value becuase this message does not have return value");
 
-		State = RequestResultState.Completed;
 		Response = response;
+		Duration = requestActivity.Value().EndTime - requestActivity.Value().StartTime;
+		State = RequestResultState.Completed;
 		OnStateChanged();
 	}
 
-	public void Complete()
+	public void SetResponse()
 	{
-		FinishDurationMap();
+		//FinishDurationMap();
 
 		if (Request.MessageInfo.HasResponse)
 			throw new InvalidOperationException(
 				$"Can't complete without return value becuase this message has return value. Use {nameof(Fail)} method when error occured and no return value is avaible");
 
+		Duration = requestActivity.Value().EndTime - requestActivity.Value().StartTime;
 		State = RequestResultState.Completed;
 		OnStateChanged();
 	}
 
 	public void Fail(string errorMessage)
 	{
-		FinishDurationMap();
-		State = RequestResultState.Failed;
+		Stop();
 		ErrorMessage = errorMessage;
+		Duration = requestActivity.Value().EndTime - requestActivity.Value().StartTime;
+		State = RequestResultState.Failed;
 		OnStateChanged();
 	}
 
@@ -96,13 +87,22 @@ public class MessageRequest : ReactiveObject
 		StateChanged?.Invoke(this, EventArgs.Empty);
 	}
 
-	public IDurationSegmentBuilder StartDurationMap()
+	public IDurationSegmentBuilder Start()
 	{
-		return durationMapBuilder.StartNewSegment("Start");
+		//var startTime = durationMapBuilder.Start();
+		requestActivity = durationMapBuilder.StartNewSegment("MessageRequest Start");
+		return requestActivity;
 	}
 
-	public void FinishDurationMap()
+	public void Stop()
 	{
-		durationMapBuilder.End();
+		var endTime = requestActivity.Value().End();
+		//durationMapBuilder.End(endTime);
+	}
+
+	public void Stop(DateTimeOffset endTime)
+	{
+		requestActivity.Value().End(endTime);
+		//durationMapBuilder.End(endTime);
 	}
 }

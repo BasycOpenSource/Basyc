@@ -16,7 +16,9 @@
         <SidebarView MessageInfo="@MessageInfo" NavigationService="@ViewModel.NavigationService" />
     </requestFormPage>
     <page>
-        @ViewModel.PageToDisplay
+        <BasycStyleSection SectionName="3">
+            @ViewModel.PageToDisplay
+        </BasycStyleSection>
     </page>
 </messagePageView>
 

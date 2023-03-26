@@ -3,6 +3,9 @@
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
 <horizontalDurationMapView>
+    <zoomToolBar>
+        <MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="0.1" Style="color: white;" />
+    </zoomToolBar>
 	<services>
 		@{
 			if (RequestContext.Diagnostics.Services.Any())
@@ -16,7 +19,9 @@
 					var backgroundColor = serviceThemeColor.Edit(opacity: 0.05);
 
 					var serviceFirstActivity = service.Activities.First();
-					var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}; box-shadow: 0px 0px 0px 1px {borderColor};";
+					//var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}";
+					var serviceStyle = $"background-color: {backgroundColor}";
+                    var durationBoxesStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)};";
 					var serviceNameStyle = $"color: {nameColor}";
 					<service style="@serviceStyle">
 						<serviceNameContainer>
@@ -24,7 +29,7 @@
 								@service.ServiceIdentity.ServiceName
 							</serviceName>
 						</serviceNameContainer>
-						<durationBoxes>
+                        <durationBoxes style="@durationBoxesStyle">
 							@{
 								ActivityContext? previousActivity = null;
 								foreach (var activity in service.Activities)
@@ -50,9 +55,7 @@
 		}
 	</services>
 
-	<zoomToolBar>
-		<MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="0.1" Style="color: white;"/>
-	</zoomToolBar>
+
 
 </horizontalDurationMapView>
 

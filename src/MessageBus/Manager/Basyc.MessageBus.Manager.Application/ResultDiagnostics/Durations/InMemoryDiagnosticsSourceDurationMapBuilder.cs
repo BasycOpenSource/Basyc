@@ -1,7 +1,7 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
+﻿using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Durations;
 using Basyc.Diagnostics.Shared.Helpers;
 using Basyc.Diagnostics.Shared.Logging;
-using System;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics.Durations;
 
@@ -18,17 +18,17 @@ internal class InMemoryDiagnosticsSourceDurationMapBuilder : InMemoryDiagnostics
 
 	public IDurationSegmentBuilder StartNewSegment(ServiceIdentity service, string segmentName, DateTimeOffset startTime)
 	{
-		return this.StartNested(service, segmentName, startTime);
+		return StartNested(service, segmentName, startTime);
 	}
 
 	public IDurationSegmentBuilder StartNewSegment(string segmentName)
 	{
-		return this.StartNested(segmentName);
+		return StartNested(segmentName);
 	}
 
 	public IDurationSegmentBuilder StartNewSegment(string segmentName, DateTimeOffset startTime)
 	{
-		return this.StartNested(segmentName, startTime);
+		return StartNested(segmentName, startTime);
 	}
 
 	void IDurationMapBuilder.End()
@@ -42,6 +42,8 @@ internal class InMemoryDiagnosticsSourceDurationMapBuilder : InMemoryDiagnostics
 	{
 		var nestedId = IdGeneratorHelper.GenerateNewSpanId();
 		diagnosticsSource.StartActivity(new ActivityStart(service, TraceId, parentId, nestedId, segmentName, start));
-		return new InMemoryDiagnosticsSourceDurationSegmentBuilder(this, TraceId, nestedId, segmentName, service, diagnosticsSource);
+		var nestedSegment = new InMemoryDiagnosticsSourceDurationSegmentBuilder(this, TraceId, nestedId, segmentName, service, diagnosticsSource);
+		nestedSegment.Start(start);
+		return nestedSegment;
 	}
 }

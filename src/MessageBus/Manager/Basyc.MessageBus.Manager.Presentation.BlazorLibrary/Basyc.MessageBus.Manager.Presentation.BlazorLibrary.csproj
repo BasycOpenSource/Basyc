@@ -21,7 +21,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
-		<PackageReference Include="LibSassBuilder" Version="2.0.1" />
+		<PackageReference Include="LibSassBuilder" Version="3.0.0" />
 		<!--<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />-->
 		<PackageReference Include="MudBlazor" Version="6.0.10" />
 		<PackageReference Include="ReactiveUI.Blazor" Version="18.4.26" />

@@ -2,11 +2,11 @@
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
-public class RequestDiagnosticsManager : IRequestDiagnosticsManager
+public class RequestDiagnosticsRepository : IRequestDiagnosticsRepository
 {
 	private readonly Dictionary<string, RequestDiagnostic> traceIdToContextMap = new();
 
-	public RequestDiagnosticsManager(IEnumerable<IRequestDiagnosticsSource> logSources)
+	public RequestDiagnosticsRepository(IEnumerable<IRequestDiagnosticsSource> logSources)
 	{
 		foreach (var logSource in logSources)
 		{

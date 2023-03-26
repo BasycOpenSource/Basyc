@@ -8,7 +8,7 @@ using Throw;
 
 namespace Basyc.MessageBus.Manager.Infrastructure;
 
-public class TypedDomainProvider : IDomainInfoProvider
+public class TypedMessageInfoProvider : IMessageInfoProvider
 {
 	private readonly ITypedDomainNameFormatter domainNameFormatter;
 	private readonly IOptions<TypedDomainProviderOptions> options;
@@ -18,7 +18,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 	private readonly ITypedRequestNameFormatter requestNameFormatter;
 	private readonly ITypedResponseNameFormatter responseNameFormatter;
 
-	public TypedDomainProvider(
+	public TypedMessageInfoProvider(
 		IOptions<TypedDomainProviderOptions> options,
 		ITypedDomainNameFormatter domainNameFormatter,
 		ITypedRequestNameFormatter requestNameFormatter,
@@ -37,7 +37,7 @@ public class TypedDomainProvider : IDomainInfoProvider
 		this.requesterSelector = requesterSelector;
 	}
 
-	public List<MessageGroup> GenerateDomainInfos()
+	public List<MessageGroup> GetMessageInfos()
 	{
 		var domains = new List<MessageGroup>();
 		foreach (var domainOption in options.Value.TypedDomainOptions)

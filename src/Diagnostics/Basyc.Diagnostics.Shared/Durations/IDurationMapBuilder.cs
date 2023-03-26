@@ -11,6 +11,7 @@ public interface IDurationMapBuilder
 	DateTimeOffset StartTime { get; }
 
 	void End();
+	void End(DateTimeOffset endTime);
 	DateTimeOffset Start();
 	IDurationSegmentBuilder StartNewSegment(ServiceIdentity service, string segmentName, DateTimeOffset startTime);
 	IDurationSegmentBuilder StartNewSegment(string segmentName);

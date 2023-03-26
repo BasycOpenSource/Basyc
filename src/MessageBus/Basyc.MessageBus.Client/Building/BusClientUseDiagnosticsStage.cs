@@ -1,6 +1,6 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.Diagnostics.Producing.Abstractions;
-using Basyc.Diagnostics.Shared.Durations;
+using Basyc.Diagnostics.Shared;
 using Basyc.MessageBus.Client.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

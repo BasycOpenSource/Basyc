@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Basyc.MessageBus.Manager.Application.Initialization;
 
-public interface IDomainInfoProvider
+public interface IMessageInfoProvider
 {
-	List<MessageGroup> GenerateDomainInfos();
+	List<MessageGroup> GetMessageInfos();
 }

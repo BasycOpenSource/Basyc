@@ -1,5 +1,6 @@
 ﻿@using Basyc.Diagnostics.Shared.Durations
 @using Basyc.Diagnostics.Shared.Logging
+@using Basyc.Diagnostics.Shared;
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Microsoft.Extensions.Logging
 <logWindowView>
@@ -7,6 +8,9 @@
 		<filterLogLevel>
 			<TableFilter TItems="LogLevel" Tooltip="tooltip" SelectedItems="SelectedLogLevels" SelectedItemsChanged="SelectedLogLevelsChanged"/>
 		</filterLogLevel>
+        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Big"/>
+        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium"/>
+        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small"/>
 		<filterService>
 			<TableFilter TItems="ServiceIdentity"
 			             Tooltip="tooltip"

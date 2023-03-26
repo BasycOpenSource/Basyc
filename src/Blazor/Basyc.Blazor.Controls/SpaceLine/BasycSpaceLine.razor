@@ -1,28 +1,49 @@
 ﻿@namespace Basyc.Blazor.Controls
 @using BlazorComponentUtilities;
 
-<basycSpaceLine class="@classToRender">
-    @if(Visible)
+<basycSpaceLine class="@basycSpaceLineClass">
+    @if (Visible)
     {
-        <line/>
+        <line class="@lineClass" />
     }
 </basycSpaceLine>
 @code {
     [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public bool Inline { get; set; } = false;
+    [Parameter] public SpaceLineDirection Direction { get; set; } = SpaceLineDirection.Horizontal;
     [Parameter] public SpaceLineSize? Start { get; set; }
     [Parameter] public SpaceLineSize? End { get; set; }
 
-    private string classToRender = "";
+    private string basycSpaceLineClass = "";
+    private string lineClass = "";
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        classToRender = new CssBuilder()
-            .AddClass("separator-top--small", Start == SpaceLineSize.Small)
-            .AddClass("separator-top--medium", Start == SpaceLineSize.Medium)
-            .AddClass("separator-top--big", Start == SpaceLineSize.Big)
-            .AddClass("separator-end--small", End == SpaceLineSize.Small)
-            .AddClass("separator-end--medium", End == SpaceLineSize.Medium)
-            .AddClass("separator-end--big", End == SpaceLineSize.Big)
+        //basycSpaceLineClass = new CssBuilder()
+        //    .AddClass("basycSpaceLine-top--small", Start == SpaceLineSize.Small)
+        //    .AddClass("basycSpaceLine-top--medium", Start == SpaceLineSize.Medium)
+        //    .AddClass("basycSpaceLine-top--big", Start == SpaceLineSize.Big)
+        //    .AddClass("basycSpaceLine-end--small", End == SpaceLineSize.Small)
+        //    .AddClass("basycSpaceLine-end--medium", End == SpaceLineSize.Medium)
+        //    .AddClass("basycSpaceLine-end--big", End == SpaceLineSize.Big)
+        //    .Build();
+
+        basycSpaceLineClass = new CssBuilder()
+            .AddClass("basycSpaceLine-vertical basycSpaceLine-left basycSpaceLine-right", Direction == SpaceLineDirection.Vertical)
+            .AddClass("basycSpaceLine-horizontal basycSpaceLine-top basycSpaceLine-bottom", Direction == SpaceLineDirection.Horizontal)
+            .AddClass("basycSpaceLine-start--small", Start == SpaceLineSize.Small)
+            .AddClass("basycSpaceLine-start--medium", Start == SpaceLineSize.Medium)
+            .AddClass("basycSpaceLine-start--big", Start == SpaceLineSize.Big)
+            .AddClass("basycSpaceLine-end--small", End == SpaceLineSize.Small)
+            .AddClass("basycSpaceLine-end--medium", End == SpaceLineSize.Medium)
+            .AddClass("basycSpaceLine-end--big", End == SpaceLineSize.Big)
+            .AddClass("basycSpaceLine--inline", Inline)
             .Build();
+
+        lineClass = new CssBuilder()
+        .AddClass("line-vertical", Direction == SpaceLineDirection.Vertical)
+        .AddClass("line-horizontal", Direction == SpaceLineDirection.Horizontal)
+        .Build();
+
     }
 }

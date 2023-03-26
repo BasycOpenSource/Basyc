@@ -1,7 +1,9 @@
 requests {
-    overflow: auto;
     display: flex;
     flex-direction: column;
+    overflow: scroll;
+    overflow: auto;
+    overflow: overlay;
 }
 
 heading {
@@ -21,5 +23,5 @@ historyItem {
 }
 
 historyItem:hover {
-    background-color: #e183c839;
+    background-color: #111724;
 }

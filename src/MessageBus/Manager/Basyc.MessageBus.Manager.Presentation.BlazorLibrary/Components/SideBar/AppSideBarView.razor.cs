@@ -7,12 +7,12 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.SideBar
 
 public partial class AppSideBarView
 {
-	[Inject] private IMessagesProvider DomainInfoProviderManager { get; set; } = null!;
+	[Inject] private IMessagesInfoProvidersAggregator DomainInfoInfoProvidersAggregatorManager { get; set; } = null!;
 	private ReadOnlyObservableCollection<MessageGroup> messageGroups = null!;
 
 	protected override void OnInitialized()
 	{
-		messageGroups = new ReadOnlyObservableCollection<MessageGroup>(new ObservableCollection<MessageGroup>(DomainInfoProviderManager.GetMessageGroups()));
+		messageGroups = new ReadOnlyObservableCollection<MessageGroup>(new ObservableCollection<MessageGroup>(DomainInfoInfoProvidersAggregatorManager.GetMessageGroups()));
 		base.OnInitialized();
 	}
 }

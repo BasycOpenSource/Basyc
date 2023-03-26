@@ -60,7 +60,8 @@ public abstract class DurationSegmentBuilderBase : IDisposable, IDurationSegment
 
 	public virtual void Dispose()
 	{
-		End();
+		if (HasEnded is false)
+			End();
 	}
 
 	/// <summary>

@@ -1,5 +1,5 @@
 ﻿using Basyc.DependencyInjection;
-using Basyc.Diagnostics.Shared.Durations;
+using Basyc.Diagnostics.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Basyc.Diagnostics.Producing.Shared.Building;

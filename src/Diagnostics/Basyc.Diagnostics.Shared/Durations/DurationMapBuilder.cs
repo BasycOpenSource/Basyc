@@ -49,7 +49,7 @@ public class DurationMapBuilder : IDurationMapBuilder
 
 	public IDurationSegmentBuilder StartNewSegment(ServiceIdentity service, string segmentName, DateTimeOffset startTime)
 	{
-		DateTimeOffset mapStart = HasStarted is false ? Start() : StartTime;
+		var mapStart = HasStarted is false ? Start() : StartTime;
 
 		if (mapStart > startTime)
 			throw new ArgumentException("nested segment cant start before map starts");
@@ -68,7 +68,7 @@ public class DurationMapBuilder : IDurationMapBuilder
 		End(DateTimeOffset.UtcNow);
 	}
 
-	private void End(DateTimeOffset endTime)
+	public void End(DateTimeOffset endTime)
 	{
 		if (HasStarted is false)
 			throw new InvalidOperationException($"{nameof(End)} method must be called after {nameof(Start)} or other method that {nameof(Start)} calls internally ({nameof(Build)})");

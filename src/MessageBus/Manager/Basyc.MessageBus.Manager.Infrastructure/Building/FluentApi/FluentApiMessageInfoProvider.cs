@@ -6,13 +6,13 @@ using Microsoft.Extensions.Options;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
-public class FluentApiDomainInfoProvider : IDomainInfoProvider
+public class FluentApiMessageInfoProvider : IMessageInfoProvider
 {
 	private readonly InMemoryRequestHandler inMemoryRequestHandler;
 	private readonly IOptions<FluentApiDomainInfoProviderOptions> options;
 	private readonly IRequesterSelector requesterSelector;
 
-	public FluentApiDomainInfoProvider(IOptions<FluentApiDomainInfoProviderOptions> options,
+	public FluentApiMessageInfoProvider(IOptions<FluentApiDomainInfoProviderOptions> options,
 		InMemoryRequestHandler inMemoryRequestHandler,
 		IRequesterSelector requesterSelector
 	)
@@ -22,9 +22,11 @@ public class FluentApiDomainInfoProvider : IDomainInfoProvider
 		this.requesterSelector = requesterSelector;
 	}
 
-	public List<MessageGroup> GenerateDomainInfos()
+	public List<MessageGroup> GetMessageInfos()
 	{
 		List<MessageGroup> domainInfos = new();
+		return domainInfos;
+		//TODO: maybe remove - probably will be repalced with CommonMessageInfoProvider
 		foreach (var domain in options.Value.GroupRegistrations)
 		{
 			var requestInfos = domain.InProgressMessages.Select(inProgressMessage =>
@@ -37,7 +39,7 @@ public class FluentApiDomainInfoProvider : IDomainInfoProvider
 				requesterSelector.AssignRequesterForMessage(requestInfo, InMemoryRequestHandler.InMemoryDelegateRequesterUniqueName);
 				return requestInfo;
 			}).ToList();
-			domainInfos.Add(new MessageGroup(domain.DomainName!, requestInfos));
+			domainInfos.Add(new MessageGroup(domain.Name!, requestInfos));
 		}
 
 		return domainInfos;
