@@ -4,11 +4,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
-public class FluentSetupGroupStage : BuilderStageBase
+public class FluentAddMessageStage : BuilderStageBase
 {
 	private readonly FluentApiGroupRegistration fluentApiGroup;
 
-	public FluentSetupGroupStage(IServiceCollection services, FluentApiGroupRegistration fluentApiGroup) : base(services)
+	public FluentAddMessageStage(IServiceCollection services, FluentApiGroupRegistration fluentApiGroup) : base(services)
 	{
 		this.fluentApiGroup = fluentApiGroup;
 	}

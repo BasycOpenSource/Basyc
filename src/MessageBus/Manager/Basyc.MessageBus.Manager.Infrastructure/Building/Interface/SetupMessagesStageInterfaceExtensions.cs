@@ -1,19 +1,18 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.MessageBus.Manager.Infrastructure.Building;
 using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
-using Basyc.MessageBus.Manager.Infrastructure.Building.Interface;
 using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SetupMessagesStageInterfaceExtensions
 {
-	public static SetupGroupStage FromAssemblyScan(this SetupMessagesStage parent, params Assembly[] assembliesToScan)
-	{
-		return new SetupGroupStage(parent.services, assembliesToScan);
-	}
+	// public static SetupGroupStage FromAssemblyScan(this SetupMessagesStage parent, params Assembly[] assembliesToScan)
+	// {
+	// 	return new SetupGroupStage(parent.services, assembliesToScan);
+	// }
 
-	public static TypeFilterStage FromAssembly2(this SetupMessagesStage parent, params Assembly[] assembliesToScan)
+	public static TypeFilterStage FromAssemblyScan(this SetupMessagesStage parent, params Assembly[] assembliesToScan)
 	{
 		return new TypeFilterStage(parent.services, assembliesToScan);
 	}
@@ -28,15 +27,21 @@ public static class SetupMessagesStageInterfaceExtensions
 			this.assemblies = assemblies;
 		}
 
-		public TypesToRegisterStage Filter(Func<Type, bool> filter)
+		public TypesToRegisterStage Where(Func<Type, bool> filter)
 		{
 			var filteredTypes = assemblies.SelectMany(x => x.DefinedTypes).Where(filter).ToArray();
 			return new TypesToRegisterStage(services, filteredTypes);
 		}
 
-		public TypesToRegisterStage FilterOnInterface<TInterface>()
+		public TypesToRegisterStage WhereImplements<TImplementedType>()
 		{
-			var filteredTypes = assemblies.SelectMany(x => x.DefinedTypes).Where(x => x.GetInterface(typeof(TInterface).Name) is not null).ToArray();
+			var filteredTypes = assemblies.SelectMany(x => x.DefinedTypes).Where(x => x.GetInterface(typeof(TImplementedType).Name) is not null).ToArray();
+			return new TypesToRegisterStage(services, filteredTypes);
+		}
+
+		public TypesToRegisterStage WhereImplements(Type implementedType)
+		{
+			var filteredTypes = assemblies.SelectMany(x => x.DefinedTypes).Where(x => x.GetInterface(implementedType.Name) is not null).ToArray();
 			return new TypesToRegisterStage(services, filteredTypes);
 		}
 	}
@@ -50,12 +55,10 @@ public static class SetupMessagesStageInterfaceExtensions
 			this.types = types;
 		}
 
-		public void Register(Action<Type, RegisterMessagesFromFluentApiStage> register)
+		public void Register(Action<Type, FluentAddGroupStage> register)
 		{
 			foreach (var type in types)
-			{
-				register.Invoke(type, new RegisterMessagesFromFluentApiStage(services));
-			}
+				register.Invoke(type, new FluentAddGroupStage(services));
 		}
 	}
 }

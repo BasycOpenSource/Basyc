@@ -21,13 +21,13 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 		binder = new RequestToTypeBinder<TMessage>();
 	}
 
-	private FluentSetupDomainPostStage HandeledBy(RequestHandlerDelegate handler)
+	private FluentSetupDomainPostStage HandledBy(RequestHandlerDelegate handler)
 	{
 		fluentApiMessage.RequestHandler = handler;
 		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 
-	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<RequestInput, TReturn> handler)
+	public FluentSetupDomainPostStage HandledBy<TReturn>(Func<RequestInput, TReturn> handler)
 	{
 		object? wrapperHandler(MessageRequest result, ILogger logger)
 		{
@@ -35,34 +35,50 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 			var returnObject = handler.Invoke(result.Request);
 			return returnObject;
 		}
+
 		fluentApiMessage.RequestHandler = wrapperHandler;
 		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 
-	public FluentSetupDomainPostStage HandeledBy(Func<TMessage, object> handlerWithTReturn)
-	{
-		object? wrapperHandler(MessageRequest result, ILogger logger)
-		{
-			var message = binder.CreateMessage(result.Request);
-			var returnObject = handlerWithTReturn.Invoke(message);
-			ReturnObjectHelper.CheckHandlerReturnType(returnObject, fluentApiMessage.ResponseRunTimeType!);
-			return returnObject!;
-		}
-		fluentApiMessage.RequestHandler = wrapperHandler;
-		return new FluentSetupDomainPostStage(services, fluentApiGroup);
-	}
+	// public FluentSetupDomainPostStage HandledBy(Func<TMessage, ILogger, object> handlerWithTReturn)
+	// {
+	// 	object? wrapperHandler(MessageRequest result, ILogger logger)
+	// 	{
+	// 		var message = binder.CreateMessage(result.Request);
+	// 		var returnObject = handlerWithTReturn.Invoke(message, logger);
+	// 		ReturnObjectHelper.CheckHandlerReturnType(returnObject, fluentApiMessage.ResponseRunTimeType!);
+	// 		return returnObject!;
+	// 	}
+	// 	fluentApiMessage.RequestHandler = wrapperHandler;
+	// 	return new FluentSetupDomainPostStage(services, fluentApiGroup);
+	// }
 
-	public FluentSetupDomainPostStage HandeledBy<TReturn>(Func<TMessage, TReturn> handlerWithTReturn)
+	// public FluentSetupDomainPostStage HandledBy<TReturn>(Func<TMessage, ILogger, TReturn> handlerWithTReturn)
+	// 	where TReturn : class
+	// {
+	// 	TReturn wrapperHandler(MessageRequest result, ILogger logger)
+	// 	{
+	// 		var message = binder.CreateMessage(result.Request);
+	// 		var returnObject = handlerWithTReturn.Invoke(message, logger);
+	// 		ReturnObjectHelper.CheckHandlerReturnType(returnObject, fluentApiMessage.ResponseRunTimeType!);
+	// 		return returnObject!;
+	// 	}
+	// 	fluentApiMessage.RequestHandler = wrapperHandler;
+	// 	return new FluentSetupDomainPostStage(services, fluentApiGroup);
+	// }
+
+	public FluentSetupDomainPostStage HandledBy<TReturn>(Func<TMessage, ILogger, TReturn> handlerWithTReturn)
 		where TReturn : class
 	{
 		TReturn wrapperHandler(MessageRequest result, ILogger logger)
 		{
 			var message = binder.CreateMessage(result.Request);
-			var returnObject = handlerWithTReturn.Invoke(message);
+			var returnObject = handlerWithTReturn.Invoke(message, logger);
 			ReturnObjectHelper.CheckHandlerReturnType(returnObject, fluentApiMessage.ResponseRunTimeType!);
 			return returnObject!;
 		}
-		fluentApiMessage.RequestHandler = wrapperHandler;
+
+		ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, wrapperHandler);
 		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 }

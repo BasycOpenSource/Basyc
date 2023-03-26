@@ -14,11 +14,11 @@ public class FluentSetupDomainPostStage : BuilderStageBase
 
 	public FluentSetupMessageStage AddMessage(string messageDisplayName)
 	{
-		return new FluentSetupGroupStage(services, inProgressGroup).AddMessage(messageDisplayName);
+		return new FluentAddMessageStage(services, inProgressGroup).AddMessage(messageDisplayName);
 	}
 
-	public FluentSetupGroupStage AddDomain(string domainName)
+	public FluentAddMessageStage AddDomain(string domainName)
 	{
-		return new RegisterMessagesFromFluentApiStage(services).AddGroup(domainName);
+		return new FluentAddGroupStage(services).InGroup(domainName);
 	}
 }

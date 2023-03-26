@@ -4,18 +4,15 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
-public class RegisterMessagesFromFluentApiStage : BuilderStageBase
+public class FluentAddGroupStage : BuilderStageBase
 {
-	public RegisterMessagesFromFluentApiStage(IServiceCollection services) : base(services)
+	public FluentAddGroupStage(IServiceCollection services) : base(services)
 	{
 	}
 
 	public FluentAddMessageStage InGroup(string groupName)
 	{
-		var newGroup = new FluentApiGroupRegistration
-		{
-			Name = groupName
-		};
+		var newGroup = new FluentApiGroupRegistration { Name = groupName };
 		services.Configure<FluentApiDomainInfoProviderOptions>(x => x.GroupRegistrations.Add(newGroup));
 		return new FluentAddMessageStage(services, newGroup);
 	}

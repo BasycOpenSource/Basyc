@@ -7,11 +7,10 @@ using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
-using Basyc.MessageBus.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using ICommand = System.Windows.Input.ICommand;
+using System.Reflection;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -50,50 +49,49 @@ busManagerBuilder.AddRequestHandler()
 	.UseTraceIdMapper<BusManagerBasycDiagnosticsReceiverTraceIdMapper>()
 	.UseBasycMessageBusHandler();
 
-busManagerBuilder.RegisterMessages()
-	.FromAssemblyScan(assembliesToScan)
-	.InGroup("FromAssembly")
-	.FromInterface<IEvent>()
-	.UseTypeNameAsDisplayName()
-	.AsEvents()
-	.HandledByDefaultHandler();
+// busManagerBuilder.RegisterMessages()
+// 	.FromAssemblyScan(assembliesToScan)
+// 	.InGroup("FromAssembly")
+// 	.FromInterface<IEvent>()
+// 	.UseTypeNameAsDisplayName()
+// 	.AsEvents()
+// 	.HandledByDefaultHandler();
+//
+// busManagerBuilder.RegisterMessages()
+// 	.FromAssemblyScan(assembliesToScan)
+// 	.InGroup("FromAssembly")
+// 	.FromInterface<ICommand>()
+// 	.UseTypeNameAsDisplayName()
+// 	.AsCommands()
+// 	.NoResponse()
+// 	.HandledBy(BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
+//
+// busManagerBuilder.RegisterMessages()
+// 	.FromAssemblyScan(assembliesToScan)
+// 	.InGroup("FromAssembly")
+// 	.FromInterface(typeof(ICommand<>))
+// 	.UseTypeNameAsDisplayName()
+// 	.AsQueries()
+// 	.HasResponse<int>()
+// 	.SetResponseDisplayName("responseType");
+//
+// busManagerBuilder.RegisterMessages()
+// 	.FromAssemblyScan(assembliesToScan)
+// 	.InGroup("FromAssembly")
+// 	.FromInterface(typeof(IQuery<>))
+// 	.UseTypeNameAsDisplayName()
+// 	.AsQueries()
+// 	.HasResponse<int>()
+// 	.SetResponseDisplayName("asddas")
+// 	.HandledByDefaultHandler();
 
 busManagerBuilder.RegisterMessages()
 	.FromAssemblyScan(assembliesToScan)
-	.InGroup("FromAssembly")
-	.FromInterface<ICommand>()
-	.UseTypeNameAsDisplayName()
-	.AsCommands()
-	.NoResponse()
-	.HandledBy(BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
-
-busManagerBuilder.RegisterMessages()
-	.FromAssemblyScan(assembliesToScan)
-	.InGroup("FromAssembly")
-	.FromInterface(typeof(ICommand<>))
-	.UseTypeNameAsDisplayName()
-	.AsQueries()
-	.HasResponse<int>()
-	.SetResponseDisplayName("responseType")
-	.HandledByDefaultHandler();
-
-busManagerBuilder.RegisterMessages()
-	.FromAssemblyScan(assembliesToScan)
-	.InGroup("FromAssembly")
-	.FromInterface(typeof(IQuery<>))
-	.UseTypeNameAsDisplayName()
-	.AsQueries()
-	.HasResponse<int>()
-	.SetResponseDisplayName("asddas")
-	.HandledByDefaultHandler();
-
-busManagerBuilder.RegisterMessages()
-	.FromAssembly2(assembliesToScan)
-	.FilterOnInterface<ICommand>()
-	.Register((x, a) =>
+	.WhereImplements<ICommand>()
+	.Register((type, register) =>
 	{
-		a.AddGroup("FromAssembly2")
-			.AddMessage(x.Name)
+		register.InGroup("FromAssembly")
+			.AddMessage(type.Name)
 			.NoReturn()
 			.HandledBy((x, logger) =>
 			{
@@ -104,8 +102,24 @@ busManagerBuilder.RegisterMessages()
 	});
 
 busManagerBuilder.RegisterMessages()
+	.FromAssemblyScan(assembliesToScan)
+	.WhereImplements(typeof(IQuery<>))
+	.Register((type, register) =>
+	{
+		register.InGroup("FromAssembly")
+			.AddMessage(type.Name)
+			.WithParametersFrom(type)
+			.Returns(type.GetTypeArgumentsFromParent(typeof(IQuery<>)).First())
+			.HandledBy((x, logger) =>
+			{
+				var text = (string)x.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).First().GetValue(x).Value();
+				return text.ToLowerInvariant();
+			});
+	});
+
+busManagerBuilder.RegisterMessages()
 	.FromFluentApi()
-	.AddGroup("FromFluentApi")
+	.InGroup("FromFluentApi")
 	.AddMessage("Fluent Message 1")
 	.NoReturn()
 	.HandledBy((input, logger) =>

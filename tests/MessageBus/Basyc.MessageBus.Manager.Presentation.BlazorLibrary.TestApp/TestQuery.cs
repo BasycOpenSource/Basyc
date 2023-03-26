@@ -1,6 +1,5 @@
-﻿namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
+﻿using Basyc.DomainDrivenDesign.Domain;
 
-public class TestQuery
-{
-	
-}
+namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
+
+public record TestQuery(string ToLower) : IQuery<string>;

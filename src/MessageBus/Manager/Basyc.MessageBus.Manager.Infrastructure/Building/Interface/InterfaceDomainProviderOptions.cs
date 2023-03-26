@@ -19,5 +19,5 @@ public class InterfaceRegistration
 	public Func<Type, string>? DisplayNameFormatter { get; set; }
 	public string? ResponseDisplayName { get; set; }
 	public MessageType RequestType { get; set; }
-	public string? RequestHandlerUniqueName { get; set; }
+	public string? RequestHandlerUniqueName { get; set; } = DefaultRequestHandlerUniqueName;
 }

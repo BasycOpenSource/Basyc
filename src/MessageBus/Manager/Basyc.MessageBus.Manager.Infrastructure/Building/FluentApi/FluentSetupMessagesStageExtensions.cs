@@ -6,7 +6,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class FluentSetupMessagesStageExtensions
 {
-	public static RegisterMessagesFromFluentApiStage FromFluentApi(this SetupMessagesStage parent)
+	public static FluentAddGroupStage FromFluentApi(this SetupMessagesStage parent)
 	{
 		// var wasRegistered = parent.services.Any(x =>
 		// {
@@ -17,6 +17,6 @@ public static class FluentSetupMessagesStageExtensions
 		// });
 		// if (wasRegistered is false)
 		parent.services.AddSingleton<IMessageInfoProvider, FluentApiMessageInfoProvider>();
-		return new RegisterMessagesFromFluentApiStage(parent.services);
+		return new FluentAddGroupStage(parent.services);
 	}
 }

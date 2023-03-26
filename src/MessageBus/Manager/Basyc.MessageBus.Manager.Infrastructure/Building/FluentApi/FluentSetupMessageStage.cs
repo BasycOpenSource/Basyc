@@ -1,6 +1,5 @@
 ﻿using Basyc.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Reflection;
 using ParameterInfo = Basyc.MessageBus.Manager.Application.Initialization.ParameterInfo;
 
@@ -8,8 +7,8 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentSetupMessageStage : BuilderStageBase
 {
-	private readonly FluentApiMessageRegistration fluentApiMessage;
 	private readonly FluentApiGroupRegistration fluentApiGroup;
+	private readonly FluentApiMessageRegistration fluentApiMessage;
 
 	public FluentSetupMessageStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) : base(services)
 	{
@@ -24,18 +23,24 @@ public class FluentSetupMessageStage : BuilderStageBase
 	}
 
 	/// <summary>
-	/// Registeres <typeparamref name="TMessage"/> public properties as message parameters
+	///     Registeres <typeparamref name="TMessage" /> public properties as message parameters
 	/// </summary>
 	/// <typeparam name="TMessage"></typeparam>
 	/// <returns></returns>
-	public FluentTMessageSetupMessageStage<TMessage> WithParameters<TMessage>()
+	public FluentTMessageSetupMessageStage<TMessage> WithParametersFrom<TMessage>()
 	{
 		foreach (var parameter in typeof(TMessage).GetProperties(BindingFlags.Instance | BindingFlags.Public))
-		{
 			fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
-		}
 
 		return new FluentTMessageSetupMessageStage<TMessage>(services, fluentApiMessage, fluentApiGroup);
+	}
+
+	public FluentTMessageSetupMessageStage<object> WithParametersFrom(Type type)
+	{
+		foreach (var parameter in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+			fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
+
+		return new FluentTMessageSetupMessageStage<object>(services, fluentApiMessage, fluentApiGroup);
 	}
 
 	public FluentSetupNoReturnStage NoReturn()
