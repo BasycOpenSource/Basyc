@@ -1,23 +1,24 @@
 ﻿using Basyc.DependencyInjection;
+using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentTMessageSetupMessageStage<TMessage> : BuilderStageBase
 {
-	private readonly FluentApiMessageRegistration fluentApiMessage;
 	private readonly FluentApiGroupRegistration fluentApiGroup;
+	private readonly FluentApiMessageRegistration fluentApiMessage;
 
-	public FluentTMessageSetupMessageStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) : base(services)
+	public FluentTMessageSetupMessageStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) :
+		base(services)
 	{
 		this.fluentApiMessage = fluentApiMessage;
 		this.fluentApiGroup = fluentApiGroup;
 	}
 
-	public FluentSetupNoReturnStage NoReturn()
+	public FluentSetupNoReturnHandledByStage NoReturn()
 	{
-		return new FluentSetupNoReturnStage(services, fluentApiMessage, fluentApiGroup);
+		return new FluentSetupNoReturnHandledByStage(services, fluentApiMessage, fluentApiGroup);
 	}
 
 	public FluentTMessageSetupReturnStage<TMessage> Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)
@@ -43,6 +44,5 @@ public class FluentTMessageSetupMessageStage<TMessage> : BuilderStageBase
 		fluentApiMessage.ResponseRunTimeType = typeof(TResponse);
 		fluentApiMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
 		return new FluentTMessageTReturnSetupReturnStage<TMessage, TResponse>(services, fluentApiMessage, fluentApiGroup);
-
 	}
 }

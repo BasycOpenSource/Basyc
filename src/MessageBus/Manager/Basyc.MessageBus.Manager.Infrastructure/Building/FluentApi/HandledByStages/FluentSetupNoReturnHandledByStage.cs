@@ -4,14 +4,14 @@ using Basyc.MessageBus.Manager.Application.Requesting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
+namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 
-public class FluentSetupNoReturnStage : BuilderStageBase
+public class FluentSetupNoReturnHandledByStage : BuilderStageBase
 {
 	private readonly FluentApiGroupRegistration fluentApiGroup;
 	private readonly FluentApiMessageRegistration fluentApiMessage;
 
-	public FluentSetupNoReturnStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) :
+	public FluentSetupNoReturnHandledByStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) :
 		base(services)
 	{
 		this.fluentApiMessage = fluentApiMessage;
@@ -38,17 +38,31 @@ public class FluentSetupNoReturnStage : BuilderStageBase
 	// 	return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	// }
 
-	public FluentSetupDomainPostStage HandledBy(Action<RequestInput, ILogger> handler)
+	// public FluentSetupDomainPostStage HandledBy(Action<RequestInput, ILogger> handler)
+	// {
+	// 	object? handlerWrapper(MessageRequest requestResult, ILogger logger)
+	// 	{
+	// 		using var act = logger.StartActivity("Invoking handler");
+	// 		handler.Invoke(requestResult.Request, logger);
+	// 		act.Stop();
+	// 		return null;
+	// 	}
+	//
+	// 	ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
+	// 	return new FluentSetupDomainPostStage(services, fluentApiGroup);
+	// }
+
+	public FluentSetupDomainPostStage HandledBy(Action<ILogger> handler)
 	{
 		object? handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
 			using var act = logger.StartActivity("Invoking handler");
-			handler.Invoke(requestResult.Request, logger);
+			handler.Invoke(logger);
 			act.Stop();
 			return null;
 		}
+
 		ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
 		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
-
 }

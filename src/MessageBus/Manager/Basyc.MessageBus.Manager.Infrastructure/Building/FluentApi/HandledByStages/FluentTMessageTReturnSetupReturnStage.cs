@@ -1,31 +1,34 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.MessageBus.Manager.Application;
-using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
+namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 
 public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderStageBase
 {
-	private readonly FluentApiMessageRegistration fluentApiMessage;
+	private static readonly RequestToTypeBinder<TMessage> messageBinder;
 	private readonly FluentApiGroupRegistration fluentApiGroup;
-	private readonly RequestToTypeBinder<TMessage> messageBinder;
+	private readonly FluentApiMessageRegistration fluentApiMessage;
 
-	public FluentTMessageTReturnSetupReturnStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) : base(services)
+	static FluentTMessageTReturnSetupReturnStage()
 	{
-		this.fluentApiMessage = fluentApiMessage;
-		this.fluentApiGroup = fluentApiGroup;
-
 		messageBinder = new RequestToTypeBinder<TMessage>();
 	}
 
-	private FluentSetupDomainPostStage HandeledBy(RequestHandlerDelegate handler)
+	public FluentTMessageTReturnSetupReturnStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) :
+		base(services)
 	{
-		fluentApiMessage.RequestHandler = handler;
-		return new FluentSetupDomainPostStage(services, fluentApiGroup);
+		this.fluentApiMessage = fluentApiMessage;
+		this.fluentApiGroup = fluentApiGroup;
 	}
+
+	//private FluentSetupDomainPostStage HandeledBy(RequestHandlerDelegate handler)
+	//{
+	//	fluentApiMessage.RequestHandler = handler;
+	//	return new FluentSetupDomainPostStage(services, fluentApiGroup);
+	//}
 
 	public FluentSetupDomainPostStage HandeledBy(Func<RequestInput, TReturn> handler)
 	{
@@ -34,7 +37,9 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 			var returnObject = handler.Invoke(requestResult.Request);
 			return returnObject;
 		}
-		fluentApiMessage.RequestHandler = handlerWrapper;
+
+		//fluentApiMessage.RequestHandler = handlerWrapper;
+		ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
 		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 
@@ -46,7 +51,10 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 			var returnObject = handlerWithTReturn.Invoke(message);
 			return returnObject!;
 		}
-		fluentApiMessage.RequestHandler = handlerWrapper;
+
+		//fluentApiMessage.RequestHandler = handlerWrapper;
+		ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
+
 		return new FluentSetupDomainPostStage(services, fluentApiGroup);
 	}
 }

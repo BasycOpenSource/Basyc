@@ -1,11 +1,10 @@
 ﻿using Basyc.DependencyInjection;
 using Basyc.MessageBus.Manager.Application;
-using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
+namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 
 public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 {
@@ -18,14 +17,15 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 	{
 		this.fluentApiMessage = fluentApiMessage;
 		this.fluentApiGroup = fluentApiGroup;
+		var name = typeof(TMessage).Name;
 		binder = new RequestToTypeBinder<TMessage>();
 	}
 
-	private FluentSetupDomainPostStage HandledBy(RequestHandlerDelegate handler)
-	{
-		fluentApiMessage.RequestHandler = handler;
-		return new FluentSetupDomainPostStage(services, fluentApiGroup);
-	}
+	//private FluentSetupDomainPostStage HandledBy(RequestHandlerDelegate handler)
+	//{
+	//	fluentApiMessage.RequestHandler = handler;
+	//	return new FluentSetupDomainPostStage(services, fluentApiGroup);
+	//}
 
 	public FluentSetupDomainPostStage HandledBy<TReturn>(Func<RequestInput, TReturn> handler)
 	{

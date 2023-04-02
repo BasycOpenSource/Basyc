@@ -7,6 +7,7 @@ using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
+using Basyc.Shared.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -93,7 +94,7 @@ busManagerBuilder.RegisterMessages()
 		register.InGroup("FromAssembly")
 			.AddMessage(type.Name)
 			.NoReturn()
-			.HandledBy((x, logger) =>
+			.HandledBy((logger) =>
 			{
 				//var activity = DiagnosticHelper.Start("Handler logic");
 				//activity.Stop();
@@ -122,7 +123,7 @@ busManagerBuilder.RegisterMessages()
 	.InGroup("FromFluentApi")
 	.AddMessage("Fluent Message 1")
 	.NoReturn()
-	.HandledBy((input, logger) =>
+	.HandledBy(logger =>
 	{
 		if (Random.Shared.Next(0, 100) > 50)
 		{
@@ -136,7 +137,7 @@ busManagerBuilder.RegisterMessages()
 	.Returns<string>("nameToUpper")
 	.HandledBy((x, logger) =>
 	{
-		var name = (string)x.Parameters.First().Value.Value();
+		var name = (string)x.First().Value.Value();
 		return name.ToUpperInvariant();
 	})
 	.AddMessage("ToLower")
@@ -144,8 +145,22 @@ busManagerBuilder.RegisterMessages()
 	.Returns<string>("nameToLower")
 	.HandledBy((x, logger) =>
 	{
-		var name = (string)x.Parameters.First().Value.Value();
+		var name = (string)x.First().Value.Value();
 		return name.ToLowerInvariant();
+	})
+	.AddMessage("Add Customer")
+	.WithParametersFrom<CustomerModel>()
+	.Returns<string>("errorCode")
+	.HandeledBy((CustomerModel x) =>
+	{
+		return "0";
+	})
+	.AddMessage("Create Customer")
+	.WithParametersFrom<CustomerModel>()
+	.Returns<CustomerModel>("new cutomer")
+	.HandeledBy((CustomerModel x) =>
+	{
+		return x;
 	});
 
 builder.Services.AddBasycBusManagerBlazorUi();

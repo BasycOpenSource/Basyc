@@ -1,4 +1,5 @@
 ﻿using Basyc.DependencyInjection;
+using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using ParameterInfo = Basyc.MessageBus.Manager.Application.Initialization.ParameterInfo;
@@ -31,21 +32,22 @@ public class FluentSetupMessageStage : BuilderStageBase
 	{
 		foreach (var parameter in typeof(TMessage).GetProperties(BindingFlags.Instance | BindingFlags.Public))
 			fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
-
+		fluentApiMessage.ParametersFromType = typeof(TMessage);
 		return new FluentTMessageSetupMessageStage<TMessage>(services, fluentApiMessage, fluentApiGroup);
 	}
 
-	public FluentTMessageSetupMessageStage<object> WithParametersFrom(Type type)
+	public FluentSetupMessageStage WithParametersFrom(Type type)
 	{
 		foreach (var parameter in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
 			fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
-
-		return new FluentTMessageSetupMessageStage<object>(services, fluentApiMessage, fluentApiGroup);
+		fluentApiMessage.ParametersFromType = type;
+		//return new FluentTMessageSetupMessageStage<object>(services, fluentApiMessage, fluentApiGroup);
+		return new FluentSetupMessageStage(services, fluentApiMessage, fluentApiGroup);
 	}
 
-	public FluentSetupNoReturnStage NoReturn()
+	public FluentSetupNoReturnHandledByStage NoReturn()
 	{
-		return new FluentSetupNoReturnStage(services, fluentApiMessage, fluentApiGroup);
+		return new FluentSetupNoReturnHandledByStage(services, fluentApiMessage, fluentApiGroup);
 	}
 
 	public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)

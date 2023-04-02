@@ -9,6 +9,9 @@ public class FluentApiMessageRegistration
 	public string? MessageDisplayName { get; set; }
 	public MessageType MessageType { get; set; }
 	public List<ParameterInfo> Parameters { get; } = new();
+	public Type? ParametersFromType { get; set; }
+	public bool ParametersAreFromType => ParametersFromType is not null;
+
 	public RequestHandlerDelegate? RequestHandler { get; set; }
 	public Type? ResponseRunTimeType { get; set; }
 	public string? ResponseRunTimeTypeDisplayName { get; set; }
