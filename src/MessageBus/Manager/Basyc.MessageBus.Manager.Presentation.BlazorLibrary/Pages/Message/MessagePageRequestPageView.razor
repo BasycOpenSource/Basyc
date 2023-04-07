@@ -68,8 +68,38 @@
         </infoRow>
         <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Big" />
 
-        <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="true" >
+        <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="true">
             <ChildContent>
+                <MudTabPanel Text="Result">
+                    <inputBox>
+                        @if (MessageRequest.State == RequestResultState.Started)
+                        {
+                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
+                        }
+                        else
+                        {
+                            <textValue>
+                                @if (MessageRequest.State == RequestResultState.Completed)
+                                {
+                                    if (MessageRequest.Request.MessageInfo.HasResponse)
+                                    {
+                                        @MessageRequest.Response
+                                    }
+                                    else
+                                    {
+                                        <ghostLabel>
+                                            Result does not have an output
+                                        </ghostLabel>
+                                    }
+                                }
+                                @if (MessageRequest.State == RequestResultState.Failed)
+                                {
+                                    @MessageRequest.ErrorMessage
+                                }
+                            </textValue>
+                        }
+                    </inputBox>
+                </MudTabPanel>
                 <MudTabPanel Text="Traces">
                     <HorizontalDurationMapView RequestContext="MessageRequest" />
                 </MudTabPanel>

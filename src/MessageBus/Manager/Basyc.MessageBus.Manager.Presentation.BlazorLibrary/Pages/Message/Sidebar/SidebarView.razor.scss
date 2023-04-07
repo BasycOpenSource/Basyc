@@ -1,8 +1,4 @@
-﻿.paramTable {
-    border-collapse: separate;
-    width: 100%;
-    /*padding-top: 1rem;*/
-}
+﻿
 
 .paddingContainer {
     /*    padding-left: 2rem;
@@ -17,9 +13,13 @@ paramLabel {
 
 .inputBorder {
     border-radius: 3px;
-    background: white;
-    border: 0.5px solid #c2c2c2;
+    background-color: #0C0E12;
     display: flex;
+    color: #A5A5A5;
+}
+
+::deep .inputBorder > input {
+    color: #A5A5A5;
 }
 
 paramType {
@@ -85,10 +85,16 @@ headingDomain {
     color: #9b9b9b;
 }
 
+.paramRow {
+    display: block;
+    width: 100%;
+}
 
 
 ::deep .paramRow > td {
     padding-bottom: 0.4rem;
+    display: block;
+    width: 100%;
 }
 
 headingDivider {
@@ -109,6 +115,8 @@ headingText {
 
 paramInput {
     padding: 0.35rem;
+    display: block;
+    width: 100%;
 }
 
 ghostLabel {
@@ -132,7 +140,31 @@ history {
 }
 
 requestform {
+    /*display: block;*/
+    overflow: hidden;
+    display: grid;
+    grid-auto-rows: 1fr auto;
+/*    width: 100%;
+    height: 100%;*/
+}
+
+.paramTable {
+    display: flex;
+    flex-direction: column;
+    border-collapse: separate;
+    width: 100%;
+
+}
+
+paramSection {
     display: block;
+    grid-row: 1;
+    overflow: auto;
+}
+
+buttonSection {
+    display: block;
+    grid-row: 2;
 }
 
 

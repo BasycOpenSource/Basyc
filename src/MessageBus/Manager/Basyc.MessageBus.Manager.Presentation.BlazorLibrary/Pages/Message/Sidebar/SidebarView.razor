@@ -7,6 +7,7 @@
 @using System.Collections.ObjectModel;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Sidebar
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
+@using System.Diagnostics.CodeAnalysis;
 @using WpfGridLayout.Blazor
 <BasycStyleSection SectionName="2">
     <reqeustSideBarView>
@@ -16,7 +17,7 @@
                 <BasycHeading Size="HeadingSize.H3">
                     Create request
                 </BasycHeading>
-                <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Start="SpaceLineSize.Medium"  Visible="false"/>
+                <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Start="SpaceLineSize.Medium" Visible="false" />
                 <requestform>
 
                     @if (MessageInfo is null)
@@ -27,44 +28,54 @@
                     }
                     else
                     {
-                        <table class="paramTable paddingContainer">
-                            @for (var i = 0; i < MessageInfo.Parameters.Count; i++)
+                        <paramSection>
+                            <table class="paramTable paddingContainer">
+                                @for (var i = 0; i < MessageInfo.Parameters.Count; i++)
+                                {
+                                    var index = i;
+                                    var paramInfo = MessageInfo.Parameters[index];
+                                    var paramValue = parameterValues[index];
+                                    var isPrimitive = paramInfo.Type.IsPrimitive || paramInfo.Type.IsArray || paramInfo.Type == typeof(string);
+                                    <tr>
+                                        <td>
+                                            <paramType class="paramType-isPrimitive-@isPrimitive">@paramInfo.TypeDisplayName</paramType>
+                                            <paramLabel>@paramInfo.ParameterDisplayName </paramLabel>
+                                        </td>
+                                    </tr>
+                                    <tr class="paramRow">
+                                        <td>
+                                            <paramInput class="inputBorder">
+                                                <input class="paramTextBox" @bind-value="@parameterValues[index]" />
+                                            </paramInput>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                            @if (MessageInfo.Parameters.Count == 0)
                             {
-                                var index = i;
-                                var paramInfo = MessageInfo.Parameters[index];
-                                var paramValue = parameterValues[index];
-                                var isPrimitive = paramInfo.Type.IsPrimitive || paramInfo.Type.IsArray || paramInfo.Type == typeof(string);
-                                <tr>
-                                    <td>
-                                        <paramType class="paramType-isPrimitive-@isPrimitive">@paramInfo.TypeDisplayName</paramType>
-                                        <paramLabel>@paramInfo.ParameterDisplayName </paramLabel>
-                                    </td>
-                                </tr>
-                                <tr class="paramRow">
-                                    <td>
-                                        <paramInput class="inputBorder">
-                                            <input class="paramTextBox" @bind-value="@parameterValues[index]" />
-                                        </paramInput>
-                                    </td>
-                                </tr>
-                            }
-                        </table>
-                        @if (MessageInfo.Parameters.Count == 0)
-                        {
-                            <ghostLabel>
-                                This message does not have paramters
-                            </ghostLabel>
+                                <ghostLabel>
+                                    This message does not have paramters
+                                </ghostLabel>
 
-                        }
-                        <BasycSpaceLine Start="@SpaceLineSize.Medium" Visible="false" />
-                        <button @onclick="SendMessage">
-                            send
-                        </button>
+                            }
+                        </paramSection>
+
+                        <buttonSection>
+                            <BasycSpaceLine Start="@SpaceLineSize.Medium" Visible="false" />
+                            @if(hasInputError)
+                            {
+                                @:error when parsing
+                            }
+
+                            <button @onclick="SendMessage">
+                                send
+                            </button>
+                        </buttonSection>
                     }
                 </requestform>
             </BasycSpaceBorder>
             <history>
-                <BasycSpaceLine />
+                <BasycSpaceLine Visible="false" />
                 <SidebarHistoryView MessageInfo="@MessageInfo" NavigationService="NavigationService" />
             </history>
 
@@ -82,6 +93,7 @@
 
     [Parameter] public MessageInfo MessageInfo { get; set; } = null!;
     [Parameter, EditorRequired] public NavigationService NavigationService { get; set; } = null!;
+    private bool hasInputError = false;
 
     protected override void OnInitialized()
     {
@@ -101,36 +113,59 @@
 
     }
 
-    private static object? ParseParamInputValue(string paramStringValue, ParameterInfo parameterInfo)
+    private static bool TryParseParamInputValue(string paramStringValue, ParameterInfo parameterInfo, out object? parsedInput)
     {
         if (paramStringValue == "@null")
-            return null;
-
-        if (paramStringValue == string.Empty)
-            return parameterInfo.Type.GetDefaultValue();
-
-        if (parameterInfo.Type == typeof(string))
-            return paramStringValue;
-
-        var converter = TypeDescriptor.GetConverter(parameterInfo.Type);
-        object? castedParam;
-        if (converter.CanConvertFrom(typeof(string)))
         {
-            castedParam = converter.ConvertFromInvariantString(paramStringValue);
-            return castedParam;
+            parsedInput = null;
+            return true;
+
         }
 
-        var converter2 = TypeDescriptor.GetConverter(typeof(string));
-        if (converter2.CanConvertFrom(parameterInfo.Type))
+        if (paramStringValue == string.Empty)
         {
-            castedParam = converter2.ConvertFromInvariantString(paramStringValue);
-            return castedParam;
+            parsedInput = parameterInfo.Type.GetDefaultValue();
+            return true;
+        }
+
+        if (parameterInfo.Type == typeof(string))
+        {
+            parsedInput = paramStringValue;
+            return true;
+        }
+
+        var toParamTypeConverter = TypeDescriptor.GetConverter(parameterInfo.Type);
+        object? castedParam;
+        if (toParamTypeConverter.CanConvertFrom(typeof(string)))
+        {
+            try
+            {
+                castedParam = toParamTypeConverter.ConvertFromInvariantString(paramStringValue);
+                parsedInput = castedParam;
+                return true;
+
+            }
+            catch
+            {
+                //Example: when providing string but the string is not number.
+                parsedInput = null;
+                return false;
+            }
+        }
+
+        var toStringConverter = TypeDescriptor.GetConverter(typeof(string));
+        if (toStringConverter.CanConvertFrom(parameterInfo.Type))
+        {
+            castedParam = toStringConverter.ConvertFromInvariantString(paramStringValue);
+            parsedInput = castedParam;
+            return true;
         }
 
         try
         {
             castedParam = Convert.ChangeType(paramStringValue, parameterInfo.Type);
-            return castedParam;
+            parsedInput = castedParam;
+            return true;
         }
         catch
         {
@@ -138,7 +173,8 @@
         }
 
         castedParam = JsonSerializer.Deserialize(paramStringValue, parameterInfo.Type);
-        return castedParam;
+        parsedInput = castedParam;
+        return true;
     }
 
     public Task SendMessage()
@@ -149,10 +185,14 @@
         {
             var paramInfo = requestInfo.Parameters[i];
             var paramStringValue = parameterValues[i];
-            var castedParamValue = ParseParamInputValue(paramStringValue, paramInfo);
+            if(TryParseParamInputValue(paramStringValue, paramInfo, out var castedParamValue) is false)
+            {
+                hasInputError = true;
+                return Task.CompletedTask;
+            }
             parameters.Add(new Parameter(paramInfo, castedParamValue));
         }
-
+        hasInputError = false;
         var request = new RequestInput(requestInfo, parameters.AsReadOnly());
         var requestResult = RequestClient.StartRequest(request);
         StateHasChanged();

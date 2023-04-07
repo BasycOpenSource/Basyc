@@ -4,6 +4,7 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 @using Basyc.ReactiveUi.Blazor;
+@using Microsoft.AspNetCore.Components.Web.Virtualization
 @using ReactiveUI.Blazor;
 @using ReactiveUI;
 @using System.Reactive.Disposables;
@@ -11,31 +12,45 @@
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryViewModel>
 <sidebarHistoryView>
     <heading>
-        <BasycSpaceBorder Size="SpacerSize.Medium">
+@*        <BasycSpaceBorder Size="SpacerSize.Medium">
             <BasycHeading Size="HeadingSize.H3">
                 History
             </BasycHeading>
-        </BasycSpaceBorder>
+        </BasycSpaceBorder>*@
     </heading>
     <requests>
-        @for (int requestIndex = ViewModel.History.Count - 1; requestIndex >= 0; requestIndex--)
+        @*        @for (int requestIndex = ViewModel.History.Count - 1; requestIndex >= 0; requestIndex--)
         {
-            var messageRequest = ViewModel.History[requestIndex];
-            <historyItem @onclick="()=>Click(messageRequest)">
-                <SidebarHistoryItemView
-                    Index="@messageRequest.OrderIndex"
-                    MessageRequest="@messageRequest"
-                    NavigationService="NavigationService" />
-            </historyItem>
-        }
+        var messageRequest = ViewModel.History[requestIndex];
+        <historyItem @onclick="()=>Click(messageRequest)">
+        <SidebarHistoryItemView
+        Index="@messageRequest.OrderIndex"
+        MessageRequest="@messageRequest"
+        NavigationService="NavigationService" />
+        </historyItem>
+        }*@
+        <Virtualize TItem="MessageRequest" Context="messageRequest" Items="@messages">
+            <ItemContent>
+                <historyItem @onclick="()=>Click(messageRequest)">
+                    <SidebarHistoryItemView Index="@messageRequest.OrderIndex"
+                                            MessageRequest="@messageRequest"
+                                            NavigationService="NavigationService" />
+                </historyItem>
+            </ItemContent>
+            <Placeholder>
+                <p>
+                    Please wait.
+                </p>
+            </Placeholder>
+        </Virtualize>
     </requests>
 </sidebarHistoryView>
 
 
 @code {
+    private ICollection<MessageRequest> messages => ViewModel.History.Reverse().ToArray();
     [Parameter, EditorRequired] public MessageInfo MessageInfo { get; set; } = null!;
     [Parameter, EditorRequired] public NavigationService NavigationService { get; set; } = null!;
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
