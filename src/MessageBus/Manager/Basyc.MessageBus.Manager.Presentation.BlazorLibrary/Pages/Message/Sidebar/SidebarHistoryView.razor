@@ -19,16 +19,6 @@
         </BasycSpaceBorder>*@
     </heading>
     <requests>
-        @*        @for (int requestIndex = ViewModel.History.Count - 1; requestIndex >= 0; requestIndex--)
-        {
-        var messageRequest = ViewModel.History[requestIndex];
-        <historyItem @onclick="()=>Click(messageRequest)">
-        <SidebarHistoryItemView
-        Index="@messageRequest.OrderIndex"
-        MessageRequest="@messageRequest"
-        NavigationService="NavigationService" />
-        </historyItem>
-        }*@
         <Virtualize TItem="MessageRequest" Context="messageRequest" Items="@messages">
             <ItemContent>
                 <historyItem @onclick="()=>Click(messageRequest)">
