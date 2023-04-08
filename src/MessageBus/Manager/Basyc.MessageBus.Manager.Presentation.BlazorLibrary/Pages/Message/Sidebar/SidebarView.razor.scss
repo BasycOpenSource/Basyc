@@ -73,7 +73,6 @@ reqeustSideBarView {
     flex-direction: column;
     border: 0px solid rgba(255, 255, 255, 0.08);
     border-right-width: 0.5px;
-
     overflow: hidden;
 }
 
@@ -130,10 +129,18 @@ ghostLabel {
 grid {
     display: grid;
     grid-template-rows: 50fr 50fr;
+    /*display: flex;
+    flex-direction: column;*/
     height: 100%
 }
 
-history {
+formRow {
+    grid-row: 1;
+    display: block;
+}
+
+historyRow {
+    grid-row: 2;
     display: flex;
     overflow: hidden;
     flex-direction: column;
@@ -144,7 +151,7 @@ requestform {
     overflow: hidden;
     display: grid;
     grid-auto-rows: 1fr auto;
-/*    width: 100%;
+    /*    width: 100%;
     height: 100%;*/
 }
 
@@ -153,7 +160,6 @@ requestform {
     flex-direction: column;
     border-collapse: separate;
     width: 100%;
-
 }
 
 paramSection {
@@ -166,5 +172,3 @@ buttonSection {
     display: block;
     grid-row: 2;
 }
-
-

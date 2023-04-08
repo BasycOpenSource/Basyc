@@ -8,34 +8,55 @@
             <BasycHeading Size="HeadingSize.H3">
                 Endpoints
             </BasycHeading>
-            <BasycSpaceLine Start="SpaceLineSize.Small" Visible="false"/>
+            @*<BasycSpaceLine Start="SpaceLineSize.Small" Visible="false"/>*@
         </BasycSpaceBorder>
-            
+
         <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">
             @foreach (var messageGroup in messageGroups)
             {
+                @* <MudList Clickable="true" Dense="true" DisablePadding="true" DisableGutters="true">
+            <MudListItem InitiallyExpanded="true" Dense="true" DisableGutters="true">
+            <ChildContent>
+            <gutters>
+            <domainHeading>
+            @Html.Icon(IconsEnum.folder)
+            @messageGroup.Name
+            </domainHeading>
+            </gutters>
+            </ChildContent>
 
-                <MudList Clickable="true" Dense="true" DisablePadding=true DisableGutters=true>
-                    <MudListItem InitiallyExpanded="true" Dense="true" DisableGutters="true">
-                        <ChildContent>
-                            <gutters>
-                                <domainHeading>
-                                    @Html.Icon(IconsEnum.folder)
-                                    @messageGroup.Name
-                                </domainHeading>
-                            </gutters>
-                        </ChildContent>
+            <NestedList>
+            @foreach (var message in messageGroup.Messages)
+            {
+            <messageItem @onclick="() => ViewModel.SelectMessage(message)">
+            <AppSideBarMessageItemView MessageInfo="@message" />
+            </messageItem>
+            }
+            </NestedList>
+            </MudListItem>
+            </MudList>
+            *@
 
-                        <NestedList>
+                <MudExpansionPanel Class="groupPanel" Dense="true" DisableGutters="true" IsInitiallyExpanded="true">
+                    <TitleContent>
+                        <gutters>
+                            <domainHeading>
+                                @Html.Icon(IconsEnum.folder)
+                                @messageGroup.Name
+                            </domainHeading>
+                        </gutters>
+                    </TitleContent>
+                    <ChildContent>
+                        <messages>
                             @foreach (var message in messageGroup.Messages)
                             {
                                 <messageItem @onclick="() => ViewModel.SelectMessage(message)">
                                     <AppSideBarMessageItemView MessageInfo="@message" />
                                 </messageItem>
                             }
-                        </NestedList>
-                    </MudListItem>
-                </MudList>
+                        </messages>
+                    </ChildContent>
+                </MudExpansionPanel>
             }
         </MudExpansionPanels>
     </BasycStyleSection>

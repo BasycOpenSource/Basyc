@@ -10,8 +10,31 @@
 
 
 ::deep .requestPanel {
-    display: flex;
-    flex-direction: column;
+    /*    display: flex;
+    flex-direction: column;*/
+}
+
+::deep .groupPanel {
+    background-color: transparent;
+    min-height: 0px;
+    margin: 0px !important;
+    padding: 0px !important;
+
+
+}
+
+::deep .mud-expand-panel-header {
+    padding: 16px 32px !important;
+}
+
+messages {
+    display: block;
+}
+
+messages :last-child {
+    ::deep treeVerticalLineBottom {
+        visibility: hidden !important;
+    }
 }
 
 domainHeading {
@@ -40,7 +63,7 @@ messageItem:hover {
 
 
 gutters {
-    margin-left: 32px;
+    /*    margin-left: 32px;
     margin-right: 32px;
-    display: block;
+    display: block;*/
 }

@@ -63,6 +63,10 @@ arrow {
     box-shadow: 0 0 0 0 transparent;
 }
 
+::deep .mud-tabs-toolbar-wrapper {
+    border-bottom: 1px solid #1E2025;
+}
+
 /*.mud-tab-slider.mud-tab-slider-horizontal*/
 /*--mud-palette-primary*/
 ::deep .mud-tab.mud-tab-active {

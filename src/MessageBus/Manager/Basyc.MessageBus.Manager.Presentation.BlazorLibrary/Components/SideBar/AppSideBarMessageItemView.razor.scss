@@ -5,11 +5,13 @@ requestItem {
     margin: 0px;
     padding: 0rem 1rem 0rem 2rem;
     flex: 1;
+    align-items: stretch;
 }
 
 requestName {
     padding: 0.35rem 0rem 0.35rem 0rem;
-    color: #A2A2A2;
+    /*color: #A2A2A2;*/
+    color: #737575;
     margin-left: 8px;
     display: flex;
     align-items: center;
@@ -23,11 +25,25 @@ tag {
     background-color: rgba(146, 35, 116, 0.20);
 }
 
-treeLine {
+treeVerticalLine {
     margin-left: 0.5rem;
-    display: block;
+    display: flex;
     width: 1px;
+    flex-direction: column;
+}
+
+treeVerticalLineBase {
+    width: 1px;
+    flex: 1;
     background-color: $treeLineColor;
+}
+
+treeVerticalLineTop {
+    @extend treeVerticalLineBase;
+}
+
+treeVerticalLineBottom {
+    @extend treeVerticalLineBase;
 }
 
 treeHorizontalLine {

@@ -5,14 +5,17 @@
 @inherits BasycReactiveBlazorComponentBase<AppSidebarMessageItemViewModel>
 
 <requestItem class="@classToRender">
-    <treeLine/>
-    <treeHorizontalLine/>
-	<requestName>
+    <treeVerticalLine>
+        <treeVerticalLineTop />
+        <treeVerticalLineBottom />
+    </treeVerticalLine>
+    <treeHorizontalLine />
+    <requestName>
         @MessageInfo.RequestDisplayName
-	</requestName>
-@*	<tag>
-        <RequestTagView RequestType="@RequestTagTypeHelper.FromRequestType(MessageInfo.MessageType)" TagStyle="TagStyle.Icon" />
-	</tag>*@
+    </requestName>
+    @*	<tag>
+    <RequestTagView RequestType="@RequestTagTypeHelper.FromRequestType(MessageInfo.MessageType)" TagStyle="TagStyle.Icon" />
+    </tag>*@
 </requestItem>
 
 @code {

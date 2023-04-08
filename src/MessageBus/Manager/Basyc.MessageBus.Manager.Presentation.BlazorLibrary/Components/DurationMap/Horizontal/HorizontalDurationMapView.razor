@@ -2,102 +2,146 @@
 @using Basyc.MessageBus.Manager.Application
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
-<horizontalDurationMapView>
+<horizontalDurationMapView class="scroll">
     <zoomToolBar>
-        <MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="0.1" Style="color: white;" />
+        <MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />
     </zoomToolBar>
-	<services>
-		@{
-			if (RequestContext.Diagnostics.Services.Any())
-			{
-				foreach (var service in RequestContext.Diagnostics.Services.Where(x => x.Activities.Any()).OrderBy(x => x.Activities.Min(y => y.StartTime)))
-				{
-					var serviceThemeColor = ServiceColorHelper.GetBackground(service.ServiceIdentity.ServiceName);
+    <services>
+        @{
+            if (RequestContext.Diagnostics.Services.Any())
+            {
+                foreach (var service in RequestContext.Diagnostics.Services.Where(x => x.Activities.Any()).OrderBy(x => x.Activities.Min(y => y.StartTime)))
+                {
+                    var serviceThemeColor = ServiceColorHelper.GetBackground(service.ServiceIdentity.ServiceName);
 
-					var nameColor = serviceThemeColor.Edit(opacity: 0.3);
-					var borderColor = serviceThemeColor.Edit(opacity: 0.25);
-					var backgroundColor = serviceThemeColor.Edit(opacity: 0.05);
+                    var nameColor = serviceThemeColor.Edit(opacity: 0.3);
+                    var borderColor = serviceThemeColor.Edit(opacity: 0.25);
+                    var backgroundColor = serviceThemeColor.Edit(opacity: 0.05);
 
-					var serviceFirstActivity = service.Activities.First();
-					//var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}";
-					var serviceStyle = $"background-color: {backgroundColor}";
+                    var serviceFirstActivity = service.Activities.First();
+                    //var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}";
+                    var serviceStyle = $"background-color: {backgroundColor}";
                     var durationBoxesStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)};";
-					var serviceNameStyle = $"color: {nameColor}";
-					<service style="@serviceStyle">
-						<serviceNameContainer>
-							<serviceName style="@serviceNameStyle">
-								@service.ServiceIdentity.ServiceName
-							</serviceName>
-						</serviceNameContainer>
+                    var serviceNameStyle = $"color: {nameColor}";
+                    <service style="@serviceStyle">
+                        <serviceNameContainer>
+                            <serviceName style="@serviceNameStyle">
+                                @service.ServiceIdentity.ServiceName
+                            </serviceName>
+                        </serviceNameContainer>
                         <durationBoxes style="@durationBoxesStyle">
-							@{
-								ActivityContext? previousActivity = null;
-								foreach (var activity in service.Activities)
-								{
-									<unknownAndKnowGroup>
-										@{
-											var leftMargin = previousActivity == null ? "0px" : DurationViewHelper.GetCssDurationValue(serviceFirstActivity.StartTime, activity.StartTime, PixelsPerMs);
-											<div style="display: flex; margin-left:@leftMargin;">
-												@{
-													<HorizontalDurationBoxView Activity="activity" PixelsPerMs="PixelsPerMs" Color="@serviceThemeColor" NestingLevel="0"/>
-													previousActivity = activity;
-												}
-											</div>
-										}
-									</unknownAndKnowGroup>
-								}
-							}
-						</durationBoxes>
-					</service>
-					<br>
-				}
-			}
-		}
-	</services>
+                            @{
+                                ActivityContext? previousActivity = null;
+                                foreach (var activity in service.Activities)
+                                {
+                                    <unknownAndKnowGroup>
+                                        @{
+                                            var leftMargin = previousActivity == null ? "0px" : DurationViewHelper.GetCssDurationValue(serviceFirstActivity.StartTime, activity.StartTime, PixelsPerMs);
+                                            <div style="display: flex; margin-left:@leftMargin;">
+                                                @{
+                                                    <HorizontalDurationBoxView Activity="activity" PixelsPerMs="PixelsPerMs" Color="@serviceThemeColor" NestingLevel="0" />
+                                                    previousActivity = activity;
+                                                }
+                                            </div>
+                                        }
+                                    </unknownAndKnowGroup>
+                                }
+                            }
+                        </durationBoxes>
+                    </service>
+                    <br>
+                }
+            }
+        }
+    </services>
 
 
 
 </horizontalDurationMapView>
 
 
+
+@*<script>
+    const slider = document.querySelector(".scroll");
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    slider.addEventListener("mousedown", e => {
+        isDown = true;
+        slider.classList.add("active");
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener("mouseleave", () => {
+        isDown = false;
+        slider.classList.remove("active");
+    });
+    slider.addEventListener("mouseup", () => {
+        isDown = false;
+        slider.classList.remove("active");
+    });
+    slider.addEventListener("mousemove", e => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = x - startX;
+        slider.scrollLeft = scrollLeft - walk;
+    });
+</script>*@
+
 @code {
+    [Inject] private BusManagerJsInterop BusManagerJsInterop { get; set; } = null!;
 
-	[Parameter]
-	[EditorRequired]
-	public MessageRequest RequestContext { get; set; } = null!;
 
-	[Parameter]
-	public double PixelsPerMs { get; set; } = 1;
+    [Parameter]
+    [EditorRequired]
+    public MessageRequest RequestContext { get; set; } = null!;
 
-	protected override void OnParametersSet()
-	{
-		RequestContext.Diagnostics.ActivityStartAdded -= OnActivityStartAdded;
-		RequestContext.Diagnostics.ActivityStartAdded += OnActivityStartAdded;
-		RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
-		RequestContext.Diagnostics.ActivityEndAdded += OnActivityEneAdded;
-		base.OnParametersSet();
-	}
+    [Parameter]
+    public double PixelsPerMs { get; set; } = 1;
 
-	private void OnActivityStartAdded(object? sender, ActivityStart activityStart)
-	{
-		StateHasChanged();
-	}
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 
-	private void OnActivityEneAdded(object? sender, ActivityEnd activityEnd)
-	{
-		StateHasChanged();
-	}
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        BusManagerJsInterop.AddDragToScroll(".scroll");
 
-	private void OnZoomInClick(MouseEventArgs args)
-	{
-		PixelsPerMs += 0.1;
-	}
+    }
 
-	private void OnZoomOutClick(MouseEventArgs args)
-	{
-		PixelsPerMs -= 0.1;
-		if (PixelsPerMs < 0)
-			PixelsPerMs = 0;
-	}
+    protected override void OnParametersSet()
+    {
+        RequestContext.Diagnostics.ActivityStartAdded -= OnActivityStartAdded;
+        RequestContext.Diagnostics.ActivityStartAdded += OnActivityStartAdded;
+        RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
+        RequestContext.Diagnostics.ActivityEndAdded += OnActivityEneAdded;
+        base.OnParametersSet();
+    }
+
+    private void OnActivityStartAdded(object? sender, ActivityStart activityStart)
+    {
+        StateHasChanged();
+    }
+
+    private void OnActivityEneAdded(object? sender, ActivityEnd activityEnd)
+    {
+        StateHasChanged();
+    }
+
+    private void OnZoomInClick(MouseEventArgs args)
+    {
+        PixelsPerMs += 0.1;
+    }
+
+    private void OnZoomOutClick(MouseEventArgs args)
+    {
+        PixelsPerMs -= 0.1;
+        if (PixelsPerMs < 0)
+            PixelsPerMs = 0;
+    }
 
 }

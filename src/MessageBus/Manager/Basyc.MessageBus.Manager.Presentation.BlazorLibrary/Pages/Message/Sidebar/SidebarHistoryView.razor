@@ -12,11 +12,11 @@
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryViewModel>
 <sidebarHistoryView>
     <heading>
-@*        <BasycSpaceBorder Size="SpacerSize.Medium">
+        <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
             <BasycHeading Size="HeadingSize.H3">
                 History
             </BasycHeading>
-        </BasycSpaceBorder>*@
+        </BasycSpaceBorder>
     </heading>
     <requests>
         <Virtualize TItem="MessageRequest" Context="messageRequest" Items="@messages">

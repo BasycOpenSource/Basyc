@@ -13,13 +13,17 @@
     <reqeustSideBarView>
 
         <grid>
-            <BasycSpaceBorder Size="SpacerSize.Medium">
-                <BasycHeading Size="HeadingSize.H3">
-                    Create request
-                </BasycHeading>
-                <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Start="SpaceLineSize.Medium" Visible="false" />
-                <requestform>
+            @*<BasycSpaceBorder Size="SpacerSize.Medium">*@
+            <formRow>
 
+                <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
+                    <BasycSpaceLine Visible="false" Start="SpaceLineSize.Medium" />
+                    <BasycHeading Size="HeadingSize.H3">
+                        Create request
+                    </BasycHeading>
+                    <BasycSpaceLine Visible="false" Start="SpaceLineSize.Small" />
+                </BasycSpaceBorder>
+                <requestform>
                     @if (MessageInfo is null)
                     {
                         <ghostLabel>
@@ -29,55 +33,61 @@
                     else
                     {
                         <paramSection>
-                            <table class="paramTable paddingContainer">
-                                @for (var i = 0; i < MessageInfo.Parameters.Count; i++)
-                                {
-                                    var index = i;
-                                    var paramInfo = MessageInfo.Parameters[index];
-                                    var paramValue = parameterValues[index];
-                                    var isPrimitive = paramInfo.Type.IsPrimitive || paramInfo.Type.IsArray || paramInfo.Type == typeof(string);
-                                    <tr>
-                                        <td>
-                                            <paramType class="paramType-isPrimitive-@isPrimitive">@paramInfo.TypeDisplayName</paramType>
-                                            <paramLabel>@paramInfo.ParameterDisplayName </paramLabel>
-                                        </td>
-                                    </tr>
-                                    <tr class="paramRow">
-                                        <td>
-                                            <paramInput class="inputBorder">
-                                                <input class="paramTextBox" @bind-value="@parameterValues[index]" />
-                                            </paramInput>
-                                        </td>
-                                    </tr>
-                                }
-                            </table>
-                            @if (MessageInfo.Parameters.Count == 0)
-                            {
-                                <ghostLabel>
-                                    This message does not have paramters
-                                </ghostLabel>
+                            <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
+                                <table class="paramTable paddingContainer">
+                                    @for (var i = 0; i < MessageInfo.Parameters.Count; i++)
+                                    {
+                                        var index = i;
+                                        var paramInfo = MessageInfo.Parameters[index];
+                                        var paramValue = parameterValues[index];
+                                        var isPrimitive = paramInfo.Type.IsPrimitive || paramInfo.Type.IsArray || paramInfo.Type == typeof(string);
+                                        <tr>
+                                            <td>
+                                                <paramType class="paramType-isPrimitive-@isPrimitive">@paramInfo.TypeDisplayName</paramType>
+                                                <paramLabel>@paramInfo.ParameterDisplayName </paramLabel>
+                                            </td>
+                                        </tr>
+                                        <tr class="paramRow">
+                                            <td>
+                                                <paramInput class="inputBorder">
+                                                    <input class="paramTextBox" @bind-value="@parameterValues[index]" />
+                                                </paramInput>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
 
-                            }
+
+                                @if (MessageInfo.Parameters.Count == 0)
+                                {
+                                    <ghostLabel>
+                                        This message does not have paramters
+                                    </ghostLabel>
+
+                                }
+                            </BasycSpaceBorder>
                         </paramSection>
 
                         <buttonSection>
-                            <BasycSpaceLine Start="@SpaceLineSize.Medium" Visible="false" />
-                            @if(hasInputError)
-                            {
-                                @:error when parsing
-                            }
-
-                            <button @onclick="SendMessage">
-                                send
-                            </button>
+                            <BasycSpaceBorder Size="SpacerSize.Medium">
+                                @if (hasInputError)
+                                {
+                                    @:error when parsing
+                                }
+                                <button @onclick="SendMessage">
+                                    send
+                                </button>
+                            </BasycSpaceBorder>
                         </buttonSection>
                     }
                 </requestform>
-            </BasycSpaceBorder>
-            <history>
+            </formRow>
+
+            @*</BasycSpaceBorder>*@
+            <historyRow>
                 <BasycSpaceLine Visible="false" />
                 <SidebarHistoryView MessageInfo="@MessageInfo" NavigationService="NavigationService" />
-            </history>
+            </historyRow>
 
         </grid>
 
@@ -101,6 +111,7 @@
         {
             parameterValues = new ObservableCollection<string>(Enumerable.Range(0, MessageInfo.Parameters.Count).Select(x => string.Empty).ToList());
         }
+
     }
 
     protected override void OnParametersSet()
@@ -185,7 +196,7 @@
         {
             var paramInfo = requestInfo.Parameters[i];
             var paramStringValue = parameterValues[i];
-            if(TryParseParamInputValue(paramStringValue, paramInfo, out var castedParamValue) is false)
+            if (TryParseParamInputValue(paramStringValue, paramInfo, out var castedParamValue) is false)
             {
                 hasInputError = true;
                 return Task.CompletedTask;
