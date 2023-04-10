@@ -5,7 +5,10 @@
 @using System.Diagnostics.CodeAnalysis;
 <basycStyleSection class="@styleSection.CssClass">
         <style>
-            @(styleSection.Style)
+            @if(styleSection is not null)
+            {
+                @(styleSection.Style)
+            }
         </style>
     @ChildContent
 </basycStyleSection>
@@ -29,8 +32,14 @@
 
     protected override void OnParametersSet()
     {
-        styleSection = styleSections.First(x => x.Name == SectionName);
         base.OnParametersSet();
+        var styleSectionPeak = styleSections.FirstOrDefault(x => x.Name == SectionName);
+        if (styleSectionPeak is null)
+            if (ThrowWhenStyleSectioNotfound)
+                throw new Exception($"Style section '{SectionName}' not found");
+            else
+                return;
+        styleSection = styleSectionPeak;
     }
 
     private static ObservableCollection<StyleDefinition> styleSections = new();
@@ -41,4 +50,7 @@
 
     [Parameter, EditorRequired]
     public string SectionName { get; set; } = null!;
+
+    [Parameter]
+    public bool ThrowWhenStyleSectioNotfound { get; set; }
 }

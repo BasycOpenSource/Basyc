@@ -43,6 +43,11 @@ messagePage {
         border-radius: 40px;
     }
 
+    ::-webkit-scrollbar-corner {
+        visibility: collapse;
+        background-color: #3D3D3D;
+    }
+
     .headingDefalts {
         font-weight: 300;
     }
@@ -99,4 +104,12 @@ messagePage {
     @extend .styleSharedDefaults;
     background-color: #0C0B10;
     color: #636986;
-}    
+}
+
+
+layout {
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+    height: 100%
+}

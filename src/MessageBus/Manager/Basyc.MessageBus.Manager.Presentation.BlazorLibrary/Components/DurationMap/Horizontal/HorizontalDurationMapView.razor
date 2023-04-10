@@ -2,12 +2,13 @@
 @using Basyc.Diagnostics.Shared.Logging
 @using Basyc.MessageBus.Manager.Application
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
-<horizontalDurationMapView class="scroll">
+<horizontalDurationMapView >
     <zoomToolBar>
         <MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />
     </zoomToolBar>
-    <services>
+    <services class="scroll">
         @{
             if (RequestContext.Diagnostics.Services.Any())
             {
@@ -59,37 +60,6 @@
 
 
 </horizontalDurationMapView>
-
-
-
-@*<script>
-    const slider = document.querySelector(".scroll");
-    let isDown = false;
-    let startX;
-    let scrollLeft;
-
-    slider.addEventListener("mousedown", e => {
-        isDown = true;
-        slider.classList.add("active");
-        startX = e.pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-    });
-    slider.addEventListener("mouseleave", () => {
-        isDown = false;
-        slider.classList.remove("active");
-    });
-    slider.addEventListener("mouseup", () => {
-        isDown = false;
-        slider.classList.remove("active");
-    });
-    slider.addEventListener("mousemove", e => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - slider.offsetLeft;
-        const walk = x - startX;
-        slider.scrollLeft = scrollLeft - walk;
-    });
-</script>*@
 
 @code {
     [Inject] private BusManagerJsInterop BusManagerJsInterop { get; set; } = null!;

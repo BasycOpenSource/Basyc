@@ -29,9 +29,15 @@ public class TooltipJsInterop : IAsyncDisposable
 		}
 	}
 
-	public async void MoveToScroll(string query)
+	public async void HideTooltip(string elementToMoveId, string targetElementId)
 	{
 		var module = await moduleTask.Value;
-		await module.InvokeVoidAsync("moveToRoot", query);
+		await module.InvokeVoidAsync("hideTooltip", elementToMoveId, targetElementId);
+	}
+
+	public async void ShowTooltip(string elementToMoveId, string targetElementQuerySelector = "basycControls")
+	{
+		var module = await moduleTask.Value;
+		await module.InvokeVoidAsync("showTooltip", elementToMoveId, targetElementQuerySelector);
 	}
 }

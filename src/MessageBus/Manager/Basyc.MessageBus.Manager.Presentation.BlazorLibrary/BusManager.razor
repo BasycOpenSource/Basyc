@@ -9,15 +9,19 @@
 </HeadContent>
 
 <busManager>
-    <MudThemeProvider Theme="@MudTheme" IsDarkMode="true" />
-    <MudDialogProvider />
-    <MudSnackbarProvider />
-    <BasycControls />
-    <sideBar>
-        <AppSideBarView/>
-    </sideBar>
+    <BasycStyleSection SectionName="1">
+        <layout>
+            <MudThemeProvider Theme="@MudTheme" IsDarkMode="true" />
+            <MudDialogProvider />
+            <MudSnackbarProvider />
+            <BasycControls />
+            <sideBar>
+                <AppSideBarView />
+            </sideBar>
 
-    <messagePage>
-        @ViewModel.CurrentPage
-    </messagePage>
+            <messagePage>
+                @ViewModel.CurrentPage
+            </messagePage>
+        </layout>
+    </BasycStyleSection>
 </busManager>

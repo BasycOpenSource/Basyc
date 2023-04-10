@@ -2,12 +2,15 @@
 @using Basyc.Blazor.Controls.Interops;
 
 <tooltipView>
-    <childContent @onmousemove="e => { x = e.OffsetX; y = e.OffsetY; }"
-                  @onmouseout="e => isMouseOver = true"
-                  @onmouseover="e => isMouseOver = true">
+    <childContent @onmousemove="e => { x = e.PageX; y = e.PageY;}"
+                  @onmouseout="MouseOut"
+                  @onmouseover="@MouseOver"
+                  @onkeyup="@KeyUp"
+                  @onkeydown="@KeyDown"
+                  id="@childContentId">
         @ChildContent
     </childContent>
-    <tooltip style="position: absolute; left: @(x + 4)px; top: @(y + 4)px; visibility: @(isMouseOver ? "visible" : "collapse")">
+    <tooltip class="tooltip--hidden" id="@toolTipId" style="position: absolute; left: @(x + 4)px; top: @(y + 4)px; visibility: @(isMouseOver || keepVisible ? "visible" : "collapse")">
         @TooltipContent
     </tooltip>
 </tooltipView>
@@ -17,7 +20,48 @@
     private double x;
     private double y;
     private bool isMouseOver;
+    private bool keepVisible;
 
     [Parameter] public RenderFragment? ChildContent { get; set; } = null;
     [Parameter] public RenderFragment? TooltipContent { get; set; } = null;
+    private string toolTipId { get; init; } = Random.Shared.Next().ToString();
+    private string childContentId { get; init; } = Random.Shared.Next().ToString();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+
+    public void KeyDown(KeyboardEventArgs e)
+    {
+        if (e.Code == "LeftControl")
+        {
+            keepVisible = true;
+        }
+    }
+
+    public void KeyUp(KeyboardEventArgs e)
+    {
+        if (e.Code == "LeftControl")
+        {
+            keepVisible = false;
+        }
+    }
+
+    public void MouseOver(MouseEventArgs e)
+    {
+        TooltipJsInterop.ShowTooltip($"{toolTipId}");
+        isMouseOver = true;
+    }
+
+    public void MouseOut(MouseEventArgs e)
+    {
+        TooltipJsInterop.HideTooltip($"{toolTipId}", childContentId);
+        isMouseOver = false;
+    }
+
+
 }
+
+
