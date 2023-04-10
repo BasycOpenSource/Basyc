@@ -37,4 +37,10 @@ public class NavigationService : BasycReactiveViewModelBase
 		CurrentQueryParams = new object();
 		CurrentPage = currentPageRenderFragment;
 	}
+
+	public void Clear()
+	{
+		CurrentQueryParams = null;
+		CurrentPage = null;
+	}
 }

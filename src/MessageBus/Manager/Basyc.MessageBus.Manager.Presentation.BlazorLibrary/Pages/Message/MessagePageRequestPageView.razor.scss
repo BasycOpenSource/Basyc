@@ -1,5 +1,6 @@
 ﻿messagePageRequestPageView {
     display: block;
+    flex: 1;
 }
 
 infoRow {
@@ -56,7 +57,13 @@ arrow {
     color: #14161E;
     font-weight: bolder;
 }
+::deep .mud-tabs{
+    height: 100%;
+}
 
+::deep .mud-tabs-panels {
+    height: 100%;
+}
 
 ::deep .mud-tabs-toolbar {
     background-color: transparent !important;

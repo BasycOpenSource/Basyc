@@ -21,13 +21,11 @@
                         @Html.Time(ViewModel.Duration)
                     </headingRow>
                     <loggingRow>
-                        <BasycSpaceLine End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
                         <LogIconView LogLevel="LogLevel.Information" /> @ViewModel.LogsInformationCount
-                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
                         <LogIconView LogLevel="LogLevel.Warning" /> @ViewModel.LogsWarningCount
-                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
                         <LogIconView LogLevel="LogLevel.Error" /> @ViewModel.LogsErrorCount
-                        <BasycSpaceLine Start="SpaceLineSize.Small" Visible="true" Direction="SpaceLineDirection.Vertical" />
                     </loggingRow>
                 </MudStack>
             </itemBody>

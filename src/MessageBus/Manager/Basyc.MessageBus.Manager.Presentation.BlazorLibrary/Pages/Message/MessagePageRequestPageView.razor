@@ -5,7 +5,7 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers;
 @inherits BasycReactiveBlazorComponentBase<MessagePageRequestPageViewModel, MessageRequest>
 <messagePageRequestPageView>
-    <BasycSpaceBorder Size="SpacerSize.Big">
+    <BasycSpaceBorder Size="SpacerSize.Big" StretchHeight="true">
         <infoRow>
             <infoSection>
                 <BasycHeading Size="HeadingSize.H3">
@@ -103,7 +103,7 @@
                 <MudTabPanel Text="Traces">
                     <HorizontalDurationMapView RequestContext="MessageRequest" />
                 </MudTabPanel>
-                <MudTabPanel Text="Logs">
+                <MudTabPanel Text="Logs" >
                     <LogWindowView DiagnosticsContext="MessageRequest.Diagnostics" />
                 </MudTabPanel>
             </ChildContent>

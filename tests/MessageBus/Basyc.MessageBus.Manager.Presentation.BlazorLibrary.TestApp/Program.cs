@@ -161,7 +161,31 @@ busManagerBuilder.RegisterMessages()
 	.HandeledBy((CustomerModel x) =>
 	{
 		return x;
-	});
+	})
+	.AddMessage("Inifinite Logging")
+	.NoReturn()
+	.HandledBy(async (logger) =>
+	{
+		var counter = 0;
+		while (true)
+		{
+			logger.LogInformation("Info: " + counter++);
+			await Task.Delay(5000);
+		}
+	})
+	.AddMessage("10 infos")
+	.NoReturn()
+	.HandledBy((logger) =>
+	{
+		var counter = 0;
+		while (true)
+		{
+			logger.LogInformation("Info: " + counter++);
+			if (counter == 10)
+				break;
+		}
+	})
+	;
 
 builder.Services.AddBasycBusManagerBlazorUi();
 //builder.Services.UseMicrosoftDependencyResolver(); //Splat config

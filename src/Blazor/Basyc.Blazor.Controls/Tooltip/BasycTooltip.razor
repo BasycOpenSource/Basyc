@@ -1,0 +1,23 @@
+﻿@namespace Basyc.Blazor.Controls
+@using Basyc.Blazor.Controls.Interops;
+
+<tooltipView>
+    <childContent @onmousemove="e => { x = e.OffsetX; y = e.OffsetY; }"
+                  @onmouseout="e => isMouseOver = true"
+                  @onmouseover="e => isMouseOver = true">
+        @ChildContent
+    </childContent>
+    <tooltip style="position: absolute; left: @(x + 4)px; top: @(y + 4)px; visibility: @(isMouseOver ? "visible" : "collapse")">
+        @TooltipContent
+    </tooltip>
+</tooltipView>
+
+@code {
+    [Inject] private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
+    private double x;
+    private double y;
+    private bool isMouseOver;
+
+    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
+    [Parameter] public RenderFragment? TooltipContent { get; set; } = null;
+}

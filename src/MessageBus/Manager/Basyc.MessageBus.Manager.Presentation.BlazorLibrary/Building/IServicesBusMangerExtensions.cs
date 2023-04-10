@@ -13,7 +13,7 @@ public static class ServicesBusMangerExtensions
 		services.AddSingleton<BusManagerJsInterop>();
 		services.AddSingleton<NavigationService>();
 		services.RegisterViewModels();
-
+		services.AddBasycBlazorControls();
 	}
 
 	private static void RegisterViewModels(this IServiceCollection services)
@@ -23,7 +23,6 @@ public static class ServicesBusMangerExtensions
 		foreach (var viewModelType in viewModelTypes)
 		{
 			services.AddTransient(viewModelType);
-
 		}
 	}
 }

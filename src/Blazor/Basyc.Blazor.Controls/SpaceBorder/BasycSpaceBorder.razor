@@ -20,6 +20,9 @@
     [Parameter]
     public bool ShrinkLeftRight { get; set; }
 
+    [Parameter]
+    public bool StretchHeight { get; set; }
+
 
     private string classToRender = "";
     protected override void OnParametersSet()
@@ -32,6 +35,7 @@
             .AddClass("spacer-leftRight--small", Size == SpacerSize.Small && !ShrinkLeftRight)
             .AddClass("spacer-leftRight--medium", Size == SpacerSize.Medium && !ShrinkLeftRight)
             .AddClass("spacer-leftRight--big", Size == SpacerSize.Big && !ShrinkLeftRight)
+            .AddClass("basycSpaceBorder--strechHeight", StretchHeight)
             .Build();
     }
 }

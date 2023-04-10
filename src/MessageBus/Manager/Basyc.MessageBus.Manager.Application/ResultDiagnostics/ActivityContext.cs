@@ -1,7 +1,5 @@
 ﻿using Basyc.Diagnostics.Shared;
 using Basyc.Diagnostics.Shared.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
@@ -15,15 +13,16 @@ public record class ActivityContext(
 	string DisplayName,
 	DateTimeOffset StartTime)
 {
+
 	public event EventHandler? ActivityEnded;
 	public event EventHandler? NestedActivityAdded;
 	public event EventHandler? NestedActivityEnded;
 	public event EventHandler? ParentAssigned;
 
 	private readonly List<ActivityContext> nestedActivities = new();
-	public IReadOnlyList<ActivityContext> NestedActivities { get => nestedActivities; }
+	public IReadOnlyList<ActivityContext> NestedActivities => nestedActivities;
 	private readonly List<LogEntry> logs = new();
-	public IReadOnlyList<LogEntry> Logs { get => logs; }
+	public IReadOnlyList<LogEntry> Logs => logs;
 	public bool HasEnded { get; private set; }
 	public DateTimeOffset EndTime { get; private set; }
 	public TimeSpan Duration { get; private set; }

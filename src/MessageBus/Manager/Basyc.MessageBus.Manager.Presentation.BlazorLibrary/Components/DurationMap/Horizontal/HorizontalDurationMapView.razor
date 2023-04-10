@@ -1,4 +1,5 @@
-﻿@using Basyc.Diagnostics.Shared.Logging
+﻿@using Basyc.Blazor.Controls.Interops;
+@using Basyc.Diagnostics.Shared.Logging
 @using Basyc.MessageBus.Manager.Application
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
@@ -92,6 +93,7 @@
 
 @code {
     [Inject] private BusManagerJsInterop BusManagerJsInterop { get; set; } = null!;
+    [Inject] private ScrollJsInterop ScrollJsInterop { get; set; } = null!;
 
 
     [Parameter]
@@ -109,7 +111,7 @@
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        BusManagerJsInterop.AddDragToScroll(".scroll");
+        ScrollJsInterop.AddDragToScroll(".scroll");
 
     }
 

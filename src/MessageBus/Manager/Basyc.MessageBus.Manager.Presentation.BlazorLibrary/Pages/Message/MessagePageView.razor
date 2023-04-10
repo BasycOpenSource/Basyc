@@ -17,7 +17,14 @@
     </requestFormPage>
     <page>
         <BasycStyleSection SectionName="3">
-            @ViewModel.PageToDisplay
+            @if (ViewModel.PageToDisplay is null)
+            {
+                @:select
+            }
+            else
+            {
+                @ViewModel.PageToDisplay
+            }
         </BasycStyleSection>
     </page>
 </messagePageView>
@@ -29,6 +36,7 @@
     public override void OnVisit(MessageInfo messageInfo)
     {
         MessageInfo = messageInfo;
+        ViewModel.NavigationService.Clear();
     }
 
 
