@@ -32,7 +32,7 @@ public static class ReactiveViewModelBaseReactiveHandlerExtensions
 		Expression<Func<TViewModel, ReadOnlyObservableCollection<TSourceItem>>> sourceProperty,
 		Action<TSourceItem> handler,
 		bool listenForItemPropertiesChanges = true)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 		where TSourceItem : INotifyPropertyChanged
 	{
 		IDisposable? nestedSubscription = null;
@@ -73,7 +73,7 @@ public static class ReactiveViewModelBaseReactiveHandlerExtensions
 		Expression<Func<TViewModel, ReadOnlyObservableCollection<TSourceItem>>> sourceProperty,
 		Action<TSourceItem> handler,
 		bool listenForItemPropertiesChanges = true)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 		where TSourceItem : INotifyPropertyChanged
 	{
 		IDisposable? nestedSubscription = null;
@@ -127,7 +127,7 @@ public static class ReactiveViewModelBaseReactiveHandlerExtensions
 	public static ReactiveSubscription ReactiveHandler<TViewModel, TObservedProperty>(this TViewModel viewModel,
 		Expression<Func<TViewModel, TObservedProperty>> sourceProperty,
 		Action<TObservedProperty> handler)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 	{
 		return viewModel.WhenAnyValue(sourceProperty!)
 		.Subscribe(handler)

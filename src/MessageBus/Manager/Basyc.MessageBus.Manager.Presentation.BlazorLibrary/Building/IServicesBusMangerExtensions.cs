@@ -9,6 +9,7 @@ public static class ServicesBusMangerExtensions
 {
 	public static void AddBasycBusManagerBlazorUi(this IServiceCollection services)
 	{
+		BasycReactiveUi.Fix();
 		services.AddMudServices();
 		services.AddSingleton<BusManagerJsInterop>();
 		services.AddSingleton<NavigationService>();

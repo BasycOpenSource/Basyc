@@ -1,14 +1,14 @@
 ﻿namespace Basyc.ReactiveUi;
 public static class DisposableReactiveViewModelBaseExtensions
 {
-	public static TDisposable DisposeWithViewModel<TDisposable>(this TDisposable disposable, BasycReactiveViewModelBase viewModel)
+	public static TDisposable DisposeWithViewModel<TDisposable>(this TDisposable disposable, IBasycReactiveViewModel viewModel)
 		where TDisposable : IDisposable
 	{
 		viewModel.Disposables.Add(disposable);
 		return disposable;
 	}
 
-	public static TDisposable DisposeWithViewModel<TDisposable>(this TDisposable disposable, BasycReactiveViewModelBase viewModel, IDisposable? oldDisposable)
+	public static TDisposable DisposeWithViewModel<TDisposable>(this TDisposable disposable, IBasycReactiveViewModel viewModel, IDisposable? oldDisposable)
 		where TDisposable : IDisposable
 	{
 		if (oldDisposable is not null)

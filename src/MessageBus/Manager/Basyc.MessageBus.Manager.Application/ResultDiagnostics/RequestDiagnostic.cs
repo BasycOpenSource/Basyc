@@ -45,8 +45,7 @@ public class RequestDiagnostic
 			throw new ArgumentException("Request id does not match context request result id", nameof(newLogEntry));
 
 		logEntries.Add(newLogEntry);
-		//logEntries.Sort((x, y) => x.Time.CompareTo(y.Time));
-		Sort(logEntries);
+		//Sort(logEntries); //Not nice when using Reactive -> publishes multiple events for one adding
 
 		if (newLogEntry.SpanId is not null)
 		{
@@ -65,7 +64,7 @@ public class RequestDiagnostic
 	private static ObservableCollection<LogEntry> Sort(ObservableCollection<LogEntry> collection)
 	{
 		ObservableCollection<LogEntry> temp;
-		temp = new ObservableCollection<LogEntry>(collection.OrderBy(x=>x.Time));
+		temp = new ObservableCollection<LogEntry>(collection.OrderBy(x => x.Time));
 		collection.Clear();
 		foreach (var j in temp) collection.Add(j);
 		return collection;

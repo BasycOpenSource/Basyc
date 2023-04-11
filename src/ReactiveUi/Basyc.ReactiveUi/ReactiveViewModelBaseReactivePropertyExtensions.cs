@@ -37,7 +37,7 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0
 	)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 	{
 		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
 		var targetPropertyGetter = targetProperty.Compile();
@@ -73,7 +73,7 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0
 	)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 	{
 		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
 		var targetPropertyGetter = targetProperty.Compile();
@@ -111,9 +111,8 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 	Expression<Func<TViewModel, TSourceProperty2>> sourceProperty2,
 	Func<(TSourceProperty, TSourceProperty2), TTargetProperty> converter,
 	[CallerFilePath] string sourceFilePath = "",
-	[CallerLineNumber] int sourceLineNumber = 0
-)
-	where TViewModel : BasycReactiveViewModelBase
+	[CallerLineNumber] int sourceLineNumber = 0)
+		where TViewModel : class, IBasycReactiveViewModel
 	{
 		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
 		var targetPropertyGetter = targetProperty.Compile();
@@ -151,7 +150,7 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0
 	)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 	{
 		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
 		var targetPropertyName = targetProperty.GetMemberName();
@@ -211,7 +210,7 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0
 	)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 	{
 		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
 		var targetPropertyName = targetProperty.GetMemberName();
@@ -238,6 +237,7 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 					.DisposeWithViewModel(viewModel, nestedSubscription2);
 
 				backingField.SetValue(viewModel, vesselsViewModels);
+				//viewModel.RaisePropertyChanged(targetPropertyName);
 				viewModel.RaisePropertyChanged(targetPropertyName);
 			})
 			.DisposeWithViewModel(viewModel);
@@ -271,7 +271,7 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0
 	)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 		//where TSourceItem : INotifyPropertyChanged
 	{
 		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
@@ -338,7 +338,7 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0
 	)
-		where TViewModel : BasycReactiveViewModelBase
+		where TViewModel : class, IBasycReactiveViewModel
 		where TSourceItem : INotifyPropertyChanged
 	{
 		AssertPropertyMatchesExpressionInDebug(sourceFilePath, sourceLineNumber, targetProperty);
