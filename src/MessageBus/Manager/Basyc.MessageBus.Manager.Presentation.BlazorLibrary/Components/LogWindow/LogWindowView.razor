@@ -55,6 +55,9 @@
 
     private List<LogEntry> filteredLogs = new();
 
+	[Reactive] public int LogsCount { get; set; }
+	[Reactive] public ReadOnlyObservableCollection<LogEntry> Logs { get; set; } = null!;
+
 
 
     private void SelectedLogLevelsChanged(List<LogLevel> levels)
@@ -73,29 +76,15 @@
     {
         base.OnInitialized();
 
-        LogsCount = this.ReactiveProperty(
-            x => x.LogsCount,
-            x => x.DiagnosticsContext.LogEntries.Count);
+	    Logs = this.ReactiveCollectionProperty(
+		    x => x.Logs,
+		    x => x.DiagnosticsContext.LogEntries,
+		    x => x);
 
-        //Logs = new(new());
-        Logs = this.ReactiveCollectionProperty(
-            x => x.Logs,
-            x => x.DiagnosticsContext.LogEntries,
-            x => x);
-
-        //this.ReactiveHandler(x => x.ViewModel.LogsCount, x =>
-        //{
-        //});
-
-        this.ReactiveHandler(x => x.LogsCount, x =>
-        {
-            
-        });
-
-        this.PropertyChanged += (s, a) =>
-        {
-
-        };
+		this.ReactiveHandler(x => x.Logs.Count, x =>
+		{
+			InvokeAsync(StateHasChanged);
+		});
     }
 
     protected override void OnParametersSet()
@@ -103,7 +92,6 @@
         SelectedLogLevels = Enum.GetValues<LogLevel>().ToList();
         SelectedServiceIdentities = DiagnosticsContext.Services.Select(x => x.ServiceIdentity).ToList();
         UpdateFilteredLogs();
-        //ViewModel.RequestDiagnostic = DiagnosticsContext;
         base.OnParametersSet();
     }
 

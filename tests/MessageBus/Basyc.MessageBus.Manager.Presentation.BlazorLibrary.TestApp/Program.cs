@@ -170,8 +170,9 @@ busManagerBuilder.RegisterMessages()
 		var counter = 0;
 		while (true)
 		{
-			logger.LogInformation("Info: " + counter++);
-			await Task.Delay(5000);
+			await Task.Delay(3500);
+			var message = $"Info: {++counter}";
+			logger.LogInformation(message);
 		}
 	})
 	.AddMessage("10 infos")

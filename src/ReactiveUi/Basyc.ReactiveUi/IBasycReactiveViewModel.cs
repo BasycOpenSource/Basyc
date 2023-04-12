@@ -7,6 +7,6 @@ public interface IBasycReactiveViewModel : IReactiveObject, IDisposable
 	/// Object and subscriptions that need to be disposed together with <see cref="IBasycReactiveViewModel"/>
 	/// </summary>
 	List<IDisposable> Disposables { get; }
-	void RaisePropertyChanged(string propertyName);
+	// void RaisePropertyChanged(string propertyName);
 }
 

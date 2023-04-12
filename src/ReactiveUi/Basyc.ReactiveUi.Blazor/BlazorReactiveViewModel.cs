@@ -16,6 +16,11 @@ public abstract class BasycReactiveBlazorComponentBase<TViewModel, TQueryParams>
 	public List<IDisposable> Disposables { get; } = new();
 	public event PropertyChangingEventHandler? PropertyChanging;
 
+	protected BasycReactiveBlazorComponentBase()
+	{
+		this.SubscribePropertyChangedEvents();
+	}
+
 	protected override void OnInitialized()
 	{
 		if (typeof(TViewModel).IsAssignableTo(typeof(INullViewModel)) is false)
@@ -31,16 +36,12 @@ public abstract class BasycReactiveBlazorComponentBase<TViewModel, TQueryParams>
 		OnVisit(QueryParams);
 	}
 
+	//TODO: maybe dont call in OnInitialized/OnParametersSet but only in navigation service?
 	public abstract void OnVisit(TQueryParams queryParams);
 
 	public void RaisePropertyChanging(PropertyChangingEventArgs args)
 	{
 		PropertyChanging?.Invoke(this, args);
-	}
-
-	public void RaisePropertyChanged(string propertyName)
-	{
-		base.OnPropertyChanged(propertyName);
 	}
 
 	public void RaisePropertyChanged(PropertyChangedEventArgs args)
@@ -62,30 +63,29 @@ public interface INullViewModel : INotifyPropertyChanged
 {
 }
 
+public interface INullQueryParameters
+{
+}
+
 public interface IBasycReactiveBlazorComponentBase : INullViewModel
 {
 }
 
-public abstract class BasycReactiveBlazorComponentBase : BasycReactiveBlazorComponentBase<IBasycReactiveBlazorComponentBase, object>
+public abstract class BasycReactiveBlazorComponentBase : BasycReactiveBlazorComponentBase<INullViewModel, INullQueryParameters>
 {
 	public BasycReactiveBlazorComponentBase()
 	{
-		var asReactiveComponentBase = (ReactiveComponentBase<IBasycReactiveBlazorComponentBase>)this;
+		// var asReactiveComponentBase = (ReactiveComponentBase<INullViewModel>)this;
+		// asReactiveComponentBase.ViewModel = this;
 		PropertyChanged += PropertyChangedHandler;
-		asReactiveComponentBase.ViewModel = this;
-		//this.WhenAnyValue(x => x.ViewModel)
-		//	.Subscribe(x =>
-		//	{
-		//		x.PropertyChanged += PropertyChangedHandler;
-		//	});
 	}
 
 	private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
 	{
-		//StateHasChanged();
+		InvokeAsync(StateHasChanged);
 	}
 
-	public override void OnVisit(object queryParams)
+	public override void OnVisit(INullQueryParameters queryParams)
 	{
 
 	}
