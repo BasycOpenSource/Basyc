@@ -80,16 +80,6 @@ public interface IBasycReactiveBlazorComponentBase
 
 public abstract class BasycReactiveBlazorComponentBase : BasycReactiveBlazorComponentBase<INullViewModel>
 {
-	//public BasycReactiveBlazorComponentBase()
-	//{
-	//	PropertyChanged += PropertyChangedHandler;
-	//}
-
-	//private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
-	//{
-	//	InvokeAsync(StateHasChanged);
-	//}
-
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
