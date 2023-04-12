@@ -7,16 +7,25 @@
 }
 
 tooltip {
-  /*    display: none;
-  visibility: collapse;*/
+  display: block;
   grid-row: 1;
   grid-column: 1;
   z-index: 1001;
   overflow: visible;
 }
 
-childContent {
+perspective {
   display: block;
+  /*perspective: 500px;*/
+}
+
+transform {
+  display: block;
+  /*transform: rotateY(-10deg);*/
+}
+
+childContent {
+  display: contents;
   grid-row: 1;
   grid-column: 1;
 }

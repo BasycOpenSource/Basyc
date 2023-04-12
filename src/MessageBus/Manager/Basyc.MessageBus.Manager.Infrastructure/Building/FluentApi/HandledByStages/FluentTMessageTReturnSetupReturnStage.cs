@@ -32,10 +32,10 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 
 	public FluentSetupDomainPostStage HandeledBy(Func<RequestInput, TReturn> handler)
 	{
-		object? handlerWrapper(MessageRequest requestResult, ILogger logger)
+		Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
 			var returnObject = handler.Invoke(requestResult.Request);
-			return returnObject;
+			return Task.FromResult<object?>(returnObject);
 		}
 
 		//fluentApiMessage.RequestHandler = handlerWrapper;
@@ -45,11 +45,11 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 
 	public FluentSetupDomainPostStage HandeledBy(Func<TMessage, TReturn> handlerWithTReturn)
 	{
-		object? handlerWrapper(MessageRequest result, ILogger logger)
+		Task<object?> handlerWrapper(MessageRequest result, ILogger logger)
 		{
 			var message = messageBinder.CreateMessage(result.Request);
 			var returnObject = handlerWithTReturn.Invoke(message);
-			return returnObject!;
+			return Task.FromResult<object?>(returnObject);
 		}
 
 		//fluentApiMessage.RequestHandler = handlerWrapper;

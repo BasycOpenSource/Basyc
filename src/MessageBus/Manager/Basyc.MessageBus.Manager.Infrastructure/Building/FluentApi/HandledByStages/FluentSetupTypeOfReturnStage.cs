@@ -85,13 +85,13 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
 	public FluentSetupDomainPostStage HandledBy<TReturn>(Func<object, ILogger, TReturn> handler)
 		where TReturn : class
 	{
-		object? handlerWrapper(MessageRequest requestResult, ILogger logger)
+		Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
 			var message = binder.Value().CreateMessage(requestResult.Request);
 			var returnObject = handler.Invoke(message, logger);
 			returnObject.ThrowIfNull();
 			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.MessageInfo.ResponseType!);
-			return returnObject;
+			return Task.FromResult<object?>(returnObject);
 		}
 
 		ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
@@ -101,12 +101,12 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
 	public FluentSetupDomainPostStage HandledBy<TReturn>(Func<ReadOnlyCollection<Parameter>, ILogger, TReturn> handler)
 		where TReturn : class
 	{
-		object? handlerWrapper(MessageRequest requestResult, ILogger logger)
+		Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
 			var returnObject = handler.Invoke(requestResult.Request.Parameters, logger);
 			returnObject.ThrowIfNull();
 			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.MessageInfo.ResponseType!);
-			return returnObject;
+			return Task.FromResult<object?>(returnObject);
 		}
 
 		ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);

@@ -19,6 +19,13 @@ public abstract class BasycReactiveBlazorComponentBase<TViewModel, TQueryParams>
 	protected BasycReactiveBlazorComponentBase()
 	{
 		this.SubscribePropertyChangedEvents();
+		PropertyChanged += PropertyChangedHandler;
+
+	}
+
+	private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
+	{
+		InvokeAsync(StateHasChanged);
 	}
 
 	protected override void OnInitialized()
@@ -50,10 +57,10 @@ public abstract class BasycReactiveBlazorComponentBase<TViewModel, TQueryParams>
 	}
 }
 
-public abstract class BasycReactiveBlazorComponentBase<TViewModel> : BasycReactiveBlazorComponentBase<TViewModel, object>
+public abstract class BasycReactiveBlazorComponentBase<TViewModel> : BasycReactiveBlazorComponentBase<TViewModel, INullQueryParameters>
 	where TViewModel : class, INotifyPropertyChanged
 {
-	public override void OnVisit(object queryParams)
+	public override void OnVisit(INullQueryParameters queryParams)
 	{
 
 	}
@@ -67,28 +74,21 @@ public interface INullQueryParameters
 {
 }
 
-public interface IBasycReactiveBlazorComponentBase : INullViewModel
+public interface IBasycReactiveBlazorComponentBase
 {
 }
 
-public abstract class BasycReactiveBlazorComponentBase : BasycReactiveBlazorComponentBase<INullViewModel, INullQueryParameters>
+public abstract class BasycReactiveBlazorComponentBase : BasycReactiveBlazorComponentBase<INullViewModel>
 {
-	public BasycReactiveBlazorComponentBase()
-	{
-		// var asReactiveComponentBase = (ReactiveComponentBase<INullViewModel>)this;
-		// asReactiveComponentBase.ViewModel = this;
-		PropertyChanged += PropertyChangedHandler;
-	}
+	//public BasycReactiveBlazorComponentBase()
+	//{
+	//	PropertyChanged += PropertyChangedHandler;
+	//}
 
-	private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
-	{
-		InvokeAsync(StateHasChanged);
-	}
-
-	public override void OnVisit(INullQueryParameters queryParams)
-	{
-
-	}
+	//private void PropertyChangedHandler(object? sender, PropertyChangedEventArgs e)
+	//{
+	//	InvokeAsync(StateHasChanged);
+	//}
 
 	protected override void OnInitialized()
 	{

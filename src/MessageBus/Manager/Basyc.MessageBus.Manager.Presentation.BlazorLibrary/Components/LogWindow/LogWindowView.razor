@@ -25,18 +25,18 @@
         </filterService>
     </toolBar>
     <logs>
-        @for (var logEntryIndex = 0; logEntryIndex < Logs.Count; logEntryIndex++)
-        {
-            var logEntry = Logs[logEntryIndex];
-            @*var logActivity = logEntry.SpanId is null ? null : DiagnosticsContext.TryGetActivity(logEntry.SpanId) ?;*@
-            ActivityContext? logActivity;
-            if (logEntry.SpanId is null)
-                logActivity = null;
-            else
-                DiagnosticsContext.TryGetActivity(logEntry.SpanId, out logActivity);
-
-            <LogEntryView AlternateColor="logEntryIndex % 2 != 0" Activity="logActivity" ServiceName="@logEntry.Service.ServiceName" LogTime="@logEntry.Time" LogLevel="@logEntry.LogLevel" LogMessage="@logEntry.Message" />
-        }
+        <BasycList Items="@Logs" Context="logEntry">
+            <ItemTemplate>
+                @{
+                    ActivityContext? logActivity;
+                    if (logEntry.SpanId is null)
+                        logActivity = null;
+                    else
+                        DiagnosticsContext.TryGetActivity(logEntry.SpanId, out logActivity);
+                }
+                <LogEntryView AlternateColor="false" Activity="logActivity" ServiceName="@logEntry.Service.ServiceName" LogTime="@logEntry.Time" LogLevel="@logEntry.LogLevel" LogMessage="@logEntry.Message" />
+            </ItemTemplate>
+        </BasycList>
     </logs>
 </logWindowView>
 
@@ -46,19 +46,15 @@
     [Parameter]
     [EditorRequired]
     public RequestDiagnostic DiagnosticsContext { get; set; } = null!;
-
     [Parameter]
     public List<LogLevel> SelectedLogLevels { get; set; } = new();
-
     [Parameter]
     public List<ServiceIdentity> SelectedServiceIdentities { get; set; } = new();
 
-    private List<LogEntry> filteredLogs = new();
 
-	[Reactive] public int LogsCount { get; set; }
-	[Reactive] public ReadOnlyObservableCollection<LogEntry> Logs { get; set; } = null!;
-
-
+    [Reactive] public int LogsCount { get; set; }
+    [Reactive] public ReadOnlyObservableCollection<LogEntry> Logs { get; set; } = null!;
+    private ReactiveSubscription? logsSubscription;
 
     private void SelectedLogLevelsChanged(List<LogLevel> levels)
     {
@@ -75,16 +71,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
-	    Logs = this.ReactiveCollectionProperty(
-		    x => x.Logs,
-		    x => x.DiagnosticsContext.LogEntries,
-		    x => x);
-
-		this.ReactiveHandler(x => x.Logs.Count, x =>
-		{
-			InvokeAsync(StateHasChanged);
-		});
+        UpdateFilteredLogs();
     }
 
     protected override void OnParametersSet()
@@ -98,11 +85,13 @@
 
     private void UpdateFilteredLogs()
     {
-        filteredLogs = DiagnosticsContext.LogEntries
-            .Where(x => SelectedLogLevels.Contains(x.LogLevel))
-            .Where(x => SelectedServiceIdentities.Contains(x.Service))
-            .ToList();
-
+        logsSubscription?.Dispose();
+        Logs = this.ReactiveCollectionProperty(
+            x => x.Logs,
+            x => x.DiagnosticsContext.LogEntries,
+            x => x,
+            x => SelectedLogLevels.Contains(x.LogLevel) && SelectedServiceIdentities.Contains(x.Service),
+            out logsSubscription);
     }
 
 }

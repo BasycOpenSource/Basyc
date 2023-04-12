@@ -5,18 +5,9 @@
 @using Color = Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors.Color
 @implements IDisposable
 @{
-    var width = "5rem"; //default lenght when not finished
     if (Activity.HasEnded)
     {
-        width = DurationViewHelper.GetCssDurationValue(Activity.EndTime - Activity.StartTime, PixelsPerMs, out var widthNumber);
-        if (widthNumber < 0.2)
-        {
-            width = "0.1px";
-        }
-        if (widthNumber < 2)
-        {
-            width = "2px";
-        }
+        SetKnownWidth();
     }
     //var opacity = Color.Opacity - (((double)NestingLevel / 5) * Color.Opacity);
     //string durationBoxStyle = $"min-width: {width}; background-color: {Color.Edit(opacity: opacity)};";
@@ -40,48 +31,7 @@
         </TooltipContent>
         <ChildContent>
             <durationBox style="@durationBoxStyle">
-                @*
-                <MudTooltip RootStyle="@mudTooltipBoxStyle" Arrow="true" Mouse>
-                <ChildContent>
                 <durationBoxBorder>
-                <acitvityName>
-                @Activity.DisplayName
-                </acitvityName>
-                @if (Activity.HasEnded is false)
-                {
-                <spinner>
-                <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
-                </spinner>
-                }
-                </durationBoxBorder>
-                </ChildContent>
-                <TooltipContent>
-                <toolTipContent>
-                service: @Activity.Service.ServiceName
-                <br />
-                name: @Activity.DisplayName
-                <br />
-                id: @Activity.Id
-                <br />
-                start: @Activity.StartTime.ToString("hh:mm:ss:fff")
-                <br />
-                end: @Activity.EndTime.ToString("hh:mm:ss:fff")
-                <br />
-                dur: @((Activity.EndTime - Activity.StartTime).TotalMilliseconds) ms
-                <br />
-                Parent: @(Activity.HasParent ? Activity.ParentActivity?.DisplayName : "(none)")
-                <br />
-                hasEnded: @Activity.HasEnded
-                <br />
-                logs: @Activity.Logs.Count
-
-                </toolTipContent>
-                </TooltipContent>
-                </MudTooltip>
-                *@
-
-                <durationBoxBorder>
-
                     <acitvityName>
                         @Activity.DisplayName
                     </acitvityName>
@@ -91,8 +41,6 @@
                             <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
                         </spinner>
                     }
-
-
                 </durationBoxBorder>
 
                 @foreach (var aggregatedLog in LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier))
@@ -126,8 +74,6 @@
                         </MudTooltip>
                     </log>
                 }
-
-
             </durationBox>
         </ChildContent>
     </BasycTooltip>
@@ -252,13 +198,53 @@
     private const double logWidthMultiplier = 4;
     private const double logMinWidthPixels = 5;
     private const double logMaxWidthPixels = 10;
+    private readonly PeriodicTimer updateUnfinishedTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+    private string width = "0rem";
+
+    protected override void OnInitialized()
+    {
+        RunTimer();
+        base.OnInitialized();
+    }
 
     protected override Task OnParametersSetAsync()
     {
+        Activity.ActivityEnded -= OnActivityEnded;
         Activity.ActivityEnded += OnActivityEnded;
+        Activity.NestedActivityEnded -= OnNestedActivityEnded;
         Activity.NestedActivityEnded += OnNestedActivityEnded;
         return base.OnParametersSetAsync();
     }
+
+    private void SetKnownWidth()
+    {
+        width = DurationViewHelper.GetCssDurationValue(Activity.EndTime - Activity.StartTime, PixelsPerMs, out var widthNumber);
+        if (widthNumber < 0.2)
+        {
+            width = "0.1px";
+        }
+        if (widthNumber < 2)
+        {
+            width = "2px";
+        }
+    }
+
+    private async void RunTimer()
+    {
+        while (await updateUnfinishedTimer.WaitForNextTickAsync())
+        {
+            if (Activity.HasEnded)
+            {
+                updateUnfinishedTimer.Dispose();
+                SetKnownWidth();
+                break;
+            }
+            width = DurationViewHelper.GetCssDurationValue(DateTimeOffset.UtcNow - Activity.StartTime, PixelsPerMs, out var widthNumber);
+            StateHasChanged();
+        }
+    }
+
+
 
     private void OnActivityEnded(object? sender, EventArgs e)
     {
@@ -274,6 +260,7 @@
     {
         Activity.ActivityEnded -= OnActivityEnded;
         Activity.NestedActivityEnded -= OnNestedActivityEnded;
+        updateUnfinishedTimer.Dispose();
     }
 
     private static DateTimeOffset GetRecursiveLatestEndTime(ActivityContext activity)

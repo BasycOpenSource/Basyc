@@ -26,6 +26,9 @@ durationBoxBorder {
     grid-column: 1;
     display: flex;
     flex-direction: row;
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
     height: 100%;
     width: 100%;
     border: 1px solid #19528699;
@@ -43,11 +46,10 @@ nestedDurationBoxes {
 }
 
 spinner {
-    display: flex;
-    align-items: center;
-    justify-items: right;
-    width: 100%;
-    justify-content: right;
+    /*display: flex;*/
+    grid-row: 1;
+    grid-column: 1;
+
 }
 
 acitvityName {

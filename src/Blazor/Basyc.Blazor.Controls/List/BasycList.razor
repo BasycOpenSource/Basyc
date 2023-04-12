@@ -1,0 +1,77 @@
+﻿@using System.Collections.ObjectModel;
+@using System.Collections.Specialized;
+@using Basyc.Blazor.Controls.Interops;
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@namespace Basyc.Blazor.Controls
+@typeparam TItem
+
+<basycList>
+@*    @foreach (var item in Items)
+    {
+        <item>
+            @if (ItemTemplate is not null)
+                @ItemTemplate(item)
+            else
+            {
+                @item
+            }
+        </item>
+    }*@
+    <Virtualize TItem="TItem" Context="item" Items="@itemsCasted">
+        <ItemContent>
+            @if (ItemTemplate is not null)
+                @ItemTemplate(item)
+            else
+            {
+                @item
+            }
+        </ItemContent>
+        <Placeholder>
+            <p>
+                Please wait.
+            </p>
+        </Placeholder>
+    </Virtualize>
+</basycList>
+
+@code {
+    [Inject]
+    public ScrollJsInterop ScrollJsInterop { get; init; } = null!;
+
+    [Parameter, EditorRequired]
+    public IEnumerable<TItem> Items { get; set; } = null!;
+    private ICollection<TItem> itemsCasted { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment<TItem>? ItemTemplate { get; set; }
+
+    private Action? unsubcribeAction;
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        unsubcribeAction?.Invoke();
+        if (Items is INotifyCollectionChanged collection)
+        {
+            collection.CollectionChanged += ItemAdded;
+            unsubcribeAction = () =>
+            {
+                collection.CollectionChanged -= ItemAdded;
+            };
+        }
+
+        itemsCasted = (ICollection<TItem>)Items;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        ScrollJsInterop.AddDragToScroll("basycList");
+    }
+
+    private void ItemAdded(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}
+

@@ -38,5 +38,9 @@
   {
     "outputFile": "Tooltip/BasycTooltip.razor.css",
     "inputFile": "Tooltip/BasycTooltip.razor.scss"
+  },
+  {
+    "outputFile": "List/BasycList.razor.css",
+    "inputFile": "List/BasycList.razor.scss"
   }
 ]

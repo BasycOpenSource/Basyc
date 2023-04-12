@@ -147,6 +147,8 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 		Expression<Func<TViewModel, ReadOnlyObservableCollection<TTargetItem>>> targetProperty,
 		Expression<Func<TViewModel, ReadOnlyObservableCollection<TSourceItem>>> sourceProperty,
 		Func<TSourceItem, TTargetItem> converter,
+		Func<TSourceItem, bool> filter,
+		out ReactiveSubscription subscription,
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0
 	)
@@ -158,10 +160,11 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 
 		IDisposable? nestedSubscription = null;
 		IDisposable? nestedSubscription2 = null;
-		viewModel.WhenAnyValue(sourceProperty)
+		subscription = viewModel.WhenAnyValue(sourceProperty)
 			.Subscribe(newSourcePropertyValue =>
 			{
 				nestedSubscription = newSourcePropertyValue.ToObservableChangeSet()
+					.Filter(filter)
 					.Transform(converter)
 					.Bind(out var vesselsViewModels)
 					.Subscribe()
@@ -179,8 +182,8 @@ public static class ReactiveViewModelBaseReactivePropertyExtensions
 				backingField.SetValue(viewModel, vesselsViewModels);
 				viewModel.RaisePropertyChanged(targetPropertyName);
 			})
-			.DisposeWithViewModel(viewModel);
-
+			.DisposeWithViewModel(viewModel)
+			.ToReactiveSubscription();
 		return targetProperty.Compile().Invoke(viewModel);
 	}
 

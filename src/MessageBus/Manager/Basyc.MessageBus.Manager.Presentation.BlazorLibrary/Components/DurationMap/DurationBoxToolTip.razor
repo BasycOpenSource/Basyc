@@ -1,5 +1,6 @@
 ﻿@using Basyc.Diagnostics.Shared;
 @using Basyc.Diagnostics.Shared.Durations
+@using Basyc.Diagnostics.Shared.Logging;
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html
@@ -17,6 +18,14 @@
             </activityName>
             <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />
             <infoItems>
+                <infoItem>
+                    <div>
+                        state
+                    </div>
+                    <div>
+                        @ActivityContext.Status.ToString()
+                    </div>
+                </infoItem>
                 <infoItem>
                     <div>
                         started
@@ -50,16 +59,22 @@
                 </logHeading>
             </BasycHeading>
             <logs>
-                @foreach (var log in ActivityContext.Logs)
-                {
-                    <log>
-                        <BasycSpaceBorder Size="SpacerSize.Small">
-                            <logLayout>
-                                <LogIconView LogLevel="log.LogLevel" />
-                            </logLayout>
-                        </BasycSpaceBorder>
-                    </log>
-                }
+
+                <BasycList Items="@ActivityContext.Logs" Context="log">
+                    <ItemTemplate>
+                        <log>
+                            <BasycSpaceBorder Size="SpacerSize.Small">
+                                <logLayout>
+                                    <LogIconView LogLevel="log.LogLevel" />
+                                    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
+                                    @log.Time.ToString("HH:mm:ss:fff")
+                                    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false"/>
+                                    @log.Message
+                                </logLayout>
+                            </BasycSpaceBorder>
+                        </log>
+                    </ItemTemplate>
+                </BasycList>
             </logs>
         </layout>
     </BasycSpaceBorder>

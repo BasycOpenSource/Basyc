@@ -1,66 +1,86 @@
 ﻿@namespace Basyc.Blazor.Controls
 @using Basyc.Blazor.Controls.Interops;
+@using Microsoft.JSInterop;
+@implements IDisposable
 
 <tooltipView>
-    <childContent @onmousemove="e => { x = e.PageX; y = e.PageY;}"
+    <childContent @onmousemove="MouseMove"
                   @onmouseout="MouseOut"
                   @onmouseover="@MouseOver"
-                  @onkeyup="@KeyUp"
-                  @onkeydown="@KeyDown"
                   id="@childContentId">
         @ChildContent
     </childContent>
-    <tooltip class="tooltip--hidden" id="@toolTipId" style="position: absolute; left: @(x + 4)px; top: @(y + 4)px; visibility: @(isMouseOver || keepVisible ? "visible" : "collapse")">
-        @TooltipContent
+    <tooltip class="tooltip--hidden" id="@toolTipId" style="position: absolute; left: @(mousePositionX + 4)px; top: @(mousePositionY + 4)px; visibility: @(isMouseOver || freezeTooltip ? "visible" : "collapse")">
+        <perspective>
+            <transform>
+                @TooltipContent
+            </transform>
+        </perspective>
     </tooltip>
 </tooltipView>
 
 @code {
     [Inject] private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
-    private double x;
-    private double y;
-    private bool isMouseOver;
-    private bool keepVisible;
-
     [Parameter] public RenderFragment? ChildContent { get; set; } = null;
     [Parameter] public RenderFragment? TooltipContent { get; set; } = null;
+    private double mousePositionX;
+    private double mousePositionY;
+    private bool isMouseOver;
+    private DotNetObjectReference<BasycTooltip> selfJsReference;
+
+    private bool freezeTooltip;
     private string toolTipId { get; init; } = Random.Shared.Next().ToString();
     private string childContentId { get; init; } = Random.Shared.Next().ToString();
+
+    public BasycTooltip()
+    {
+        selfJsReference = DotNetObjectReference.Create(this);
+    }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
     }
 
-
-    public void KeyDown(KeyboardEventArgs e)
+    public void MouseMove(MouseEventArgs e)
     {
-        if (e.Code == "LeftControl")
-        {
-            keepVisible = true;
-        }
-    }
-
-    public void KeyUp(KeyboardEventArgs e)
-    {
-        if (e.Code == "LeftControl")
-        {
-            keepVisible = false;
-        }
+        if (freezeTooltip)
+            return;
+        mousePositionX = e.PageX;
+        mousePositionY = e.PageY;
     }
 
     public void MouseOver(MouseEventArgs e)
     {
-        TooltipJsInterop.ShowTooltip($"{toolTipId}");
+        //TooltipJsInterop.ShowTooltip($"{toolTipId}");
+        TooltipJsInterop.ShowTooltip(selfJsReference, $"{toolTipId}");
         isMouseOver = true;
     }
 
     public void MouseOut(MouseEventArgs e)
     {
-        TooltipJsInterop.HideTooltip($"{toolTipId}", childContentId);
+        //TooltipJsInterop.HideTooltip($"{toolTipId}", childContentId);
+        if (freezeTooltip is false)
+        {
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{toolTipId}", childContentId);
+        }
         isMouseOver = false;
     }
 
+    [JSInvokable]
+    public void ChangeFreeze(bool value)
+    {
+        freezeTooltip = value;
+        if (freezeTooltip is false)
+        {
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{toolTipId}", childContentId);
+        }
+    }
+
+    public void Dispose()
+    {
+        selfJsReference.Dispose();
+    }
 
 }
 
