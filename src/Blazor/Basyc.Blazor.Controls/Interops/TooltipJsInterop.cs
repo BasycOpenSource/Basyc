@@ -1,5 +1,5 @@
+using Basyc.Blazor.Controls.Tooltip;
 using Microsoft.JSInterop;
-using System.Xml.Linq;
 
 namespace Basyc.Blazor.Controls.Interops;
 public class TooltipJsInterop : IAsyncDisposable
@@ -35,7 +35,7 @@ public class TooltipJsInterop : IAsyncDisposable
 	//	await module.InvokeVoidAsync("showTooltip", elementToMoveId, targetElementQuerySelector);
 	//}
 
-	public async void HideTooltip(DotNetObjectReference<BasycTooltip> tooltipElementComponenet, string elementToMoveId, string targetElementId)
+	public async void HideTooltip(DotNetObjectReference<TooltipPopup> tooltipElementComponenet, string elementToMoveId, string targetElementId)
 	{
 		var module = await moduleTask.Value;
 		//await module.InvokeVoidAsync("hideTooltip", objRef, elementToMoveId, targetElementId);
@@ -44,7 +44,7 @@ public class TooltipJsInterop : IAsyncDisposable
 		await jsRuntime.InvokeVoidAsync("hideTooltip", tooltipElementComponenet, elementToMoveId, targetElementId);
 	}
 
-	public async void ShowTooltip(DotNetObjectReference<BasycTooltip> tooltipElementComponenet, string elementToMoveId, string targetElementQuerySelector = "basycControls")
+	public async void ShowTooltip(DotNetObjectReference<TooltipPopup> tooltipElementComponenet, string elementToMoveId, string targetElementQuerySelector = "basycControls")
 	{
 		var module = await moduleTask.Value;
 		//await module.InvokeVoidAsync("showTooltip", objRef, elementToMoveId, targetElementQuerySelector);

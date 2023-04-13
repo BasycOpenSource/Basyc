@@ -176,15 +176,18 @@ busManagerBuilder.RegisterMessages()
 			logger.LogError(message);
 		}
 	})
-	.AddMessage("10 infos")
+	.AddMessage("Log")
+	.WithParameter<int>("logCount")
 	.NoReturn()
-	.HandledBy((logger) =>
+	.HandledBy((input, logger) =>
 	{
-		var counter = 0;
+		var logCounter = 0;
+		var desiredCount = (int)input.Parameters.First().Value.Value();
 		while (true)
 		{
-			logger.LogInformation("Info: " + counter++);
-			if (counter == 10)
+			logger.LogInformation("Info: " + logCounter++);
+			logger.LogError("Error: " + logCounter++);
+			if (logCounter >= desiredCount)
 				break;
 		}
 	})

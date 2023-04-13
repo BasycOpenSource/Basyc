@@ -5,18 +5,7 @@
 @namespace Basyc.Blazor.Controls
 @typeparam TItem
 
-<basycList>
-@*    @foreach (var item in Items)
-    {
-        <item>
-            @if (ItemTemplate is not null)
-                @ItemTemplate(item)
-            else
-            {
-                @item
-            }
-        </item>
-    }*@
+<basycList id="@scrollId">
     <Virtualize TItem="TItem" Context="item" Items="@itemsCasted">
         <ItemContent>
             @if (ItemTemplate is not null)
@@ -45,7 +34,9 @@
     [Parameter]
     public RenderFragment<TItem>? ItemTemplate { get; set; }
 
+    private string scrollId = @Random.Shared.Next().ToString();
     private Action? unsubcribeAction;
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -66,7 +57,7 @@
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        ScrollJsInterop.AddDragToScroll("basycList");
+        ScrollJsInterop.AddDragToScroll(scrollId);
     }
 
     private void ItemAdded(object? sender, NotifyCollectionChangedEventArgs e)

@@ -26,11 +26,11 @@ public class InMemoryRequestHandler : IRequestHandler
 		//var inMemoryRequesterAct = logger.StartActivity("InMemoryRequester", requestResult.TraceId);
 		logger.LogInformation("Starting invoking in-memory delegate");
 		//using var findingHandlerActivity = logger.StartActivity("Finding handler");
-		var handlerFound = handlersMap.TryGetValue(request.Request.MessageInfo, out var handler);
+		var handlerFound = handlersMap.TryGetValue(request.RequestInput.MessageInfo, out var handler);
 		if (handlerFound is false)
 		{
 			request.Fail(
-				$"Requester: '{nameof(InMemoryRequestHandler)}' doesn't have handler for message with display name: '{request.Request.MessageInfo.RequestDisplayName}'");
+				$"Requester: '{nameof(InMemoryRequestHandler)}' doesn't have handler for message with display name: '{request.RequestInput.MessageInfo.RequestDisplayName}'");
 			//findingHandlerActivity.Stop();
 			return;
 		}
@@ -48,7 +48,7 @@ public class InMemoryRequestHandler : IRequestHandler
 			requestActivity.End(endTime);
 			request.Stop(endTime);
 
-			if (request.Request.MessageInfo.HasResponse)
+			if (request.RequestInput.MessageInfo.HasResponse)
 				request.SetResponse(handlerOutput);
 			else
 				request.SetResponse();

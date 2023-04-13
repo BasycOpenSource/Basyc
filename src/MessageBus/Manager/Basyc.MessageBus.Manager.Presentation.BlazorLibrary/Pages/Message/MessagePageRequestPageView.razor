@@ -32,7 +32,7 @@
             </infoSection>
             <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Big" />
             <inputBox>
-                @ResponseResultConverter.CreateInputOverview(MessageRequest.Request.Parameters)
+                @ResponseResultConverter.CreateInputOverview(MessageRequest.RequestInput.Parameters)
             </inputBox>
             <arrow>
                 |>
@@ -47,7 +47,7 @@
                     <textValue>
                         @if (MessageRequest.State == RequestResultState.Completed)
                         {
-                            if (MessageRequest.Request.MessageInfo.HasResponse)
+                            if (MessageRequest.RequestInput.MessageInfo.HasResponse)
                             {
                                 @MessageRequest.Response
                             }
@@ -81,7 +81,7 @@
                             <textValue>
                                 @if (MessageRequest.State == RequestResultState.Completed)
                                 {
-                                    if (MessageRequest.Request.MessageInfo.HasResponse)
+                                    if (MessageRequest.RequestInput.MessageInfo.HasResponse)
                                     {
                                         @MessageRequest.Response
                                     }

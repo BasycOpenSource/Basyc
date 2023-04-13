@@ -87,10 +87,10 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
 	{
 		Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
-			var message = binder.Value().CreateMessage(requestResult.Request);
+			var message = binder.Value().CreateMessage(requestResult.RequestInput);
 			var returnObject = handler.Invoke(message, logger);
 			returnObject.ThrowIfNull();
-			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.MessageInfo.ResponseType!);
+			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.RequestInput.MessageInfo.ResponseType!);
 			return Task.FromResult<object?>(returnObject);
 		}
 
@@ -103,9 +103,9 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
 	{
 		Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
-			var returnObject = handler.Invoke(requestResult.Request.Parameters, logger);
+			var returnObject = handler.Invoke(requestResult.RequestInput.Parameters, logger);
 			returnObject.ThrowIfNull();
-			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.MessageInfo.ResponseType!);
+			ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.RequestInput.MessageInfo.ResponseType!);
 			return Task.FromResult<object?>(returnObject);
 		}
 

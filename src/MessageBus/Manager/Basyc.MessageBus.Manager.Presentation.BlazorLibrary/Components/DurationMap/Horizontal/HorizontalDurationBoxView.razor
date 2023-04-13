@@ -16,8 +16,9 @@
         darkPercentage = 1;
     //string durationBoxStyle = $"min-width: {width}; background-color: {Color.Darker(darkPercentage)};";
     //var durationBoxStyle = $"width: {width}; background-color: {Color.Darker()};";
-    var durationBoxStyle = $"width: {width}; background-color: #2676D10D;";
+    var durationBoxStyle = $"width: {width};";
     //var mudTooltipBoxStyle = "display: block; width: 100%; height: 100%; grid-row: 1; grid-column: 1;";
+    var activityNameStyle = $"max-width: {width};"; //enabled overflow elipsis
 }
 
 <horizontalDurationBoxView>
@@ -31,8 +32,8 @@
         </TooltipContent>
         <ChildContent>
             <durationBox style="@durationBoxStyle">
-                <durationBoxBorder>
-                    <acitvityName>
+                <stickyContainer>
+                    <acitvityName style="@activityNameStyle">
                         @Activity.DisplayName
                     </acitvityName>
                     @if (Activity.HasEnded is false)
@@ -41,39 +42,44 @@
                             <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
                         </spinner>
                     }
-                </durationBoxBorder>
-
-                @foreach (var aggregatedLog in LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier))
-                {
-                    var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime, PixelsPerMs, out var logStartPixels);
-                    var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
-                    var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
-                    var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
-                    var legMarginLeft = -(logWidth / 2);
-                    if (logStartPixels < legMarginLeft)
+                </stickyContainer>
+                <logs>
+                 
+                    @foreach (var aggregatedLog in LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier))
                     {
-                        legMarginLeft = 0;
-                    }
-                    if (logStartPixels > logWidth)
-                    {
-                        legMarginLeft = -logWidth;
-                    }
+                        //TODO: This should use Virtulize
+                        var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime, PixelsPerMs, out var logStartPixels);
+                        var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
+                        var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
+                        var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
+                        var legMarginLeft = -(logWidth / 2);
+                        if (logStartPixels < legMarginLeft)
+                        {
+                            legMarginLeft = 0;
+                        }
+                        if (logStartPixels > logWidth)
+                        {
+                            legMarginLeft = -logWidth;
+                        }
 
-                    var logContentStyle = $"margin-left: {Html.Number(legMarginLeft)}px;";
+                        var logContentStyle = $"margin-left: {Html.Number(legMarginLeft)}px;";
 
-                    <log style="@logStyle">
-                        <MudTooltip RootClass="logContentToolTip">
-                            <ChildContent>
-                                <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
-                            </ChildContent>
-                            <TooltipContent>
-                                <toolTipContent>
-                                    @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
-                                </toolTipContent>
-                            </TooltipContent>
-                        </MudTooltip>
-                    </log>
-                }
+                        <log style="@logStyle">
+                            <MudTooltip RootClass="logContentToolTip">
+                                <ChildContent>
+                                    <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
+                                </ChildContent>
+                                <TooltipContent>
+                                    <toolTipContent>
+                                        @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
+                                    </toolTipContent>
+                                </TooltipContent>
+                            </MudTooltip>
+                        </log>
+
+                    }
+                </logs>
+
             </durationBox>
         </ChildContent>
     </BasycTooltip>

@@ -1,7 +1,10 @@
 ﻿//https://discourse.wicg.io/t/drag-to-scroll-a-simple-way-to-scroll-sideways-on-desktop/3627
 
-export function addDragToScroll(query) {
-	const slider = document.querySelector(query);
+export function addDragToScroll(elementId) {
+	const slider = document.getElementById(elementId);
+	if (slider.classList.contains("horizontalScroll"))
+		return;
+	slider.classList.add("horizontalScroll");
 	let isDown = false;
 	let startX;
 	let startY;

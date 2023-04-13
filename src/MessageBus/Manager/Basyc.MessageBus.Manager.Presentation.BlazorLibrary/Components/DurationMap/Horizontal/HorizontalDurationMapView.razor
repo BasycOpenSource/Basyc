@@ -4,11 +4,14 @@
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
-<horizontalDurationMapView >
+<horizontalDurationMapView>
     <zoomToolBar>
         <MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />
+        <button @onclick="@OnZoomInClick">+</button>
+        <button @onclick="@OnZoomOutClick">-</button>
+        <button @onclick="@OnZoomFitClick">fit</button>
     </zoomToolBar>
-    <services class="scroll">
+    <services id="@scrollId">
         @{
             if (RequestContext.Diagnostics.Services.Any())
             {
@@ -73,6 +76,9 @@
     [Parameter]
     public double PixelsPerMs { get; set; } = 1;
 
+    private string scrollId = @Random.Shared.Next().ToString();
+
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -81,8 +87,7 @@
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        ScrollJsInterop.AddDragToScroll(".scroll");
-
+        ScrollJsInterop.AddDragToScroll(scrollId);
     }
 
     protected override void OnParametersSet()
@@ -106,14 +111,56 @@
 
     private void OnZoomInClick(MouseEventArgs args)
     {
-        PixelsPerMs += 0.1;
+        PixelsPerMs += 0.1 * PixelsPerMs * 3;
     }
 
     private void OnZoomOutClick(MouseEventArgs args)
     {
-        PixelsPerMs -= 0.1;
+        PixelsPerMs -= 0.1 * PixelsPerMs * 3;
         if (PixelsPerMs < 0)
             PixelsPerMs = 0;
     }
+
+    private void OnZoomFitClick(MouseEventArgs args)
+    {
+        double aviableWidthPx = 1000; //this can be dynamic value obtained from js
+        DurationViewHelper.GetCssDurationValue(GetLatestEndTime(RequestContext.Diagnostics) - RequestContext.StartTime, 1, out var normalWidthPx);
+        var newPixelsPerMs = aviableWidthPx / normalWidthPx;
+        PixelsPerMs = newPixelsPerMs;
+    }
+
+    private static DateTimeOffset GetLatestEndTime(RequestDiagnostic requestDiagnostic)
+    {
+        static DateTimeOffset GetLatestEndTimeFromActivity(ActivityContext activity)
+        {
+            if (activity.Status == System.Diagnostics.ActivityStatusCode.Unset)
+                return DateTimeOffset.UtcNow;
+
+            var latestEndTime = activity.EndTime;
+            foreach (var nestedActivity in activity.NestedActivities)
+            {
+                var nestedLatestEndTime = GetLatestEndTimeFromActivity(nestedActivity);
+                latestEndTime = latestEndTime > nestedLatestEndTime ? latestEndTime : nestedLatestEndTime;
+            }
+            return latestEndTime;
+        }
+
+        DateTimeOffset latestEndTime = default;
+        foreach (var service in requestDiagnostic.Services)
+        {
+            foreach (var activity in service.Activities)
+            {
+                foreach (var nestedActivity in activity.NestedActivities)
+                {
+                    var nestedLatestEndTime = GetLatestEndTimeFromActivity(nestedActivity);
+                    latestEndTime = latestEndTime > nestedLatestEndTime ? latestEndTime : nestedLatestEndTime;
+                }
+            }
+        }
+
+        return latestEndTime;
+    }
+
+
 
 }

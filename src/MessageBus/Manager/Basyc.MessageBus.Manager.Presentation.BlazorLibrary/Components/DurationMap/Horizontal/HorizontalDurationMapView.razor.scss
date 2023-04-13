@@ -1,11 +1,8 @@
 ﻿horizontalDurationMapView {
     display: block;
     position: relative;
-    /*overflow: auto;*/
     width: 100%;
-    /*max-height: 15rem;*/
     max-height: 40rem;
-    /*background-color: #000000a6;*/
     position: relative;
     height: 100%;
 }
@@ -17,19 +14,23 @@ services {
 }
 
 service {
-    display: inline-flex;
-    flex-direction: row;
+    display: inline-grid;
+    grid-auto-rows: 1fr;
+    grid-auto-columns: 1fr;
     margin-bottom: 0.2rem;
-    /*border: 3px solid black;*/
     border-radius: 2px;
     margin: 4px;
-    padding: 32px;
+    padding: 32px 0px;
     min-height: 160px;
 }
 
 serviceNameContainer {
-    display: flex;
-    flex-direction: column;
+    grid-row: 1;
+    grid-column: 1;
+    position: sticky;
+    left: 0;
+    display: block;
+    width: 64px;
 }
 
 serviceName {
@@ -39,6 +40,7 @@ serviceName {
     align-items: center;
     padding: 0.5rem;
     padding-right: 32px;
+    padding-left: 32px;
     writing-mode: vertical-rl;
     white-space: nowrap;
     overflow: hidden;
@@ -50,8 +52,10 @@ serviceName {
 
 
 durationBoxes {
+    grid-row: 1;
+    grid-column: 1;
     padding-right: 0.5rem;
-    padding-left: 0.5rem;
+    padding-left: 96px;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
     display: flex;
@@ -71,7 +75,6 @@ zoomToolBar {
     bottom: 0px;
     width: 5rem;
 }
-
 
 
 unknownAndKnowGroup {

@@ -42,7 +42,7 @@
 					Input
 				</label>
 				<inputs>
-					@foreach (var parameter in RequestResult.Request.Parameters)
+					@foreach (var parameter in RequestResult.RequestInput.Parameters)
 					{
 						<parameterRow>
 							<parameterName>
@@ -67,7 +67,7 @@
 					}
 					@if (RequestResult.State == RequestResultState.Completed)
 					{
-						@if (RequestResult.Request.MessageInfo.HasResponse)
+						@if (RequestResult.RequestInput.MessageInfo.HasResponse)
 						{
 							@RequestResult.Response
 						}

@@ -8,33 +8,46 @@ horizontalDurationBoxView {
 
 
 durationBox {
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-auto-rows: 1fr;
     align-items: end;
     box-sizing: border-box;
-    height: 1.4rem;
-    overflow: hidden;
+    /*height: 1.4rem;*/
     grid-row: 1;
     float: left;
     position: relative;
     border-radius: 2px;
+    /*display: flex;*/
+    border: 1px solid #19528699;
+    background-color: #2676D10D;
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    /*    display: block;
+    width: 100%;*/
+    /*overflow-x: scroll;*/
+    /*contain: paint; //works but elipsis does not work*/
+    overflow: clip
 }
 
-durationBoxBorder {
+durationBox:hover {
+    background-color: #436b74a8;
+}
+
+stickyContainer {
     grid-row: 1;
     grid-column: 1;
     display: flex;
     flex-direction: row;
-    display: grid;
-    grid-auto-columns: 1fr;
-    grid-auto-rows: 1fr;
-    height: 100%;
-    width: 100%;
-    border: 1px solid #19528699;
-    /*border-radius: 2px;*/
+    position: sticky;
+    left: 96px;
+    justify-self: flex-start;
     overflow: hidden;
 }
+
+
+
+
+
+
 
 nestedDurationBoxes {
     display: flex;
@@ -46,26 +59,25 @@ nestedDurationBoxes {
 }
 
 spinner {
-    /*display: flex;*/
+    display: flex;
+    align-items: center;
     grid-row: 1;
     grid-column: 1;
-
+    ::deep .mud-progress-circular{
+        height: 16px;
+        width: 16px;
+    }
 }
 
 acitvityName {
-    position: absolute;
-    display: flex;
+    display: block;
     height: 100%;
-    width: 100%;
     overflow: hidden;
     overflow-wrap: break-word;
     white-space: nowrap;
     text-overflow: ellipsis;
     padding: 0.3rem;
     line-height: 0.8rem;
-    top: 0;
-    left: 0;
-    color: #e7ecefbf;
     color: #c7c7c7bf;
 }
 
@@ -76,9 +88,7 @@ toolTipContent {
 }
 
 
-durationBoxBorder:hover {
-    background-color: #436b74a8;
-}
+
 
 nestedRows {
     display: flex;
@@ -110,7 +120,7 @@ treeHorizontalLine {
     width: 100%;
 }
 
-logs {
+/*logs {
     grid-row: 1;
     grid-column: 1;
     display: grid;
@@ -118,14 +128,24 @@ logs {
     grid-auto-rows: 1fr;
     width: 100%;
     height: 100%;
+}*/
+
+logs {
+    display: contents;
+    grid-auto-columns: 1fr;
+    grid-auto-rows: 1fr;
+    /*overflow: hidden;*/
+    position: absolute;
+    bottom: 0px;
+  
 }
 
 log {
-    display: block;    
+    display: block;
     height: 33%;
     grid-column: 1;
     grid-row: 1;
-    opacity: 0.75;
+    opacity: 0.25;
 }
 
 ::deep .logContentToolTip {

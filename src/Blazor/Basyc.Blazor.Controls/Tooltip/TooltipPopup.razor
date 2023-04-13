@@ -1,0 +1,94 @@
+﻿@using Basyc.Blazor.Controls.Interops;
+@using Microsoft.JSInterop;
+
+@implements IDisposable
+
+<tooltipPopupComponent class="tooltip--hidden" id="@toolTipId" style="position: absolute; left: @(mousePositionX + 4)px; top: @(mousePositionY + 4)px; visibility: @(isMouseOver || freezeTooltip ? "visible" : "collapse")">
+    <perspective>
+        <transform>
+            @ChildContent
+        </transform>
+    </perspective>
+</tooltipPopupComponent>
+
+@code {
+    public TooltipPopup()
+    {
+        selfJsReference = DotNetObjectReference.Create(this);
+    }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
+    [Parameter, EditorRequired] public TooltipPartsMessenger Messenger { get; set; } = null!;
+    [Parameter, EditorRequired] public string OwnerId { get; set; } = null!;
+    [Inject] private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
+
+    private DotNetObjectReference<TooltipPopup> selfJsReference;
+    private double mousePositionX;
+    private double mousePositionY;
+    private bool isMouseOver;
+    private bool freezeTooltip;
+    private string toolTipId { get; init; } = Random.Shared.Next().ToString();
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Messenger.MouseOver += MouseOver;
+        Messenger.MouseMove += MouseMove;
+        Messenger.MouseOut += MouseOut;
+
+    }
+
+    [JSInvokable]
+    public void ChangeFreeze(bool value)
+    {
+        freezeTooltip = value;
+        if (freezeTooltip is false)
+        {
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{toolTipId}", OwnerId);
+        }
+    }
+
+
+    public void MouseMove(object? sender, MouseEventArgs e)
+    {
+        if (freezeTooltip)
+            return;
+        //TODO : this approach makes content of popup to rerender
+        //If the content is heavy for render it is quite noticible
+        //This update position logic can be moved to JS.
+        mousePositionX = e.PageX;
+        mousePositionY = e.PageY;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void MouseOver(object? sender, MouseEventArgs e)
+    {
+        if (isMouseOver)
+            return;
+        TooltipJsInterop.ShowTooltip(selfJsReference, $"{toolTipId}");
+        isMouseOver = true;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void MouseOut(object? sender, MouseEventArgs e)
+    {
+        if (isMouseOver is false)
+            return;
+        if (freezeTooltip is false)
+        {
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{toolTipId}", OwnerId);
+        }
+        InvokeAsync(StateHasChanged);
+
+        isMouseOver = false;
+    }
+
+    public void Dispose()
+    {
+        selfJsReference.Dispose();
+        Messenger.MouseOver -= MouseOver;
+        Messenger.MouseMove -= MouseMove;
+        Messenger.MouseOut -= MouseOut;
+    }
+
+}

@@ -1,0 +1,24 @@
+.tooltip--hidden {
+    display: none !important;
+    visibility: collapse !important;
+}
+
+.tooltip--visible {
+    display: block !important;
+    visibility: visible !important;
+}
+
+perspective {
+    display: block;
+    /*perspective: 500px;*/
+}
+
+transform {
+    display: block;
+    /*transform: rotateY(-10deg);*/
+}
+
+tooltipPopupComponent {
+    z-index: 1001;
+    overflow: visible;
+}

@@ -32,7 +32,7 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 		Task<object?> wrapperHandler(MessageRequest result, ILogger logger)
 		{
 			//requestResult.Start();
-			var returnObject = handler.Invoke(result.Request);
+			var returnObject = handler.Invoke(result.RequestInput);
 			return Task.FromResult<object?>(returnObject);
 		}
 
@@ -72,7 +72,7 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 	{
 		Task<object?> wrapperHandler(MessageRequest result, ILogger logger)
 		{
-			var message = binder.CreateMessage(result.Request);
+			var message = binder.CreateMessage(result.RequestInput);
 			var returnObject = handlerWithTReturn.Invoke(message, logger);
 			ReturnObjectHelper.CheckHandlerReturnType(returnObject, fluentApiMessage.ResponseRunTimeType!);
 			return Task.FromResult<object?>(returnObject);

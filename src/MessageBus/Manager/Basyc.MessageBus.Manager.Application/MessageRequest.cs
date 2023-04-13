@@ -13,7 +13,7 @@ public class MessageRequest : ReactiveObject
 	public MessageRequest(RequestInput request, DateTimeOffset requestCreationTime, string traceId, IDurationMapBuilder durationMapBuilder,
 		RequestDiagnostic requestDiagnostics, int orderIndex)
 	{
-		Request = request;
+		RequestInput = request;
 		this.durationMapBuilder = durationMapBuilder;
 		Diagnostics = requestDiagnostics;
 		CreationTime = requestCreationTime;
@@ -23,7 +23,7 @@ public class MessageRequest : ReactiveObject
 		Duration = default;
 	}
 
-	public RequestInput Request { get; init; }
+	public RequestInput RequestInput { get; init; }
 
 	/// <summary>
 	///     Time when request was created
@@ -49,7 +49,7 @@ public class MessageRequest : ReactiveObject
 	public void SetResponse(object? response)
 	{
 		//FinishDurationMap();
-		if (Request.MessageInfo.HasResponse is false)
+		if (RequestInput.MessageInfo.HasResponse is false)
 			throw new InvalidOperationException("Can't complete with return value becuase this message does not have return value");
 
 		Response = response;
@@ -62,7 +62,7 @@ public class MessageRequest : ReactiveObject
 	{
 		//FinishDurationMap();
 
-		if (Request.MessageInfo.HasResponse)
+		if (RequestInput.MessageInfo.HasResponse)
 			throw new InvalidOperationException(
 				$"Can't complete without return value becuase this message has return value. Use {nameof(Fail)} method when error occured and no return value is avaible");
 

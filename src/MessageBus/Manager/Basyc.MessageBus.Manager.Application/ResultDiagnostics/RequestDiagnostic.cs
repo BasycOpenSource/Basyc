@@ -129,7 +129,11 @@ public class RequestDiagnostic
 			activity = AddStartActivity(new ActivityStart(activityEnd.Service, activityEnd.TraceId, activityEnd.ParentId, activityEnd.Id, activityEnd.Name,
 				activityEnd.StartTime));
 
-		activity.End(activityEnd.EndTime, activityEnd.Status);
+		var status = activityEnd.Status == System.Diagnostics.ActivityStatusCode.Unset
+			? System.Diagnostics.ActivityStatusCode.Ok
+			: activityEnd.Status;
+
+		activity.End(activityEnd.EndTime, status);
 		OnActivityEndAdded(activityEnd);
 	}
 

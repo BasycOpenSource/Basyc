@@ -6,36 +6,8 @@
   overflow: visible;
 }
 
-tooltip {
-  display: block;
-  grid-row: 1;
-  grid-column: 1;
-  z-index: 1001;
-  overflow: visible;
-}
-
-perspective {
-  display: block;
-  /*perspective: 500px;*/
-}
-
-transform {
-  display: block;
-  /*transform: rotateY(-10deg);*/
-}
-
 childContent {
   display: contents;
   grid-row: 1;
   grid-column: 1;
-}
-
-::deep .tooltip--hidden {
-  display: none !important;
-  visibility: collapse !important;
-}
-
-::deep .tooltip--visible {
-  display: block !important;
-  visibility: visible !important;
 }

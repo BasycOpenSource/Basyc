@@ -34,7 +34,7 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 	{
 		Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
 		{
-			var returnObject = handler.Invoke(requestResult.Request);
+			var returnObject = handler.Invoke(requestResult.RequestInput);
 			return Task.FromResult<object?>(returnObject);
 		}
 
@@ -47,7 +47,7 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
 	{
 		Task<object?> handlerWrapper(MessageRequest result, ILogger logger)
 		{
-			var message = messageBinder.CreateMessage(result.Request);
+			var message = messageBinder.CreateMessage(result.RequestInput);
 			var returnObject = handlerWithTReturn.Invoke(message);
 			return Task.FromResult<object?>(returnObject);
 		}
