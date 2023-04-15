@@ -1,1 +1,1 @@
-﻿.tooltip--hidden{display:none!important;visibility:collapse!important;}.tooltip--visible{display:block!important;visibility:visible!important;}perspective{display:block;}transform{display:block;}tooltipPopupComponent{z-index:1001;overflow:visible;}
+﻿.tooltip--hidden{display:none!important;visibility:collapse!important;}.tooltip--visible{display:block!important;visibility:visible!important;}perspective{display:block;}transform{display:block;}tooltipPopupComponent{z-index:1001;overflow:visible;position:absolute;}

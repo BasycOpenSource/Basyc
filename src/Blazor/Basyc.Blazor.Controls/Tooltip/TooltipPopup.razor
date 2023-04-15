@@ -1,9 +1,10 @@
 ﻿@using Basyc.Blazor.Controls.Interops;
 @using Microsoft.JSInterop;
+@using System.Diagnostics;
 
 @implements IDisposable
-
-<tooltipPopupComponent class="tooltip--hidden" id="@toolTipId" style="position: absolute; left: @(mousePositionX + 4)px; top: @(mousePositionY + 4)px; visibility: @(isMouseOver || freezeTooltip ? "visible" : "collapse")">
+@*style="left: @(mousePositionX + 4)px; top: @(mousePositionY + 4)px; visibility: @(isMouseOver || freezeTooltip ? "visible" : "collapse")"*@
+<tooltipPopupComponent class="tooltip--hidden" id="@tooltipPopupComponentId" @ref=tooltipPopupComponent>
     <perspective>
         <transform>
             @ChildContent
@@ -21,13 +22,27 @@
     [Parameter, EditorRequired] public TooltipPartsMessenger Messenger { get; set; } = null!;
     [Parameter, EditorRequired] public string OwnerId { get; set; } = null!;
     [Inject] private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
+    [Inject] private ElementJsInterop ElementJsInterop { get; init; } = null!;
 
+    private ElementReference tooltipPopupComponent;
     private DotNetObjectReference<TooltipPopup> selfJsReference;
     private double mousePositionX;
     private double mousePositionY;
     private bool isMouseOver;
     private bool freezeTooltip;
-    private string toolTipId { get; init; } = Random.Shared.Next().ToString();
+    private string tooltipPopupComponentId { get; init; } = Random.Shared.Next().ToString();
+
+
+
+    [JSInvokable]
+    public void ChangeFreeze(bool value)
+    {
+        freezeTooltip = value;
+        if (freezeTooltip is false)
+        {
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{tooltipPopupComponentId}", OwnerId);
+        }
+    }
 
     protected override void OnParametersSet()
     {
@@ -38,18 +53,13 @@
 
     }
 
-    [JSInvokable]
-    public void ChangeFreeze(bool value)
+    protected override void OnAfterRender(bool firstRender)
     {
-        freezeTooltip = value;
-        if (freezeTooltip is false)
-        {
-            TooltipJsInterop.HideTooltip(selfJsReference, $"{toolTipId}", OwnerId);
-        }
+        Console.WriteLine("Popup render");
+        base.OnAfterRender(firstRender);
     }
 
-
-    public void MouseMove(object? sender, MouseEventArgs e)
+    private void MouseMove(object? sender, MouseEventArgs e)
     {
         if (freezeTooltip)
             return;
@@ -58,29 +68,38 @@
         //This update position logic can be moved to JS.
         mousePositionX = e.PageX;
         mousePositionY = e.PageY;
-        InvokeAsync(StateHasChanged);
+        UpdateStyle();
+        //InvokeAsync(StateHasChanged);
     }
 
-    public void MouseOver(object? sender, MouseEventArgs e)
+    private void MouseOver(object? sender, MouseEventArgs e)
     {
         if (isMouseOver)
             return;
-        TooltipJsInterop.ShowTooltip(selfJsReference, $"{toolTipId}");
+        TooltipJsInterop.ShowTooltip(selfJsReference, $"{tooltipPopupComponentId}");
         isMouseOver = true;
         InvokeAsync(StateHasChanged);
     }
 
-    public void MouseOut(object? sender, MouseEventArgs e)
+    private void MouseOut(object? sender, MouseEventArgs e)
     {
         if (isMouseOver is false)
             return;
         if (freezeTooltip is false)
         {
-            TooltipJsInterop.HideTooltip(selfJsReference, $"{toolTipId}", OwnerId);
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{tooltipPopupComponentId}", OwnerId);
         }
         InvokeAsync(StateHasChanged);
 
         isMouseOver = false;
+    }
+
+    private void UpdateStyle()
+    {
+        var visibility = isMouseOver || freezeTooltip ? "visible" : "collapse";
+        var cssText = $"left: {mousePositionX + 4}px; top: {mousePositionY + 4}px; visibility: {visibility}";
+        ElementJsInterop.ChangeStyle(tooltipPopupComponent, cssText);
+
     }
 
     public void Dispose()

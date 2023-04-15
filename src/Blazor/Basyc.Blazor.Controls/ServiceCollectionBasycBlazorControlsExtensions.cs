@@ -7,6 +7,7 @@ public static class ServiceCollectionBasycBlazorControlsExtensions
 	{
 		services.AddSingleton<TooltipJsInterop>();
 		services.AddSingleton<ScrollJsInterop>();
+		services.AddSingleton<ElementJsInterop>();
 		return services;
 	}
 }

@@ -1,29 +1,9 @@
-﻿
-//export function hideTooltip(elementToMoveId, targetElementId) {
-//	let toMoveElement = document.getElementById(elementToMoveId);
-//	let targetElement = document.getElementById(targetElementId);
-//	targetElement.after(toMoveElement);
-//	toMoveElement.classList.remove("tooltip--visible")
-//	toMoveElement.classList.add("tooltip--hidden")
-
-//}
-
-//export function showTooltip(elementToMoveId, targetElementQuerySelector) {
-//	let toMoveElement = document.getElementById(elementToMoveId);
-//	let targetElement = document.querySelector(targetElementQuerySelector);
-//	targetElement.after(toMoveElement);
-//	toMoveElement.classList.remove("tooltip--hidden")
-//	toMoveElement.classList.add("tooltip--visible")
-//	document.addEventListener("keydown", keyDown);
-//}
-
-window.hideTooltip = (dotNetHelper, elementToMoveId, targetElementId) => {
+﻿window.hideTooltip = (dotNetHelper, elementToMoveId, targetElementId) => {
 	let toMoveElement = document.getElementById(elementToMoveId);
 	let targetElement = document.getElementById(targetElementId);
 	targetElement.after(toMoveElement);
 	toMoveElement.classList.remove("tooltip--visible")
 	toMoveElement.classList.add("tooltip--hidden")
-	//dotNetHelper.dispose();
 }
 
 window.showTooltip = (dotNetHelper, elementToMoveId, targetElementQuerySelector) => {
@@ -49,16 +29,4 @@ window.showTooltip = (dotNetHelper, elementToMoveId, targetElementQuerySelector)
 			frozen = false;
 		}
 	}
-	//dotNetHelper.dispose();
 }
-
-//window.hideTooltip = (dotNetHelper) => {
-//	prompt("test");
-//	dotNetHelper.dispose();
-//}
-
-//window.showTooltip = (dotNetHelper) => {
-//	prompt("test");
-//	dotNetHelper.dispose();
-//}
-

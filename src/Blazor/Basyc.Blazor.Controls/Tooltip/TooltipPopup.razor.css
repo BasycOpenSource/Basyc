@@ -21,4 +21,5 @@ transform {
 tooltipPopupComponent {
   z-index: 1001;
   overflow: visible;
+  position: absolute;
 }

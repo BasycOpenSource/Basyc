@@ -59,7 +59,7 @@
                 </logHeading>
             </BasycHeading>
             <logs>
-                <BasycList Items="@ActivityContext.Logs" Context="log">
+                <BasycList Items="@ActivityContext.Logs" Context="log" Virtualize="false">
                     <ItemTemplate>
                         <log>
                             <BasycSpaceBorder Size="SpacerSize.Small">
@@ -100,8 +100,15 @@
     public int LogsWarningCount { get; init; }
     public int LogsErrorCount { get; init; }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine("DurationBoxTooltip OnAfterRender");
+        base.OnAfterRender(firstRender);
+    }
+
     protected override void OnParametersSet()
     {
+        Console.WriteLine("DurationBoxTooltip OnParametersSet");
         base.OnParametersSet();
     }
 

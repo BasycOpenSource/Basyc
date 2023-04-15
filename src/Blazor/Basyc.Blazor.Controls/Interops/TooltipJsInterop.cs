@@ -23,33 +23,15 @@ public class TooltipJsInterop : IAsyncDisposable
 		}
 	}
 
-	//public async void HideTooltip(string elementToMoveId, string targetElementId)
-	//{
-	//	var module = await moduleTask.Value;
-	//	await module.InvokeVoidAsync("hideTooltip", elementToMoveId, targetElementId);
-	//}
-
-	//public async void ShowTooltip(string elementToMoveId, string targetElementQuerySelector = "basycControls")
-	//{
-	//	var module = await moduleTask.Value;
-	//	await module.InvokeVoidAsync("showTooltip", elementToMoveId, targetElementQuerySelector);
-	//}
-
 	public async void HideTooltip(DotNetObjectReference<TooltipPopup> tooltipElementComponenet, string elementToMoveId, string targetElementId)
 	{
 		var module = await moduleTask.Value;
-		//await module.InvokeVoidAsync("hideTooltip", objRef, elementToMoveId, targetElementId);
-		//await module.InvokeVoidAsync("hideTooltip", objRef);
-		//await jsRuntime.InvokeVoidAsync("hideTooltip", objRef);
 		await jsRuntime.InvokeVoidAsync("hideTooltip", tooltipElementComponenet, elementToMoveId, targetElementId);
 	}
 
 	public async void ShowTooltip(DotNetObjectReference<TooltipPopup> tooltipElementComponenet, string elementToMoveId, string targetElementQuerySelector = "basycControls")
 	{
 		var module = await moduleTask.Value;
-		//await module.InvokeVoidAsync("showTooltip", objRef, elementToMoveId, targetElementQuerySelector);
-		//await module.InvokeVoidAsync("showTooltip", objRef);
-		//await jsRuntime.InvokeVoidAsync("showTooltip", objRef);
 		await jsRuntime.InvokeVoidAsync("showTooltip", tooltipElementComponenet, elementToMoveId, targetElementQuerySelector);
 	}
 }
