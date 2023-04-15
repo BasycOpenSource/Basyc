@@ -6,14 +6,15 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
-public class RequestDiagnostic
+public class MessageDiagnostic
 {
 	private readonly Dictionary<string, ActivityContext> activityIdToActivityMap = new();
 	private readonly Dictionary<string, List<LogEntry>> missingActivityIdToLogsMap = new();
 	private readonly Dictionary<string, List<ActivityContext>> missingParentIdToNestedActivityMap = new();
 	private readonly List<ServiceIdentityContext> services = new();
+	private DateTimeOffset? messageStart;
 
-	public RequestDiagnostic(string traceId)
+	public MessageDiagnostic(string traceId)
 	{
 		TraceId = traceId;
 		LogEntries = new ReadOnlyObservableCollection<LogEntry>(logEntries);
@@ -76,7 +77,7 @@ public class RequestDiagnostic
 		var serviceContext = EnsureServiceCreated(activityStart.Service);
 		var hasParent = activityStart.ParentId is not null;
 		var newActivityContext = new ActivityContext(activityStart.Service, activityStart.TraceId, hasParent, activityStart.ParentId, activityStart.Id,
-			activityStart.Name, activityStart.StartTime);
+			activityStart.Name, activityStart.StartTime.GetRelativeTime(messageStart.Value()));
 		activityIdToActivityMap.Add(newActivityContext.Id, newActivityContext);
 		if (missingActivityIdToLogsMap.TryGetValue(newActivityContext.Id, out var logs))
 		{
@@ -135,6 +136,11 @@ public class RequestDiagnostic
 
 		activity.End(activityEnd.EndTime, status);
 		OnActivityEndAdded(activityEnd);
+	}
+
+	public void Start(DateTimeOffset messageStart)
+	{
+		this.messageStart = messageStart;
 	}
 
 	private void OnLogAdded(LogEntry newLogEntry)

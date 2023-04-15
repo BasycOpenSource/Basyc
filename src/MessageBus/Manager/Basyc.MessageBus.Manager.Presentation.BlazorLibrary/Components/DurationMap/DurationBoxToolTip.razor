@@ -31,7 +31,7 @@
                         started
                     </div>
                     <div>
-                        @Html.Time(StartTime)
+                        @Html.Time(StartTime.Value - default(DateTimeOffset))
                     </div>
                 </infoItem>
                 <infoItem>
@@ -85,7 +85,7 @@
     public string? Name { get; set; }
 
     [Parameter, EditorRequired]
-    public DateTimeOffset StartTime { get; set; }
+    public RelativeTime StartTime { get; set; }
 
     [Parameter, EditorRequired]
     public TimeSpan Duration { get; set; }

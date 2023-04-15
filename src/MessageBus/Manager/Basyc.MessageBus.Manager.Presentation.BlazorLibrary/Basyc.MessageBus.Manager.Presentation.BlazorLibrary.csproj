@@ -64,4 +64,8 @@
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</None>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Shared\Converters\" />
+	</ItemGroup>
 </Project>

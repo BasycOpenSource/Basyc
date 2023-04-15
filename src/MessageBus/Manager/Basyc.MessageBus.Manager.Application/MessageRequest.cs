@@ -11,7 +11,7 @@ public class MessageRequest : ReactiveObject
 	private IDurationSegmentBuilder? requestActivity;
 
 	public MessageRequest(RequestInput request, DateTimeOffset requestCreationTime, string traceId, IDurationMapBuilder durationMapBuilder,
-		RequestDiagnostic requestDiagnostics, int orderIndex)
+		MessageDiagnostic requestDiagnostics, int orderIndex)
 	{
 		RequestInput = request;
 		this.durationMapBuilder = durationMapBuilder;
@@ -41,7 +41,7 @@ public class MessageRequest : ReactiveObject
 
 	public string TraceId { get; init; }
 	public int OrderIndex { get; init; }
-	public RequestDiagnostic Diagnostics { get; }
+	public MessageDiagnostic Diagnostics { get; }
 	[Reactive] public RequestResultState State { get; private set; }
 	public object? Response { get; private set; }
 	public string? ErrorMessage { get; private set; }
@@ -90,7 +90,9 @@ public class MessageRequest : ReactiveObject
 	public IDurationSegmentBuilder Start()
 	{
 		//var startTime = durationMapBuilder.Start();
-		requestActivity = durationMapBuilder.StartNewSegment("MessageRequest Start");
+		var startTime = DateTimeOffset.UtcNow;
+		Diagnostics.Start(startTime);
+		requestActivity = durationMapBuilder.StartNewSegment("MessageRequest Start", startTime);
 		return requestActivity;
 	}
 

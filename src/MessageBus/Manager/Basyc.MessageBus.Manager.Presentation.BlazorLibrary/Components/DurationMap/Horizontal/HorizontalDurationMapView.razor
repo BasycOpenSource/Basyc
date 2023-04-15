@@ -26,7 +26,7 @@
                     var serviceFirstActivity = service.Activities.First();
                     //var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}";
                     var serviceStyle = $"background-color: {backgroundColor}";
-                    var durationBoxesStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)};";
+                    var durationBoxesStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime.AbsoluteTime, PixelsPerMs)};";
                     var serviceNameStyle = $"color: {nameColor}";
                     <service style="@serviceStyle">
                         <serviceNameContainer>
@@ -41,7 +41,7 @@
                                 {
                                     <unknownAndKnowGroup>
                                         @{
-                                            var leftMargin = previousActivity == null ? "0px" : DurationViewHelper.GetCssDurationValue(serviceFirstActivity.StartTime, activity.StartTime, PixelsPerMs);
+                                            var leftMargin = previousActivity == null ? "0px" : DurationViewHelper.GetCssDurationValue(serviceFirstActivity.StartTime.Value, activity.StartTime.Value, PixelsPerMs);
                                             <div style="display: flex; margin-left:@leftMargin;">
                                                 @{
                                                     <HorizontalDurationBoxView Activity="activity" PixelsPerMs="PixelsPerMs" Color="@serviceThemeColor" NestingLevel="0" />
@@ -129,7 +129,7 @@
         PixelsPerMs = newPixelsPerMs;
     }
 
-    private static DateTimeOffset GetLatestEndTime(RequestDiagnostic requestDiagnostic)
+    private static DateTimeOffset GetLatestEndTime(MessageDiagnostic requestDiagnostic)
     {
         static DateTimeOffset GetLatestEndTimeFromActivity(ActivityContext activity)
         {
@@ -139,10 +139,11 @@
             var latestEndTime = activity.EndTime;
             foreach (var nestedActivity in activity.NestedActivities)
             {
-                var nestedLatestEndTime = GetLatestEndTimeFromActivity(nestedActivity);
-                latestEndTime = latestEndTime > nestedLatestEndTime ? latestEndTime : nestedLatestEndTime;
+
+                var nestedLatestEndTime = GetLatestEndTimeFromActivity(nestedActivity).GetRelativeTime(latestEndTime.BaseTime);
+                latestEndTime = latestEndTime.Value > nestedLatestEndTime.Value ? latestEndTime : nestedLatestEndTime;
             }
-            return latestEndTime;
+            return latestEndTime.AbsoluteTime;
         }
 
         DateTimeOffset latestEndTime = default;

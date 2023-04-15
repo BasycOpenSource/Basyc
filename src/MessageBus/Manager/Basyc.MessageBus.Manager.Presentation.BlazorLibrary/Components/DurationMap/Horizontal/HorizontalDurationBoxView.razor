@@ -27,7 +27,7 @@
             <DurationBoxToolTip Name="@Activity.DisplayName"
                                 Service="@Activity.Service"
                                 StartTime="@Activity.StartTime"
-                                Duration="((Activity.EndTime - Activity.StartTime))"
+                                Duration="((Activity.EndTime.Value - Activity.StartTime.Value))"
                                 ActivityContext="@Activity" />
         </TooltipContent>
         <ChildContent>
@@ -48,7 +48,7 @@
                     @foreach (var aggregatedLog in LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier))
                     {
                         //TODO: This should use Virtulize
-                        var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime, PixelsPerMs, out var logStartPixels);
+                        var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var logStartPixels);
                         var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
                         var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
                         var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
@@ -97,13 +97,13 @@
                 {
                     lastRow.Activities.Add(nestedActivity);
                     lastRow.LastEndTime = nestedActivityLatestEndTime;
-                    lastRow.StartTime = nestedActivity.StartTime;
+                    lastRow.StartTime = nestedActivity.StartTime.AbsoluteTime;
                     continue;
                 }
                 var previousActivityInRow = lastRow.Activities.First();
-                var diff = Math.Ceiling((nestedActivity.StartTime - lastRow.LastEndTime).TotalMilliseconds);
+                var diff = Math.Ceiling((nestedActivity.StartTime.AbsoluteTime - lastRow.LastEndTime).TotalMilliseconds);
                 var canFitOnSameRow = diff >= 0;
-                var startsTheSameAndPreviousHas0Duration = (lastRow.LastEndTime - nestedActivity.StartTime).TotalMilliseconds == 0 && previousActivityInRow.Duration.Ticks == 0;
+                var startsTheSameAndPreviousHas0Duration = (lastRow.LastEndTime - nestedActivity.StartTime.AbsoluteTime).TotalMilliseconds == 0 && previousActivityInRow.Duration.Ticks == 0;
                 if (canFitOnSameRow || startsTheSameAndPreviousHas0Duration)
                 {
                     lastRow.Activities.Add(nestedActivity);
@@ -114,7 +114,7 @@
                     var newRow = new RowViewModel();
                     newRow.LastEndTime = nestedActivityLatestEndTime;
                     newRow.Activities.Add(nestedActivity);
-                    newRow.StartTime = nestedActivity.StartTime;
+                    newRow.StartTime = nestedActivity.StartTime.AbsoluteTime;
                     rows.Add(newRow);
                 }
             }
@@ -141,19 +141,19 @@
                                 var isFirstNested = previousRowActivity is null;
                                 if (isFirstNested)
                                 {
-                                    var lateStartDuration = nestedActivity.StartTime - Activity.StartTime;
+                                    var lateStartDuration = nestedActivity.StartTime.AbsoluteTime - Activity.StartTime.AbsoluteTime;
                                     if (lateStartDuration > TimeSpan.FromMilliseconds(0))
                                     {
-                                        <HorizontalUnknownDurationBoxView StartTime="Activity.StartTime" EndTime="nestedActivity.StartTime" PixelsPerMs="PixelsPerMs" Color="@Color" />
+                                        <HorizontalUnknownDurationBoxView StartTime="Activity.StartTime.AbsoluteTime" EndTime="nestedActivity.StartTime.AbsoluteTime" PixelsPerMs="PixelsPerMs" Color="@Color" />
                                     }
                                 }
 
 
-                                var isGapBetweenPreviousNested = previousRowActivity is not null && previousRowActivity.EndTime != nestedActivity.StartTime;
+                                var isGapBetweenPreviousNested = previousRowActivity is not null && previousRowActivity.EndTime.Value != nestedActivity.StartTime.Value; ;
                                 if (isGapBetweenPreviousNested)
                                 {
                                     previousRowActivity.ThrowIfNull();
-                                    <HorizontalUnknownDurationBoxView StartTime="previousRowActivity.EndTime" EndTime="nestedActivity.StartTime" PixelsPerMs="PixelsPerMs" Color="@Color" />
+                                    <HorizontalUnknownDurationBoxView StartTime="previousRowActivity.EndTime.AbsoluteTime" EndTime="nestedActivity.StartTime.AbsoluteTime" PixelsPerMs="PixelsPerMs" Color="@Color" />
                                 }
                                 <HorizontalDurationBoxView Activity="nestedActivity" PixelsPerMs="PixelsPerMs" Color="@Color" NestingLevel="NestingLevel+1" />
 
@@ -224,7 +224,7 @@
 
     private void SetKnownWidth()
     {
-        width = DurationViewHelper.GetCssDurationValue(Activity.EndTime - Activity.StartTime, PixelsPerMs, out var widthNumber);
+        width = DurationViewHelper.GetCssDurationValue(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var widthNumber);
         if (widthNumber < 0.2)
         {
             width = "0.1px";
@@ -245,7 +245,7 @@
                 SetKnownWidth();
                 break;
             }
-            width = DurationViewHelper.GetCssDurationValue(DateTimeOffset.UtcNow - Activity.StartTime, PixelsPerMs, out var widthNumber);
+            width = DurationViewHelper.GetCssDurationValue(DateTimeOffset.UtcNow - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var widthNumber);
             StateHasChanged();
         }
     }
@@ -271,7 +271,7 @@
 
     private static DateTimeOffset GetRecursiveLatestEndTime(ActivityContext activity)
     {
-        var latestEndTime = activity.EndTime;
+        var latestEndTime = activity.EndTime.AbsoluteTime;
         foreach (var nestedActivity in activity.NestedActivities)
         {
             var nestedLatestEndTime = GetRecursiveLatestEndTime(nestedActivity);
