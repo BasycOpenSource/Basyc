@@ -34,7 +34,7 @@
                     else
                         DiagnosticsContext.TryGetActivity(logEntry.SpanId, out logActivity);
                 }
-                <LogEntryView AlternateColor="false" Activity="logActivity" ServiceName="@logEntry.Service.ServiceName" LogTime="@logEntry.Time" LogLevel="@logEntry.LogLevel" LogMessage="@logEntry.Message" />
+                <LogEntryView AlternateColor="false" Activity="logActivity" ServiceName="@logEntry.Service.ServiceName" LogTime="@logEntry.Time" BaseTime="@DiagnosticsContext.MessageStart.Value()" LogLevel="@logEntry.LogLevel" LogMessage="@logEntry.Message" />
             </ItemTemplate>
         </BasycList>
     </logs>

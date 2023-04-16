@@ -12,7 +12,7 @@ public class MessageDiagnostic
 	private readonly Dictionary<string, List<LogEntry>> missingActivityIdToLogsMap = new();
 	private readonly Dictionary<string, List<ActivityContext>> missingParentIdToNestedActivityMap = new();
 	private readonly List<ServiceIdentityContext> services = new();
-	private DateTimeOffset? messageStart;
+	public DateTimeOffset? MessageStart { get; private set; }
 
 	public MessageDiagnostic(string traceId)
 	{
@@ -77,7 +77,7 @@ public class MessageDiagnostic
 		var serviceContext = EnsureServiceCreated(activityStart.Service);
 		var hasParent = activityStart.ParentId is not null;
 		var newActivityContext = new ActivityContext(activityStart.Service, activityStart.TraceId, hasParent, activityStart.ParentId, activityStart.Id,
-			activityStart.Name, activityStart.StartTime.GetRelativeTime(messageStart.Value()));
+			activityStart.Name, activityStart.StartTime.GetRelativeTime(MessageStart.Value()));
 		activityIdToActivityMap.Add(newActivityContext.Id, newActivityContext);
 		if (missingActivityIdToLogsMap.TryGetValue(newActivityContext.Id, out var logs))
 		{
@@ -140,7 +140,7 @@ public class MessageDiagnostic
 
 	public void Start(DateTimeOffset messageStart)
 	{
-		this.messageStart = messageStart;
+		MessageStart = messageStart;
 	}
 
 	private void OnLogAdded(LogEntry newLogEntry)

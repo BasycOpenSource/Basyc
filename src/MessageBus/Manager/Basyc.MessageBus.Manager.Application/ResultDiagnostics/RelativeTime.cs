@@ -14,7 +14,20 @@ public readonly struct RelativeTime
 
 	private DateTimeOffset GetRelativeTime(DateTimeOffset toConvertTime, DateTimeOffset baseTime)
 	{
-		var relativeTime = new DateTimeOffset((toConvertTime - baseTime).Ticks, default);
-		return relativeTime;
+		var relativeTicks = (toConvertTime - baseTime).Ticks;
+		if (relativeTicks < 0)
+		{
+			relativeTicks = 0;
+		}
+		try
+		{
+			var relativeTime = new DateTimeOffset(relativeTicks, default);
+			return relativeTime;
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex);
+			throw;
+		}
 	}
 }
