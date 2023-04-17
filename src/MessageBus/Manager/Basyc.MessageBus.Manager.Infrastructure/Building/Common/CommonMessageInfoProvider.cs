@@ -44,7 +44,7 @@ public class CommonMessageInfoProvider : IMessageInfoProvider
 					requesterSelector.AssignRequesterForMessage(messageInfo, inMemoryRequestHandler.UniqueName);
 				}
 			}
-			var group = new MessageGroup(messageGroupRegistration.Name,messageInfos);
+			var group = new MessageGroup(messageGroupRegistration.Name, messageInfos);
 			messageGroups.Add(group);
 		}
 
