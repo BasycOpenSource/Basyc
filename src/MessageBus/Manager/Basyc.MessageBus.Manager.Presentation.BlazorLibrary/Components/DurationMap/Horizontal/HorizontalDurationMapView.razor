@@ -140,7 +140,7 @@
             foreach (var nestedActivity in activity.NestedActivities)
             {
 
-                var nestedLatestEndTime = GetLatestEndTimeFromActivity(nestedActivity).GetRelativeTime(latestEndTime.BaseTime);
+                var nestedLatestEndTime = GetLatestEndTimeFromActivity(nestedActivity).GetDiagnosticTime(latestEndTime.BaseTime);
                 latestEndTime = latestEndTime.Value > nestedLatestEndTime.Value ? latestEndTime : nestedLatestEndTime;
             }
             return latestEndTime.AbsoluteTime;

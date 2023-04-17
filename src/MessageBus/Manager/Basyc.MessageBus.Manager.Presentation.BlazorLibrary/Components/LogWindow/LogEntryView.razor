@@ -18,7 +18,7 @@
     <LogIconView LogLevel="LogLevel" />
     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small" Inline="true" />
     <time>
-        @Html.RelativeTime(new RelativeTime(LogTime, BaseTime))
+        @Html.DiagnosticTime(new DiagnosticTime(LogTime, BaseTime))
     </time>
     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium" Inline="true" />
     <serviceName style="@serviceNameStyle">

@@ -1,8 +1,10 @@
 ﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
+@using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Throw
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html
 @using Color = Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors.Color
+@using static Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal.LogAggregator;
 @implements IDisposable
 @{
     if (Activity.HasEnded)
@@ -44,40 +46,76 @@
                     }
                 </stickyContainer>
                 <logs>
-                 
-                    @foreach (var aggregatedLog in LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier))
+                    <Virtualize Items="@AggragatedLogs"
+                                Context="aggregatedLog"
+                                ItemSize="0.001F">
+                        <ItemContent>
+                            @{
+                                var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var logStartPixels);
+                                var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
+                                var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
+                                var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
+                                var legMarginLeft = -(logWidth / 2);
+                                if (logStartPixels < legMarginLeft)
+                                {
+                                    legMarginLeft = 0;
+                                }
+                                if (logStartPixels > logWidth)
+                                {
+                                    legMarginLeft = -logWidth;
+                                }
+                            }
+                            <log style="@logStyle">
+                                <MudTooltip RootClass="logContentToolTip">
+                                    <ChildContent>
+                                        <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
+                                    </ChildContent>
+                                    <TooltipContent>
+                                        <toolTipContent>
+                                            @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
+                                        </toolTipContent>
+                                    </TooltipContent>
+                                </MudTooltip>
+                            </log>
+                        </ItemContent>
+                        <Placeholder>
+                            <loading />
+                        </Placeholder>
+
+                    </Virtualize>
+                    @*foreach (var aggregatedLog in LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier))
                     {
-                        //TODO: This should use Virtulize
-                        var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var logStartPixels);
-                        var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
-                        var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
-                        var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
-                        var legMarginLeft = -(logWidth / 2);
-                        if (logStartPixels < legMarginLeft)
-                        {
-                            legMarginLeft = 0;
-                        }
-                        if (logStartPixels > logWidth)
-                        {
-                            legMarginLeft = -logWidth;
-                        }
-
-                        var logContentStyle = $"margin-left: {Html.Number(legMarginLeft)}px;";
-
-                        <log style="@logStyle">
-                            <MudTooltip RootClass="logContentToolTip">
-                                <ChildContent>
-                                    <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
-                                </ChildContent>
-                                <TooltipContent>
-                                    <toolTipContent>
-                                        @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
-                                    </toolTipContent>
-                                </TooltipContent>
-                            </MudTooltip>
-                        </log>
-
+                    //TODO: This should use Virtulize
+                    var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var logStartPixels);
+                    var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
+                    var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
+                    var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
+                    var legMarginLeft = -(logWidth / 2);
+                    if (logStartPixels < legMarginLeft)
+                    {
+                    legMarginLeft = 0;
                     }
+                    if (logStartPixels > logWidth)
+                    {
+                    legMarginLeft = -logWidth;
+                    }
+
+                    var logContentStyle = $"margin-left: {Html.Number(legMarginLeft)}px;";
+
+                    <log style="@logStyle">
+                    <MudTooltip RootClass="logContentToolTip">
+                    <ChildContent>
+                    <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
+                    </ChildContent>
+                    <TooltipContent>
+                    <toolTipContent>
+                    @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
+                    </toolTipContent>
+                    </TooltipContent>
+                    </MudTooltip>
+                    </log>
+
+                    }*@
                 </logs>
 
             </durationBox>
@@ -206,6 +244,7 @@
     private const double logMaxWidthPixels = 10;
     private readonly PeriodicTimer updateUnfinishedTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
     private string width = "0rem";
+    private List<AggregatedLog> AggragatedLogs => LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
 
     protected override void OnInitialized()
     {

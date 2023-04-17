@@ -3,7 +3,7 @@
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
 public static partial class Html
 {
-	public static string RelativeTime(this RelativeTime relativeTime)
+	public static string DiagnosticTime(this DiagnosticTime relativeTime)
 	{
 		//var totalMs = relativeTime.Value.ToUnixTimeMilliseconds();
 		var totalMs = relativeTime.Value.Ticks / (double)TimeSpan.TicksPerMillisecond;

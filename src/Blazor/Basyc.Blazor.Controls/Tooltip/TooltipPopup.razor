@@ -31,7 +31,7 @@
     private bool isMouseOver;
     private bool freezeTooltip;
     private string tooltipPopupComponentId { get; init; } = Random.Shared.Next().ToString();
-
+    private bool shouldRender;
 
 
     [JSInvokable]
@@ -44,6 +44,14 @@
         }
     }
 
+    public void Dispose()
+    {
+        selfJsReference.Dispose();
+        Messenger.MouseOver -= MouseOver;
+        Messenger.MouseMove -= MouseMove;
+        Messenger.MouseOut -= MouseOut;
+    }
+
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -51,6 +59,11 @@
         Messenger.MouseMove += MouseMove;
         Messenger.MouseOut += MouseOut;
 
+    }
+
+    protected override bool ShouldRender()
+    {
+        return shouldRender;
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -63,13 +76,9 @@
     {
         if (freezeTooltip)
             return;
-        //TODO : this approach makes content of popup to rerender
-        //If the content is heavy for render it is quite noticible
-        //This update position logic can be moved to JS.
         mousePositionX = e.PageX;
         mousePositionY = e.PageY;
         UpdateStyle();
-        //InvokeAsync(StateHasChanged);
     }
 
     private void MouseOver(object? sender, MouseEventArgs e)
@@ -78,7 +87,9 @@
             return;
         TooltipJsInterop.ShowTooltip(selfJsReference, $"{tooltipPopupComponentId}");
         isMouseOver = true;
+        shouldRender = true;
         InvokeAsync(StateHasChanged);
+        shouldRender = false;
     }
 
     private void MouseOut(object? sender, MouseEventArgs e)
@@ -99,15 +110,8 @@
         var visibility = isMouseOver || freezeTooltip ? "visible" : "collapse";
         var cssText = $"left: {mousePositionX + 4}px; top: {mousePositionY + 4}px; visibility: {visibility}";
         ElementJsInterop.ChangeStyle(tooltipPopupComponent, cssText);
-
     }
 
-    public void Dispose()
-    {
-        selfJsReference.Dispose();
-        Messenger.MouseOver -= MouseOver;
-        Messenger.MouseMove -= MouseMove;
-        Messenger.MouseOut -= MouseOut;
-    }
+
 
 }

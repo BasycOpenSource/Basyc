@@ -18,6 +18,7 @@ window.showTooltip = (dotNetHelper, elementToMoveId, targetElementQuerySelector)
 	function keyDown(e) {
 
 		if (frozen == false) {
+			toMoveElement.classList.add("tooltip--frozen")
 			dotNetHelper.invokeMethodAsync('ChangeFreeze', true);
 			frozen = true;
 		}
@@ -25,6 +26,7 @@ window.showTooltip = (dotNetHelper, elementToMoveId, targetElementQuerySelector)
 
 	function keyUp(e) {
 		if (frozen == true) {
+			toMoveElement.classList.remove("tooltip--frozen")
 			dotNetHelper.invokeMethodAsync('ChangeFreeze', false);
 			frozen = false;
 		}

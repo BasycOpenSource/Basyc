@@ -1,7 +1,7 @@
 ﻿namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
-public readonly struct RelativeTime
+public readonly struct DiagnosticTime
 {
-	public RelativeTime(DateTimeOffset time, DateTimeOffset baseTime)
+	public DiagnosticTime(DateTimeOffset time, DateTimeOffset baseTime)
 	{
 		BaseTime = baseTime;
 		AbsoluteTime = time;

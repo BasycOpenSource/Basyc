@@ -32,7 +32,7 @@
                     </div>
                     <div>
                         @*@Html.Time(StartTime.Value - default(DateTimeOffset))*@
-                        @Html.RelativeTime(StartTime)
+                        @Html.DiagnosticTime(StartTime)
                     </div>
                 </infoItem>
                 <infoItem>
@@ -60,7 +60,7 @@
                 </logHeading>
             </BasycHeading>
             <logs>
-                <BasycList Items="@ActivityContext.Logs" Context="log" Virtualize="false">
+                <BasycList Items="@ActivityContext.Logs" Context="log">
                     <ItemTemplate>
                         <log>
                             <BasycSpaceBorder Size="SpacerSize.Small">
@@ -86,7 +86,7 @@
     public string? Name { get; set; }
 
     [Parameter, EditorRequired]
-    public Application.ResultDiagnostics.RelativeTime StartTime { get; set; }
+    public Application.ResultDiagnostics.DiagnosticTime StartTime { get; set; }
 
     [Parameter, EditorRequired]
     public TimeSpan Duration { get; set; }
@@ -100,6 +100,8 @@
     public int LogsInformationCount => ActivityContext.Logs.Where(x => x.LogLevel == LogLevel.Information).Count();
     public int LogsWarningCount { get; init; }
     public int LogsErrorCount { get; init; }
+
+
 
     protected override void OnAfterRender(bool firstRender)
     {

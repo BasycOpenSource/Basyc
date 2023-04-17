@@ -77,7 +77,7 @@ public class MessageDiagnostic
 		var serviceContext = EnsureServiceCreated(activityStart.Service);
 		var hasParent = activityStart.ParentId is not null;
 		var newActivityContext = new ActivityContext(activityStart.Service, activityStart.TraceId, hasParent, activityStart.ParentId, activityStart.Id,
-			activityStart.Name, activityStart.StartTime.GetRelativeTime(MessageStart.Value()));
+			activityStart.Name, activityStart.StartTime.GetDiagnosticTime(MessageStart.Value()));
 		activityIdToActivityMap.Add(newActivityContext.Id, newActivityContext);
 		if (missingActivityIdToLogsMap.TryGetValue(newActivityContext.Id, out var logs))
 		{

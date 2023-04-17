@@ -11,7 +11,7 @@ public record class ActivityContext(
 	string? ParentId,
 	string Id,
 	string DisplayName,
-	RelativeTime StartTime)
+	DiagnosticTime StartTime)
 {
 
 	public event EventHandler? ActivityEnded;
@@ -24,13 +24,13 @@ public record class ActivityContext(
 	private readonly List<LogEntry> logs = new();
 	public IReadOnlyList<LogEntry> Logs => logs;
 	public bool HasEnded { get; private set; }
-	public RelativeTime EndTime { get; private set; }
+	public DiagnosticTime EndTime { get; private set; }
 	public TimeSpan Duration { get; private set; }
 	public ActivityStatusCode Status { get; private set; }
 	public ActivityContext? ParentActivity { get; private set; }
 	public void End(DateTimeOffset endTime, ActivityStatusCode status)
 	{
-		var endTimeRelative = new RelativeTime(endTime, StartTime.BaseTime);
+		var endTimeRelative = new DiagnosticTime(endTime, StartTime.BaseTime);
 		EndTime = endTimeRelative;
 		Duration = EndTime.Value - StartTime.Value;
 		Status = status;

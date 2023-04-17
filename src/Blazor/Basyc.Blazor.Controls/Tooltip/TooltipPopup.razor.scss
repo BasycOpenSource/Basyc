@@ -8,6 +8,10 @@
     visibility: visible !important;
 }
 
+.tooltip--frozen {
+    pointer-events: auto !important;
+}
+
 perspective {
     display: block;
     /*perspective: 500px;*/
@@ -22,4 +26,5 @@ tooltipPopupComponent {
     z-index: 1001;
     overflow: visible;
     position: absolute;
+    pointer-events: none;
 }
