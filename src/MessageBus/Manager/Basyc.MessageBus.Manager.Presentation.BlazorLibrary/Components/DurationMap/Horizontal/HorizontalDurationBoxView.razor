@@ -83,39 +83,6 @@
                         </Placeholder>
 
                     </Virtualize>
-                    @*foreach (var aggregatedLog in LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier))
-                    {
-                    //TODO: This should use Virtulize
-                    var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var logStartPixels);
-                    var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
-                    var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
-                    var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
-                    var legMarginLeft = -(logWidth / 2);
-                    if (logStartPixels < legMarginLeft)
-                    {
-                    legMarginLeft = 0;
-                    }
-                    if (logStartPixels > logWidth)
-                    {
-                    legMarginLeft = -logWidth;
-                    }
-
-                    var logContentStyle = $"margin-left: {Html.Number(legMarginLeft)}px;";
-
-                    <log style="@logStyle">
-                    <MudTooltip RootClass="logContentToolTip">
-                    <ChildContent>
-                    <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
-                    </ChildContent>
-                    <TooltipContent>
-                    <toolTipContent>
-                    @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
-                    </toolTipContent>
-                    </TooltipContent>
-                    </MudTooltip>
-                    </log>
-
-                    }*@
                 </logs>
 
             </durationBox>
