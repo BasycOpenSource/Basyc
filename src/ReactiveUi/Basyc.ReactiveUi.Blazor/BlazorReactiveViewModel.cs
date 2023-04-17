@@ -66,18 +66,6 @@ public abstract class BasycReactiveBlazorComponentBase<TViewModel> : BasycReacti
 	}
 }
 
-public interface INullViewModel : INotifyPropertyChanged
-{
-}
-
-public interface INullQueryParameters
-{
-}
-
-public interface IBasycReactiveBlazorComponentBase
-{
-}
-
 public abstract class BasycReactiveBlazorComponentBase : BasycReactiveBlazorComponentBase<INullViewModel>
 {
 	protected override void OnInitialized()
@@ -95,3 +83,4 @@ public abstract class BasycReactiveBlazorComponentBase : BasycReactiveBlazorComp
 		base.OnParametersSet();
 	}
 }
+
