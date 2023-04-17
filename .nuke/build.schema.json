@@ -82,10 +82,10 @@
             "enum": [
               "BranchCheckAffected",
               "BranchCheckAll",
+              "ChangeReportCheck",
               "CleanAll",
               "CompileAffected",
               "CompileAll",
-              "ChangeReportCheck",
               "NugetReleaseAll",
               "NugetReleaseCheck",
               "PullRequestCheckAll",
@@ -110,10 +110,10 @@
             "enum": [
               "BranchCheckAffected",
               "BranchCheckAll",
+              "ChangeReportCheck",
               "CleanAll",
               "CompileAffected",
               "CompileAll",
-              "ChangeReportCheck",
               "NugetReleaseAll",
               "NugetReleaseCheck",
               "PullRequestCheckAll",
