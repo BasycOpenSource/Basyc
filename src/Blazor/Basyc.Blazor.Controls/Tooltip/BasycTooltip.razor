@@ -1,15 +1,31 @@
 ﻿@namespace Basyc.Blazor.Controls
+@using Basyc.Blazor.Controls.Interops;
+@using Basyc.Blazor.Controls.Tooltip;
+@using Microsoft.JSInterop;
 
 <tooltipView>
-    <childContent @onmousemove="e => { x = e.PageX; y = e.PageY;}"
-                  @onmouseout="MouseOut"
-                  @onmouseover="@MouseOver"
-                  @onkeyup="@KeyUp"
-                  @onkeydown="@KeyDown"
-                  id="@childContentId">
-        @ChildContent
+    <childContent id="@childContentId">
+        <TooltipContent Messenger="@messenger">
+            @ChildContent
+        </TooltipContent>
     </childContent>
-    <tooltip class="tooltip--hidden" id="@toolTipId" style="position: absolute; left: @(x + 4)px; top: @(y + 4)px; visibility: @(isMouseOver || keepVisible ? "visible" : "collapse")">
+    <TooltipPopup Messenger="@messenger" OwnerId="@childContentId">
         @TooltipContent
-    </tooltip>
+    </TooltipPopup>
 </tooltipView>
+
+@code {
+    [Inject] private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
+    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
+    [Parameter] public RenderFragment? TooltipContent { get; set; } = null;
+
+    private string childContentId { get; init; } = Random.Shared.Next().ToString();
+    private TooltipPartsMessenger messenger = new TooltipPartsMessenger();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+}
+
+

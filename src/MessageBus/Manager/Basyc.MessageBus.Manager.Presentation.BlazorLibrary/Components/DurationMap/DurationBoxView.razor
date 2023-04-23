@@ -1,5 +1,4 @@
 ﻿@using Basyc.Diagnostics.Shared.Durations;
-@using Basyc.Diagnostics.Shared.Durations
 <durationBoxContainer>
 
 	@{
@@ -26,7 +25,8 @@
 			</durationBoxDuration>
 		}
 		<div class="tooltiptext">
-            <DurationBoxToolTip Name="DurationSegment.Name" StartTime="DurationSegment.StartTime" Duration="DurationSegment.Duration" Service="DurationSegment.Service" ActivityContext="null!" />
+            @*DurationSegment.StartTime*@
+            <DurationBoxToolTip Name="DurationSegment.Name" StartTime="default!" Duration="DurationSegment.Duration" Service="DurationSegment.Service" ActivityContext="null!" />
 		</div>
 	</durationBox>
 	<nestedContent>

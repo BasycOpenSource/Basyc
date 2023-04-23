@@ -1,10 +1,4 @@
-﻿using Basyc.DependencyInjection;
-using Basyc.MessageBus.Manager.Application;
-using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System.Collections.ObjectModel;
-using Throw;
+﻿using System.Collections.ObjectModel;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 
@@ -85,13 +79,13 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
     public FluentSetupDomainPostStage HandledBy<TReturn>(Func<object, ILogger, TReturn> handler)
         where TReturn : class
     {
-        object? handlerWrapper(MessageRequest requestResult, ILogger logger)
+        Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
         {
-            var message = binder.Value().CreateMessage(requestResult.Request);
+            var message = binder.Value().CreateMessage(requestResult.RequestInput);
             var returnObject = handler.Invoke(message, logger);
             returnObject.ThrowIfNull();
-            ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.MessageInfo.ResponseType!);
-            return returnObject;
+            ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.RequestInput.MessageInfo.ResponseType!);
+            return Task.FromResult<object?>(returnObject);
         }
 
         ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
@@ -101,12 +95,12 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
     public FluentSetupDomainPostStage HandledBy<TReturn>(Func<ReadOnlyCollection<Parameter>, ILogger, TReturn> handler)
         where TReturn : class
     {
-        object? handlerWrapper(MessageRequest requestResult, ILogger logger)
+        Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
         {
-            var returnObject = handler.Invoke(requestResult.Request.Parameters, logger);
+            var returnObject = handler.Invoke(requestResult.RequestInput.Parameters, logger);
             returnObject.ThrowIfNull();
-            ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.Request.MessageInfo.ResponseType!);
-            return returnObject;
+            ReturnObjectHelper.CheckHandlerReturnType(returnObject, requestResult.RequestInput.MessageInfo.ResponseType!);
+            return Task.FromResult<object?>(returnObject);
         }
 
         ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);

@@ -1,4 +1,18 @@
 ﻿@page "/"
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages
+@using ReactiveUI.Fody.Helpers;
+@using System.Reflection;
 
-<BusManager/>
+<BusManager />
+
+
+@code {
+    [Reactive] public int TestNumber { get; set; }
+    public Index()
+    {
+        var allFields = this.GetType()
+        .GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+        .Select(x => x.Name)
+        .ToArray();
+    }
+}

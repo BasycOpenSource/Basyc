@@ -35,21 +35,22 @@
 </sidebarHistoryItemView>
 
 @code {
+
     [Parameter, EditorRequired] public NavigationService NavigationService { get; set; } = null!;
     [Parameter, EditorRequired] public MessageRequest MessageRequest { get; set; } = null!;
     [Parameter, EditorRequired] public int Index { get; set; }
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
     private string sidebarHistoryItemViewClass = "";
-    //private string headingRowClass = "";
     private string headingRowClass => new CssBuilder()
             .AddClass("headingRowClass--started", ViewModel.State == RequestResultState.Started)
             .AddClass("headingRowClass--completed", ViewModel.State == RequestResultState.Completed)
             .AddClass("headingRowClass--failed", ViewModel.State == RequestResultState.Failed)
             .Build();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
 
     protected override void OnParametersSet()
     {
@@ -60,12 +61,6 @@
         sidebarHistoryItemViewClass = new CssBuilder()
              .AddClass("sidebarHistoryItemView--selected", ViewModel.IsSelected)
              .Build();
-
-        //headingRowClass = new CssBuilder()
-        //    .AddClass("headingRowClass--started", ViewModel.State == RequestResultState.Started)
-        //    .AddClass("headingRowClass--completed", ViewModel.State == RequestResultState.Completed)
-        //    .AddClass("headingRowClass--failed", ViewModel.State == RequestResultState.Failed)
-        //    .Build();
     }
 
 }

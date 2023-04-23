@@ -1,8 +1,4 @@
-﻿using Basyc.MessageBus.Manager.Application;
-using Basyc.MessageBus.Manager.Application.Requesting;
-using Microsoft.Extensions.Logging;
-
-namespace Basyc.MessageBus.Manager.Infrastructure;
+﻿namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class NullRequestHandler : IRequestHandler
 {
@@ -10,7 +6,7 @@ public class NullRequestHandler : IRequestHandler
 
     public void StartRequest(MessageRequest requestResult, ILogger logger)
     {
-        if (requestResult.Request.MessageInfo.HasResponse)
+        if (requestResult.RequestInput.MessageInfo.HasResponse)
             requestResult.SetResponse("NullRequester dummy response");
         else
             requestResult.SetResponse();

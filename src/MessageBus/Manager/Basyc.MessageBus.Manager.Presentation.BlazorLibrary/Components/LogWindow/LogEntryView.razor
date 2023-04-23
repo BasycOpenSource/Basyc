@@ -1,4 +1,5 @@
 ﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
 @using BlazorComponentUtilities;
 @using Throw
 @using Basyc.Blazor.Controls.TooltippedText
@@ -17,7 +18,7 @@
     <LogIconView LogLevel="LogLevel" />
     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small" Inline="true" />
     <time>
-        @LogTime.ToString("HH:mm:ss:fff")
+        @Html.DiagnosticTime(new DiagnosticTime(LogTime, BaseTime))
     </time>
     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium" Inline="true" />
     <serviceName style="@serviceNameStyle">
@@ -41,19 +42,22 @@
 
 @code {
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public ActivityContext? Activity { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public string? ServiceName { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public string? LogMessage { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
     public DateTimeOffset LogTime { get; set; }
 
-    [Parameter]
+    [Parameter, EditorRequired]
+    public DateTimeOffset BaseTime { get; set; }
+
+    [Parameter, EditorRequired]
     public LogLevel LogLevel { get; set; }
 
     [Parameter]

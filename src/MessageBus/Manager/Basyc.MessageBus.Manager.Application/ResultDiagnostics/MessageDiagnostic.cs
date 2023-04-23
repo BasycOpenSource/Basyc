@@ -1,19 +1,16 @@
-﻿using Basyc.Diagnostics.Shared;
-using Basyc.Diagnostics.Shared.Logging;
-using Microsoft.Extensions.Logging;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.ObjectModel;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
-public class RequestDiagnostic
+public class MessageDiagnostic
 {
     private readonly Dictionary<string, ActivityContext> activityIdToActivityMap = new();
     private readonly Dictionary<string, List<LogEntry>> missingActivityIdToLogsMap = new();
     private readonly Dictionary<string, List<ActivityContext>> missingParentIdToNestedActivityMap = new();
     private readonly List<ServiceIdentityContext> services = new();
+    public DateTimeOffset? MessageStart { get; private set; }
 
-    public RequestDiagnostic(string traceId)
+    public MessageDiagnostic(string traceId)
     {
         TraceId = traceId;
         LogEntries = new ReadOnlyObservableCollection<LogEntry>(logEntries);
@@ -42,8 +39,7 @@ public class RequestDiagnostic
             throw new ArgumentException("Request id does not match context request result id", nameof(newLogEntry));
 
         logEntries.Add(newLogEntry);
-        //logEntries.Sort((x, y) => x.Time.CompareTo(y.Time));
-        Sort(logEntries);
+        //Sort(logEntries); //Not nice when using Reactive -> publishes multiple events for one adding
 
         if (newLogEntry.SpanId is not null)
         {
@@ -64,8 +60,7 @@ public class RequestDiagnostic
         ObservableCollection<LogEntry> temp;
         temp = new ObservableCollection<LogEntry>(collection.OrderBy(x => x.Time));
         collection.Clear();
-        foreach (var j in temp)
-            collection.Add(j);
+        foreach (var j in temp) collection.Add(j);
         return collection;
 
     }
@@ -75,7 +70,7 @@ public class RequestDiagnostic
         var serviceContext = EnsureServiceCreated(activityStart.Service);
         var hasParent = activityStart.ParentId is not null;
         var newActivityContext = new ActivityContext(activityStart.Service, activityStart.TraceId, hasParent, activityStart.ParentId, activityStart.Id,
-            activityStart.Name, activityStart.StartTime);
+            activityStart.Name, activityStart.StartTime.GetDiagnosticTime(MessageStart.Value()));
         activityIdToActivityMap.Add(newActivityContext.Id, newActivityContext);
         if (missingActivityIdToLogsMap.TryGetValue(newActivityContext.Id, out var logs))
         {
@@ -128,11 +123,23 @@ public class RequestDiagnostic
             activity = AddStartActivity(new ActivityStart(activityEnd.Service, activityEnd.TraceId, activityEnd.ParentId, activityEnd.Id, activityEnd.Name,
                 activityEnd.StartTime));
 
-        activity.End(activityEnd.EndTime, activityEnd.Status);
+        var status = activityEnd.Status == System.Diagnostics.ActivityStatusCode.Unset
+            ? System.Diagnostics.ActivityStatusCode.Ok
+            : activityEnd.Status;
+
+        activity.End(activityEnd.EndTime, status);
         OnActivityEndAdded(activityEnd);
     }
 
-    private void OnLogAdded(LogEntry newLogEntry) => LogAdded?.Invoke(this, newLogEntry);
+    public void Start(DateTimeOffset messageStart)
+    {
+        MessageStart = messageStart;
+    }
+
+    private void OnLogAdded(LogEntry newLogEntry)
+    {
+        LogAdded?.Invoke(this, newLogEntry);
+    }
 
     private void OnActivityStartAdded(ActivityStart activityStart) => ActivityStartAdded?.Invoke(this, activityStart);
 

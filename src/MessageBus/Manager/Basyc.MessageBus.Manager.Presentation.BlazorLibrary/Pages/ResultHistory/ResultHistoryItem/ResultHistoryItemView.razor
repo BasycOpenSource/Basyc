@@ -29,7 +29,7 @@
 				<dataSubSection>
 					<inputBorder>
 						<textValue>
-							@ResponseResultConverter.CreateInputOverview(RequestContext.Request.Parameters)
+							@ResponseResultConverter.CreateInputOverview(RequestContext.RequestInput.Parameters)
 						</textValue>
 					</inputBorder>
 					<arrow>
@@ -45,7 +45,7 @@
 							<textValue>
 								@if (RequestContext.State == RequestResultState.Completed)
 								{
-									if (RequestContext.Request.MessageInfo.HasResponse)
+									if (RequestContext.RequestInput.MessageInfo.HasResponse)
 									{
 										@RequestContext.Response
 									}

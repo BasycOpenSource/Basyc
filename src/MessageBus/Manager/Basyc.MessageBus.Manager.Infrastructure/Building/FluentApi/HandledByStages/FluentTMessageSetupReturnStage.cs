@@ -1,10 +1,4 @@
-﻿using Basyc.DependencyInjection;
-using Basyc.MessageBus.Manager.Application;
-using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
+﻿namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 
 public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 {
@@ -29,11 +23,11 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
 
     public FluentSetupDomainPostStage HandledBy<TReturn>(Func<RequestInput, TReturn> handler)
     {
-        object? wrapperHandler(MessageRequest result, ILogger logger)
+        Task<object?> wrapperHandler(MessageRequest result, ILogger logger)
         {
             //requestResult.Start();
-            var returnObject = handler.Invoke(result.Request);
-            return returnObject;
+            var returnObject = handler.Invoke(result.RequestInput);
+            return Task.FromResult<object?>(returnObject);
         }
 
         fluentApiMessage.RequestHandler = wrapperHandler;
@@ -70,12 +64,12 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
     public FluentSetupDomainPostStage HandledBy<TReturn>(Func<TMessage, ILogger, TReturn> handlerWithTReturn)
         where TReturn : class
     {
-        TReturn wrapperHandler(MessageRequest result, ILogger logger)
+        Task<object?> wrapperHandler(MessageRequest result, ILogger logger)
         {
-            var message = binder.CreateMessage(result.Request);
+            var message = binder.CreateMessage(result.RequestInput);
             var returnObject = handlerWithTReturn.Invoke(message, logger);
             ReturnObjectHelper.CheckHandlerReturnType(returnObject, fluentApiMessage.ResponseRunTimeType!);
-            return returnObject!;
+            return Task.FromResult<object?>(returnObject);
         }
 
         ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, wrapperHandler);

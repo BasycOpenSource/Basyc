@@ -8,6 +8,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Pages\RequestSideBar\**" />
+	  <Content Remove="Pages\RequestSideBar\**" />
+	  <EmbeddedResource Remove="Pages\RequestSideBar\**" />
+	  <None Remove="Pages\RequestSideBar\**" />
+	  <SassFile Remove="Pages\RequestSideBar\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Content Remove="compilerconfig.json" />
 	</ItemGroup>
 
@@ -19,11 +27,23 @@
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 
+  <!--<PropertyGroup>
+    <PropertyChangedAnalyzerConfiguration>
+      <IsCodeGeneratorDisabled>false</IsCodeGeneratorDisabled>
+      <EventInvokerName>OnPropertyChanged</EventInvokerName>
+    </PropertyChangedAnalyzerConfiguration>
+  </PropertyGroup>-->
+
 	<ItemGroup>
+		<!--<PackageReference Include="Fody" Version="6.6.4">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>-->
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
 		<PackageReference Include="LibSassBuilder" Version="3.0.0" />
 		<!--<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />-->
 		<PackageReference Include="MudBlazor" Version="6.0.10" />
+		<!--<PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />-->
 		<PackageReference Include="ReactiveUI.Blazor" Version="18.4.26" />
 		<PackageReference Include="ReactiveUI.Fody" Version="18.4.26" />
 		<PackageReference Include="Throw" Version="1.3.1" />
@@ -46,6 +66,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Pages\RequestSideBar\" />
+	  <Folder Include="Shared\Converters\" />
 	</ItemGroup>
 </Project>

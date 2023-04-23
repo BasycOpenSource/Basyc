@@ -1,9 +1,4 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
-using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
-
-namespace Basyc.MessageBus.Manager.Application;
+﻿namespace Basyc.MessageBus.Manager.Application;
 
 public class MessageRequest : ReactiveObject
 {
@@ -11,9 +6,9 @@ public class MessageRequest : ReactiveObject
     private IDurationSegmentBuilder? requestActivity;
 
     public MessageRequest(RequestInput request, DateTimeOffset requestCreationTime, string traceId, IDurationMapBuilder durationMapBuilder,
-        RequestDiagnostic requestDiagnostics, int orderIndex)
+        MessageDiagnostic requestDiagnostics, int orderIndex)
     {
-        Request = request;
+        RequestInput = request;
         this.durationMapBuilder = durationMapBuilder;
         Diagnostics = requestDiagnostics;
         CreationTime = requestCreationTime;
@@ -23,7 +18,7 @@ public class MessageRequest : ReactiveObject
         Duration = default;
     }
 
-    public RequestInput Request { get; init; }
+    public RequestInput RequestInput { get; init; }
 
     /// <summary>
     ///     Time when request was created
@@ -41,7 +36,7 @@ public class MessageRequest : ReactiveObject
 
     public string TraceId { get; init; }
     public int OrderIndex { get; init; }
-    public RequestDiagnostic Diagnostics { get; }
+    public MessageDiagnostic Diagnostics { get; }
     [Reactive] public RequestResultState State { get; private set; }
     public object? Response { get; private set; }
     public string? ErrorMessage { get; private set; }
@@ -49,7 +44,7 @@ public class MessageRequest : ReactiveObject
     public void SetResponse(object? response)
     {
         //FinishDurationMap();
-        if (Request.MessageInfo.HasResponse is false)
+        if (RequestInput.MessageInfo.HasResponse is false)
             throw new InvalidOperationException("Can't complete with return value becuase this message does not have return value");
 
         Response = response;
@@ -62,7 +57,7 @@ public class MessageRequest : ReactiveObject
     {
         //FinishDurationMap();
 
-        if (Request.MessageInfo.HasResponse)
+        if (RequestInput.MessageInfo.HasResponse)
             throw new InvalidOperationException(
                 $"Can't complete without return value becuase this message has return value. Use {nameof(Fail)} method when error occured and no return value is avaible");
 
@@ -87,7 +82,9 @@ public class MessageRequest : ReactiveObject
     public IDurationSegmentBuilder Start()
     {
         //var startTime = durationMapBuilder.Start();
-        requestActivity = durationMapBuilder.StartNewSegment("MessageRequest Start");
+        var startTime = DateTimeOffset.UtcNow;
+        Diagnostics.Start(startTime);
+        requestActivity = durationMapBuilder.StartNewSegment("MessageRequest Start", startTime);
         return requestActivity;
     }
 

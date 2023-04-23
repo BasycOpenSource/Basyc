@@ -39,7 +39,7 @@
 		<dataSubSection>
 			<requestBox>
 				<textValue>
-					@ResponseResultConverter.CreateInputOverview(RequestContext.Request.Parameters)
+					@ResponseResultConverter.CreateInputOverview(RequestContext.RequestInput.Parameters)
 				</textValue>
 			</requestBox>
 			<arrow>
@@ -56,7 +56,7 @@
 					<textValue>
 						@if (RequestContext.State == RequestResultState.Completed)
 						{
-							if (RequestContext.Request.MessageInfo.HasResponse)
+							if (RequestContext.RequestInput.MessageInfo.HasResponse)
 							{
 								@RequestContext.Response
 							}

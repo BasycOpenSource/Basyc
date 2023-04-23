@@ -1,5 +1,3 @@
-using Microsoft.JSInterop;
-
 namespace Basyc.Blazor.Controls.Interops;
 
 // This class provides an example of how JavaScript functionality can be wrapped
@@ -28,9 +26,9 @@ public class ScrollJsInterop : IAsyncDisposable
         }
     }
 
-    public async void AddDragToScroll(string query)
+    public async void AddDragToScroll(string elementId)
     {
         var module = await moduleTask.Value;
-        await module.InvokeVoidAsync("addDragToScroll", query);
+        await module.InvokeVoidAsync("addDragToScroll", elementId);
     }
 }

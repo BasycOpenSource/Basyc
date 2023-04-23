@@ -3,80 +3,95 @@
 @using Basyc.Diagnostics.Shared;
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Microsoft.Extensions.Logging
+@using ReactiveUI;
+@using ReactiveUI.Fody.Helpers;
+@using System.Collections.ObjectModel;
+@inherits BasycReactiveBlazorComponentBase
 <logWindowView>
-	<toolBar>
-		<filterLogLevel>
-			<TableFilter TItems="LogLevel" Tooltip="tooltip" SelectedItems="SelectedLogLevels" SelectedItemsChanged="SelectedLogLevelsChanged"/>
-		</filterLogLevel>
-        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Big"/>
-        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium"/>
-        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small"/>
-		<filterService>
-			<TableFilter TItems="ServiceIdentity"
-			             Tooltip="tooltip"
-			             ItemsToSelect="@DiagnosticsContext.Services.Select(x => x.ServiceIdentity).ToArray()"
-			             SelectedItems="@SelectedServiceIdentities"
-			             SelectedItemsChanged="SelectedServiceIdentitiesChanged"
-			             ItemsToSelectDisplayConverter="x => x.ServiceName"/>
-		</filterService>
-	</toolBar>
-	<logs>
-		@for (var logEntryIndex = 0; logEntryIndex < filteredLogs.Count; logEntryIndex++)
-		{
-			var logEntry = filteredLogs[logEntryIndex];
-            @*var logActivity = logEntry.SpanId is null ? null : DiagnosticsContext.TryGetActivity(logEntry.SpanId) ?;*@
-			ActivityContext? logActivity;
-			if (logEntry.SpanId is null)
-				logActivity = null;
-			else
-				DiagnosticsContext.TryGetActivity(logEntry.SpanId, out logActivity);
-
-			<LogEntryView AlternateColor="logEntryIndex % 2 != 0" Activity="logActivity" ServiceName="@logEntry.Service.ServiceName" LogTime="@logEntry.Time" LogLevel="@logEntry.LogLevel" LogMessage="@logEntry.Message"/>
-		}
-	</logs>
+    <toolBar>
+        <filterLogLevel>
+            <TableFilter TItems="LogLevel" Tooltip="tooltip" SelectedItems="SelectedLogLevels" SelectedItemsChanged="SelectedLogLevelsChanged" />
+        </filterLogLevel>
+        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Big" />
+        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium" />
+        <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small" />
+        <filterService>
+            <TableFilter TItems="ServiceIdentity"
+                         Tooltip="tooltip"
+                         ItemsToSelect="@DiagnosticsContext.Services.Select(x => x.ServiceIdentity).ToArray()"
+                         SelectedItems="@SelectedServiceIdentities"
+                         SelectedItemsChanged="SelectedServiceIdentitiesChanged"
+                         ItemsToSelectDisplayConverter="x => x.ServiceName" />
+        </filterService>
+    </toolBar>
+    <logs>
+        <BasycList Items="@Logs" Context="logEntry">
+            <ItemTemplate>
+                @{
+                    ActivityContext? logActivity;
+                    if (logEntry.SpanId is null)
+                        logActivity = null;
+                    else
+                        DiagnosticsContext.TryGetActivity(logEntry.SpanId, out logActivity);
+                }
+                <LogEntryView AlternateColor="false" Activity="logActivity" ServiceName="@logEntry.Service.ServiceName" LogTime="@logEntry.Time" BaseTime="@DiagnosticsContext.MessageStart.Value()" LogLevel="@logEntry.LogLevel" LogMessage="@logEntry.Message" />
+            </ItemTemplate>
+        </BasycList>
+    </logs>
 </logWindowView>
 
 
 @code {
 
-	[Parameter]
-	[EditorRequired]
-	public RequestDiagnostic DiagnosticsContext { get; set; } = null!;
+    [Parameter]
+    [EditorRequired]
+    public MessageDiagnostic DiagnosticsContext { get; set; } = null!;
+    [Parameter]
+    public List<LogLevel> SelectedLogLevels { get; set; } = new();
+    [Parameter]
+    public List<ServiceIdentity> SelectedServiceIdentities { get; set; } = new();
 
-	[Parameter]
-	public List<LogLevel> SelectedLogLevels { get; set; } = new();
 
-	[Parameter]
-	public List<ServiceIdentity> SelectedServiceIdentities { get; set; } = new();
+    [Reactive] public int LogsCount { get; set; }
+    [Reactive] public ReadOnlyObservableCollection<LogEntry> Logs { get; set; } = null!;
+    private ReactiveSubscription? logsSubscription;
 
-	private void SelectedLogLevelsChanged(List<LogLevel> levels)
-	{
-		SelectedLogLevels = levels;
-		UpdateFilteredLogs();
-	}
+    private void SelectedLogLevelsChanged(List<LogLevel> levels)
+    {
+        SelectedLogLevels = levels;
+        UpdateFilteredLogs();
+    }
 
-	private void SelectedServiceIdentitiesChanged(List<ServiceIdentity> services)
-	{
-		SelectedServiceIdentities = services;
-		UpdateFilteredLogs();
-	}
+    private void SelectedServiceIdentitiesChanged(List<ServiceIdentity> services)
+    {
+        SelectedServiceIdentities = services;
+        UpdateFilteredLogs();
+    }
 
-	protected override void OnParametersSet()
-	{
-		SelectedLogLevels = Enum.GetValues<LogLevel>().ToList();
-		SelectedServiceIdentities = DiagnosticsContext.Services.Select(x => x.ServiceIdentity).ToList();
-		UpdateFilteredLogs();
-		base.OnParametersSet();
-	}
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        UpdateFilteredLogs();
+    }
 
-	private List<LogEntry> filteredLogs = new();
+    protected override void OnParametersSet()
+    {
+        SelectedLogLevels = Enum.GetValues<LogLevel>().ToList();
+        SelectedServiceIdentities = DiagnosticsContext.Services.Select(x => x.ServiceIdentity).ToList();
+        UpdateFilteredLogs();
+        base.OnParametersSet();
+    }
 
-	private void UpdateFilteredLogs()
-	{
-		filteredLogs = DiagnosticsContext.LogEntries
-			.Where(x => SelectedLogLevels.Contains(x.LogLevel))
-			.Where(x => SelectedServiceIdentities.Contains(x.Service))
-			.ToList();
-	}
+
+    private void UpdateFilteredLogs()
+    {
+        logsSubscription?.Dispose();
+        Logs = this.ReactiveCollectionProperty(
+            x => x.Logs,
+            x => x.DiagnosticsContext.LogEntries,
+            x => x,
+            x => SelectedLogLevels.Contains(x.LogLevel) && SelectedServiceIdentities.Contains(x.Service),
+            out logsSubscription);
+    }
 
 }

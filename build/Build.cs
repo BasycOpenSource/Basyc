@@ -1,13 +1,3 @@
-using Basyc.Extensions.Nuke.Targets;
-using Basyc.Extensions.Nuke.Targets.Nuget;
-using Basyc.Extensions.Nuke.Tasks.CI;
-using Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
-using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
-using Basyc.Extensions.Nuke.Tasks.Tools.GitFlow;
-using Nuke.Common;
-using Nuke.Common.CI.GitHubActions;
-using Nuke.Common.ProjectModel;
-
 [BasycContinuousPipeline(
     CiProvider.GithubActions,
     PipelineOs.Linux,

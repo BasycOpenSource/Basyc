@@ -1,0 +1,117 @@
+﻿@using Basyc.Blazor.Controls.Interops;
+@using Microsoft.JSInterop;
+@using System.Diagnostics;
+
+@implements IDisposable
+@*style="left: @(mousePositionX + 4)px; top: @(mousePositionY + 4)px; visibility: @(isMouseOver || freezeTooltip ? "visible" : "collapse")"*@
+<tooltipPopupComponent class="tooltip--hidden" id="@tooltipPopupComponentId" @ref=tooltipPopupComponent>
+    <perspective>
+        <transform>
+            @ChildContent
+        </transform>
+    </perspective>
+</tooltipPopupComponent>
+
+@code {
+    public TooltipPopup()
+    {
+        selfJsReference = DotNetObjectReference.Create(this);
+    }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
+    [Parameter, EditorRequired] public TooltipPartsMessenger Messenger { get; set; } = null!;
+    [Parameter, EditorRequired] public string OwnerId { get; set; } = null!;
+    [Inject] private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
+    [Inject] private ElementJsInterop ElementJsInterop { get; init; } = null!;
+
+    private ElementReference tooltipPopupComponent;
+    private DotNetObjectReference<TooltipPopup> selfJsReference;
+    private double mousePositionX;
+    private double mousePositionY;
+    private bool isMouseOver;
+    private bool freezeTooltip;
+    private string tooltipPopupComponentId { get; init; } = Random.Shared.Next().ToString();
+    private bool shouldRender;
+
+
+    [JSInvokable]
+    public void ChangeFreeze(bool value)
+    {
+        freezeTooltip = value;
+        if (freezeTooltip is false)
+        {
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{tooltipPopupComponentId}", OwnerId);
+        }
+    }
+
+    public void Dispose()
+    {
+        selfJsReference.Dispose();
+        Messenger.MouseOver -= MouseOver;
+        Messenger.MouseMove -= MouseMove;
+        Messenger.MouseOut -= MouseOut;
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Messenger.MouseOver += MouseOver;
+        Messenger.MouseMove += MouseMove;
+        Messenger.MouseOut += MouseOut;
+
+    }
+
+    protected override bool ShouldRender()
+    {
+        return shouldRender;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine("Popup render");
+        base.OnAfterRender(firstRender);
+    }
+
+    private void MouseMove(object? sender, MouseEventArgs e)
+    {
+        if (freezeTooltip)
+            return;
+        mousePositionX = e.PageX;
+        mousePositionY = e.PageY;
+        UpdateStyle();
+    }
+
+    private void MouseOver(object? sender, MouseEventArgs e)
+    {
+        if (isMouseOver)
+            return;
+        TooltipJsInterop.ShowTooltip(selfJsReference, $"{tooltipPopupComponentId}");
+        isMouseOver = true;
+        shouldRender = true;
+        InvokeAsync(StateHasChanged);
+        shouldRender = false;
+    }
+
+    private void MouseOut(object? sender, MouseEventArgs e)
+    {
+        if (isMouseOver is false)
+            return;
+        if (freezeTooltip is false)
+        {
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{tooltipPopupComponentId}", OwnerId);
+        }
+        InvokeAsync(StateHasChanged);
+
+        isMouseOver = false;
+    }
+
+    private void UpdateStyle()
+    {
+        var visibility = isMouseOver || freezeTooltip ? "visible" : "collapse";
+        var cssText = $"left: {mousePositionX + 4}px; top: {mousePositionY + 4}px; visibility: {visibility}";
+        ElementJsInterop.ChangeStyle(tooltipPopupComponent, cssText);
+    }
+
+
+
+}

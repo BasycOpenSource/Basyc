@@ -1,0 +1,38 @@
+﻿@implements IHandleEvent
+
+<tooltipContentComponent @onmousemove="MouseMove"
+                         @onmouseout="MouseOut"
+                         @onmouseover="MouseOver">
+    @ChildContent
+</tooltipContentComponent>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
+    [Parameter, EditorRequired] public TooltipPartsMessenger Messenger { get; set; } = null!;
+
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine("tooltip content render");
+        base.OnAfterRender(firstRender);
+    }
+
+    private void MouseOver(MouseEventArgs e)
+    {
+        Messenger.OnMouseOver(e);
+    }
+
+    private void MouseMove(MouseEventArgs e)
+    {
+        Messenger.OnMouseMove(e);
+    }
+
+
+    private void MouseOut(MouseEventArgs e)
+    {
+        Messenger.OnMouseOut(e);
+    }
+
+    Task IHandleEvent.HandleEventAsync(
+        EventCallbackWorkItem callback, object? arg) => callback.InvokeAsync(arg);
+}

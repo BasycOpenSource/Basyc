@@ -1,10 +1,4 @@
-﻿using Basyc.DependencyInjection;
-using Basyc.MessageBus.Manager.Application;
-using Basyc.MessageBus.Manager.Application.Requesting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
+﻿namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 
 public class FluentSetupNoReturnHandledByStage : BuilderStageBase
 {
@@ -54,12 +48,40 @@ public class FluentSetupNoReturnHandledByStage : BuilderStageBase
 
     public FluentSetupDomainPostStage HandledBy(Action<ILogger> handler)
     {
-        object? handlerWrapper(MessageRequest requestResult, ILogger logger)
+        Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
         {
             using var act = logger.StartActivity("Invoking handler");
             handler.Invoke(logger);
             act.Stop();
-            return null;
+            return Task.FromResult<object?>(null);
+        }
+
+        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
+        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+    }
+
+    public FluentSetupDomainPostStage HandledBy(Action<RequestInput, ILogger> handler)
+    {
+        Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
+        {
+            using var act = logger.StartActivity("Invoking handler");
+            handler.Invoke(requestResult.RequestInput, logger);
+            act.Stop();
+            return Task.FromResult<object?>(null);
+        }
+
+        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
+        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+    }
+
+    public FluentSetupDomainPostStage HandledBy(Func<ILogger, Task> handler)
+    {
+        async Task<object?> handlerWrapper(MessageRequest requestResult, ILogger logger)
+        {
+            using var act = logger.StartActivity("Invoking handler");
+            await handler.Invoke(logger);
+            act.Stop();
+            return Task.FromResult<object?>(null);
         }
 
         ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, handlerWrapper);
