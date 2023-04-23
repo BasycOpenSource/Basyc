@@ -11,8 +11,5 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class BasycSerializerSelectSerializersStageProtobufNetExtensions
 {
-	public static JsonByteSerializer SystemTextJson(this SerializersSelectSerializerStage basycSerializers)
-	{
-		return JsonByteSerializer.Singlenton;
-	}
+    public static JsonByteSerializer SystemTextJson(this SerializersSelectSerializerStage basycSerializers) => JsonByteSerializer.Singlenton;
 }

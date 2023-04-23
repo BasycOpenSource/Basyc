@@ -7,46 +7,40 @@ namespace Basyc.MessageBus.Client.Building;
 
 public class BusClientSetupHandlersStage : BuilderStageBase
 {
-	public BusClientSetupHandlersStage(IServiceCollection services) : base(services)
-	{
-	}
+    public BusClientSetupHandlersStage(IServiceCollection services) : base(services)
+    {
+    }
 
-	public BusClientSetupProviderStage NoHandlers()
-	{
-		return new BusClientSetupProviderStage(services);
-	}
+    public BusClientSetupProviderStage NoHandlers() => new BusClientSetupProviderStage(services);
 
-	public BusClientSetupProviderStage RegisterHandlersFromAssembly<THandlerAssemblyMarker>()
-	{
-		return RegisterHandlersFromAssembly(typeof(THandlerAssemblyMarker).Assembly);
-	}
+    public BusClientSetupProviderStage RegisterHandlersFromAssembly<THandlerAssemblyMarker>() => RegisterHandlersFromAssembly(typeof(THandlerAssemblyMarker).Assembly);
 
-	public BusClientSetupProviderStage RegisterHandlersFromAssembly(params Assembly[] assembliesToScan)
-	{
-		foreach (var assembly in assembliesToScan)
-		{
-			var typesInAssembly = assembly.GetTypes();
-			var handlerTypesInAssembly = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<>)));
-			foreach (var handlerType in handlerTypesInAssembly)
-			{
+    public BusClientSetupProviderStage RegisterHandlersFromAssembly(params Assembly[] assembliesToScan)
+    {
+        foreach (var assembly in assembliesToScan)
+        {
+            var typesInAssembly = assembly.GetTypes();
+            var handlerTypesInAssembly = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<>)));
+            foreach (var handlerType in handlerTypesInAssembly)
+            {
 
-				//var serviceType = typeof(IMessageHandler<>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<>)));
-				//services.AddScoped(serviceType, serviceProvider => RegisterHandlerHelper.CreateHandlerWithDecoratedLogger(handlerType, serviceProvider));
-				//EnsureDecoratedLoggerRegistered(services, handlerType);
-				HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handlerType);
-			}
+                //var serviceType = typeof(IMessageHandler<>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<>)));
+                //services.AddScoped(serviceType, serviceProvider => RegisterHandlerHelper.CreateHandlerWithDecoratedLogger(handlerType, serviceProvider));
+                //EnsureDecoratedLoggerRegistered(services, handlerType);
+                HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handlerType);
+            }
 
-			var handlerTypesInAssembly2 = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<,>)));
-			foreach (var handlerType in handlerTypesInAssembly2)
-			{
-				//var serviceType = typeof(IMessageHandler<,>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<,>)));
-				//services.AddScoped(serviceType, serviceProvider => RegisterHandlerHelper.CreateHandlerWithDecoratedLogger(handlerType, serviceProvider));
-				//EnsureDecoratedLoggerRegistered(services, handlerType);
-				HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handlerType);
+            var handlerTypesInAssembly2 = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<,>)));
+            foreach (var handlerType in handlerTypesInAssembly2)
+            {
+                //var serviceType = typeof(IMessageHandler<,>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<,>)));
+                //services.AddScoped(serviceType, serviceProvider => RegisterHandlerHelper.CreateHandlerWithDecoratedLogger(handlerType, serviceProvider));
+                //EnsureDecoratedLoggerRegistered(services, handlerType);
+                HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handlerType);
 
-			}
-		}
+            }
+        }
 
-		return new BusClientSetupProviderStage(services);
-	}
+        return new BusClientSetupProviderStage(services);
+    }
 }

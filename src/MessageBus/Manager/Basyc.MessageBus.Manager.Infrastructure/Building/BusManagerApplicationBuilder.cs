@@ -10,13 +10,10 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public class BusManagerApplicationBuilder : BuilderStageBase
 {
-	public BusManagerApplicationBuilder(IServiceCollection services) : base(services)
-	{
+    public BusManagerApplicationBuilder(IServiceCollection services) : base(services)
+    {
 
-	}
+    }
 
-	public SetupMessagesStage RegisterMessages()
-	{
-		return new SetupMessagesStage(services);
-	}
+    public SetupMessagesStage RegisterMessages() => new SetupMessagesStage(services);
 }

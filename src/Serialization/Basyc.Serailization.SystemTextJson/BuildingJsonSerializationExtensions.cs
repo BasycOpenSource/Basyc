@@ -10,9 +10,9 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class BuildingJsonSerializationExtensions
 {
-	public static void SelectSytemTextJson(this SelectSerializationStage selectSerializationStage)
-	{
-		selectSerializationStage.services.AddSingleton<ITypedByteSerializer, JsonByteSerializer>();
-		selectSerializationStage.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
-	}
+    public static void SelectSytemTextJson(this SelectSerializationStage selectSerializationStage)
+    {
+        selectSerializationStage.services.AddSingleton<ITypedByteSerializer, JsonByteSerializer>();
+        selectSerializationStage.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
+    }
 }

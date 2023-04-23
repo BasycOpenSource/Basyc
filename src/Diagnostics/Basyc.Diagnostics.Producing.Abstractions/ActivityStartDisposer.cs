@@ -1,41 +1,43 @@
-﻿using Basyc.Diagnostics.Shared.Logging;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using Basyc.Diagnostics.Shared.Logging;
 
 namespace Basyc.Diagnostics.Producing.Abstractions;
 
 public struct ActivityStartDisposer : IDisposable
 {
-	private readonly IDiagnosticsExporter diagnosticsProducer;
-	private bool isEnded = false;
-	public ActivityStart ActivityStart { get; init; }
+    private readonly IDiagnosticsExporter diagnosticsProducer;
 
-	public ActivityStartDisposer(IDiagnosticsExporter diagnosticsProducer, ActivityStart activityStart)
-	{
-		this.diagnosticsProducer = diagnosticsProducer;
-		ActivityStart = activityStart;
-	}
+    private bool isEnded = false;
 
-	public void Dispose()
-	{
-		if (isEnded)
-			return;
+    public ActivityStartDisposer(IDiagnosticsExporter diagnosticsProducer, ActivityStart activityStart)
+    {
+        this.diagnosticsProducer = diagnosticsProducer;
+        ActivityStart = activityStart;
+    }
 
-		diagnosticsProducer.EndActivity(ActivityStart, DateTimeOffset.UtcNow);
-		isEnded = true;
-	}
+    public ActivityStart ActivityStart { get; init; }
 
-	public void Stop(DateTimeOffset endTime = default, ActivityStatusCode activityStatusCode = ActivityStatusCode.Ok)
-	{
-		if (isEnded)
-			throw new InvalidOperationException("Activity is already ended");
+    public void Dispose()
+    {
+        if (isEnded)
+            return;
 
-		diagnosticsProducer.EndActivity(ActivityStart, endTime, activityStatusCode);
-		isEnded = true;
-	}
+        diagnosticsProducer.EndActivity(ActivityStart, DateTimeOffset.UtcNow);
+        isEnded = true;
+    }
 
-	public ActivityStartDisposer StartNested(string name, DateTimeOffset startTime = default)
-	{
-		var nestedActivityDisposer = diagnosticsProducer.StartActivity(this, name, startTime);
-		return nestedActivityDisposer;
-	}
+    public void Stop(DateTimeOffset endTime = default, ActivityStatusCode activityStatusCode = ActivityStatusCode.Ok)
+    {
+        if (isEnded)
+            throw new InvalidOperationException("Activity is already ended");
+
+        diagnosticsProducer.EndActivity(ActivityStart, endTime, activityStatusCode);
+        isEnded = true;
+    }
+
+    public ActivityStartDisposer StartNested(string name, DateTimeOffset startTime = default)
+    {
+        var nestedActivityDisposer = diagnosticsProducer.StartActivity(this, name, startTime);
+        return nestedActivityDisposer;
+    }
 }

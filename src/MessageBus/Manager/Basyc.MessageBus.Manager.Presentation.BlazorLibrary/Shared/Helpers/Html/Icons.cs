@@ -4,17 +4,17 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htm
 
 public static partial class Html
 {
-	public static readonly string assemblyFolderName = typeof(IconsEnum).Assembly.GetName().Name!;
+    public static readonly string assemblyFolderName = typeof(IconsEnum).Assembly.GetName().Name!;
 
-	public static MarkupString Icon(IconsEnum icon)
-	{
-		var svgFilePath = $"_content/{assemblyFolderName}/{icon}.svg";
-		//var svgCode = File.ReadAllText(svgFilePath);
-		return (MarkupString)$"<img src=\"{svgFilePath}\" alt=\"{icon}\">";
-	}
+    public static MarkupString Icon(IconsEnum icon)
+    {
+        var svgFilePath = $"_content/{assemblyFolderName}/{icon}.svg";
+        //var svgCode = File.ReadAllText(svgFilePath);
+        return (MarkupString)$"<img src=\"{svgFilePath}\" alt=\"{icon}\">";
+    }
 }
 
 public enum IconsEnum
 {
-	folder
+    folder
 }

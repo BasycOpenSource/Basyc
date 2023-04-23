@@ -5,5 +5,5 @@ namespace Basyc.MessageBus.Manager.Application.Initialization;
 
 public interface IMessageInfoProvider
 {
-	List<MessageGroup> GetMessageInfos();
+    List<MessageGroup> GetMessageInfos();
 }

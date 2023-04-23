@@ -8,20 +8,20 @@ namespace Basyc.MessageBus.InMemory.Tests;
 
 public class NetMqMessageBusClientTests
 {
-	//private readonly ITypedMessageBusClient client;
+    //private readonly ITypedMessageBusClient client;
 
-	public NetMqMessageBusClientTests()
-	{
-		var mock = new Mock<ILogger<NetMqByteMessageBusClient>>();
-		var logger = mock.Object;
-		//client = new NetMQByteMessageBusClient(,logger);
-	}
+    public NetMqMessageBusClientTests()
+    {
+        var mock = new Mock<ILogger<NetMqByteMessageBusClient>>();
+        var logger = mock.Object;
+        //client = new NetMQByteMessageBusClient(,logger);
+    }
 
-	[Fact]
-	public async Task Work()
-	{
-		//var res = await client.RequestAsync<TestRequest, Customer>();
-	}
+    [Fact]
+    public async Task Work()
+    {
+        //var res = await client.RequestAsync<TestRequest, Customer>();
+    }
 }
 
 public record TestRequest : IMessage<Customer>;

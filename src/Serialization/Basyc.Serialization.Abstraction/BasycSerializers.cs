@@ -12,8 +12,5 @@ namespace Basyc.Serialization;
 /// </summary>
 public static class BasycSerializers
 {
-	public static SerializersSelectSerializerStage Select()
-	{
-		return new SerializersSelectSerializerStage();
-	}
+    public static SerializersSelectSerializerStage Select() => new SerializersSelectSerializerStage();
 }

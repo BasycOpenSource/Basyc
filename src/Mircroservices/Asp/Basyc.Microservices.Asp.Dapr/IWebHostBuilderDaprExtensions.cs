@@ -9,30 +9,30 @@ namespace Basyc.MicroService.Asp.Dapr;
 
 public static class WebHostBuilderDaprExtensions
 {
-	public static IWebHostBuilder ConfigureDaprServices(this IWebHostBuilder webBuilder)
-	{
-		webBuilder.ConfigureServices((context, services) =>
-		{
-			services.AddTransient<IStartupFilter, DaprStartupFilter>();
-			services.AddDaprClient();
-			services.AddSingleton(new JsonSerializerOptions
-			{
-				PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-				PropertyNameCaseInsensitive = true
-			});
+    public static IWebHostBuilder ConfigureDaprServices(this IWebHostBuilder webBuilder)
+    {
+        webBuilder.ConfigureServices((context, services) =>
+        {
+            services.AddTransient<IStartupFilter, DaprStartupFilter>();
+            services.AddDaprClient();
+            services.AddSingleton(new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            });
 
-			services.AddControllers().FixJsonSerialization().AddDapr();
+            services.AddControllers().FixJsonSerialization().AddDapr();
 
-			services.Configure<DaprMessageBusManagerOptions>(options =>
-			{
-				options.PubSubName = MessageBusConstants.MessageBusName;
-			});
-		});
+            services.Configure<DaprMessageBusManagerOptions>(options =>
+            {
+                options.PubSubName = MessageBusConstants.MessageBusName;
+            });
+        });
 
-		//var serviceBuilder = new MicroserviceBuilder(webBuilder,IHostBuilder).AddDaprProvider();
-		//throw new Exception();
-		//configure(serviceBuilder);
+        //var serviceBuilder = new MicroserviceBuilder(webBuilder,IHostBuilder).AddDaprProvider();
+        //throw new Exception();
+        //configure(serviceBuilder);
 
-		return webBuilder;
-	}
+        return webBuilder;
+    }
 }

@@ -9,16 +9,16 @@ namespace Basyc.MessageBus.Manager;
 
 public static class MassTransitMessageManagerBuilderExtensions
 {
-	public static TypedProviderBuilder UseMasstransit(this BusManagerApplicationBuilder managerBuilder)
-	{
-		UseMasstransitReqeustClient(managerBuilder);
-		var typedBuilder = managerBuilder.UseTypedProvider();
-		return typedBuilder;
-	}
+    public static TypedProviderBuilder UseMasstransit(this BusManagerApplicationBuilder managerBuilder)
+    {
+        UseMasstransitReqeustClient(managerBuilder);
+        var typedBuilder = managerBuilder.UseTypedProvider();
+        return typedBuilder;
+    }
 
-	public static BusManagerApplicationBuilder UseMasstransitReqeustClient(this BusManagerApplicationBuilder managerBuilder)
-	{
-		managerBuilder.services.AddSingleton<IRequestHandler, MassTransitRequestHandler>();
-		return managerBuilder;
-	}
+    public static BusManagerApplicationBuilder UseMasstransitReqeustClient(this BusManagerApplicationBuilder managerBuilder)
+    {
+        managerBuilder.services.AddSingleton<IRequestHandler, MassTransitRequestHandler>();
+        return managerBuilder;
+    }
 }

@@ -9,25 +9,16 @@ namespace Basyc.MessageBus.Client.Diagnostics.Sinks;
 /// <typeparam name="TCategory"></typeparam>
 public class LoggerToBypassCircularDepedency<TCategory> : ILogger<TCategory>
 {
-	private readonly ILogger<TCategory> logger;
+    private readonly ILogger<TCategory> logger;
 
-	public LoggerToBypassCircularDepedency(ILoggerFactory factory)
-	{
-		logger = new Logger<TCategory>(factory);
-	}
+    public LoggerToBypassCircularDepedency(ILoggerFactory factory)
+    {
+        logger = new Logger<TCategory>(factory);
+    }
 
-	public IDisposable BeginScope<TState>(TState state)
-	{
-		return logger.BeginScope(state);
-	}
+    public IDisposable BeginScope<TState>(TState state) => logger.BeginScope(state);
 
-	public bool IsEnabled(LogLevel logLevel)
-	{
-		return logger.IsEnabled(logLevel);
-	}
+    public bool IsEnabled(LogLevel logLevel) => logger.IsEnabled(logLevel);
 
-	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-	{
-		logger.Log(logLevel, eventId, state, exception, formatter);
-	}
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter) => logger.Log(logLevel, eventId, state, exception, formatter);
 }

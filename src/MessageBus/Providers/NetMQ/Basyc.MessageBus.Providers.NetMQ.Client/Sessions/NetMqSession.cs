@@ -10,5 +10,5 @@
 /// <param name="ResponseSource"></param>
 public record NetMqSession<TSessionResult>(int SessionId, string? TraceId, string MessageType, TaskCompletionSource<TSessionResult> ResponseSource)
 {
-	public const int UnknownSessionId = -1;
+    public const int UnknownSessionId = -1;
 }

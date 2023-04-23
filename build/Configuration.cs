@@ -7,11 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 [SuppressMessage("Design", "CA1050")]
 public class Configuration : Enumeration
 {
-	public static Configuration Debug = new() { Value = nameof(Debug) };
-	public static Configuration Release = new() { Value = nameof(Release) };
+    public static Configuration Debug = new() { Value = nameof(Debug) };
+    public static Configuration Release = new() { Value = nameof(Release) };
 
-	public static implicit operator string(Configuration configuration)
-	{
-		return configuration.Value;
-	}
+    public static implicit operator string(Configuration configuration) => configuration.Value;
 }

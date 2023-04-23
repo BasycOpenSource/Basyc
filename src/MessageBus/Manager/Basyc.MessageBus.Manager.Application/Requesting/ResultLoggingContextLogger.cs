@@ -7,29 +7,23 @@ namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public class ResultLoggingContextLogger : ILogger
 {
-	private readonly RequestDiagnostic loggingContext;
-	private readonly ServiceIdentity serviceIdentity;
+    private readonly RequestDiagnostic loggingContext;
+    private readonly ServiceIdentity serviceIdentity;
 
-	public ResultLoggingContextLogger(ServiceIdentity serviceIdentity, RequestDiagnostic loggingContext)
-	{
-		this.loggingContext = loggingContext;
-		this.serviceIdentity = serviceIdentity;
-	}
+    public ResultLoggingContextLogger(ServiceIdentity serviceIdentity, RequestDiagnostic loggingContext)
+    {
+        this.loggingContext = loggingContext;
+        this.serviceIdentity = serviceIdentity;
+    }
 
-	public IDisposable BeginScope<TState>(TState state)
-	{
-		return NullScope.Instance;
-	}
+    public IDisposable BeginScope<TState>(TState state) => NullScope.Instance;
 
-	public bool IsEnabled(LogLevel logLevel)
-	{
-		return true;
-	}
+    public bool IsEnabled(LogLevel logLevel) => true;
 
-	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-	{
-		var spanId = Activity.Current?.SpanId.ToString();
-		var message = formatter.Invoke(state, exception);
-		loggingContext.AddLog(serviceIdentity, logLevel, message, spanId);
-	}
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        var spanId = Activity.Current?.SpanId.ToString();
+        var message = formatter.Invoke(state, exception);
+        loggingContext.AddLog(serviceIdentity, logLevel, message, spanId);
+    }
 }

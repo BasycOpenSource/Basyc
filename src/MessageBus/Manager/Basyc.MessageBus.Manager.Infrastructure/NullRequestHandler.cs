@@ -6,13 +6,13 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class NullRequestHandler : IRequestHandler
 {
-	public string UniqueName => nameof(NullRequestHandler);
+    public string UniqueName => nameof(NullRequestHandler);
 
-	public void StartRequest(MessageRequest requestResult, ILogger logger)
-	{
-		if (requestResult.Request.MessageInfo.HasResponse)
-			requestResult.SetResponse("NullRequester dummy response");
-		else
-			requestResult.SetResponse();
-	}
+    public void StartRequest(MessageRequest requestResult, ILogger logger)
+    {
+        if (requestResult.Request.MessageInfo.HasResponse)
+            requestResult.SetResponse("NullRequester dummy response");
+        else
+            requestResult.SetResponse();
+    }
 }

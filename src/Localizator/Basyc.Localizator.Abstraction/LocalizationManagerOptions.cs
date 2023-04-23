@@ -2,5 +2,5 @@
 
 public class LocalizationManagerOptions
 {
-	public List<ILocalizator> LocalizatorsToSave { get; set; } = new();
+    public List<ILocalizator> LocalizatorsToSave { get; set; } = new();
 }

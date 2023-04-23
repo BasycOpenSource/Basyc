@@ -1,11 +1,11 @@
- @GetVariables()
- <basycControls>
+@GetVariables()
+<basycControls>
 
- </basycControls>
+</basycControls>
+
 @code {
-    static MarkupString GetVariables()
-    {
-        return (MarkupString)@"
+
+    static MarkupString GetVariables() => (MarkupString)@"
 <style>
 :root {
 --space-small: 8px;
@@ -14,7 +14,6 @@
 }
 </style>
 ";
-    }
 
-    
+
 }

@@ -8,54 +8,44 @@ public interface ILocalizatedSection<T> : ILocalizatedSection
 
 public interface ILocalizatedSection
 {
-	/// <summary>
-	///     Name of localization group
-	/// </summary>
-	string SectionUniqueName { get; }
+    event EventHandler<SectionCultureChangedEventArgs>? SectionCultureChanged;
 
-	CultureInfo DefaultCulture { get; set; }
+    /// <summary>
+    ///     Name of localization group.
+    /// </summary>
+    string SectionUniqueName { get; }
 
-	/// <summary>
-	///     Default culture will be always same as it is in LocalizationManager.
-	/// </summary>
-	bool InheritsDefaultCulture { get; set; }
+    CultureInfo DefaultCulture { get; set; }
 
-	/// <summary>
-	/// Checks if this section supports localization for provided culture
-	/// </summary>
-	/// <param name="cultureInfo"></param>
-	/// <returns></returns>
+    /// <summary>
+    ///     Default culture will be always same as it is in LocalizationManager.
+    /// </summary>
+    bool InheritsDefaultCulture { get; set; }
 
-	//Task<bool> IsCultureSupportedAsync(CultureInfo cultureInfo);
-	/// <summary>
-	///     <see cref="string" /> key is <see cref="CultureInfo.Name" />
-	/// </summary>
-	IReadOnlyDictionary<string, CultureInfo> SupportedCultures { get; }
+    /// <summary>
+    /// Checks if this section supports localization for provided culture.
+    /// </summary>
 
-	/// <summary>
-	///     Return localizazor for provided culture
-	/// </summary>
-	/// <param name="culture"></param>
-	/// <returns></returns>
-	Task<ILocalizator> GetLocalizatorAsync(CultureInfo culture);
+    //Task<bool> IsCultureSupportedAsync(CultureInfo cultureInfo);
+    /// <summary>
+    ///     <see cref="string" /> key is <see cref="CultureInfo.Name" />
+    /// </summary>
+    IReadOnlyDictionary<string, CultureInfo> SupportedCultures { get; }
 
-	/// <summary>
-	///     Returns localizazor with default localization culture or default culture of this section when section's culture is setuped
-	/// </summary>
-	Task<ILocalizator> GetLocalizatorAsync();
+    /// <summary>
+    ///     Return localizazor for provided culture.
+    /// </summary>
+    Task<ILocalizator> GetLocalizatorAsync(CultureInfo culture);
 
-	/// <param name="culture"></param>
-	/// <param name="localizator"></param>
-	/// <param name="canReturnDefault"></param>
-	/// <returns></returns>
-	Task<GetLocalizatorResult> TryGetLocalizatorAsync(CultureInfo culture, bool canReturnDefault = true);
+    /// <summary>
+    ///     Returns localizazor with default localization culture or default culture of this section when section's culture is setuped.
+    /// </summary>
+    Task<ILocalizator> GetLocalizatorAsync();
 
-	/// <summary>
-	///     Saves multiple <paramref name="localizators" />
-	/// </summary>
-	/// <param name="localizators"></param>
-	/// <returns></returns>
-	Task AddLocalizatorsAsync(params ILocalizator[] localizators);
+    Task<GetLocalizatorResult> TryGetLocalizatorAsync(CultureInfo culture, bool canReturnDefault = true);
 
-	event EventHandler<SectionCultureChangedArgs>? SectionCultureChanged;
+    /// <summary>
+    ///     Saves multiple <paramref name="localizators" />.
+    /// </summary>
+    Task AddLocalizatorsAsync(params ILocalizator[] localizators);
 }

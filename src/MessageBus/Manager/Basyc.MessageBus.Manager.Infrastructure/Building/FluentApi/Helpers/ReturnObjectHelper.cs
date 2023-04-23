@@ -2,23 +2,23 @@
 
 public static class ReturnObjectHelper
 {
-	public static void CheckHandlerReturnType(object? returnObject, Type expectedType)
-	{
-		if (returnObject is null)
-		{
-			var cannotBeNull = expectedType.IsValueType || Nullable.GetUnderlyingType(expectedType) == null;
-			if (cannotBeNull is false)
-			{
-				throw new InvalidOperationException($"Handler return null but expected type is {expectedType} does not support null");
-			}
+    public static void CheckHandlerReturnType(object? returnObject, Type expectedType)
+    {
+        if (returnObject is null)
+        {
+            var cannotBeNull = expectedType.IsValueType || Nullable.GetUnderlyingType(expectedType) == null;
+            if (cannotBeNull is false)
+            {
+                throw new InvalidOperationException($"Handler return null but expected type is {expectedType} does not support null");
+            }
 
-			return;
-		}
+            return;
+        }
 
-		var returnObjectType = returnObject.GetType();
-		if (returnObjectType.IsAssignableTo(expectedType) is false)
-		{
-			throw new InvalidOperationException($"Handler return object of type {returnObject.GetType()} but expected type is {expectedType}");
-		}
-	}
+        var returnObjectType = returnObject.GetType();
+        if (returnObjectType.IsAssignableTo(expectedType) is false)
+        {
+            throw new InvalidOperationException($"Handler return object of type {returnObject.GetType()} but expected type is {expectedType}");
+        }
+    }
 }

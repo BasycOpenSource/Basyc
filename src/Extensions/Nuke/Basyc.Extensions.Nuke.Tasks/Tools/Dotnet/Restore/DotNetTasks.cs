@@ -9,10 +9,10 @@ namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
 
 public static partial class DotNetTasks
 {
-	public static void BasycDotNetRestoreAffected(RepositoryChangeReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
-	{
-		using var solutionToUse = TemporarySolution.GetAffectedAsSolution(gitCompareReport, unitTestSuffix, buildProjectName, solution);
-		DotNetRestore(_ => _
-			.SetProjectFile(solutionToUse.Solution));
-	}
+    public static void BasycDotNetRestoreAffected(RepositoryChangeReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
+    {
+        using var solutionToUse = TemporarySolution.GetAffectedAsSolution(gitCompareReport, unitTestSuffix, buildProjectName, solution);
+        DotNetRestore(_ => _
+            .SetProjectFile(solutionToUse.Solution));
+    }
 }

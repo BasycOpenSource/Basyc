@@ -5,5 +5,5 @@ namespace Basyc.MessageBus.Manager.Application;
 
 public interface IMessagesInfoProvidersAggregator
 {
-	IReadOnlyList<MessageGroup> GetMessageGroups();
+    IReadOnlyList<MessageGroup> GetMessageGroups();
 }

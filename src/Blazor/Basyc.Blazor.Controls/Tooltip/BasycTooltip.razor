@@ -1,5 +1,4 @@
 ﻿@namespace Basyc.Blazor.Controls
-@using Basyc.Blazor.Controls.Interops;
 
 <tooltipView>
     <childContent @onmousemove="e => { x = e.PageX; y = e.PageY;}"
@@ -14,54 +13,3 @@
         @TooltipContent
     </tooltip>
 </tooltipView>
-
-@code {
-    [Inject] private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
-    private double x;
-    private double y;
-    private bool isMouseOver;
-    private bool keepVisible;
-
-    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
-    [Parameter] public RenderFragment? TooltipContent { get; set; } = null;
-    private string toolTipId { get; init; } = Random.Shared.Next().ToString();
-    private string childContentId { get; init; } = Random.Shared.Next().ToString();
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
-
-
-    public void KeyDown(KeyboardEventArgs e)
-    {
-        if (e.Code == "LeftControl")
-        {
-            keepVisible = true;
-        }
-    }
-
-    public void KeyUp(KeyboardEventArgs e)
-    {
-        if (e.Code == "LeftControl")
-        {
-            keepVisible = false;
-        }
-    }
-
-    public void MouseOver(MouseEventArgs e)
-    {
-        TooltipJsInterop.ShowTooltip($"{toolTipId}");
-        isMouseOver = true;
-    }
-
-    public void MouseOut(MouseEventArgs e)
-    {
-        TooltipJsInterop.HideTooltip($"{toolTipId}", childContentId);
-        isMouseOver = false;
-    }
-
-
-}
-
-

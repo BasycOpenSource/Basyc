@@ -4,13 +4,7 @@ namespace Basyc.Diagnostics.Server.Abstractions;
 
 public class InMemoryServerDiagnosticReceiver : IServerDiagnosticReceiver
 {
-	public event EventHandler<DiagnosticChanges>? ChangesReceived;
-	public InMemoryServerDiagnosticReceiver()
-	{
-	}
+    public event EventHandler<DiagnosticChanges>? ChangesReceived;
 
-	public void ReceiveChangesFromProducer(DiagnosticChanges changes)
-	{
-		ChangesReceived?.Invoke(this, changes);
-	}
+    public void ReceiveChangesFromProducer(DiagnosticChanges changes) => ChangesReceived?.Invoke(this, changes);
 }

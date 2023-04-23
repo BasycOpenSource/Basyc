@@ -2,6 +2,6 @@
 
 public enum PipelineOs
 {
-	Windows,
-	Linux
+    Windows,
+    Linux
 }

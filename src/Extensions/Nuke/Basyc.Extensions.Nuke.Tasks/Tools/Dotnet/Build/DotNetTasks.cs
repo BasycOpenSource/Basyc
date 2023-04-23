@@ -11,12 +11,12 @@ namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet;
 [ExcludeFromCodeCoverage]
 public static partial class DotNetTasks
 {
-	public static void BasycDotNetBuildAffected(RepositoryChangeReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
-	{
-		using var solutionToUse = TemporarySolution.GetAffectedAsSolution(gitCompareReport, unitTestSuffix, buildProjectName, solution);
+    public static void BasycDotNetBuildAffected(RepositoryChangeReport gitCompareReport, string unitTestSuffix, string buildProjectName, Solution solution)
+    {
+        using var solutionToUse = TemporarySolution.GetAffectedAsSolution(gitCompareReport, unitTestSuffix, buildProjectName, solution);
 
-		DotNetBuild(_ => _
-			.EnableNoRestore()
-			.SetProjectFile(solutionToUse.Solution));
-	}
+        DotNetBuild(_ => _
+            .EnableNoRestore()
+            .SetProjectFile(solutionToUse.Solution));
+    }
 }

@@ -4,20 +4,17 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class EndpointBuilderHttpProxyServerExtensions
 {
-	public static void MapHttpMessageBusProxyServer(this IEndpointRouteBuilder endpoints)
-	{
-		endpoints.MapPost("", async context =>
-		{
-			var httpHandler = context.RequestServices.GetRequiredService<ProxyHttpRequestHandler>();
-			try
-			{
-				await httpHandler.Handle(context);
-			}
-			catch (Exception ex)
-			{
-				context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-				await context.Response.WriteAsync(ex.Message);
-			}
-		});
-	}
+    public static void MapHttpMessageBusProxyServer(this IEndpointRouteBuilder endpoints) => endpoints.MapPost("", async context =>
+                                                                                                  {
+                                                                                                      var httpHandler = context.RequestServices.GetRequiredService<ProxyHttpRequestHandler>();
+                                                                                                      try
+                                                                                                      {
+                                                                                                          await httpHandler.Handle(context);
+                                                                                                      }
+                                                                                                      catch (Exception ex)
+                                                                                                      {
+                                                                                                          context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                                                                                                          await context.Response.WriteAsync(ex.Message);
+                                                                                                      }
+                                                                                                  });
 }

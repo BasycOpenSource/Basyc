@@ -2,23 +2,23 @@
 
 public interface IBulkCrudRepository<TModel, TKey> : IBulkRepository, IAsyncReadRepository<TModel, TKey> where TKey : notnull
 {
-	/// <summary>
-	///     If id is null it will be genereted
-	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="model"></param>
-	TModel Add(TModel model);
+    /// <summary>
+    ///     If id is null it will be genereted
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="model"></param>
+    TModel Add(TModel model);
 
-	/// <summary>
-	///     Updates a record
-	/// </summary>
-	/// <param name="id"></param>
-	/// <param name="model"></param>
-	void Update(TModel model);
+    /// <summary>
+    ///     Updates a record
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="model"></param>
+    void Update(TModel model);
 
-	/// <summary>
-	///     Deletes item with same id.
-	/// </summary>
-	/// <param name="id"></param>
-	void Remove(TKey id);
+    /// <summary>
+    ///     Deletes item with same id.
+    /// </summary>
+    /// <param name="id"></param>
+    void Remove(TKey id);
 }

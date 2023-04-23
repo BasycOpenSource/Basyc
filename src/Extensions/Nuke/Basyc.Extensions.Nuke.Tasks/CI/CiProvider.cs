@@ -2,6 +2,6 @@
 
 public enum CiProvider
 {
-	GithubActions,
-	AzurePipelines
+    GithubActions,
+    AzurePipelines
 }

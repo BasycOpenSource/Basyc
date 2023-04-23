@@ -6,11 +6,11 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class TypedDomainNameFormatter : ITypedDomainNameFormatter
 {
-	public string GetFormattedName(Assembly assembly)
-	{
-		var assemblyName = assembly.GetName();
-		assemblyName.ThrowIfNull();
-		assemblyName.Name.ThrowIfNull();
-		return assemblyName.Name;
-	}
+    public string GetFormattedName(Assembly assembly)
+    {
+        var assemblyName = assembly.GetName();
+        assemblyName.ThrowIfNull();
+        assemblyName.Name.ThrowIfNull();
+        return assemblyName.Name;
+    }
 }

@@ -13,44 +13,4 @@
     @ChildContent
 </basycStyleSection>
 
-@code {
 
-    public static void AddStyleSection(StyleDefinition styleSection)
-    {
-        styleSections.Add(styleSection);
-    }
-
-
-    protected override void OnInitialized()
-    {
-        styleSections.CollectionChanged += (s, a) =>
-        {
-            this.StateHasChanged();
-        };
-        base.OnInitialized();
-    }
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        var styleSectionPeak = styleSections.FirstOrDefault(x => x.Name == SectionName);
-        if (styleSectionPeak is null)
-            if (ThrowWhenStyleSectioNotfound)
-                throw new Exception($"Style section '{SectionName}' not found");
-            else
-                return;
-        styleSection = styleSectionPeak;
-    }
-
-    private static ObservableCollection<StyleDefinition> styleSections = new();
-    [Parameter]
-    public RenderFragment? ChildContent { get; set; }
-    private StyleDefinition styleSection = null!;
-
-
-    [Parameter, EditorRequired]
-    public string SectionName { get; set; } = null!;
-
-    [Parameter]
-    public bool ThrowWhenStyleSectioNotfound { get; set; }
-}

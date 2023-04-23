@@ -7,8 +7,5 @@ namespace Basyc.Extensions.Nuke.Tasks.Tools.Structure;
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
 public sealed class RepositoryAttribute : ValueInjectionAttributeBase
 {
-	public override object GetValue(MemberInfo member, object instance)
-	{
-		return new Repository(NukeBuild.RootDirectory);
-	}
+    public override object GetValue(MemberInfo member, object instance) => new Repository(NukeBuild.RootDirectory);
 }

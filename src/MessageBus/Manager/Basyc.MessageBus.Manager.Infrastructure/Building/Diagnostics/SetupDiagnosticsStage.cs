@@ -5,7 +5,7 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
 
 public class SetupDiagnosticsStage : BuilderStageBase
 {
-	public SetupDiagnosticsStage(IServiceCollection services) : base(services)
-	{
-	}
+    public SetupDiagnosticsStage(IServiceCollection services) : base(services)
+    {
+    }
 }

@@ -6,16 +6,13 @@ using Basyc.ReactiveUi;
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.SideBar;
 public class AppSideBarViewModel : BasycReactiveViewModelBase
 {
-	private readonly NavigationService navigationService;
+    private readonly NavigationService navigationService;
 
-	public AppSideBarViewModel(NavigationService navigationService)
-	{
-		this.navigationService = navigationService;
-	}
+    public AppSideBarViewModel(NavigationService navigationService)
+    {
+        this.navigationService = navigationService;
+    }
 
-	public void SelectMessage(MessageInfo messageInfo)
-	{
-		navigationService.GoTo<MessagePageView, MessagePageViewModel, MessageInfo>(messageInfo);
-	}
+    public void SelectMessage(MessageInfo messageInfo) => navigationService.GoTo<MessagePageView, MessagePageViewModel, MessageInfo>(messageInfo);
 }
 

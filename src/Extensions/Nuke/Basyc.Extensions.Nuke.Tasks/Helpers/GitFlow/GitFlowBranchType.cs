@@ -2,10 +2,10 @@
 
 public enum GitFlowBranchType
 {
-	Main,
-	HotFix,
-	Release,
-	Develop,
-	Feature,
-	PullRequest
+    Main,
+    HotFix,
+    Release,
+    Develop,
+    Feature,
+    PullRequest
 }

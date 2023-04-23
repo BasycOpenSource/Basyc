@@ -2,8 +2,5 @@
 
 public class NullBasycDiagnosticsReceiverTraceIdMapper : IBasycDiagnosticsReceiverTraceIdMapper
 {
-	public string GetTraceId(string traceId)
-	{
-		return traceId;
-	}
+    public string GetTraceId(string traceId) => traceId;
 }

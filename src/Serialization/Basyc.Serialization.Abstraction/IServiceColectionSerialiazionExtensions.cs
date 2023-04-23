@@ -2,8 +2,5 @@
 
 public static class ServiceColectionSerialiazionExtensions
 {
-	public static SelectSerializationStage AddBasycSerialization(this IServiceCollection service)
-	{
-		return new SelectSerializationStage(service);
-	}
+    public static SelectSerializationStage AddBasycSerialization(this IServiceCollection service) => new SelectSerializationStage(service);
 }

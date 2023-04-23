@@ -11,6 +11,6 @@ public interface IMessage
 }
 
 public interface IMessage<TResponse>
-	where TResponse : class
+    where TResponse : class
 {
 }

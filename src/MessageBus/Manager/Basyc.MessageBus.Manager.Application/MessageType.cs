@@ -2,8 +2,8 @@
 
 public enum MessageType
 {
-	Query,
-	Command,
-	Generic,
-	Event,
+    Query,
+    Command,
+    Generic,
+    Event,
 }

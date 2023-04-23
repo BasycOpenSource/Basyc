@@ -3,10 +3,10 @@
 namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionBasycBlazorControlsExtensions
 {
-	public static IServiceCollection AddBasycBlazorControls(this IServiceCollection services)
-	{
-		services.AddSingleton<TooltipJsInterop>();
-		services.AddSingleton<ScrollJsInterop>();
-		return services;
-	}
+    public static IServiceCollection AddBasycBlazorControls(this IServiceCollection services)
+    {
+        services.AddSingleton<TooltipJsInterop>();
+        services.AddSingleton<ScrollJsInterop>();
+        return services;
+    }
 }

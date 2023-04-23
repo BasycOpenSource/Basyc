@@ -9,4 +9,4 @@ namespace Basyc.DomainDrivenDesign.Domain;
 public record CommandWithContextBase<TContext>(TContext Context) : ICommand;
 
 public record CommandWithContextBase<TContext, TResponse>(TContext Context) : ICommand<TResponse>
-	where TResponse : class;
+    where TResponse : class;

@@ -2,22 +2,22 @@
 
 public enum Currencies
 {
-	/// <summary>
-	///     Euro
-	/// </summary>
-	Eur = 1,
+    /// <summary>
+    ///     Euro
+    /// </summary>
+    Eur = 1,
 
-	/// <summary>
-	///     Dollar
-	/// </summary>
-	Usd = 2,
+    /// <summary>
+    ///     Dollar
+    /// </summary>
+    Usd = 2,
 
-	/// <summary>
-	///     Czech crown
-	/// </summary>
-	Czk = 3,
+    /// <summary>
+    ///     Czech crown
+    /// </summary>
+    Czk = 3,
 
-	/// <summary>
-	/// </summary>
-	Pln = 4
+    /// <summary>
+    /// </summary>
+    Pln = 4
 }

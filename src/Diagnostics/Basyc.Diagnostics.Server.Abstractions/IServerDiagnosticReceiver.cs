@@ -4,5 +4,5 @@ namespace Basyc.Diagnostics.Server.Abstractions;
 
 public interface IServerDiagnosticReceiver
 {
-	event EventHandler<DiagnosticChanges> ChangesReceived;
+    event EventHandler<DiagnosticChanges> ChangesReceived;
 }

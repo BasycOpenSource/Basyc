@@ -2,6 +2,6 @@
 
 public class MessageHandlerManagerOptions
 {
-	public bool IsDiagnosticLoggingEnabled { get; set; }
-	public List<NetMqMessageHandlerInfo> HandlerInfos { get; } = new();
+    public bool IsDiagnosticLoggingEnabled { get; set; }
+    public List<NetMqMessageHandlerInfo> HandlerInfos { get; } = new();
 }

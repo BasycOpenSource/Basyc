@@ -11,8 +11,8 @@ namespace Basyc.Repositories;
 /// </summary>
 public interface IUnitOfWorkRepository<TModel, TKey>
 {
-	/// <summary>
-	/// Is responsible for saving repository changes. Indicates unique storage source that can be shared between multiple repositories (e.g. DbContext)
-	/// </summary>
-	IUnitOfWorkContext Context { get; }
+    /// <summary>
+    /// Is responsible for saving repository changes. Indicates unique storage source that can be shared between multiple repositories (e.g. DbContext)
+    /// </summary>
+    IUnitOfWorkContext Context { get; }
 }

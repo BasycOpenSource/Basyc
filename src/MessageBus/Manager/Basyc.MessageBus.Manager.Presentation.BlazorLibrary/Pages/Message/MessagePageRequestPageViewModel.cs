@@ -5,9 +5,9 @@ using ReactiveUI.Fody.Helpers;
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message;
 public class MessagePageRequestPageViewModel : BasycReactiveViewModelBase
 {
-	[Reactive] public MessageRequest? MessageRequest { get; set; }
-	public MessagePageRequestPageViewModel()
-	{
+    [Reactive] public MessageRequest? MessageRequest { get; set; }
+    public MessagePageRequestPageViewModel()
+    {
 
-	}
+    }
 }

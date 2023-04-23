@@ -5,10 +5,10 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public static class MessageManagerBuilderTypedExtensions
 {
-	public static TypedProviderBuilder UseTypedProvider(this BusManagerApplicationBuilder managerBuilder)
-	{
-		managerBuilder.services.AddSingleton<IMessageInfoProvider, TypedMessageInfoProvider>();
+    public static TypedProviderBuilder UseTypedProvider(this BusManagerApplicationBuilder managerBuilder)
+    {
+        managerBuilder.services.AddSingleton<IMessageInfoProvider, TypedMessageInfoProvider>();
 
-		return new TypedProviderBuilder(managerBuilder.services);
-	}
+        return new TypedProviderBuilder(managerBuilder.services);
+    }
 }

@@ -4,7 +4,7 @@ namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public interface IRequestManager
 {
-	MessageRequest StartRequest(RequestInput request);
-	//Dictionary<MessageInfo, List<RequestContext>> Requests { get; }
-	ReadOnlyObservableCollection<MessageContext> MessageContexts { get; }
+    MessageRequest StartRequest(RequestInput request);
+    //Dictionary<MessageInfo, List<RequestContext>> Requests { get; }
+    ReadOnlyObservableCollection<MessageContext> MessageContexts { get; }
 }

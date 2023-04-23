@@ -6,10 +6,10 @@ namespace Basyc.Diagnostics.SignalR.Server;
 
 public class LoggingReceiversHub : Hub<IReceiversMethodsServerCanCall>, IServerMethodsReceiversCanCall
 {
-	private readonly IServerDiagnosticReceiver diagnosticsServer;
+    private readonly IServerDiagnosticReceiver diagnosticsServer;
 
-	public LoggingReceiversHub(IServerDiagnosticReceiver diagnosticsServer)
-	{
-		this.diagnosticsServer = diagnosticsServer;
-	}
+    public LoggingReceiversHub(IServerDiagnosticReceiver diagnosticsServer)
+    {
+        this.diagnosticsServer = diagnosticsServer;
+    }
 }

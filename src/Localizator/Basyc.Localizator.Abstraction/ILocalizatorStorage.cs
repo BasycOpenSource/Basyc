@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 
 namespace Basyc.Localizator.Abstraction;
 
 /// <summary>
-/// Contains and manages storage for all localization sections
+/// Contains and manages storage for all localization sections.
 /// </summary>
 public interface ILocalizatorStorage
 {
-	Task<IDictionary<string, ILocalizatedSection>> GetSectionsAsync();
-	Task<ILocalizatedSection> GetSectionAsync(string uniqueSectionName);
-	/// <summary>
-	/// <see cref="string"/> key is <see cref="CultureInfo.Name"/>
-	/// </summary>
-	/// <param name="sectionUniqueName"></param>
-	/// <returns></returns>
-	Task<IDictionary<string, CultureInfo>> GetSupportedCulturesAsync(string sectionUniqueName);
+    event EventHandler<LocalizationStorageChangedArgs> StorageChanged;
 
-	Task<ILocalizator> LoadLocalizatorAsync(CultureInfo requiredCulture, string sectionUniqueName);
+    Task<IDictionary<string, ILocalizatedSection>> GetSectionsAsync();
 
-	Task SaveOrUpdateLocalizatorsAsync(params ILocalizator[] localizators);
+    Task<ILocalizatedSection> GetSectionAsync(string uniqueSectionName);
 
-	event EventHandler<LocalizationStorageChangedArgs> StorageChanged;
+    /// <summary>
+    /// <see cref="string"/> key is <see cref="CultureInfo.Name"/>.
+    /// </summary>
+    Task<IDictionary<string, CultureInfo>> GetSupportedCulturesAsync(string sectionUniqueName);
 
+    Task<ILocalizator> LoadLocalizatorAsync(CultureInfo requiredCulture, string sectionUniqueName);
+
+    Task SaveOrUpdateLocalizatorsAsync(params ILocalizator[] localizators);
 }

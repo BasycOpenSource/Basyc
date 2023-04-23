@@ -22,29 +22,13 @@ namespace Basyc.Extensions.Nuke.Tasks.Tools.Structure;
 // {solution}.sln
 public static class RepositoryStructureHelper
 {
-	public static AbsolutePath GetRootFolder(string rootDirectory)
-	{
-		return (AbsolutePath)rootDirectory;
-	}
+    public static AbsolutePath GetRootFolder(string rootDirectory) => (AbsolutePath)rootDirectory;
 
+    public static AbsolutePath GetDocsFolder(string rootDirectory) => GetRootFolder(rootDirectory) / "docs";
 
-	public static AbsolutePath GetDocsFolder(string rootDirectory)
-	{
-		return GetRootFolder(rootDirectory) / "docs";
-	}
+    public static AbsolutePath GetSourceFolder(string rootDirectory) => GetRootFolder(rootDirectory) / "src";
 
-	public static AbsolutePath GetSourceFolder(string rootDirectory)
-	{
-		return GetRootFolder(rootDirectory) / "src";
-	}
+    public static AbsolutePath GetTestsFolder(string rootDirectory) => GetRootFolder(rootDirectory) / "tests";
 
-	public static AbsolutePath GetTestsFolder(string rootDirectory)
-	{
-		return GetRootFolder(rootDirectory) / "tests";
-	}
-
-	public static AbsolutePath GetTestsHistoryFolder(string rootDirectory)
-	{
-		return GetTestsFolder(rootDirectory) / "history";
-	}
+    public static AbsolutePath GetTestsHistoryFolder(string rootDirectory) => GetTestsFolder(rootDirectory) / "history";
 }
