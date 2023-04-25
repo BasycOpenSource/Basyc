@@ -36,21 +36,23 @@ public class ObjectFromByteMessageBusClient : IObjectMessageBusClient
         var innerBusTask = byteMessageBusClient.RequestAsync(requestType, requestContext, cancellationToken);
         var busTask = innerBusTask.ContinueWith<object>(x =>
         {
-            var deseriResult = objectToByteSerailizer.Deserialize(x.ResponseBytes, x.ResposneType);
+            var deseriResult = objectToByteSerailizer.Deserialize(x.ResponseBytes, x.ResponseType);
             deseriResult.ThrowIfNull();
             return deseriResult;
         });
         return busTask;
     }
 
-    public BusTask<object> RequestAsync(string requestType, object requestData, RequestContext requestContext = default,
+    public BusTask<object> RequestAsync(string requestType,
+        object requestData,
+        RequestContext requestContext = default,
         CancellationToken cancellationToken = default)
     {
         var requestBytes = objectToByteSerailizer.Serialize(requestData, requestType);
         var innerBusTask = byteMessageBusClient.RequestAsync(requestType, requestBytes, requestContext, cancellationToken);
         var busTask = BusTask<object>.FromBusTask(innerBusTask, byteResponse =>
         {
-            var deseriliazed = objectToByteSerailizer.Deserialize(byteResponse.ResponseBytes, byteResponse.ResposneType);
+            var deseriliazed = objectToByteSerailizer.Deserialize(byteResponse.ResponseBytes, byteResponse.ResponseType);
             deseriliazed.ThrowIfNull();
             return deseriliazed;
         });

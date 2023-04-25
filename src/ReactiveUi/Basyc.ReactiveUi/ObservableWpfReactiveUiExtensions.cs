@@ -5,11 +5,10 @@ using System.ComponentModel;
 namespace Basyc.ReactiveUi;
 internal static class ObservableWpfReactiveUiExtensions
 {
-
     //public static IObservable<IChangeSet<TObject>> SetAutoRefresh<TObject>(this IObservable<IChangeSet<TObject>> source, bool enabled)
-    //	 where TObject : INotifyPropertyChanged
+    //   where TObject : INotifyPropertyChanged
     //{
-    //	return enabled ? source.AutoRefresh() : source;
+    //  return enabled ? source.AutoRefresh() : source;
     //}
     public static IObservable<IChangeSet<TObject>> SetAutoRefresh<TObject>(this IObservable<IChangeSet<TObject>> source, bool enabled)
     {
@@ -17,6 +16,7 @@ internal static class ObservableWpfReactiveUiExtensions
         {
             return source;
         }
+
         var sourceCasted = source.Select(x => (INotifyPropertyChanged)x!);
 
         return enabled ? source.Select(x => (INotifyPropertyChanged)x!).AutoRefresh().Select(x => (TObject)x) : source;

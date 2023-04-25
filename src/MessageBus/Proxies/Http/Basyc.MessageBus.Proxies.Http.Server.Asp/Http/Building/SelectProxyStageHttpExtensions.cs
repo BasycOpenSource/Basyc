@@ -10,8 +10,8 @@ public static class SelectProxyStageHttpExtensions
     public static void UseHttp(this SelectProxyStage parent)
     {
         //services.AddSingleton<IRequestSerializer, JsonRequestSerializer>();
-        parent.services.AddSingleton<ITypedByteSerializer, ProtobufByteSerializer>();
-        parent.services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
-        parent.services.AddSingleton<ProxyHttpRequestHandler>();
+        parent.Services.AddSingleton<ITypedByteSerializer, ProtobufByteSerializer>();
+        parent.Services.AddSingleton<IObjectToByteSerailizer, ObjectFromTypedByteSerializer>();
+        parent.Services.AddSingleton<ProxyHttpRequestHandler>();
     }
 }

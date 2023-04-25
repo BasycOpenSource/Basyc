@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Basyc.MessageBus.Manager.Application;
+﻿namespace Basyc.MessageBus.Manager.Application;
 
 public interface ITypedRequestNameFormatter
 {

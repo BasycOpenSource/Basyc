@@ -59,46 +59,9 @@ public record AggregatedDotnetFormatReport(List<AggregatedDocumentReport> Docume
         return documentIdToTempDocumentMap;
     }
 
-    private static Dictionary<string, SolutionProject> CreateSolutionProjectToCsharpProjectMap(string solutionPath)
-    {
-        static Dictionary<string, SolutionProject> AddAllChildren(
-            string? parentCsharpProjectId,
-            SolutionFolder folder,
-            ref Dictionary<string, SolutionProject> map)
-        {
-            foreach (var project in folder.Projects)
-            {
-                string projectId = project.ProjectId.ToString("D");
-                map.Add(projectId, new(projectId, ProjectType.Project, project.Name, project.ProjectId.ToString("D")));
-            }
+    private sealed record TempDocument(string DocumentId, string FilePath, string FileName, string ProjectId, List<string> Changes);
 
-            foreach (var nestedFolder in folder.SolutionFolders)
-            {
-                AddAllChildren(null, nestedFolder, ref map);
-            }
-
-            return map;
-        }
-
-        var solution = ProjectModelTasks.ParseSolution(solutionPath);
-        Dictionary<string, SolutionProject> solutionProjectIdToCsharpProjectMap = new();
-        foreach (var project in solution.AllProjects)
-        {
-            string projectId = project.ProjectId.ToString("D");
-            solutionProjectIdToCsharpProjectMap.Add(projectId, new(projectId, ProjectType.Project, project.Name, projectId));
-        }
-
-        foreach (var nestedFolder in solution.AllSolutionFolders)
-        {
-            AddAllChildren(null, nestedFolder, ref solutionProjectIdToCsharpProjectMap);
-        }
-
-        return solutionProjectIdToCsharpProjectMap;
-    }
-
-    private record TempDocument(string DocumentId, string FilePath, string FileName, string ProjectId, List<string> Changes);
-
-    private record SolutionProject(string Id, ProjectType ProjectType, string Name, string CsharpProjectId);
+    private sealed record SolutionProject(string Id, ProjectType ProjectType, string Name, string CsharpProjectId);
 }
 
 public record AggregatedDocumentReport(string FilePath, string FileName, string ProjectId, string ProjectName, string[] Changes);

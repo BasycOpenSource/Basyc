@@ -2,7 +2,7 @@
 
 public class UnitTestSettings
 {
-    public List<ProjectTestException> ProjectExceptions { get; init; } = new();
+    public List<ProjectTestExceptionPath> ProjectExceptions { get; init; } = new();
 
     public double BranchMinimum { get; private set; } = 50;
 

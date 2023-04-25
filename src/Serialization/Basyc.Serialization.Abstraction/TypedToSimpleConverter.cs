@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Basyc.Serializaton.Abstraction;
+﻿namespace Basyc.Serializaton.Abstraction;
 
 public static class TypedToSimpleConverter
 {
@@ -16,7 +10,7 @@ public static class TypedToSimpleConverter
     {
         var type = Type.GetType(requestType);
         if (type == null)
-            throw new Exception($"Failed to convert request simple type '{requestType}' to runtime type");
+            throw new InvalidOperationException($"Failed to convert request simple type '{requestType}' to runtime type");
 
         return type;
     }

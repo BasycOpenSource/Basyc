@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Basyc.MessageBus.Manager.Application.Requesting;
+﻿namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public class NullScope : IDisposable
 {

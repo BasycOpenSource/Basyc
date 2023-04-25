@@ -11,17 +11,17 @@ public static class BusClientSetupProviderStageProxySignalRExtensions
         string signalRServerUri,
         string hubPattern = SignalRConstants.ProxyClientHubPattern)
     {
-        parent.services.AddBasycSerialization()
+        parent.Services.AddBasycSerialization()
             .SelectProtobufNet();
-        parent.services.AddSingleton<IObjectMessageBusClient, SignalRProxyObjectMessageBusClient>();
-        parent.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
+        parent.Services.AddSingleton<IObjectMessageBusClient, SignalRProxyObjectMessageBusClient>();
+        parent.Services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
 
-        parent.services.Configure<SignalROptions>(options =>
+        parent.Services.Configure<SignalROptions>(options =>
         {
             options.SignalRServerUri = signalRServerUri;
             options.ProxyClientHubPattern = hubPattern;
         });
 
-        return new BusClientUseDiagnosticsStage(parent.services);
+        return new BusClientUseDiagnosticsStage(parent.Services);
     }
 }

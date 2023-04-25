@@ -12,5 +12,6 @@ public class ConnectionFactoryMock : IConnectionFactory
     {
         this.pipe = pipe;
     }
-    public ValueTask<ConnectionContext> ConnectAsync(EndPoint endpoint, CancellationToken cancellationToken = default) => new ValueTask<ConnectionContext>(new ConnectionContextMock(pipe));
+
+    public ValueTask<ConnectionContext> ConnectAsync(EndPoint endpoint, CancellationToken cancellationToken = default) => new(new ConnectionContextMock(pipe));
 }

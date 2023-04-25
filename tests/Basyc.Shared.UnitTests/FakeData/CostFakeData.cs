@@ -48,7 +48,7 @@ public static class CostFakeData
             .RuleFor(x => x.Name, x => x.Random.Words(x.Random.Int(1, 5)))
             .RuleFor(x => x.CostPerOne, x => new Cash(sharedCurrency.Value, x.Random.Decimal(0, 1000)))
             .RuleFor(x => x.Descriptions, x => new Dictionary<string, string>(new Faker<Tuple<string, string>>()
-                .CustomInstantiator(x => new Tuple<string, string>(x.IndexGlobal.ToString(), ""))
+                .CustomInstantiator(x => new Tuple<string, string>(x.IndexGlobal.ToString(), string.Empty))
                 //.RuleFor(x => x.Item1, (Faker x) => x.Random.Word()) ///ffffgdfguifguguuguduflkad ou  iojqwd jioiiojasdadasdsdtrioiiiasdoij iiojasdasddddasdasdasdasd
                 .RuleFor(x => x.Item2, x => x.Random.Words(x.Random.Int(0, 5)))
                 .Generate(x.Random.Int(0, 10)).Select(x => new KeyValuePair<string, string>(x.Item1, x.Item2))))

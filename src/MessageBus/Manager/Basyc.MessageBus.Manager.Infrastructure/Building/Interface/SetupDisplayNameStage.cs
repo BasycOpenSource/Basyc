@@ -15,12 +15,12 @@ public class SetupDisplayNameStage : BuilderStageBase
     public SelectMessageTypeStage UseTypeNameAsDisplayName()
     {
         interfaceRegistration.DisplayNameFormatter = x => x.Name;
-        return new SelectMessageTypeStage(services, interfaceRegistration);
+        return new SelectMessageTypeStage(Services, interfaceRegistration);
     }
 
     public SelectMessageTypeStage SetDisplayName(Func<Type, string> formatter)
     {
         interfaceRegistration.DisplayNameFormatter = formatter;
-        return new SelectMessageTypeStage(services, interfaceRegistration);
+        return new SelectMessageTypeStage(Services, interfaceRegistration);
     }
 }

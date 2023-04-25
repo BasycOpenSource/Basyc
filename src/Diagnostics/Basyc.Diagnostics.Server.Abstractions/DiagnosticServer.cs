@@ -15,7 +15,7 @@ public class DiagnosticServer
         }
     }
 
-    public Task Start() => Task.CompletedTask;
+    public static Task Start() => Task.CompletedTask;
 
     private async void Receiver_ChangesReceived(object? sender, DiagnosticChanges changes)
     {

@@ -22,7 +22,7 @@ public static class BuildingNetMqExtensions
         int brokerServerPort = defaultBrokerServerPort,
         string brokerServerAddress = defaultBrokerServerAddress)
     {
-        var services = builder.services;
+        var services = builder.Services;
         AddClients(services);
 
         services.AddSingleton<ISessionManager<NetMqSessionResult>, InMemorySessionManager<NetMqSessionResult>>();

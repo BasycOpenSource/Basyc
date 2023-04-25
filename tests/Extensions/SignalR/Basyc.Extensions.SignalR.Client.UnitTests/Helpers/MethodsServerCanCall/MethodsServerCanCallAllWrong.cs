@@ -2,29 +2,11 @@
 
 public class MethodsServerCanCallAllWrong
 {
-    private readonly int privateIntField;
-
     public MethodsServerCanCallAllWrong()
-    {
-    }
-
-    private MethodsServerCanCallAllWrong(int number)
     {
     }
 
     public int PublicIntAutoProperty { get; set; }
 
     public string? PublicFullStringAutoProperty { get; set; }
-
-    private void PrivateVoidMethod()
-    {
-    }
-
-    private void PrivateVoidMethodInt(int number)
-    {
-    }
-
-    private Task PrivateTaskMethod() => Task.CompletedTask;
-
-    private Task PrivateTaskMethodInt(int number) => Task.CompletedTask;
 }

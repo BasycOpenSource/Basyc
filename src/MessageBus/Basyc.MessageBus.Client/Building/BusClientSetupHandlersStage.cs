@@ -11,7 +11,7 @@ public class BusClientSetupHandlersStage : BuilderStageBase
     {
     }
 
-    public BusClientSetupProviderStage NoHandlers() => new BusClientSetupProviderStage(services);
+    public BusClientSetupProviderStage NoHandlers() => new(Services);
 
     public BusClientSetupProviderStage RegisterHandlersFromAssembly<THandlerAssemblyMarker>() => RegisterHandlersFromAssembly(typeof(THandlerAssemblyMarker).Assembly);
 
@@ -23,16 +23,16 @@ public class BusClientSetupHandlersStage : BuilderStageBase
             var handlerTypesInAssembly = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<>)));
             foreach (var handlerType in handlerTypesInAssembly)
             {
-                HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handlerType);
+                HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(Services, handlerType);
             }
 
             var handlerTypesInAssembly2 = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<,>)));
             foreach (var handlerType in handlerTypesInAssembly2)
             {
-                HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handlerType);
+                HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(Services, handlerType);
             }
         }
 
-        return new BusClientSetupProviderStage(services);
+        return new BusClientSetupProviderStage(Services);
     }
 }

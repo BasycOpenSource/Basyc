@@ -91,7 +91,7 @@ public class DurationMapBuilderTests
         }
     }
 
-    [Theory(Skip = "Clock is not accurate sometimes fails")]
+    [Theory]
     [InlineData(0, new int[] { })]
     [InlineData(4, new[] { 100, 150, 50, 150 })]
     [InlineData(2, new[] { 100, 150 })]

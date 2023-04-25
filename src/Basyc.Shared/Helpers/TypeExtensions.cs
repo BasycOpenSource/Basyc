@@ -50,9 +50,8 @@ public static class TypeExtensions
     }
 
     /// <summary>
-    ///     Return all methods matching constraints (even iherited)
+    ///     Return all methods matching constraints (even iherited).
     /// </summary>
-    /// <returns></returns>
     public static MethodInfo[] GetMethodsRecursive(this Type type, BindingFlags bindingFlags)
     {
         var methods = new List<MethodInfo>(type.GetMethods(bindingFlags));

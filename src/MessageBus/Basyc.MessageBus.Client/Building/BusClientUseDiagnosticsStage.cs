@@ -15,8 +15,8 @@ public class BusClientUseDiagnosticsStage : BuilderStageBase
 
     public void NoDiagnostics()
     {
-        services.TryAddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
-        services.Configure<BusDiagnosticsOptions>(x =>
+        Services.TryAddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
+        Services.Configure<BusDiagnosticsOptions>(x =>
         {
             x.UseDiagnostics = false;
         });
@@ -24,11 +24,11 @@ public class BusClientUseDiagnosticsStage : BuilderStageBase
 
     public BusClientSetupDiagnosticsStage EnableDiagnostics()
     {
-        services.Configure<BusDiagnosticsOptions>(x =>
+        Services.Configure<BusDiagnosticsOptions>(x =>
         {
             x.UseDiagnostics = true;
             x.Service = ServiceIdentity.ApplicationWideIdentity;
         });
-        return new BusClientSetupDiagnosticsStage(services);
+        return new BusClientSetupDiagnosticsStage(Services);
     }
 }

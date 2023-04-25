@@ -3,17 +3,17 @@
 public enum Currencies
 {
     /// <summary>
-    ///     Euro
+    ///     Euro.
     /// </summary>
     Eur = 1,
 
     /// <summary>
-    ///     Dollar
+    ///     Dollar.
     /// </summary>
     Usd = 2,
 
     /// <summary>
-    ///     Czech crown
+    ///     Czech crown.
     /// </summary>
     Czk = 3,
 

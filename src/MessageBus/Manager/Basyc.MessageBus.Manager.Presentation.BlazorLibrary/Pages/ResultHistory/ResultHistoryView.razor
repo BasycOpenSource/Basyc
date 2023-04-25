@@ -28,22 +28,3 @@
 	}
 </historyView>
 
-@code {
-
-	[Parameter]
-	public List<MessageRequest>? RequestContexts { get; set; }
-
-	private MessageRequest? selectedRequestResults;
-
-	[Parameter]
-	public MessageRequest? SelectedRequestResults
-	{
-		get => selectedRequestResults;
-		set
-		{
-			if (value == selectedRequestResults) return;
-			selectedRequestResults = value;
-		}
-	}
-
-}

@@ -1,14 +1,6 @@
 ﻿using Basyc.MessageBus.Client.Building;
 using MassTransit;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basyc.MessageBus.Client.MasstTransit;
 
@@ -19,7 +11,7 @@ public static class MessageBusBuilderMassTransitExtensions
     /// </summary>
     public static BusClientSetupProviderStage UseMassTransitProvider(this BusClientSetupProviderStage builder)
     {
-        var services = builder.services;
+        var services = builder.Services;
         services.AddSingleton<ITypedMessageBusClient, MassTransitMessageBusClient>();
         services.AddHealthChecks();
         services.AddMassTransit(x =>

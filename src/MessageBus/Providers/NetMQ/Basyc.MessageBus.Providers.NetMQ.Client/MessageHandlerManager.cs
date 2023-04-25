@@ -91,5 +91,5 @@ public class MessageHandlerManager : IMessageHandlerManager
             .Select(handlerMetadata => handlerMetadata.HandlerInfo.MessageSimpleType)
             .ToArray();
 
-    private record HandlerMetadata(NetMqMessageHandlerInfo HandlerInfo, Type HandlerRuntimeType);
+    private sealed record HandlerMetadata(NetMqMessageHandlerInfo HandlerInfo, Type HandlerRuntimeType);
 }

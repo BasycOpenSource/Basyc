@@ -15,7 +15,7 @@ public static class ResponseResultConverter
             stringBuilder.Append(", ");
         }
 
-        if (parameters.Count() > 0)
+        if (parameters.Any())
         {
             stringBuilder.Remove(stringBuilder.Length - 2, 2);
         }

@@ -39,8 +39,8 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
         }
 
         //fluentApiMessage.RequestHandler = handlerWrapper;
-        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 
     public FluentSetupDomainPostStage HandeledBy(Func<TMessage, TReturn> handlerWithTReturn)
@@ -53,8 +53,8 @@ public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderS
         }
 
         //fluentApiMessage.RequestHandler = handlerWrapper;
-        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
 
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 }

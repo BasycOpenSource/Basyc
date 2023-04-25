@@ -20,7 +20,7 @@ public class FluentSetupMessageStage : BuilderStageBase
     public FluentSetupMessageStage WithParameter<TParameter>(string parameterDisplayName)
     {
         fluentApiMessage.Parameters.Add(new ParameterInfo(typeof(TParameter), parameterDisplayName, typeof(TParameter).Name));
-        return new FluentSetupMessageStage(services, fluentApiMessage, fluentApiGroup);
+        return new FluentSetupMessageStage(Services, fluentApiMessage, fluentApiGroup);
     }
 
     /// <summary>
@@ -31,7 +31,7 @@ public class FluentSetupMessageStage : BuilderStageBase
         foreach (var parameter in typeof(TMessage).GetProperties(BindingFlags.Instance | BindingFlags.Public))
             fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
         fluentApiMessage.ParametersFromType = typeof(TMessage);
-        return new FluentTMessageSetupMessageStage<TMessage>(services, fluentApiMessage, fluentApiGroup);
+        return new FluentTMessageSetupMessageStage<TMessage>(Services, fluentApiMessage, fluentApiGroup);
     }
 
     public FluentSetupMessageStage WithParametersFrom(Type type)
@@ -40,16 +40,16 @@ public class FluentSetupMessageStage : BuilderStageBase
             fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
         fluentApiMessage.ParametersFromType = type;
         //return new FluentTMessageSetupMessageStage<object>(services, fluentApiMessage, fluentApiGroup);
-        return new FluentSetupMessageStage(services, fluentApiMessage, fluentApiGroup);
+        return new FluentSetupMessageStage(Services, fluentApiMessage, fluentApiGroup);
     }
 
-    public FluentSetupNoReturnHandledByStage NoReturn() => new FluentSetupNoReturnHandledByStage(services, fluentApiMessage, fluentApiGroup);
+    public FluentSetupNoReturnHandledByStage NoReturn() => new(Services, fluentApiMessage, fluentApiGroup);
 
     public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)
     {
         fluentApiMessage.ResponseRunTimeType = messageResponseRuntimeType;
         fluentApiMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
-        return new FluentSetupTypeOfReturnStage(services, fluentApiMessage, fluentApiGroup);
+        return new FluentSetupTypeOfReturnStage(Services, fluentApiMessage, fluentApiGroup);
     }
 
     public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType) => Returns(messageResponseRuntimeType, messageResponseRuntimeType.Name);

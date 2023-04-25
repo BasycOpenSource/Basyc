@@ -3,6 +3,10 @@ using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using System.Reflection;
 using Throw;
+// ReSharper disable InconsistentNaming
+#pragma warning disable SA1402
+#pragma warning disable SA1401
+#pragma warning disable CA2211
 
 namespace Basyc.Repositories.EF;
 
@@ -12,22 +16,27 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
     where TEntity : class, new()
     where TModelId : notnull
 {
-    private static bool isInitialized;
-
     protected static Func<TEntity, TEntityId> entityIdGetter = null!;
+
     protected static Action<TEntity, TEntityId> entityIdSetter = null!;
+
     protected static Func<TModel, TModelId> modelIdGetter = null!;
+
     protected static Action<TModel, TModelId> modelIdSetter = null!;
 
-    public EfAsyncInstantCrudRepositoryBase(DbContext dbContext, Expression<Func<TEntity, TEntityId>> entityIdPropertyNameSelector,
-        Expression<Func<TModel, TModelId>> modelIdPropertyNameSelector, ILogger<EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TModel, TModelId>> logger)
+    private static bool isInitialized;
+
+    public EfAsyncInstantCrudRepositoryBase(DbContext dbContext,
+        Expression<Func<TEntity, TEntityId>> entityIdPropertyNameSelector,
+        Expression<Func<TModel, TModelId>> modelIdPropertyNameSelector,
+        ILogger<EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TModel, TModelId>> logger)
         : base(dbContext, logger)
     {
         if (isInitialized is false)
         {
-            var ImodeldPropertyExpression = modelIdPropertyNameSelector.Body as MemberExpression;
-            ImodeldPropertyExpression.ThrowIfNull();
-            var modelPropertyInfo = ImodeldPropertyExpression.Member as PropertyInfo;
+            var imodeldPropertyExpression = modelIdPropertyNameSelector.Body as MemberExpression;
+            imodeldPropertyExpression.ThrowIfNull();
+            var modelPropertyInfo = imodeldPropertyExpression.Member as PropertyInfo;
             modelPropertyInfo.ThrowIfNull();
             modelIdGetter = (Func<TModel, TModelId>)Delegate.CreateDelegate(typeof(Func<TModel, TModelId>), modelPropertyInfo.GetGetMethod()!);
             modelIdSetter = (Action<TModel, TModelId>)Delegate.CreateDelegate(typeof(Action<TModel, TModelId>), modelPropertyInfo.GetSetMethod()!);
@@ -47,8 +56,8 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
     {
         var entity = ToEntity(model);
         entity.ThrowIfNull();
-        dbContext.Add(entity);
-        await dbContext.SaveChangesAsync();
+        DbContext.Add(entity);
+        await DbContext.SaveChangesAsync();
         var entityId = entityIdGetter(entity);
         modelIdSetter(model, ToModelId(entityId));
         return model;
@@ -56,7 +65,7 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
 
     public async Task<Dictionary<TModelId, TModel>> GetAllAsync()
     {
-        var models = await dbContext.Set<TEntity>()
+        var models = await DbContext.Set<TEntity>()
             .AsQueryable()
             .AsNoTracking()
             .AsSplitQuery()
@@ -69,21 +78,21 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
         return models;
     }
 
-    public async Task<TModel?> GetAsync(TModelId modelId)
+    public async Task<TModel?> GetAsync(TModelId id)
     {
-        var entity = await dbContext.Set<TEntity>().FindAsync(ToEntityId(modelId));
+        var entity = await DbContext.Set<TEntity>().FindAsync(ToEntityId(id));
 
         if (entity == null)
         {
-            throw new InvalidOperationException($"Can't find entity with id: '{modelId}'");
+            throw new InvalidOperationException($"Can't find entity with id: '{id}'");
         }
 
         return ToModel(entity);
     }
 
-    public async Task<TModel?> TryGetAsync(TModelId modelId)
+    public async Task<TModel?> TryGetAsync(TModelId id)
     {
-        var entity = await dbContext.Set<TEntity>().FindAsync(ToEntityId(modelId));
+        var entity = await DbContext.Set<TEntity>().FindAsync(ToEntityId(id));
         if (entity == null)
         {
             return null;
@@ -99,7 +108,7 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
         var modelId = modelIdGetter(model);
         TEntity updatetedEntity;
 
-        var oldEntityEntry = dbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => entityIdGetter(x.Entity)!.Equals(modelId));
+        var oldEntityEntry = DbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => entityIdGetter(x.Entity)!.Equals(modelId));
         if (oldEntityEntry is not null)
         {
             oldEntityEntry.CurrentValues.SetValues(entityToUpdate);
@@ -107,30 +116,30 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
         }
         else
         {
-            updatetedEntity = dbContext.Update(entityToUpdate).Entity;
+            updatetedEntity = DbContext.Update(entityToUpdate).Entity;
         }
 
-        await dbContext.SaveChangesAsync();
+        await DbContext.SaveChangesAsync();
         var updatedModel = ToModel(updatetedEntity);
         updatedModel.ThrowIfNull();
         return updatedModel;
     }
 
-    public async Task InstaRemoveAsync(TModelId modelId)
+    public async Task InstaRemoveAsync(TModelId id)
     {
-        var oldEntry = dbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => ToModelId(entityIdGetter(x.Entity)).Equals(modelId));
+        var oldEntry = DbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => ToModelId(entityIdGetter(x.Entity)).Equals(id));
         if (oldEntry != null)
         {
-            dbContext.Set<TEntity>().Remove(oldEntry.Entity);
+            DbContext.Set<TEntity>().Remove(oldEntry.Entity);
         }
         else
         {
             var entityToRemove = new TEntity();
-            entityIdSetter(entityToRemove, ToEntityId(modelId));
-            dbContext.Set<TEntity>().Remove(entityToRemove);
+            entityIdSetter(entityToRemove, ToEntityId(id));
+            DbContext.Set<TEntity>().Remove(entityToRemove);
         }
 
-        await dbContext.SaveChangesAsync();
+        await DbContext.SaveChangesAsync();
     }
 
     protected abstract TModelId ToModelId(TEntityId id);
@@ -143,9 +152,14 @@ public abstract class EfInstantCrudRepositoryBase<TEntity, TModelId, TModel> : E
     where TEntity : class, new()
     where TModelId : notnull
 {
-    public EfInstantCrudRepositoryBase(DbContext dbContext, Expression<Func<TEntity, TModelId>> entityIdSelector,
-        Expression<Func<TModel, TModelId>> modelIdSelector, ILogger<EfInstantCrudRepositoryBase<TEntity, TModelId, TModel>> logger) : base(dbContext,
-        entityIdSelector, modelIdSelector, logger)
+    public EfInstantCrudRepositoryBase(DbContext dbContext,
+        Expression<Func<TEntity, TModelId>> entityIdSelector,
+        Expression<Func<TModel, TModelId>> modelIdSelector,
+        ILogger<EfInstantCrudRepositoryBase<TEntity, TModelId, TModel>> logger)
+        : base(dbContext,
+            entityIdSelector,
+            modelIdSelector,
+            logger)
     {
     }
 
@@ -155,14 +169,13 @@ public abstract class EfInstantCrudRepositoryBase<TEntity, TModelId, TModel> : E
 }
 
 /// <summary>
-///     Use when Model class is the same as Entity class
+///     Use when Model class is the same as Entity class.
 /// </summary>
-/// <typeparam name="TModel"></typeparam>
-/// <typeparam name="TModelKey"></typeparam>
 public abstract class EfInstantCrudRepositoryBase<TModel, TModelKey> : EfInstantCrudRepositoryBase<TModel, TModelKey, TModel>
     where TModel : class, new() where TModelKey : notnull
 {
-    protected EfInstantCrudRepositoryBase(DbContext dbContext, Expression<Func<TModel, TModelKey>> modelIdPropertyNameSelector,
+    protected EfInstantCrudRepositoryBase(DbContext dbContext,
+        Expression<Func<TModel, TModelKey>> modelIdPropertyNameSelector,
         ILogger<EfInstantCrudRepositoryBase<TModel, TModelKey>> logger) : base(dbContext, modelIdPropertyNameSelector, modelIdPropertyNameSelector, logger)
     {
     }

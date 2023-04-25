@@ -1,6 +1,5 @@
 ﻿using Basyc.MessageBus.Manager.Infrastructure.Building;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Basyc.MessageBus.Manager.Infrastructure;
 
@@ -8,7 +7,7 @@ public class TypedProviderBuilder
 {
     public TypedProviderBuilder(IServiceCollection services)
     {
-        this.Services = services;
+        Services = services;
     }
 
     public IServiceCollection Services { get; init; }
@@ -24,5 +23,5 @@ public class TypedProviderBuilder
         return this;
     }
 
-    public SetupTypeFormattingStage ChangeFormatting() => new SetupTypeFormattingStage(Services);
+    public SetupTypeFormattingStage ChangeFormatting() => new(Services);
 }

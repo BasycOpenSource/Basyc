@@ -26,7 +26,7 @@ public class TemporaryDirectoryTests : IDisposable
         Array.ForEach(temporaryDirs, x => dirsToCleanAfterTest.Add(x.FullPath));
         temporaryDirs.Should().OnlyHaveUniqueItems();
         bool[] exists = temporaryDirs.Select(x => Directory.Exists(x.FullPath)).ToArray();
-        exists.Should().OnlyContain(x => x == true);
+        exists.Should().OnlyContain(x => x);
     }
 
     [Fact]

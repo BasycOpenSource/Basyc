@@ -3,9 +3,11 @@
 public abstract class TrackingAsyncInstantCrudRepositoryBase<TModel, TKey> : IAsyncInstantCrudRepository<TModel, TKey>, ITrackingChangesRepository<TModel, TKey>
     where TModel : class where TKey : notnull
 {
+    public List<RepositoryAction<TModel, TKey>> Actions { get; } = new();
+
     public abstract Task<Dictionary<TKey, TModel>> GetAllAsync();
 
-    public abstract Task<TModel?> TryGetAsync(TKey key);
+    public abstract Task<TModel?> TryGetAsync(TKey id);
 
     public abstract Task<TModel?> GetAsync(TKey id);
 
@@ -29,6 +31,8 @@ public abstract class TrackingAsyncInstantCrudRepositoryBase<TModel, TKey> : IAs
                     break;
 
                 case CrudActions.Removed:
+                    break;
+                default:
                     break;
             }
         }
@@ -62,8 +66,6 @@ public abstract class TrackingAsyncInstantCrudRepositoryBase<TModel, TKey> : IAs
 
         return Task.FromResult(model);
     }
-
-    public List<RepositoryAction<TModel, TKey>> Actions { get; } = new();
 
     protected abstract TKey GetModelId(TModel model);
 }

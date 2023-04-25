@@ -13,14 +13,14 @@ public class SetupProducersStage : BuilderStageBase
 
     public SetupProducersStage AddInMemoryExporter()
     {
-        services.TryAddSingleton<InMemoryDiagnosticsExporter>();
-        services.AddSingleton<IDiagnosticsExporter, InMemoryDiagnosticsExporter>(x => x.GetRequiredService<InMemoryDiagnosticsExporter>());
-        return new SetupProducersStage(services);
+        Services.TryAddSingleton<InMemoryDiagnosticsExporter>();
+        Services.AddSingleton<IDiagnosticsExporter, InMemoryDiagnosticsExporter>(x => x.GetRequiredService<InMemoryDiagnosticsExporter>());
+        return new SetupProducersStage(Services);
     }
 
     public SetupProducersStage AddNullExporter()
     {
-        services.AddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
-        return new SetupProducersStage(services);
+        Services.AddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
+        return new SetupProducersStage(Services);
     }
 }

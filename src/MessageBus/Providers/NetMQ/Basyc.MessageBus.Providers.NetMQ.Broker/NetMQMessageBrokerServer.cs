@@ -229,26 +229,4 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
             messageCase));
         return mqMessage;
     }
-
-    private NetMQMessage CreateRequestNetMqMessage<TData>(NetMQFrame addressToSend,
-        NetMQFrame requestProducerAddress,
-        TData data,
-        int sessionId,
-        string traceId,
-        string parentSpanId,
-        MessageCase messageCase)
-    {
-        var mqMessage = new NetMQMessage();
-        mqMessage.Append(addressToSend);
-        mqMessage.AppendEmptyFrame();
-        mqMessage.Append(requestProducerAddress);
-        mqMessage.AppendEmptyFrame();
-        mqMessage.Append(messageToByteSerializer.CreateWrapperMessage(data,
-            TypedToSimpleConverter.ConvertTypeToSimple(typeof(TData)),
-            sessionId,
-            traceId,
-            parentSpanId,
-            messageCase));
-        return mqMessage;
-    }
 }

@@ -1,9 +1,6 @@
 ﻿using Basyc.MessageBus.Client.RequestResponse;
-using Basyc.Shared.Helpers;
 using MassTransit;
 using MassTransit.ExtensionsDependencyInjectionIntegration;
-using System;
-using System.Linq;
 
 namespace Basyc.MessageBus.Client.MasstTransit;
 

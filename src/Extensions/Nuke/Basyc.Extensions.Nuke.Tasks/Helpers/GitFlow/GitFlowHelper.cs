@@ -50,7 +50,7 @@ public static class GitFlowHelper
         if (branchName.IsHotfixBranch())
             return new GitFlowBranch.Release(branchName);
 
-        throw new StringNotGitFlowBranch($"Can't determine source branch for '{branchName}'");
+        throw new StringNotGitFlowBranchException($"Can't determine source branch for '{branchName}'");
     }
 
     public static GitFlowBranch GetBranch(string branchName)
@@ -73,7 +73,7 @@ public static class GitFlowHelper
         if (branchName.IsPullRequestBranch())
             return new GitFlowBranch.PullRequest(branchName);
 
-        throw new StringNotGitFlowBranch($"Can't create branch for branch name '{branchName}'");
+        throw new StringNotGitFlowBranchException($"Can't create branch for branch name '{branchName}'");
     }
 
     public static bool IsGitFlowBranch(string branch)
@@ -82,7 +82,7 @@ public static class GitFlowHelper
         {
             GetBranch(branch);
         }
-        catch (StringNotGitFlowBranch)
+        catch (StringNotGitFlowBranchException)
         {
             return false;
         }

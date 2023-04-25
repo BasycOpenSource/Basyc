@@ -14,9 +14,8 @@ public class ActorRegistrator
     }
 
     /// <summary>
-    ///     <typeparamref name="TStartup" /> must be in default namespace besides Actors folder
+    ///     <typeparamref name="TStartup" /> must be in default namespace besides Actors folder.
     /// </summary>
-    /// <typeparam name="TStartup"></typeparam>
     public void RegisterActors<TStartup>() => RegisterActors(typeof(TStartup).Namespace + "/Actors");
 
     public void RegisterActors(string actorsNamespace)

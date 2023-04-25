@@ -14,10 +14,10 @@ public static class RegisterMessagesFromAssemblyStageInterfaceExtensions
         interfaceRegistration.MessageInterfaceType = interfaceType;
         interfaceRegistration.GroupName = fromAssemblyStage.GroupName;
         interfaceRegistration.DisplayNameFormatter = x => x.Name;
-        fromAssemblyStage.services.Configure<InterfaceDomainProviderOptions>(options =>
+        fromAssemblyStage.Services.Configure<InterfaceDomainProviderOptions>(options =>
         {
             options.InterfaceRegistrations.Add(interfaceRegistration);
         });
-        return new SetupDisplayNameStage(fromAssemblyStage.services, interfaceRegistration);
+        return new SetupDisplayNameStage(fromAssemblyStage.Services, interfaceRegistration);
     }
 }

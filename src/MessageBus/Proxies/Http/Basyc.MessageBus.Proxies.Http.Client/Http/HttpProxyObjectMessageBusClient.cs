@@ -112,7 +112,7 @@ public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
         return BusTask<ProxyResponse>.FromValue(proxyResponse.TraceId, new ProxyResponse(deserializedResponse, true, false, proxyResponse.TraceId));
     }
 
-    private class UnknownResponseType
+    private sealed class UnknownResponseType
     {
     }
 }

@@ -3,9 +3,6 @@
 public abstract class QueryableTrackingAsyncInstantCrudRepositoryBase<TModel, TKey> : TrackingAsyncInstantCrudRepositoryBase<TModel, TKey>
     where TModel : class where TKey : notnull
 {
-    protected readonly Func<TModel, TKey> keySelector;
-    protected IQueryable<TModel> allRecords;
-
     public QueryableTrackingAsyncInstantCrudRepositoryBase(IEnumerable<TModel> allRecords,
         Func<TModel, TKey> keySelector) : this(allRecords.AsQueryable(), keySelector)
     {
@@ -18,19 +15,23 @@ public abstract class QueryableTrackingAsyncInstantCrudRepositoryBase<TModel, TK
 
     public QueryableTrackingAsyncInstantCrudRepositoryBase(IQueryable<TModel> allRecords, Func<TModel, TKey> keySelector)
     {
-        this.allRecords = allRecords;
-        this.keySelector = keySelector;
+        this.AllRecords = allRecords;
+        this.KeySelector = keySelector;
     }
 
-    public override Task<TModel?> TryGetAsync(TKey key)
+    protected Func<TModel, TKey> KeySelector { get; init; }
+
+    protected IQueryable<TModel> AllRecords { get; private set; }
+
+    public override Task<TModel?> TryGetAsync(TKey id)
     {
-        var model = allRecords.FirstOrDefault(x => keySelector(x).Equals(key));
+        var model = AllRecords.FirstOrDefault(x => KeySelector(x).Equals(id));
         return Task.FromResult(model)!;
     }
 
     public override Task<Dictionary<TKey, TModel>> GetAllAsync()
     {
-        var models = allRecords.ToDictionary(keySelector);
+        var models = AllRecords.ToDictionary(KeySelector);
         return Task.FromResult(models);
     }
 }

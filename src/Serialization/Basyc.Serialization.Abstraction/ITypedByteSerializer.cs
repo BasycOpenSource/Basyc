@@ -2,7 +2,6 @@
 
 public interface ITypedByteSerializer : ISerializer<object?, byte[], Type>
 {
-
     public bool TrySerialize<T>(T deserializedObject, out byte[]? serializedObject, out SerializationFailure? error)
     {
         try
@@ -18,6 +17,7 @@ public interface ITypedByteSerializer : ISerializer<object?, byte[], Type>
             return false;
         }
     }
+
     public bool TryDeserialize<T>(byte[] serializedObject, out T? deserializedObject, out SerializationFailure? error)
     {
         try

@@ -2,10 +2,6 @@
 
 public struct NullableResult<T>
 {
-    public T Value { get; set; }
-    public bool WasFound { get; init; }
-    public readonly T? DefaultValue { get; init; }
-
     public NullableResult(T value, bool wasFound, bool checkValueType = true)
     {
         Value = value;
@@ -19,6 +15,12 @@ public struct NullableResult<T>
         WasFound = wasFound;
         DefaultValue = defaultValue;
     }
+
+    public T Value { get; set; }
+
+    public bool WasFound { get; init; }
+
+    public readonly T? DefaultValue { get; init; }
 
     private static object? GetDefaultValue(Type type)
     {

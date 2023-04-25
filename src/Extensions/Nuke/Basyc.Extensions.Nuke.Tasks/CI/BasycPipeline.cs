@@ -30,6 +30,7 @@ public class BasycPipeline : ConfigurationAttributeBase
         baseProvider = provider switch
         {
             CiProvider.GithubActions => UseGithub(name, pipelineOs, trigger, branches, targets, importSecrets, importParameters),
+            CiProvider.AzurePipelines => throw new NotImplementedException(),
             _ => throw new NotImplementedException()
         };
     }
@@ -72,6 +73,10 @@ public class BasycPipeline : ConfigurationAttributeBase
                     break;
                 case GitFlowBranchType.Feature:
                     patterns.Add("feature/*");
+                    break;
+                case GitFlowBranchType.PullRequest:
+                    break;
+                default:
                     break;
             }
         }

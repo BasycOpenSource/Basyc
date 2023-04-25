@@ -134,7 +134,7 @@ public static partial class DotNetTasks
         return errorMessages.ToArray();
     }
 
-    private record BatchedReport(ReportBatch[] Batches);
+    private sealed record BatchedReport(ReportBatch[] Batches);
 
-    private record ReportBatch(string SolutionPath, string[] FilesToInclude);
+    private sealed record ReportBatch(string SolutionPath, string[] FilesToInclude);
 }

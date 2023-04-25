@@ -11,7 +11,7 @@ public static class SetupSignalRLogProducerStageExtensions
 {
     public static SetupProducersStage AddSignalRExporter(this SetupProducersStage parent, string signalRServerRootUri = "https://localhost:44310")
     {
-        parent.services.Configure<SignalRLogReceiverOptions>(x =>
+        parent.Services.Configure<SignalRLogReceiverOptions>(x =>
         {
             x.SignalRServerUri = signalRServerRootUri + SignalRConstants.ProducersHubPattern;
         });
@@ -20,14 +20,14 @@ public static class SetupSignalRLogProducerStageExtensions
 
     public static SetupProducersStage AddSignalRExporter(this SetupProducersStage parent, Action<SignalRLogReceiverOptions> optionSetup)
     {
-        parent.services.Configure(optionSetup);
+        parent.Services.Configure(optionSetup);
         return AddSignalRExporter(parent);
     }
 
     public static SetupProducersStage AddSignalRExporter(this SetupProducersStage parent, IConfiguration configuration)
     {
         var sec = configuration.GetSection(nameof(SignalRLogReceiverOptions));
-        parent.services.Configure<SignalRLogReceiverOptions>(sec, o =>
+        parent.Services.Configure<SignalRLogReceiverOptions>(sec, o =>
         {
             o.ErrorOnUnknownConfiguration = true;
         });
@@ -36,7 +36,7 @@ public static class SetupSignalRLogProducerStageExtensions
 
     internal static SetupProducersStage AddSignalRExporter(this SetupProducersStage parent)
     {
-        parent.services.AddSingleton<IDiagnosticsExporter, SignalRDiagnosticsExporter>();
+        parent.Services.AddSingleton<IDiagnosticsExporter, SignalRDiagnosticsExporter>();
         return parent;
     }
 }

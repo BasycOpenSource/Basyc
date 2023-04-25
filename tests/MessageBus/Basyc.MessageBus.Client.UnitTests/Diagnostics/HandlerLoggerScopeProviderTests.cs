@@ -20,7 +20,7 @@ public class HandlerLoggerScopeProviderTests
         var provider = new HandlerLoggerScopeProvider();
         var handlerScope = provider.BeginHandlerScope(new HandlerScopeState(1), new DummyScope("1"));
         handlerScope.Dispose();
-        var action = () => handlerScope.Dispose();
+        var action = handlerScope.Dispose;
         action.Should().Throw<InvalidOperationException>();
     }
 
@@ -71,7 +71,7 @@ public class HandlerLoggerScopeProviderTests
         });
     }
 
-    private class DummyScope : IDisposable
+    private sealed class DummyScope : IDisposable
     {
         public DummyScope(string state)
         {

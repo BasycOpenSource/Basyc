@@ -1,8 +1,6 @@
 ﻿namespace Basyc.MessageBus.Client;
 
 /// <summary>
-/// Contains bytes and its metadata (message type - that can be used for deserailization)
+/// Contains bytes and its metadata (message type - that can be used for deserialization).
 /// </summary>
-/// <param name="ResponseBytes"></param>
-/// <param name="MessageType"></param>
-public record ByteResponse(byte[] ResponseBytes, string ResposneType);
+public record ByteResponse(byte[] ResponseBytes, string ResponseType);

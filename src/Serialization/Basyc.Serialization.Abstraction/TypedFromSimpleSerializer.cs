@@ -11,7 +11,7 @@ public sealed class TypedFromSimpleSerializer : ITypedByteSerializer
         this.byteSerailizer = byteSerailizer;
     }
 
-    public object? Deserialize(byte[] input, Type dataType) => byteSerailizer.Deserialize(input, TypedToSimpleConverter.ConvertTypeToSimple(dataType));
+    public object? Deserialize(byte[] serializedInput, Type dataType) => byteSerailizer.Deserialize(serializedInput, TypedToSimpleConverter.ConvertTypeToSimple(dataType));
 
-    public byte[] Serialize(object? input, Type dataType) => byteSerailizer.Serialize(input, TypedToSimpleConverter.ConvertTypeToSimple(dataType));
+    public byte[] Serialize(object? deserializedObject, Type dataType) => byteSerailizer.Serialize(deserializedObject, TypedToSimpleConverter.ConvertTypeToSimple(dataType));
 }

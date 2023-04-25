@@ -15,14 +15,14 @@ public class SetupHasResponseStage : BuilderStageBase
     public SelectHandlerStage NoResponse()
     {
         registration.HasResponse = false;
-        return new SelectHandlerStage(services, registration);
+        return new SelectHandlerStage(Services, registration);
     }
 
     public SetupResponseStage HasResponse(Type responseType)
     {
         registration.HasResponse = true;
         registration.ResponseType = responseType;
-        return new SetupResponseStage(services, registration);
+        return new SetupResponseStage(Services, registration);
     }
 
     public SetupResponseStage HasResponse<TResponse>() => HasResponse(typeof(TResponse));

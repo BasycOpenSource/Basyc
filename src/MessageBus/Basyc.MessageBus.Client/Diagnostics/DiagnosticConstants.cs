@@ -6,5 +6,5 @@ public static class DiagnosticConstants
 {
     public const string ShouldBeReceived = "IsHandlerActivityBaggage";
 
-    public static readonly ActivitySource HandlerStarted = new ActivitySource("Basyc.Bus.HandlerStarted", "1.0.0");
+    public static readonly ActivitySource HandlerStarted = new("Basyc.Bus.HandlerStarted", "1.0.0");
 }

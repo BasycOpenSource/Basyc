@@ -43,7 +43,7 @@ public class BasycTypedMessageBusRequestHandler : IRequestHandler
         //var dummyStartSegment = requestContext.StartNewSegment("BasycTypedMessageBusRequester.StartRequest DUMMy");
         //var startSegment = DiagnosticHelper.Start("BasycTypedMessageBusRequester.StartRequest", dummyStartSegment.TraceId, dummyStartSegment.Id);
         var startSegment = DiagnosticHelper.Start("BasycTypedMessageBusRequester.StartRequest");
-        var busRequestContext = new Shared.RequestContext(startSegment.Activity?.SpanId.ToString()!, startSegment.Activity?.TraceId.ToString()!);
+        var busRequestContext = new RequestContext(startSegment.Activity?.SpanId.ToString()!, startSegment.Activity?.TraceId.ToString()!);
         var prepareSegment = DiagnosticHelper.Start("Creating request instance");
         var requestType = requestInfoTypeStorage.GetRequestType(requestResult.RequestInput.MessageInfo);
         object?[] paramValues = requestResult.RequestInput.Parameters.Select(x => x.Value).ToArray();

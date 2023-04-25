@@ -18,7 +18,7 @@ public class AppSidebarMessageItemViewModel : BasycReactiveViewModelBase
             x => x.MessageInfo,
             x =>
             {
-                var isSelected = x.Item1 is MessageInfo messageInfo && messageInfo == MessageInfo;
+                var isSelected = x.Source is MessageInfo messageInfo && messageInfo == MessageInfo;
                 return isSelected;
             });
     }

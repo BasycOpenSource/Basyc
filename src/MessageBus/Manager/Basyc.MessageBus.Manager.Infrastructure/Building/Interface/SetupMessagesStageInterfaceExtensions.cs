@@ -12,7 +12,7 @@ public static class SetupMessagesStageInterfaceExtensions
     //  return new SetupGroupStage(parent.services, assembliesToScan);
     // }
 
-    public static TypeFilterStage FromAssemblyScan(this SetupMessagesStage parent, params Assembly[] assembliesToScan) => new TypeFilterStage(parent.services, assembliesToScan);
+    public static TypeFilterStage FromAssemblyScan(this SetupMessagesStage parent, params Assembly[] assembliesToScan) => new(parent.Services, assembliesToScan);
 
     public class TypeFilterStage : BuilderStageBase
     {
@@ -26,19 +26,19 @@ public static class SetupMessagesStageInterfaceExtensions
         public TypesToRegisterStage Where(Func<Type, bool> filter)
         {
             var filteredTypes = assemblies.SelectMany(x => x.DefinedTypes).Where(filter).ToArray();
-            return new TypesToRegisterStage(services, filteredTypes);
+            return new TypesToRegisterStage(Services, filteredTypes);
         }
 
         public TypesToRegisterStage WhereImplements<TImplementedType>()
         {
             var filteredTypes = assemblies.SelectMany(x => x.DefinedTypes).Where(x => x.GetInterface(typeof(TImplementedType).Name) is not null).ToArray();
-            return new TypesToRegisterStage(services, filteredTypes);
+            return new TypesToRegisterStage(Services, filteredTypes);
         }
 
         public TypesToRegisterStage WhereImplements(Type implementedType)
         {
             var filteredTypes = assemblies.SelectMany(x => x.DefinedTypes).Where(x => x.GetInterface(implementedType.Name) is not null).ToArray();
-            return new TypesToRegisterStage(services, filteredTypes);
+            return new TypesToRegisterStage(Services, filteredTypes);
         }
     }
 
@@ -54,7 +54,7 @@ public static class SetupMessagesStageInterfaceExtensions
         public void Register(Action<Type, FluentAddGroupStage> register)
         {
             foreach (var type in types)
-                register.Invoke(type, new FluentAddGroupStage(services));
+                register.Invoke(type, new FluentAddGroupStage(Services));
         }
     }
 }

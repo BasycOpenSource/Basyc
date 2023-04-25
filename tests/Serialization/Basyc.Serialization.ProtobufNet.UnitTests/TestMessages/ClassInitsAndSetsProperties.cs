@@ -10,6 +10,7 @@ public class ClassInitsAndSetsProperties
     public string Name { get; init; }
 
     public string? NickName { get; set; }
+
     public List<string>? NickNames { get; set; }
 
     public int Age { get; init; } = 5;

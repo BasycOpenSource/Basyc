@@ -6,5 +6,5 @@ public static class BusManagerApplicationBuilderBasycMessageBusExtensions
 {
     public static SetupBasycDiagnosticsReceiverMapper AddRequestHandler(this BusManagerApplicationBuilder parent) =>
         // parent.services.TryAddSingleton<IRequester, BasycTypedMessageBusRequester>();
-        new SetupBasycDiagnosticsReceiverMapper(parent.services);
+        new(parent.Services);
 }

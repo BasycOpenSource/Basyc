@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Basyc.Diagnostics.Producing.Shared.Listening.MicrosoftLogging;
 
-internal class ExporterLogger : ILogger
+internal sealed class ExporterLogger : ILogger
 {
     private readonly MicrosoftLoggingDiagnosticListener listener;
 
@@ -29,7 +29,7 @@ internal class ExporterLogger : ILogger
         listener.ReceiveLog(logEntry);
     }
 
-    private class NullScope : IDisposable
+    private sealed class NullScope : IDisposable
     {
         public static IDisposable Instance { get; } = new NullScope();
 

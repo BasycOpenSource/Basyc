@@ -42,7 +42,7 @@ public class ProxyHttpReqeustHandlerTests
         var busErrorMessage = "BUS_ERROR_MESSAGE";
         messageBusMock
             .Setup(x => x.SendAsync(It.IsAny<string>(), It.IsAny<byte[]>(), default, default))
-            .Throws(new Exception(busErrorMessage));
+            .Throws(new InvalidOperationException(busErrorMessage));
 
         Func<Task> taskWrapper = async () =>
         {

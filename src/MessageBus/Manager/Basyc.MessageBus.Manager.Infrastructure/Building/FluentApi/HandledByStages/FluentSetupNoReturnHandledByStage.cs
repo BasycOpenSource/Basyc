@@ -27,8 +27,8 @@ public class FluentSetupNoReturnHandledByStage : BuilderStageBase
             return Task.FromResult<object?>(null);
         }
 
-        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 
     public FluentSetupDomainPostStage HandledBy(Action<RequestInput, ILogger> handler)
@@ -41,8 +41,8 @@ public class FluentSetupNoReturnHandledByStage : BuilderStageBase
             return Task.FromResult<object?>(null);
         }
 
-        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 
     public FluentSetupDomainPostStage HandledBy(Func<ILogger, Task> handler)
@@ -55,7 +55,7 @@ public class FluentSetupNoReturnHandledByStage : BuilderStageBase
             return Task.FromResult<object?>(null);
         }
 
-        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 }

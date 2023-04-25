@@ -6,8 +6,8 @@ public static class BusClientSetupProviderStageNullExtensions
 {
     public static BusClientUseDiagnosticsStage SelectNullClient(this BusClientSetupProviderStage parent)
     {
-        parent.services.AddSingleton<IObjectMessageBusClient, NullObjectMessageBusClient>();
-        parent.services.AddSingleton<ITypedMessageBusClient, NullTypedMessageBusClient>();
-        return new BusClientUseDiagnosticsStage(parent.services);
+        parent.Services.AddSingleton<IObjectMessageBusClient, NullObjectMessageBusClient>();
+        parent.Services.AddSingleton<ITypedMessageBusClient, NullTypedMessageBusClient>();
+        return new BusClientUseDiagnosticsStage(parent.Services);
     }
 }

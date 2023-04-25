@@ -1,8 +1,14 @@
 ﻿namespace Basyc.Extensions.SignalR.Client.Tests.Helpers;
+#pragma warning disable SA1649
+#pragma warning disable SA1201
+
+public interface ICorrectMethodsClientCanCallNoMethods
+{
+}
 
 public static class CorrectMethodsClientCanCallHubs
 {
-    public static Type[] CorrectMethodsClientCanCallTypes =
+    public static readonly Type[] CorrectMethodsClientCanCallTypes =
     {
         typeof(ICorrectMethodsClientCanCallNoMethods),
         typeof(ICorrectMethodsClientCanCallVoids),
@@ -12,22 +18,23 @@ public static class CorrectMethodsClientCanCallHubs
     };
 }
 
-public interface ICorrectMethodsClientCanCallNoMethods
-{
-}
-
 public interface ICorrectMethodsClientCanCallVoids
 {
     void SendNothing();
+
     void SendNumber(int number);
+
     void SendIntString(int number, string name);
 }
 
 public interface ICorrectMethodsClientCanCallTasks
 {
     Task SendNothingAsync();
+
     Task SendIntAsync(int number);
+
     Task SendIntCancelAsync(int number, CancellationToken cancellationToken);
+
     Task SendIntStringCancelAsync(int number, string name, CancellationToken cancellationToken);
 }
 

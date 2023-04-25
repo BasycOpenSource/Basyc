@@ -13,5 +13,5 @@ public class SetupGroupStage : BuilderStageBase
         this.assemblies = assemblies;
     }
 
-    public RegisterMessagesFromAssemblyStage InGroup(string groupName) => new RegisterMessagesFromAssemblyStage(services, groupName, assemblies);
+    public RegisterMessagesFromAssemblyStage InGroup(string groupName) => new(Services, groupName, assemblies);
 }

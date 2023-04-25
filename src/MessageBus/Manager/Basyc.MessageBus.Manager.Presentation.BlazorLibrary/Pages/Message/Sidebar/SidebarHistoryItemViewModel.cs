@@ -36,7 +36,7 @@ public class SidebarHistoryItemViewModel : BasycReactiveViewModelBase
             x => x.IsSelected,
             x => x.NavigationService!.CurrentQueryParams,
             x => x.MessageRequest,
-            x => x.Item1 is MessageRequest messageRequest && messageRequest == x.Item2);
+            x => x.Source is MessageRequest messageRequest && messageRequest == x.Source2);
     }
 
     [Reactive] public MessageRequest? MessageRequest { get; set; }

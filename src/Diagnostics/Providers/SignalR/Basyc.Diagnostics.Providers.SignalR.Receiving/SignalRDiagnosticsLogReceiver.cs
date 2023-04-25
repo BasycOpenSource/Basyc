@@ -52,7 +52,7 @@ public class SignalRDiagnosticsLogReceiver : IDiagnosticReceiver, IReceiversMeth
     private void ReceiveLogEntriesFromServer(LogEntrySignalRDto[] logEntriesDtos)
     {
         var logEntries = logEntriesDtos
-            .Select(x => LogEntrySignalRDto.ToEntry(x))
+            .Select(LogEntrySignalRDto.ToEntry)
             .ToArray();
         OnLogsReceived(logEntries);
     }
@@ -60,7 +60,7 @@ public class SignalRDiagnosticsLogReceiver : IDiagnosticReceiver, IReceiversMeth
     private void ReceiveStartedActivitiesFromServer(ActivityStartSignalRDto[] activitiesDtos)
     {
         var activities = activitiesDtos
-            .Select(x => ActivityStartSignalRDto.ToEntry(x))
+            .Select(ActivityStartSignalRDto.ToEntry)
             .ToArray();
 
         OnActivityStartsReceived(activities);
@@ -69,7 +69,7 @@ public class SignalRDiagnosticsLogReceiver : IDiagnosticReceiver, IReceiversMeth
     private void ReceiveEndedActivitiesFromServer(ActivityEndSignalRDto[] activitiesDtos)
     {
         var activities = activitiesDtos
-            .Select(x => ActivityEndSignalRDto.ToEntry(x))
+            .Select(ActivityEndSignalRDto.ToEntry)
             .ToArray();
 
         OnActivityEndsReceived(activities);

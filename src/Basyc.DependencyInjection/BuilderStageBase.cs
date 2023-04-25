@@ -4,10 +4,10 @@ namespace Basyc.DependencyInjection;
 
 public class BuilderStageBase
 {
-    public readonly IServiceCollection services;
-
     public BuilderStageBase(IServiceCollection services)
     {
-        this.services = services;
+        this.Services = services;
     }
+
+    public IServiceCollection Services { get; init; }
 }

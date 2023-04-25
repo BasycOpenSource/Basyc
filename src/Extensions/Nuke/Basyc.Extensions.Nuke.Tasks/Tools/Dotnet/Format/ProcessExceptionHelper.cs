@@ -1,10 +1,8 @@
-﻿using Nuke.Common;
-using Nuke.Common.Tooling;
+﻿using Nuke.Common.Tooling;
 using Nuke.Common.Utilities.Collections;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text;
-using LogLevel = Nuke.Common.LogLevel;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
 public static class ProcessExceptionHelper

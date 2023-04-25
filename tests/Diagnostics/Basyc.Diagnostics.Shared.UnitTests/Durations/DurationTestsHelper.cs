@@ -3,5 +3,5 @@
 public static class DurationTestsHelper
 {
     public const int TaskDelayPrecisionMs = 150;
-    public static TimeSpan TaskDelayPrecision = TimeSpan.FromMilliseconds(TaskDelayPrecisionMs);
+    public static readonly TimeSpan TaskDelayPrecision = TimeSpan.FromMilliseconds(TaskDelayPrecisionMs);
 }

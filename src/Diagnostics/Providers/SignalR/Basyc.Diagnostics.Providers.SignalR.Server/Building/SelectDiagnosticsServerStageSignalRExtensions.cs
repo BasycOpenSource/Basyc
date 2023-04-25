@@ -8,14 +8,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class SelectDiagnosticsServerStageSignalRExtensions
 {
     /// <summary>
-    ///     Call <see cref="WepApplicationDiagnosticsSignalRExtensions.MapBasycSignalRDiagnosticsServer(WebApplication, string)" /> to start.
+    ///     Call <see cref="WepApplicationDiagnosticsSignalRExtensions.MapBasycSignalRDiagnosticsServer(WebApplication, string, string)" /> to start.
     /// </summary>
     public static void SelectSignalRPusher(this SelectDiagnosticsServerStage parent)
     {
-        parent.services.AddSignalR();
-        parent.services.TryAddSingleton<InMemoryServerDiagnosticReceiver>();
-        parent.services.AddSingleton<IServerDiagnosticReceiver, InMemoryServerDiagnosticReceiver>(x =>
+        parent.Services.AddSignalR();
+        parent.Services.TryAddSingleton<InMemoryServerDiagnosticReceiver>();
+        parent.Services.AddSingleton<IServerDiagnosticReceiver, InMemoryServerDiagnosticReceiver>(x =>
             x.GetRequiredService<InMemoryServerDiagnosticReceiver>());
-        parent.services.AddSingleton<IServerDiagnosticPusher, SignalRServerDiagnosticPusher>();
+        parent.Services.AddSingleton<IServerDiagnosticPusher, SignalRServerDiagnosticPusher>();
     }
 }

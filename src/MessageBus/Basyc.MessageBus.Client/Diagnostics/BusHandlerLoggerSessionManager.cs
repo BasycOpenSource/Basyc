@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-namespace Basyc.MessageBus.Client.Diagnostics;
+﻿namespace Basyc.MessageBus.Client.Diagnostics;
 
 public static class BusHandlerLoggerSessionManager
 {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
 
 namespace Basyc.MessageBus.Client.Diagnostics.Sinks;
 

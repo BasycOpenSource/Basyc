@@ -21,6 +21,6 @@ public class FluentAddMessageStage : BuilderStageBase
             MessageType = MessageType.Generic
         };
         fluentApiGroup.InProgressMessages.Add(newMessage);
-        return new FluentSetupMessageStage(services, newMessage, fluentApiGroup);
+        return new FluentSetupMessageStage(Services, newMessage, fluentApiGroup);
     }
 }

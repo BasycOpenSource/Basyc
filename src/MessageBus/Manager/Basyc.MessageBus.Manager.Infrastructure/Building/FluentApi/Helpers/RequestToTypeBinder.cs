@@ -8,7 +8,7 @@ public class RequestToTypeBinder
 {
     public RequestToTypeBinder(Type messageRuntimeType)
     {
-        this.MessageRuntimeType = messageRuntimeType;
+        MessageRuntimeType = messageRuntimeType;
         MessageClassProperties = messageRuntimeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
     }
 

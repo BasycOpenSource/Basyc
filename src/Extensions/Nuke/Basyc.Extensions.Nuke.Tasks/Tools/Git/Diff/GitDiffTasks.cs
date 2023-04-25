@@ -67,8 +67,8 @@ public static partial class GitTasks
                 string changeParentDir = GetGitParentDirectoryRelativePath(changeRelativePath);
                 if (solutionIsInGitRoot || solutionDirectoryRelativePath == changeParentDir)
                 {
-                    var sol = solutionChanges.Last();
-                    sol.SolutionChanged = true;
+                    var (solutionPath, solutionChanged, solutionItems, projectChanges2) = solutionChanges.Last();
+                    solutionChanged = true;
                     continue;
                 }
 

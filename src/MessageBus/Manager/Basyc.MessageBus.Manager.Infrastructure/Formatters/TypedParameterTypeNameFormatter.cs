@@ -56,7 +56,7 @@ public class TypedParameterTypeNameFormatter : ITypedParameterNameFormatter
 
         if (type.IsGenericType)
         {
-            return type.Name.Split('`')[0] + "<" + string.Join(", ", type.GetGenericArguments().Select(x => GetFriendlyName(x)).ToArray()) + ">";
+            return type.Name.Split('`')[0] + "<" + string.Join(", ", type.GetGenericArguments().Select(GetFriendlyName).ToArray()) + ">";
         }
 
         if (type.IsArray)

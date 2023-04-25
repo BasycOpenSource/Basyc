@@ -93,8 +93,8 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
             return Task.FromResult<object?>(returnObject);
         }
 
-        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, WrapperHandler);
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, WrapperHandler);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 
     public FluentSetupDomainPostStage HandledBy<TReturn>(Func<ReadOnlyCollection<Parameter>, ILogger, TReturn> handler)
@@ -107,7 +107,7 @@ public class FluentSetupTypeOfReturnStage : BuilderStageBase
             return Task.FromResult<object?>(returnObject);
         }
 
-        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, WrapperHandler);
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, WrapperHandler);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 }

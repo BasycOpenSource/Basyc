@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
+﻿namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
 public interface IRequestDiagnosticsSource
 {

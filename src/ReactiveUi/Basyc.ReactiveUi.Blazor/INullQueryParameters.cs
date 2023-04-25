@@ -3,4 +3,3 @@
 public interface INullQueryParameters
 {
 }
-

@@ -1,32 +1,32 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Basyc.DependencyInjection;
 
+#pragma warning disable SA1402
 public abstract class DependencyBuilderBase<TParentBuilder>
 {
-    public readonly IServiceCollection services;
     private readonly TParentBuilder parentBuilder;
 
     public DependencyBuilderBase(IServiceCollection services, TParentBuilder parentBuilder)
     {
-        this.services = services;
+        this.Services = services;
         this.parentBuilder = parentBuilder;
     }
 
+    public IServiceCollection Services { get; init; }
+
     /// <summary>
-    /// Allows continuing configuring previous builder
+    /// Allows continuing configuring previous builder.
     /// </summary>
-    /// <returns></returns>
     public TParentBuilder Back() => parentBuilder;
 }
 
 public abstract class DependencyBuilderBase
 {
-    public readonly IServiceCollection services;
-
     public DependencyBuilderBase(IServiceCollection services)
     {
-        this.services = services;
+        this.Services = services;
     }
+
+    public IServiceCollection Services { get; init; }
 }

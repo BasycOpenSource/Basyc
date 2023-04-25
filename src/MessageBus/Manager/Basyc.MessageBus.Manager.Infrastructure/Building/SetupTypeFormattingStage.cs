@@ -9,7 +9,7 @@ public class SetupTypeFormattingStage
 {
     public SetupTypeFormattingStage(IServiceCollection services)
     {
-        this.Services = services;
+        Services = services;
         SetDefaultFormatting();
     }
 

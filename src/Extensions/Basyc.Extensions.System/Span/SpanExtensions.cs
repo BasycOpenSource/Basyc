@@ -27,7 +27,7 @@ public static class SpanExtensions
         for (int itemIndex = 0; itemIndex < span.Length; itemIndex++)
         {
             var item = span[itemIndex];
-            if (object.Equals(item, itemToFind))
+            if (Equals(item, itemToFind))
                 return itemIndex;
         }
 

@@ -9,7 +9,7 @@ public static class SelectReceiverProviderStageSignalRExtensions
 {
     public static SetupSignalRReceiverStage SelectSignalRReceiver(this SelectReceiverProviderStage parent)
     {
-        parent.services.AddSingleton<IDiagnosticReceiver, SignalRDiagnosticsLogReceiver>();
-        return new SetupSignalRReceiverStage(parent.services);
+        parent.Services.AddSingleton<IDiagnosticReceiver, SignalRDiagnosticsLogReceiver>();
+        return new SetupSignalRReceiverStage(parent.Services);
     }
 }

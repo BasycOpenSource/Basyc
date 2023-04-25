@@ -1,5 +1,4 @@
 ﻿using Basyc.Diagnostics.Shared.Logging;
-using System;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 

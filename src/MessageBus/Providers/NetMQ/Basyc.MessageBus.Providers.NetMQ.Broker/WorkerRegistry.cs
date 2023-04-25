@@ -16,8 +16,10 @@ public class WorkerRegistry : IWorkerRegistry
             }
             else
             {
-                var newWorkerList = new List<string>();
-                newWorkerList.Add(workerId);
+                var newWorkerList = new List<string>
+                {
+                    workerId
+                };
                 workerStorage.Add(supportedMessage, new MessageTypeRecord(supportedMessage, newWorkerList, 0));
             }
         }

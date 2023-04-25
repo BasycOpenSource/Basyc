@@ -32,11 +32,11 @@ public class ProxyHttpRequestHandler
             await busTaskValue.Match(
                 async byteResponse =>
                 {
-                    var proxyResponse = new ResponseHttpDto(busTask.TraceId, byteResponse.ResponseBytes, byteResponse.ResposneType);
+                    var proxyResponse = new ResponseHttpDto(busTask.TraceId, byteResponse.ResponseBytes, byteResponse.ResponseType);
                     var proxyResponseBytes = serializer.Serialize(proxyResponse, proxyResponseSimpleDataType);
                     await context.Response.BodyWriter.WriteAsync(proxyResponseBytes);
                 },
-                busRequestError => throw new Exception(busRequestError.Message));
+                busRequestError => throw new InvalidOperationException(busRequestError.Message));
         }
         else
         {
@@ -49,7 +49,7 @@ public class ProxyHttpRequestHandler
                     var proxyResponseBytes = serializer.Serialize(proxyResponse, proxyResponseSimpleDataType);
                     await context.Response.BodyWriter.WriteAsync(proxyResponseBytes);
                 },
-                busRequestError => throw new Exception(busRequestError.Message));
+                busRequestError => throw new InvalidOperationException(busRequestError.Message));
         }
     }
 }

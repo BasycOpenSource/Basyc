@@ -1,6 +1,5 @@
 ﻿using Basyc.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Basyc.DomainDrivenDesign.DependencyInjection;
 

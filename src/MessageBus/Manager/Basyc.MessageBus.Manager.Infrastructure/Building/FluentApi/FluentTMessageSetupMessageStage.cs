@@ -16,13 +16,13 @@ public class FluentTMessageSetupMessageStage<TMessage> : BuilderStageBase
         this.fluentApiGroup = fluentApiGroup;
     }
 
-    public FluentSetupNoReturnHandledByStage NoReturn() => new FluentSetupNoReturnHandledByStage(services, fluentApiMessage, fluentApiGroup);
+    public FluentSetupNoReturnHandledByStage NoReturn() => new(Services, fluentApiMessage, fluentApiGroup);
 
     public FluentTMessageSetupReturnStage<TMessage> Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)
     {
         fluentApiMessage.ResponseRunTimeType = messageResponseRuntimeType;
         fluentApiMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
-        return new FluentTMessageSetupReturnStage<TMessage>(services, fluentApiMessage, fluentApiGroup);
+        return new FluentTMessageSetupReturnStage<TMessage>(Services, fluentApiMessage, fluentApiGroup);
     }
 
     public FluentTMessageSetupReturnStage<TMessage> Returns(Type messageResponseRuntimeType) => Returns(messageResponseRuntimeType, messageResponseRuntimeType.Name);
@@ -37,6 +37,6 @@ public class FluentTMessageSetupMessageStage<TMessage> : BuilderStageBase
     {
         fluentApiMessage.ResponseRunTimeType = typeof(TResponse);
         fluentApiMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
-        return new FluentTMessageTReturnSetupReturnStage<TMessage, TResponse>(services, fluentApiMessage, fluentApiGroup);
+        return new FluentTMessageTReturnSetupReturnStage<TMessage, TResponse>(Services, fluentApiMessage, fluentApiGroup);
     }
 }

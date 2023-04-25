@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Basyc.Shared.Models;
+﻿namespace Basyc.Shared.Models;
 
 public class ContactModel
 {
@@ -16,6 +10,8 @@ public class ContactModel
     }
 
     public string Email { get; set; }
+
     public string PhoneNumber { get; set; }
+
     public AddressModel Address { get; set; }
 }

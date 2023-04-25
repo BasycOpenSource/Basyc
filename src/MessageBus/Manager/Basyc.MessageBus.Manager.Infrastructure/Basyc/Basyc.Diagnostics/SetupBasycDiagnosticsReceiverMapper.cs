@@ -16,8 +16,8 @@ public class SetupBasycDiagnosticsReceiverMapper : BuilderStageBase
     /// </summary>
     public SetupRequesterStage NoTraceIdMapper()
     {
-        services.AddSingleton<IBasycDiagnosticsReceiverTraceIdMapper, NullBasycDiagnosticsReceiverTraceIdMapper>();
-        return new SetupRequesterStage(services);
+        Services.AddSingleton<IBasycDiagnosticsReceiverTraceIdMapper, NullBasycDiagnosticsReceiverTraceIdMapper>();
+        return new SetupRequesterStage(Services);
     }
 
     /// <summary>
@@ -25,9 +25,9 @@ public class SetupBasycDiagnosticsReceiverMapper : BuilderStageBase
     /// </summary>
     public SetupRequesterStage UseTraceIdMapper<TMapper>() where TMapper : class, IBasycDiagnosticsReceiverTraceIdMapper
     {
-        services.RemoveAll<IBasycDiagnosticsReceiverTraceIdMapper>();
-        services.AddSingleton<TMapper>();
-        services.AddSingleton<IBasycDiagnosticsReceiverTraceIdMapper, TMapper>(x => x.GetRequiredService<TMapper>());
-        return new SetupRequesterStage(services);
+        Services.RemoveAll<IBasycDiagnosticsReceiverTraceIdMapper>();
+        Services.AddSingleton<TMapper>();
+        Services.AddSingleton<IBasycDiagnosticsReceiverTraceIdMapper, TMapper>(x => x.GetRequiredService<TMapper>());
+        return new SetupRequesterStage(Services);
     }
 }

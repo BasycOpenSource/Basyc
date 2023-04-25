@@ -3,22 +3,20 @@
 public interface IAsyncReadRepository<TModel, TKey> where TKey : notnull
 {
     /// <summary>
-    ///     Returns all records as dictionary
+    ///     Returns all records as dictionary.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     Task<Dictionary<TKey, TModel>> GetAllAsync();
 
     /// <summary>
-    ///     Throws exception when not found,
+    ///     Throws exception when not found.
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     Task<TModel?> GetAsync(TKey id);
 
     /// <summary>
-    ///     Returns default when not found,
+    ///     Returns default when not found.
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     Task<TModel?> TryGetAsync(TKey id);
 }

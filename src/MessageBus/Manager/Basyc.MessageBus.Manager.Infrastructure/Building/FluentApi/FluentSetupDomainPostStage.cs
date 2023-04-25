@@ -12,7 +12,7 @@ public class FluentSetupDomainPostStage : BuilderStageBase
         this.inProgressGroup = inProgressGroup;
     }
 
-    public FluentSetupMessageStage AddMessage(string messageDisplayName) => new FluentAddMessageStage(services, inProgressGroup).AddMessage(messageDisplayName);
+    public FluentSetupMessageStage AddMessage(string messageDisplayName) => new FluentAddMessageStage(Services, inProgressGroup).AddMessage(messageDisplayName);
 
-    public FluentAddMessageStage AddDomain(string domainName) => new FluentAddGroupStage(services).InGroup(domainName);
+    public FluentAddMessageStage AddDomain(string domainName) => new FluentAddGroupStage(Services).InGroup(domainName);
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Basyc.MessageBus.HttpProxy.Client.Http;
+﻿namespace Basyc.MessageBus.HttpProxy.Client.Http;
 
 public class HttpProxyObjectMessageBusClientOptions
 {

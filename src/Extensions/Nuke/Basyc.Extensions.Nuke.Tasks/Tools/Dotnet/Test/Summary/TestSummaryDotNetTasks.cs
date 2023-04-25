@@ -190,14 +190,7 @@ public static partial class DotNetTasks
     private static string GetProjectTag(ProjectCoverageReport project)
     {
         string projectNameTag = string.Empty;
-        if (project.CoverageExcluded)
-        {
-            projectNameTag = "(excluded)";
-        }
-        else
-        {
-            projectNameTag = project.TestProjectFound ? string.Empty : $"[{newBadColor}](tests missing)[/]";
-        }
+        projectNameTag = project.CoverageExcluded ? "(excluded)" : project.TestProjectFound ? string.Empty : $"[{newBadColor}](tests missing)[/]";
 
         return projectNameTag;
     }

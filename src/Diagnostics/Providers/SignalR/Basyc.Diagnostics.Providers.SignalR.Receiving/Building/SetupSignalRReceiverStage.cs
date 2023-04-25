@@ -14,14 +14,14 @@ public class SetupSignalRReceiverStage : BuilderStageBase
     public SetupSignalRReceiverStage UseConfiguration(IConfiguration configuration)
     {
         var sec = configuration.GetSection(nameof(SignalRLogReceiverOptions));
-        services.Configure<SignalRLogReceiverOptions>(sec, o =>
+        Services.Configure<SignalRLogReceiverOptions>(sec, o =>
         {
             o.ErrorOnUnknownConfiguration = true;
         });
         return this;
     }
 
-    public void SetServerUri(string serverUri, string receiverHubPattern = SignalRConstants.ReceiversHubPattern) => services.Configure<SignalRLogReceiverOptions>(options =>
+    public void SetServerUri(string serverUri, string receiverHubPattern = SignalRConstants.ReceiversHubPattern) => Services.Configure<SignalRLogReceiverOptions>(options =>
                                                                                                                          {
                                                                                                                              options.SignalRServerReceiverHubUri = serverUri + receiverHubPattern;
                                                                                                                          });

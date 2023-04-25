@@ -8,9 +8,9 @@ public static class SelectListenForStageMicrosoftLoggingExtensions
 {
     public static SelectListenForStage AnyLog(this SelectListenForStage parent)
     {
-        parent.services.AddSingleton<MicrosoftLoggingDiagnosticListener>();
-        parent.services.AddSingleton<IDiagnosticListener, MicrosoftLoggingDiagnosticListener>(x => x.GetRequiredService<MicrosoftLoggingDiagnosticListener>());
-        parent.services.AddLogging(x => x.AddBasycExporterLog());
+        parent.Services.AddSingleton<MicrosoftLoggingDiagnosticListener>();
+        parent.Services.AddSingleton<IDiagnosticListener, MicrosoftLoggingDiagnosticListener>(x => x.GetRequiredService<MicrosoftLoggingDiagnosticListener>());
+        parent.Services.AddLogging(x => x.AddBasycExporterLog());
         return parent;
     }
 }

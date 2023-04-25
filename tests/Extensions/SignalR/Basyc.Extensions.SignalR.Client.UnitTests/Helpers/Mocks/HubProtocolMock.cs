@@ -8,16 +8,17 @@ namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
 
 public class HubProtocolMock : IHubProtocol
 {
-    private Queue<HubProtocolMockMessage> mockMessages { get; set; } = new();
-
     public HubProtocolMock()
     {
     }
+
     public string Name => nameof(HubProtocolMock);
 
     public int Version => 1;
 
     public TransferFormat TransferFormat => throw new NotImplementedException();
+
+    private Queue<HubProtocolMockMessage> MockMessages { get; set; } = new();
 
     public ReadOnlyMemory<byte> GetMessageBytes(HubMessage message) => throw new NotImplementedException();
 
@@ -25,7 +26,7 @@ public class HubProtocolMock : IHubProtocol
 
     public bool TryParseMessage(ref ReadOnlySequence<byte> input, IInvocationBinder binder, [NotNullWhen(true)] out HubMessage? message)
     {
-        if (mockMessages.TryDequeue(out var getterMessage) is false)
+        if (MockMessages.TryDequeue(out var getterMessage) is false)
         {
             message = null;
             return false;
@@ -39,8 +40,7 @@ public class HubProtocolMock : IHubProtocol
 
     public void WriteMessage(HubMessage message, IBufferWriter<byte> output)
     {
-
     }
 
-    public void AddReceivingMessage(HubProtocolMockMessage message) => mockMessages.Enqueue(message);
+    public void AddReceivingMessage(HubProtocolMockMessage message) => MockMessages.Enqueue(message);
 }

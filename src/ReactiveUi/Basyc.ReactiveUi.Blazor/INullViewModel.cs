@@ -5,4 +5,3 @@ namespace Basyc.ReactiveUi.Blazor;
 public interface INullViewModel : INotifyPropertyChanged
 {
 }
-

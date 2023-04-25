@@ -12,6 +12,7 @@ public static class LogIconTypeHelper
         LogLevel.Warning => LogIconType.Warning,
         LogLevel.Error => LogIconType.Error,
         LogLevel.Critical => LogIconType.Error,
+        LogLevel.None => throw new NotImplementedException(),
         _ => throw new ArgumentException("Incorrect logLevel")
     };
 }

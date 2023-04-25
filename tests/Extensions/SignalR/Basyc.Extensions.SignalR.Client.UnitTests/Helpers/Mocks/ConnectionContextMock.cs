@@ -5,23 +5,28 @@ using System.IO.Pipelines;
 
 namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
 
-internal class ConnectionContextMock : ConnectionContext
+internal sealed class ConnectionContextMock : ConnectionContext
 {
-
     public ConnectionContextMock(Pipe pipe)
     {
         Transport = new DuplexPipeMock(pipe);
     }
+
     public override IDuplexPipe Transport { get; set; }
+
     public override string ConnectionId { get; set; } = "-1";
 
     public override IFeatureCollection Features { get; } = new FeatureCollectionMock();
 
     public override IDictionary<object, object?> Items { get; set; } = new Dictionary<object, object?>();
 
-    private class FeatureCollectionMock : IFeatureCollection
+    private sealed class FeatureCollectionMock : IFeatureCollection
     {
-        private readonly Dictionary<Type, object?> map = new Dictionary<Type, object?>();
+        private readonly Dictionary<Type, object?> map = new();
+
+        public bool IsReadOnly => true;
+
+        public int Revision => 1;
 
         public object? this[Type key]
         {
@@ -29,10 +34,6 @@ internal class ConnectionContextMock : ConnectionContext
 
             set => map[key] = value;
         }
-
-        public bool IsReadOnly => true;
-
-        public int Revision => 1;
 
         public TFeature? Get<TFeature>()
         {

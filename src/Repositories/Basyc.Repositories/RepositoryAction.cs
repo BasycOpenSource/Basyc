@@ -10,6 +10,8 @@ public class RepositoryAction<TModel, TKey>
     }
 
     public string ActionType { get; set; }
+
     public TModel? NewModelData { get; set; }
+
     public TKey Id { get; set; }
 }

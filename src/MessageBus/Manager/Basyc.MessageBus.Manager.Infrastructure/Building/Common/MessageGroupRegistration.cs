@@ -1,6 +1,4 @@
-﻿using Basyc.MessageBus.Manager.Application.Building;
-
-namespace Basyc.MessageBus.Manager.Infrastructure.Building.Common;
+﻿namespace Basyc.MessageBus.Manager.Infrastructure.Building.Common;
 
 public record MessageGroupRegistration(string Name)
 {

@@ -11,5 +11,5 @@ public class SelectDiagnosticStage : BuilderStageBase
     {
     }
 
-    public void NoDiagnostics() => services.TryAddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
+    public void NoDiagnostics() => Services.TryAddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
 }

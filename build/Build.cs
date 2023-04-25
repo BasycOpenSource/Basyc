@@ -7,6 +7,7 @@ using Basyc.Extensions.Nuke.Tasks.Tools.GitFlow;
 using Nuke.Common;
 using Nuke.Common.CI.GitHubActions;
 using Nuke.Common.ProjectModel;
+#pragma warning disable IDE0052 // Remove unread private members
 
 [BasycContinuousPipeline(
     CiProvider.GithubActions,
@@ -22,7 +23,7 @@ using Nuke.Common.ProjectModel;
     new[] { nameof(IBasycBuildNugetAll.NugetReleaseAll) },
     new[] { nameof(nugetApiKey) },
     new[] { nameof(nugetSource) })]
-class Build : NukeBuild, IBasycBuilds
+sealed class Build : NukeBuild, IBasycBuilds
 {
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;

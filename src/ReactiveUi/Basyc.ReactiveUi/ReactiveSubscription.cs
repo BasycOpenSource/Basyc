@@ -12,4 +12,3 @@ public class ReactiveSubscription : IDisposable
 
     public void Dispose() => subscription.Dispose();
 }
-

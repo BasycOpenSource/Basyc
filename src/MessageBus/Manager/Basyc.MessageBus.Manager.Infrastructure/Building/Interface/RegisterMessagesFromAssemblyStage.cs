@@ -8,8 +8,8 @@ public class RegisterMessagesFromAssemblyStage : BuilderStageBase
 {
     public RegisterMessagesFromAssemblyStage(IServiceCollection services, string groupName, params Assembly[] assembliesToScan) : base(services)
     {
-        this.AssembliesToScan = assembliesToScan;
-        this.GroupName = groupName;
+        AssembliesToScan = assembliesToScan;
+        GroupName = groupName;
     }
 
     public Assembly[] AssembliesToScan { get; init; }

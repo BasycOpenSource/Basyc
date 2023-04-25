@@ -15,6 +15,6 @@ public class SetupResponseStage : BuilderStageBase
     public SelectHandlerStage SetResponseDisplayName(string responseTypeDislpayName)
     {
         registration.ResponseDisplayName = responseTypeDislpayName;
-        return new SelectHandlerStage(services, registration);
+        return new SelectHandlerStage(Services, registration);
     }
 }

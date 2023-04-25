@@ -18,16 +18,18 @@ public class TraderModel
     }
 
     public string TraderName { get; }
+
     public AddressModel Address { get; }
+
     public ContactModel Contact { get; }
 
     /// <summary>
-    ///     ICO in czech
+    ///     ICO in czech.
     /// </summary>
     public string Cin { get; }
 
     /// <summary>
-    ///     DIC in czech
+    ///     DIC in czech.
     /// </summary>
     public string VatId { get; }
 }

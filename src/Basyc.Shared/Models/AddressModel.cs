@@ -14,10 +14,16 @@ public class AddressModel
     }
 
     public string Country { get; set; }
+
     public string Region { get; set; }
+
     public string District { get; set; }
+
     public string Town { get; set; }
+
     public string Street { get; set; }
+
     public int PostCode { get; set; }
+
     public string HouseNumber { get; set; }
 }

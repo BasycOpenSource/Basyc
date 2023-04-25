@@ -3,5 +3,6 @@
 public interface ISharedRequestIdCounter
 {
     int GetLastId();
+
     int GetNextId();
 }

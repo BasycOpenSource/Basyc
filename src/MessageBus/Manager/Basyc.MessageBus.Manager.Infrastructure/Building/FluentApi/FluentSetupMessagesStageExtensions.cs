@@ -16,7 +16,7 @@ public static class FluentSetupMessagesStageExtensions
         //  return x.ImplementationType == typeof(FluentApiDomainInfoProvider);
         // });
         // if (wasRegistered is false)
-        parent.services.AddSingleton<IMessageInfoProvider, FluentApiMessageInfoProvider>();
-        return new FluentAddGroupStage(parent.services);
+        parent.Services.AddSingleton<IMessageInfoProvider, FluentApiMessageInfoProvider>();
+        return new FluentAddGroupStage(parent.Services);
     }
 }

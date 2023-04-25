@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-
-namespace Basyc.MessageBus.HttpProxy.Server.Asp.Http;
+﻿namespace Basyc.MessageBus.HttpProxy.Server.Asp.Http;
 
 public static class HttpProxyConstants
 {

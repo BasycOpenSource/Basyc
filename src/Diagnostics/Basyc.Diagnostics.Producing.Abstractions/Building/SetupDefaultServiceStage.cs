@@ -14,6 +14,6 @@ public class SetupDefaultServiceStage : BuilderStageBase
     {
         var serviceIdentity = new ServiceIdentity(serviceName);
         ServiceIdentity.ApplicationWideIdentity = serviceIdentity;
-        return new SetupProducersStage(services);
+        return new SetupProducersStage(Services);
     }
 }

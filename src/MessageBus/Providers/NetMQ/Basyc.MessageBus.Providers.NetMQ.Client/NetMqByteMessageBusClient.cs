@@ -17,7 +17,7 @@ using System.Text;
 namespace Basyc.MessageBus.Client.NetMQ;
 
 //https://zguide.zeromq.org/docs/chapter3/#A-Load-Balancing-Message-Broker
-public class NetMqByteMessageBusClient : IByteMessageBusClient
+public class NetMqByteMessageBusClient : IByteMessageBusClient, IDisposable
 {
     private static readonly string tokenString = "PublicKeyToken=null";
     private static readonly int tokenLenght = "PublicKeyToken=nul".Length;
@@ -225,6 +225,12 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient
                         }
 
                         break;
+                    case MessageCase.CheckIn:
+                        break;
+                    case MessageCase.Request:
+                        break;
+                    case MessageCase.Event:
+                        break;
                     default:
                         throw new NotImplementedException();
                 }
@@ -243,14 +249,7 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient
         }
         else
         {
-            if (Activity.Current is not null)
-            {
-                traceId = Activity.Current.TraceId.ToString();
-            }
-            else
-            {
-                traceId = IdGeneratorHelper.GenerateNewTraceId();
-            }
+            traceId = Activity.Current is not null ? Activity.Current.TraceId.ToString() : IdGeneratorHelper.GenerateNewTraceId();
         }
 
         string requesterSpanId;
@@ -260,14 +259,7 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient
         }
         else
         {
-            if (Activity.Current is not null)
-            {
-                requesterSpanId = Activity.Current.SpanId.ToString();
-            }
-            else
-            {
-                requesterSpanId = IdGeneratorHelper.GenerateNewSpanId();
-            }
+            requesterSpanId = Activity.Current is not null ? Activity.Current.SpanId.ToString() : IdGeneratorHelper.GenerateNewSpanId();
         }
 
         //var publishActivity = DiagnosticHelper.Start("NetMQByteMessageBusClient.PublishAsync", traceId, requesterSpanId);
@@ -362,7 +354,7 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient
             logger.LogInformation("Requested '{Type}'", FormatType(requestType));
             var sessionResult = await newSession.ResponseSource.Task;
             requestActivity.Stop();
-            return new ByteResponse(sessionResult.bytes, sessionResult.responseType);
+            return new ByteResponse(sessionResult.Bytes, sessionResult.ResponseType);
         });
 
         return BusTask<ByteResponse>.FromTask(newSession.TraceId!, task);

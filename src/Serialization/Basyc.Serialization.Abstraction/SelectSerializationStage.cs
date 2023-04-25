@@ -2,10 +2,10 @@
 
 public class SelectSerializationStage
 {
-    public readonly IServiceCollection services;
-
     public SelectSerializationStage(IServiceCollection services)
     {
-        this.services = services;
+        this.Services = services;
     }
+
+    public IServiceCollection Services { get; init; }
 }

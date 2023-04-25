@@ -7,8 +7,64 @@ namespace Basyc.Serialization.ProtobufNet;
 
 public class ProtobufByteSerializer : ITypedByteSerializer
 {
-    public static ProtobufByteSerializer Singlenton = new();
+    public static readonly ProtobufByteSerializer Singlenton = new();
+
     private static readonly Dictionary<Type, PreparedTypeMetadata> knownTypes = new();
+
+    public byte[] Serialize(object? deserializedObject, Type dataType)
+    {
+        var typeMetadata = PrepareSerializer(dataType);
+
+        if (deserializedObject == null)
+        {
+            return Array.Empty<byte>();
+        }
+
+        if (typeMetadata.HasZeroProperties)
+        {
+            return Array.Empty<byte>();
+        }
+
+        using var stream = new MemoryStream();
+        Serializer.Serialize(stream, deserializedObject);
+        return stream.ToArray();
+    }
+
+    public object? Deserialize(byte[] serializedInput, Type dataType)
+    {
+        PrepareSerializer(dataType);
+
+        if (serializedInput == null)
+        {
+            return dataType.GetDefaultValue();
+        }
+
+        var stream = new MemoryStream(serializedInput);
+        stream.Write(serializedInput, 0, serializedInput.Length);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        object result = Serializer.Deserialize(dataType, stream);
+        return result;
+    }
+
+    public bool TrySerialize<T>(T deserializedObject, out byte[]? serializedObject, out SerializationFailure? error)
+    {
+        var thisCasted = (ITypedByteSerializer)this;
+        return thisCasted.TrySerialize(deserializedObject, typeof(T), out serializedObject, out error);
+    }
+
+    public bool TryDeserialize<T>(byte[] serializedObject, out T? deserializedObject, out SerializationFailure? error)
+    {
+        var thisCasted = (ITypedByteSerializer)this;
+        bool wasSuccesful = thisCasted.TryDeserialize(serializedObject, typeof(T), out object? inputObject, out error);
+        deserializedObject = (T?)inputObject;
+        return wasSuccesful;
+    }
+
+    public byte[] Serialize<T>(object? deserializedObject) => Serialize(deserializedObject, typeof(T));
+
+    public object? Deserialize<T>(byte[] serializedObject) => Deserialize(serializedObject, typeof(T));
+
     private static PreparedTypeMetadata PrepareSerializer(Type typeToPrepare)
     {
         if (knownTypes.TryGetValue(typeToPrepare, out var metadata))
@@ -30,11 +86,10 @@ public class ProtobufByteSerializer : ITypedByteSerializer
             {
                 if (TryFixWithSkippingEmptyCtor(typeToPrepare) is false)
                 {
-
                     RuntimeTypeModel.Default.Add(typeToPrepare);
                     if (RuntimeTypeModel.Default.CanSerialize(typeToPrepare) is false)
                     {
-                        throw new Exception($"Could not prepare type '{typeToPrepare.Name}'");
+                        throw new InvalidOperationException($"Could not prepare type '{typeToPrepare.Name}'");
                     }
                 }
             }
@@ -46,8 +101,6 @@ public class ProtobufByteSerializer : ITypedByteSerializer
     /// <summary>
     /// Workaround for scenarios when class has empty ctor. Returns false when fix cant be applied.
     /// </summary>
-    /// <param name="typeToPrepare"></param>
-    /// <returns></returns>
     private static bool TryFixWithSkippingEmptyCtor(Type typeToPrepare)
     {
         if (IsTypeHavingExtraEmptyCtorProblem(typeToPrepare))
@@ -149,59 +202,4 @@ public class ProtobufByteSerializer : ITypedByteSerializer
 
         return hadProblem;
     }
-
-    public byte[] Serialize(object? input, Type dataType)
-    {
-        var typeMetadata = PrepareSerializer(dataType);
-
-        if (input == null)
-        {
-            return new byte[0];
-        }
-
-        if (typeMetadata.HasZeroProperties)
-        {
-            return new byte[0];
-        }
-
-        using var stream = new MemoryStream();
-        Serializer.Serialize(stream, input);
-        return stream.ToArray();
-    }
-
-    public object? Deserialize(byte[] input, Type dataType)
-    {
-        PrepareSerializer(dataType);
-
-        if (input == null)
-        {
-            return dataType.GetDefaultValue();
-        }
-
-        var stream = new MemoryStream(input);
-        stream.Write(input, 0, input.Length);
-        stream.Seek(0, SeekOrigin.Begin);
-
-        object result = Serializer.Deserialize(dataType, stream);
-        return result;
-    }
-
-    public bool TrySerialize<T>(T input, out byte[]? output, out SerializationFailure? error)
-    {
-        var thisCasted = (ITypedByteSerializer)this;
-        return thisCasted.TrySerialize(input, typeof(T), out output, out error);
-    }
-
-    public bool TryDeserialize<T>(byte[] serializedInput, out T? input, out SerializationFailure? error)
-    {
-        var thisCasted = (ITypedByteSerializer)this;
-        bool wasSuccesful = thisCasted.TryDeserialize(serializedInput, typeof(T), out object? inputObject, out error);
-        input = (T?)inputObject;
-        return wasSuccesful;
-
-    }
-
-    public byte[] Serialize<T>(object? deserializedObject) => Serialize(deserializedObject, typeof(T));
-
-    public object? Deserialize<T>(byte[] serializedObject) => Deserialize(serializedObject, typeof(T));
 }

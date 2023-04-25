@@ -1,9 +1,4 @@
 ﻿using Basyc.MessageBus.NetMQ.Shared.Cases;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Basyc.MessageBus.NetMQ.Shared;
 
@@ -11,7 +6,7 @@ public class DeserializationResult
 {
     private DeserializationResult(MessageCase messageCase)
     {
-        this.MessageCase = messageCase;
+        MessageCase = messageCase;
         Failed = false;
     }
 
@@ -55,13 +50,13 @@ public class DeserializationResult
 
     public bool Failed { get; init; }
 
-    public static DeserializationResult CreateCheckIn(CheckInMessage checkIn) => new DeserializationResult(checkIn);
+    public static DeserializationResult CreateCheckIn(CheckInMessage checkIn) => new(checkIn);
 
-    public static DeserializationResult CreateRequest(RequestCase requestCase) => new DeserializationResult(requestCase);
+    public static DeserializationResult CreateRequest(RequestCase requestCase) => new(requestCase);
 
-    public static DeserializationResult CreateResponse(ResponseCase responseCase) => new DeserializationResult(responseCase);
+    public static DeserializationResult CreateResponse(ResponseCase responseCase) => new(responseCase);
 
-    public static DeserializationResult CreateEvent(EventCase eventCase) => new DeserializationResult(eventCase);
+    public static DeserializationResult CreateEvent(EventCase eventCase) => new(eventCase);
 
-    public static DeserializationResult CreateDeserializationFailure(DeserializationFailureCase failure) => new DeserializationResult(failure);
+    public static DeserializationResult CreateDeserializationFailure(DeserializationFailureCase failure) => new(failure);
 }

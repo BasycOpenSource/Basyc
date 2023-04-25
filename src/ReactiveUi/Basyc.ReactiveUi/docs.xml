@@ -3,7 +3,7 @@
 <Docs>
 	<ReactiveProperty>
 		<SummaryStart>
-			Binds a view-model's property to another view-model's property
+			Binds a view-model's property to another view-model's property.
 		</SummaryStart>
 		<Remarks>
 			<remarks>

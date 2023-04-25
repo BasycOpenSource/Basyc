@@ -1,7 +1,5 @@
 ﻿using Basyc.MessageBus.Shared;
 using Basyc.Serialization.Abstraction;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Basyc.MessageBus.Client;
 
@@ -16,13 +14,13 @@ public class ByteFromObjectMessageBusClient : IByteMessageBusClient
         this.byteSerailizer = byteSerailizer;
     }
 
-    public BusTask PublishAsync(string eventType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.PublishAsync(eventType, cancellationToken);
+    public BusTask PublishAsync(string eventType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.PublishAsync(eventType, cancellationToken, cancellationToken: cancellationToken);
 
     public BusTask PublishAsync(string eventType, byte[] eventData, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.PublishAsync(eventType, eventData, requestContext, cancellationToken);
 
     public BusTask<ByteResponse> RequestAsync(string requestType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
     {
-        var innerBusTask = objectMessageBusClient.RequestAsync(requestType, cancellationToken);
+        var innerBusTask = objectMessageBusClient.RequestAsync(requestType, cancellationToken, cancellationToken: cancellationToken);
         return innerBusTask.ContinueWith<ByteResponse>(x => new ByteResponse((byte[])x, "unknown"));
     }
 
@@ -38,7 +36,7 @@ public class ByteFromObjectMessageBusClient : IByteMessageBusClient
         });
     }
 
-    public BusTask SendAsync(string commandType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.SendAsync(commandType, cancellationToken);
+    public BusTask SendAsync(string commandType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.SendAsync(commandType, cancellationToken, cancellationToken: cancellationToken);
 
     public BusTask SendAsync(string commandType, byte[] commandData, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.SendAsync(commandType, commandData, requestContext, cancellationToken);
 

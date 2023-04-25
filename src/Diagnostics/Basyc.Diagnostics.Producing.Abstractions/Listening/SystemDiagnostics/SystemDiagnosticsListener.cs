@@ -1,9 +1,10 @@
-﻿using System.Diagnostics;
-using Basyc.Diagnostics.Shared;
+﻿using Basyc.Diagnostics.Shared;
 using Basyc.Diagnostics.Shared.Logging;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace Basyc.Diagnostics.Producing.Shared.Listening.SystemDiagnostics;
+#pragma warning disable CS0067 // The event 'SystemDiagnosticsListener.LogsReceived' is never used
 
 public class SystemDiagnosticsListener : IDiagnosticListener
 {

@@ -1,4 +1,5 @@
 ﻿namespace System;
+#pragma warning disable SA1612
 
 public static class GenericsHelper
 {
@@ -42,11 +43,9 @@ public static class GenericsHelper
     }
 
     /// <summary>
-    ///     Get generic argument from base class
+    ///     Get generic argument from base class.
     /// </summary>
-    /// <param name="childType"></param>
-    /// <param name="parentType">parent type that should contain generic parameters</param>
-    /// <returns></returns>
+    /// <param name="parentType">parent type that should contain generic parameters.</param>
     public static Type[] GetTypeArgumentsFromParent(this Type childType, Type parentType)
     {
         if (parentType.IsGenericTypeDefinition is false)

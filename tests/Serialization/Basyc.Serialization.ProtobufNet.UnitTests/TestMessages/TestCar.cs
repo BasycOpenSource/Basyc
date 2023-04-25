@@ -15,5 +15,6 @@ public class TestCar
     }
 
     public string Name { get; init; }
+
     public DateTime AssemblyDate { get; init; }
 }

@@ -26,7 +26,7 @@ public class HandlerLoggerScopeProvider
         return this.handlerScopeState.Value != null;
     }
 
-    private class HandlerScopeEnder : IDisposable
+    private sealed class HandlerScopeEnder : IDisposable
     {
         private readonly AsyncLocal<HandlerScopeState?> handlerScopeState;
         private readonly Stack<ScopeWrapper> scopes;
@@ -52,5 +52,5 @@ public class HandlerLoggerScopeProvider
         }
     }
 
-    private record ScopeWrapper(HandlerScopeState State, IDisposable NormalLoggerScope);
+    private sealed record ScopeWrapper(HandlerScopeState State, IDisposable NormalLoggerScope);
 }

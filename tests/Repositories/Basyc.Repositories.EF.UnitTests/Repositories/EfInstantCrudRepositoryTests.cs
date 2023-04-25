@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Basyc.Repositories.EF.Tests.Repositories;
 
-public class EfInstantCrudRepositoryTests
+public class EfInstantCrudRepositoryTests : IDisposable
 {
     private readonly TestDbContext dbContext;
 
@@ -90,4 +90,6 @@ public class EfInstantCrudRepositoryTests
         personFromRepo.ThrowIfNull();
         personFromRepo.Name.Should().Be(newName);
     }
+
+    public void Dispose() => throw new NotImplementedException();
 }

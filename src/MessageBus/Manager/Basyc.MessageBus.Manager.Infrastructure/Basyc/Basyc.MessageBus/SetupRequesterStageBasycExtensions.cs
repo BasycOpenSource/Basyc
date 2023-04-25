@@ -8,7 +8,7 @@ public static class SetupRequesterStageBasycExtensions
 {
     public static SetupTypeFormattingStage UseBasycMessageBusHandler(this SetupRequesterStage parent)
     {
-        parent.services.AddSingleton<IRequestHandler, BasycTypedMessageBusRequestHandler>();
-        return new SetupTypeFormattingStage(parent.services);
+        parent.Services.AddSingleton<IRequestHandler, BasycTypedMessageBusRequestHandler>();
+        return new SetupTypeFormattingStage(parent.Services);
     }
 }

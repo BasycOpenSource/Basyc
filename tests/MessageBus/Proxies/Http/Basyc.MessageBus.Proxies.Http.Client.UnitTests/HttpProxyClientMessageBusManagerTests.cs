@@ -6,7 +6,7 @@ using Moq;
 
 namespace Basyc.MessageBus.HttpProxy.Client.Tests;
 
-public class HttpProxyClientMessageBusManagerTests
+public class HttpProxyClientMessageBusManagerTests : IDisposable
 {
     private readonly HttpProxyObjectMessageBusClient manager;
     private readonly Mock<HttpMessageHandler> httpHandlerMock;
@@ -18,6 +18,8 @@ public class HttpProxyClientMessageBusManagerTests
         var options = Options.Create(new HttpProxyObjectMessageBusClientOptions() { ProxyHostUri = new Uri("https://localhost:6969/") });
         manager = new HttpProxyObjectMessageBusClient(options, serilizer);
     }
+
+    public void Dispose() => throw new NotImplementedException();
 
     //[Fact]
     //public async Task Should_Send_On_Valid()

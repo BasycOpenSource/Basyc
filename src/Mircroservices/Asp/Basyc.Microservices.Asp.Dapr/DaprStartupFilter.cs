@@ -1,12 +1,8 @@
 ﻿using Basyc.MessageBus.Client;
-using Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Linq;
 
 namespace Basyc.MicroService.Asp.Dapr;
 
@@ -25,7 +21,7 @@ public class DaprStartupFilter : IStartupFilter
                                                                                                next(app);
                                                                                            };
 
-    private void Configure(IApplicationBuilder app)
+    private static void Configure(IApplicationBuilder app)
     {
         var env = app.ApplicationServices.GetRequiredService<IHostEnvironment>();
 

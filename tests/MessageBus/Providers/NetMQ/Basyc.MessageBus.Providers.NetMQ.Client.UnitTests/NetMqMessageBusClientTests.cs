@@ -18,10 +18,8 @@ public class NetMqMessageBusClientTests
     }
 
     [Fact]
-    public async Task Work()
-    {
-        //var res = await client.RequestAsync<TestRequest, Customer>();
-    }
+    public async Task Work() => await Task.Delay(100);
+    //var res = await client.RequestAsync<TestRequest, Customer>();
 }
 
 public record TestRequest : IMessage<Customer>;

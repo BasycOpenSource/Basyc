@@ -1,8 +1,6 @@
 ﻿using Basyc.MessageBus.Client;
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.HttpProxy.Client.Http;
-using Basyc.Serialization.Abstraction;
-using System.Net.Http;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -10,12 +8,12 @@ public static class BusClientSetupProxyStageHttpExtensions
 {
     public static SetupHttpProxyStage UseHttpProxy(this BusClientSetupProviderStage builder)
     {
-        builder.services.AddBasycSerialization()
+        builder.Services.AddBasycSerialization()
             .SelectProtobufNet();
-        builder.services.AddSingleton(new HttpClient());
-        builder.services.AddSingleton<IObjectMessageBusClient, HttpProxyObjectMessageBusClient>();
-        builder.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
+        builder.Services.AddSingleton(new HttpClient());
+        builder.Services.AddSingleton<IObjectMessageBusClient, HttpProxyObjectMessageBusClient>();
+        builder.Services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
 
-        return new SetupHttpProxyStage(builder.services);
+        return new SetupHttpProxyStage(builder.Services);
     }
 }

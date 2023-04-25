@@ -7,6 +7,6 @@ public static class ServiceProviderDiagnosticServerExtensions
     public static Task StartBasycDiagnosticServer(this IServiceProvider serviceProvider)
     {
         var server = serviceProvider.GetRequiredService<DiagnosticServer>();
-        return server.Start();
+        return DiagnosticServer.Start();
     }
 }

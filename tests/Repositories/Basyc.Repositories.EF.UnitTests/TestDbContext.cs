@@ -9,5 +9,6 @@ public class TestDbContext : DbContext
     }
 
     public DbSet<PersonEntity> People { get; set; } = null!;
+
     public DbSet<CarEntity> Cars { get; set; } = null!;
 }

@@ -5,6 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <PreferredUILang>en</PreferredUILang>
+        <!--https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA0001.md-->
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
+        <!--xx-->
     </PropertyGroup>
 
     <ItemGroup>

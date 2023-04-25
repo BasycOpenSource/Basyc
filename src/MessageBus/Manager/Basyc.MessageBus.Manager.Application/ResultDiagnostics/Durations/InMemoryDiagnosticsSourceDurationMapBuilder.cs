@@ -5,7 +5,7 @@ using Basyc.Diagnostics.Shared.Logging;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics.Durations;
 
-internal class InMemoryDiagnosticsSourceDurationMapBuilder : InMemoryDiagnosticsSourceDurationSegmentBuilder, IDurationMapBuilder
+internal sealed class InMemoryDiagnosticsSourceDurationMapBuilder : InMemoryDiagnosticsSourceDurationSegmentBuilder, IDurationMapBuilder
 {
     private readonly InMemoryRequestDiagnosticsSource diagnosticsSource;
     private readonly string? parentId;

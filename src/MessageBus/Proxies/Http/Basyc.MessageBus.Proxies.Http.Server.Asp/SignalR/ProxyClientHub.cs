@@ -31,7 +31,7 @@ public partial class ProxyClientHub : Hub<IClientMethodsServerCanCall>, IMethods
             await busTaskValue.Match(
                 async byteResponse =>
                 {
-                    var response = new ResponseSignalRDto(busTask.TraceId, true, byteResponse.ResponseBytes, byteResponse.ResposneType);
+                    var response = new ResponseSignalRDto(busTask.TraceId, true, byteResponse.ResponseBytes, byteResponse.ResponseType);
                     LogSendingResponse(proxyRequest.MessageType);
                     await Clients.Caller.ReceiveRequestResult(response);
                 },

@@ -4,15 +4,15 @@ public static class ColorHelper
 {
     public static Color GetColorFromText(string textInput, double saturation, double saturationRandomness = 0, double opacity = 1)
     {
-        if (saturation < 0 || saturation > 1)
+        if (saturation is < 0 or > 1)
             throw new ArgumentException("bad value", nameof(saturation));
 
-        if (opacity < 0 || opacity > 1)
+        if (opacity is < 0 or > 1)
             throw new ArgumentException("bad value", nameof(opacity));
 
         var opacity255 = GetHexPercentage(opacity);
 
-        if (saturationRandomness < 0 || saturationRandomness > 1)
+        if (saturationRandomness is < 0 or > 1)
             throw new ArgumentException("bad value", nameof(saturationRandomness));
 
         int saturationRandomness255 = (int)Math.Round(255 * saturationRandomness);
@@ -42,7 +42,7 @@ public static class ColorHelper
 
     public static string GetHexPercentage(double percantage)
     {
-        if (percantage < 0 || percantage > 1)
+        if (percantage is < 0 or > 1)
             throw new ArgumentException("bad value", nameof(percantage));
 
         var percentage255 = (int)Math.Round(255 * percantage);
@@ -51,7 +51,7 @@ public static class ColorHelper
 
     public static string GetHexPercentage(int percantage)
     {
-        if (percantage < 0 || percantage > 100)
+        if (percantage is < 0 or > 100)
             throw new ArgumentException("bad value", nameof(percantage));
 
         var percentage255 = (int)Math.Round(2.55 * percantage);

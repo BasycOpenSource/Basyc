@@ -5,7 +5,7 @@ namespace Basyc.MessageBus.Manager.Application.Tests.Durations;
 
 public class DurationSegmentBuilderTests
 {
-    private static ServiceIdentity serviceIdentity = new ServiceIdentity("test");
+    private static ServiceIdentity serviceIdentity = new("test");
 
     [Fact]
     public void When_BuildingEmpty_Should_BeEmpty()
@@ -18,8 +18,8 @@ public class DurationSegmentBuilderTests
         var segment = segmentBuilder.Build();
 
         segment.NestedSegments.Length.Should().Be(0);
-        segment.StartTime.Should().NotBe(default(DateTimeOffset));
-        segment.EndTime.Should().NotBe(default(DateTimeOffset));
+        segment.StartTime.Should().NotBe(default);
+        segment.EndTime.Should().NotBe(default);
     }
 
     [Theory]
@@ -37,7 +37,26 @@ public class DurationSegmentBuilderTests
         allBuilders.All(x => x.HasEnded).Should().BeTrue();
     }
 
-    private InMemoryDurationSegmentBuilder CreateNesting(uint nestedSegmentsNumber, uint levelOfNestingInNestedSegments, out List<IDurationSegmentBuilder> allBuilders)
+    [Fact]
+    public void EndAndStart_Should_HaveSameEndAndStarTimes()
+    {
+        var rootSegmentBuilder = new InMemoryDurationSegmentBuilder(serviceIdentity, "1", "1", "root");
+        rootSegmentBuilder.Start();
+        var nestedSegmentBuilder1 = rootSegmentBuilder.StartNested("nested1");
+        var nestedSegmentBuilder2 = nestedSegmentBuilder1.EndAndStartFollowing("nested2");
+
+        nestedSegmentBuilder1.HasEnded.Should().BeTrue();
+        nestedSegmentBuilder2.HasEnded.Should().BeFalse();
+
+        nestedSegmentBuilder1.EndTime.Should().Be(nestedSegmentBuilder2.StartTime);
+        nestedSegmentBuilder2.EndTime.Should().Be(default);
+
+        var rootSegment = rootSegmentBuilder.Build();
+        rootSegment.NestedSegments.Length.Should().Be(2);
+        rootSegment.NestedSegments.All(x => x.NestedSegments.Length == 0).Should().BeTrue();
+    }
+
+    private static InMemoryDurationSegmentBuilder CreateNesting(uint nestedSegmentsNumber, uint levelOfNestingInNestedSegments, out List<IDurationSegmentBuilder> allBuilders)
     {
         allBuilders = new List<IDurationSegmentBuilder>();
         const string segmentName = "segmentName";
@@ -58,28 +77,9 @@ public class DurationSegmentBuilderTests
         }
 
         uint levelOfNesteding = levelOfNestingInNestedSegments + 1;
-        ((uint)allBuilders.Count).Should().Be(1 + nestedSegmentsNumber * levelOfNesteding);
+        ((uint)allBuilders.Count).Should().Be(1 + (nestedSegmentsNumber * levelOfNesteding));
 
         return rootSegmentBuilder;
-    }
-
-    [Fact]
-    public void EndAndStart_Should_HaveSameEndAndStarTimes()
-    {
-        var rootSegmentBuilder = new InMemoryDurationSegmentBuilder(serviceIdentity, "1", "1", "root");
-        rootSegmentBuilder.Start();
-        var nestedSegmentBuilder1 = rootSegmentBuilder.StartNested("nested1");
-        var nestedSegmentBuilder2 = nestedSegmentBuilder1.EndAndStartFollowing("nested2");
-
-        nestedSegmentBuilder1.HasEnded.Should().BeTrue();
-        nestedSegmentBuilder2.HasEnded.Should().BeFalse();
-
-        nestedSegmentBuilder1.EndTime.Should().Be(nestedSegmentBuilder2.StartTime);
-        nestedSegmentBuilder2.EndTime.Should().Be(default(DateTimeOffset));
-
-        var rootSegment = rootSegmentBuilder.Build();
-        rootSegment.NestedSegments.Length.Should().Be(2);
-        rootSegment.NestedSegments.All(x => x.NestedSegments.Length == 0).Should().BeTrue();
     }
 
     [Theory]

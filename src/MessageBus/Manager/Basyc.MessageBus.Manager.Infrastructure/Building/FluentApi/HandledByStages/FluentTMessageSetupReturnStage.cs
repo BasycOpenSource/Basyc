@@ -32,7 +32,7 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
         }
 
         fluentApiMessage.RequestHandler = WrapperHandler;
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 
 #pragma warning disable SA1027
@@ -75,7 +75,7 @@ public class FluentTMessageSetupReturnStage<TMessage> : BuilderStageBase
             return Task.FromResult<object?>(returnObject);
         }
 
-        ReturnStageHelper.RegisterMessageRegistration(services, fluentApiGroup, fluentApiMessage, WrapperHandler);
-        return new FluentSetupDomainPostStage(services, fluentApiGroup);
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, WrapperHandler);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 }

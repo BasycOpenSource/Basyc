@@ -23,12 +23,7 @@ public interface ILocalizatedSection
     bool InheritsDefaultCulture { get; set; }
 
     /// <summary>
-    /// Checks if this section supports localization for provided culture.
-    /// </summary>
-
-    //Task<bool> IsCultureSupportedAsync(CultureInfo cultureInfo);
-    /// <summary>
-    ///     <see cref="string" /> key is <see cref="CultureInfo.Name" />
+    ///     <see cref="string" /> key is <see cref="CultureInfo.Name" />.
     /// </summary>
     IReadOnlyDictionary<string, CultureInfo> SupportedCultures { get; }
 

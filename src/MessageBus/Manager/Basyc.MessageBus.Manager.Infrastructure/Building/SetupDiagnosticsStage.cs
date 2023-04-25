@@ -9,5 +9,5 @@ public class SetupDiagnosticsStage : BuilderStageBase
     {
     }
 
-    public SetupRequesterStage NoDiagnostics() => new SetupRequesterStage(services);
+    public SetupRequesterStage NoDiagnostics() => new(Services);
 }

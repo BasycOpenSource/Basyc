@@ -17,7 +17,10 @@ public class TestCustomer
     }
 
     public string FirstName { get; init; }
+
     public string LastName { get; init; }
+
     public int Age { get; init; }
+
     public TestCar Car { get; init; }
 }

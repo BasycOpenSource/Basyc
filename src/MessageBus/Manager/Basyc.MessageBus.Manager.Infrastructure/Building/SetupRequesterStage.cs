@@ -14,7 +14,7 @@ public class SetupRequesterStage : BuilderStageBase
     public SetupTypeFormattingStage UseHandler<TRequestHandler>()
         where TRequestHandler : class, IRequestHandler
     {
-        services.TryAddSingleton<IRequestHandler, TRequestHandler>();
-        return new SetupTypeFormattingStage(services);
+        Services.TryAddSingleton<IRequestHandler, TRequestHandler>();
+        return new SetupTypeFormattingStage(Services);
     }
 }

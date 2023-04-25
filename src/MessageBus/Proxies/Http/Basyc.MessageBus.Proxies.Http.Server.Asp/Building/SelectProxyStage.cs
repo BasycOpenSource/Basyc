@@ -1,5 +1,4 @@
 ﻿using Basyc.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Basyc.MessageBus.HttpProxy.Server.Asp.Building;
 

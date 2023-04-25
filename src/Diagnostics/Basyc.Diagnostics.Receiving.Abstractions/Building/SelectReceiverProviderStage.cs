@@ -12,8 +12,8 @@ public class SelectReceiverProviderStage : BuilderStageBase
 
     public SetupInMemoryReceiverStage AddInMemoryReceiver()
     {
-        services.TryAddSingleton<InMemoryDiagnosticReceiver>();
-        services.AddSingleton<IDiagnosticReceiver, InMemoryDiagnosticReceiver>(x => x.GetRequiredService<InMemoryDiagnosticReceiver>());
-        return new SetupInMemoryReceiverStage(services);
+        Services.TryAddSingleton<InMemoryDiagnosticReceiver>();
+        Services.AddSingleton<IDiagnosticReceiver, InMemoryDiagnosticReceiver>(x => x.GetRequiredService<InMemoryDiagnosticReceiver>());
+        return new SetupInMemoryReceiverStage(Services);
     }
 }

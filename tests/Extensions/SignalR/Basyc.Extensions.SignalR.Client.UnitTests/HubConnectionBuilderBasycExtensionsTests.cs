@@ -65,6 +65,6 @@ public class HubConnectionBuilderBasycExtensionsTests
     {
         var connectionMock = new HubConnectionMockBuilder().BuildAsMock();
         var hubClient = connectionMock.CreateStrongTyped(new WrongHubClientIsClassNumbersExceptions());
-        hubClient.Call.Invoking(x => x.ThrowNumberVoid(1)).Should().Throw<MethodExceptionHelperException>();
+        hubClient.Call.Invoking(x => WrongHubClientIsClassNumbersExceptions.ThrowNumberVoid(1)).Should().Throw<MethodExceptionHelperException>();
     }
 }

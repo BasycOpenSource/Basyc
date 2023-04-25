@@ -1,11 +1,5 @@
 ﻿using Dapr.Client;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Basyc.MicroService.Dapr.MessageBus.Handlers;
 
@@ -19,5 +13,6 @@ public abstract class DaprRequestHandler<TRequest, TResponse> : IRequestHandler<
         this.daprClient = daprClient;
         this.appName = appName;
     }
+
     public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken) => daprClient.InvokeMethodAsync<TRequest, TResponse>(appName, nameof(TResponse), request, cancellationToken);
 }
