@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using System.Reflection;
 using Throw;
+
 // ReSharper disable InconsistentNaming
 #pragma warning disable SA1402
 #pragma warning disable SA1401
@@ -16,14 +17,6 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
     where TEntity : class, new()
     where TModelId : notnull
 {
-    protected static Func<TEntity, TEntityId> entityIdGetter = null!;
-
-    protected static Action<TEntity, TEntityId> entityIdSetter = null!;
-
-    protected static Func<TModel, TModelId> modelIdGetter = null!;
-
-    protected static Action<TModel, TModelId> modelIdSetter = null!;
-
     private static bool isInitialized;
 
     public EfAsyncInstantCrudRepositoryBase(DbContext dbContext,
@@ -38,19 +31,27 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
             imodeldPropertyExpression.ThrowIfNull();
             var modelPropertyInfo = imodeldPropertyExpression.Member as PropertyInfo;
             modelPropertyInfo.ThrowIfNull();
-            modelIdGetter = (Func<TModel, TModelId>)Delegate.CreateDelegate(typeof(Func<TModel, TModelId>), modelPropertyInfo.GetGetMethod()!);
-            modelIdSetter = (Action<TModel, TModelId>)Delegate.CreateDelegate(typeof(Action<TModel, TModelId>), modelPropertyInfo.GetSetMethod()!);
+            ModelIdGetter = (Func<TModel, TModelId>)Delegate.CreateDelegate(typeof(Func<TModel, TModelId>), modelPropertyInfo.GetGetMethod()!);
+            ModelIdSetter = (Action<TModel, TModelId>)Delegate.CreateDelegate(typeof(Action<TModel, TModelId>), modelPropertyInfo.GetSetMethod()!);
 
             var entityIdPropertyExpression = entityIdPropertyNameSelector.Body as MemberExpression;
             entityIdPropertyExpression.ThrowIfNull();
             var entityPropertyInfo = entityIdPropertyExpression.Member as PropertyInfo;
             entityPropertyInfo.ThrowIfNull();
-            entityIdGetter = (Func<TEntity, TEntityId>)Delegate.CreateDelegate(typeof(Func<TEntity, TEntityId>), entityPropertyInfo.GetGetMethod()!);
-            entityIdSetter = (Action<TEntity, TEntityId>)Delegate.CreateDelegate(typeof(Action<TEntity, TEntityId>), entityPropertyInfo.GetSetMethod()!);
+            EntityIdGetter = (Func<TEntity, TEntityId>)Delegate.CreateDelegate(typeof(Func<TEntity, TEntityId>), entityPropertyInfo.GetGetMethod()!);
+            EntityIdSetter = (Action<TEntity, TEntityId>)Delegate.CreateDelegate(typeof(Action<TEntity, TEntityId>), entityPropertyInfo.GetSetMethod()!);
         }
 
         isInitialized = true;
     }
+
+    protected static Func<TEntity, TEntityId> EntityIdGetter { get; private set; } = null!;
+
+    protected static Action<TEntity, TEntityId> EntityIdSetter { get; private set; } = null!;
+
+    protected static Func<TModel, TModelId> ModelIdGetter { get; private set; } = null!;
+
+    protected static Action<TModel, TModelId> ModelIdSetter { get; private set; } = null!;
 
     public async Task<TModel> InstaAddAsync(TModel model)
     {
@@ -58,8 +59,8 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
         entity.ThrowIfNull();
         DbContext.Add(entity);
         await DbContext.SaveChangesAsync();
-        var entityId = entityIdGetter(entity);
-        modelIdSetter(model, ToModelId(entityId));
+        var entityId = EntityIdGetter(entity);
+        ModelIdSetter(model, ToModelId(entityId));
         return model;
     }
 
@@ -69,7 +70,7 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
             .AsQueryable()
             .AsNoTracking()
             .AsSplitQuery()
-            .ToDictionaryAsync(entity => ToModelId(entityIdGetter(entity)), entity =>
+            .ToDictionaryAsync(entity => ToModelId(EntityIdGetter(entity)), entity =>
             {
                 var model = ToModel(entity);
                 model.ThrowIfNull();
@@ -80,12 +81,7 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
 
     public async Task<TModel?> GetAsync(TModelId id)
     {
-        var entity = await DbContext.Set<TEntity>().FindAsync(ToEntityId(id));
-
-        if (entity == null)
-        {
-            throw new InvalidOperationException($"Can't find entity with id: '{id}'");
-        }
+        var entity = await DbContext.Set<TEntity>().FindAsync(ToEntityId(id)) ?? throw new InvalidOperationException($"Can't find entity with id: '{id}'");
 
         return ToModel(entity);
     }
@@ -105,10 +101,10 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
     {
         var entityToUpdate = ToEntity(model);
         entityToUpdate.ThrowIfNull();
-        var modelId = modelIdGetter(model);
+        var modelId = ModelIdGetter(model);
         TEntity updatetedEntity;
 
-        var oldEntityEntry = DbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => entityIdGetter(x.Entity)!.Equals(modelId));
+        var oldEntityEntry = DbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => EntityIdGetter(x.Entity)!.Equals(modelId));
         if (oldEntityEntry is not null)
         {
             oldEntityEntry.CurrentValues.SetValues(entityToUpdate);
@@ -127,7 +123,7 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
 
     public async Task InstaRemoveAsync(TModelId id)
     {
-        var oldEntry = DbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => ToModelId(entityIdGetter(x.Entity)).Equals(id));
+        var oldEntry = DbContext.ChangeTracker.Entries<TEntity>().FirstOrDefault(x => ToModelId(EntityIdGetter(x.Entity)).Equals(id));
         if (oldEntry != null)
         {
             DbContext.Set<TEntity>().Remove(oldEntry.Entity);
@@ -135,7 +131,7 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
         else
         {
             var entityToRemove = new TEntity();
-            entityIdSetter(entityToRemove, ToEntityId(id));
+            EntityIdSetter(entityToRemove, ToEntityId(id));
             DbContext.Set<TEntity>().Remove(entityToRemove);
         }
 

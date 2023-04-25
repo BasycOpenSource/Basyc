@@ -5,13 +5,11 @@ namespace Basyc.Blazor.Controls.Interops;
 public class ElementJsInterop : IAsyncDisposable
 {
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
-    private readonly IJSRuntime jsRuntime;
 
     public ElementJsInterop(IJSRuntime jsRuntime)
     {
         moduleTask = new Lazy<Task<IJSObjectReference>>(() => jsRuntime.InvokeAsync<IJSObjectReference>(
             "import", "./_content/Basyc.Blazor.Controls/elementJSInterop.js").AsTask());
-        this.jsRuntime = jsRuntime;
     }
 
     public async ValueTask DisposeAsync()

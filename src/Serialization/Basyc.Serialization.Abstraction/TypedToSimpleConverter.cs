@@ -8,9 +8,7 @@ public static class TypedToSimpleConverter
 
     public static Type ConvertSimpleToType(string requestType)
     {
-        var type = Type.GetType(requestType);
-        if (type == null)
-            throw new InvalidOperationException($"Failed to convert request simple type '{requestType}' to runtime type");
+        var type = Type.GetType(requestType) ?? throw new InvalidOperationException($"Failed to convert request simple type '{requestType}' to runtime type");
 
         return type;
     }

@@ -63,11 +63,7 @@ public static class GenericsHelper
 
         if (parentType.IsInterface)
         {
-            var baseInterface = childType.GetInterface(parentType.Name);
-            if (baseInterface is null)
-            {
-                throw new InvalidOperationException("Class does not have specified base class/interface");
-            }
+            var baseInterface = childType.GetInterface(parentType.Name) ?? throw new InvalidOperationException("Class does not have specified base class/interface");
 
             return baseInterface.GetGenericArguments();
         }

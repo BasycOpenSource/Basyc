@@ -1,6 +1,7 @@
 ﻿using Basyc.Diagnostics.Shared;
 
 namespace Microsoft.Extensions.Logging;
+#pragma warning disable IDE0060
 
 public static class LoggerActivityExtensions
 {
