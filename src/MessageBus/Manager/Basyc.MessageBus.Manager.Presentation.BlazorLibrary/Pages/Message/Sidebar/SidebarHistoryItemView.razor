@@ -47,11 +47,6 @@
             .AddClass("headingRowClass--failed", ViewModel.State == RequestResultState.Failed)
             .Build();
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
-
     protected override void OnParametersSet()
     {
         ViewModel.MessageRequest = MessageRequest;

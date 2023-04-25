@@ -1,3 +1,5 @@
+using Microsoft.JSInterop;
+
 namespace Basyc.Blazor.Controls.Interops;
 
 // This class provides an example of how JavaScript functionality can be wrapped

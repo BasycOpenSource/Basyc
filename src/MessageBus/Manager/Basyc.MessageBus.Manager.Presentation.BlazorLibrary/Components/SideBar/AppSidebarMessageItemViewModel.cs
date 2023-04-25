@@ -7,25 +7,11 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.SideBar
 public class AppSidebarMessageItemViewModel : BasycReactiveViewModelBase
 {
     private readonly NavigationService navigationService;
-    [Reactive] public MessageInfo? MessageInfo { get; set; }
-    [Reactive] public bool IsSelected { get; private set; }
 
     public AppSidebarMessageItemViewModel(NavigationService navigationService)
     {
         this.navigationService = navigationService;
 
-        //this.ReactiveHandler(x => x.MessageInfo,
-        //	x =>
-        //	{
-        //		IsSelected = this.ReactiveProperty(
-        //			x => x.IsSelected,
-        //			x => x.navigationService.CurrentQueryParams,
-        //			x =>
-        //			{
-        //				var isSelected = x is MessageInfo messageInfo && messageInfo == MessageInfo;
-        //				return isSelected;
-        //			});
-        //	});
         IsSelected = this.ReactiveProperty(
             x => x.IsSelected,
             x => x.navigationService.CurrentQueryParams,
@@ -35,6 +21,9 @@ public class AppSidebarMessageItemViewModel : BasycReactiveViewModelBase
                 var isSelected = x.Item1 is MessageInfo messageInfo && messageInfo == MessageInfo;
                 return isSelected;
             });
-
     }
+
+    [Reactive] public MessageInfo? MessageInfo { get; set; }
+
+    [Reactive] public bool IsSelected { get; private set; }
 }

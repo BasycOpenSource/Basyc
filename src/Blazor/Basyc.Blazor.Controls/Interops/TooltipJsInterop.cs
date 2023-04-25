@@ -1,3 +1,6 @@
+using Basyc.Blazor.Controls.Tooltip;
+using Microsoft.JSInterop;
+
 namespace Basyc.Blazor.Controls.Interops;
 public class TooltipJsInterop : IAsyncDisposable
 {

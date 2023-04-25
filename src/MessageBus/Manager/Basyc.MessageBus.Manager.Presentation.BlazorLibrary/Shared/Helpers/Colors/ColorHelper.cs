@@ -4,7 +4,6 @@ public static class ColorHelper
 {
     public static Color GetColorFromText(string textInput, double saturation, double saturationRandomness = 0, double opacity = 1)
     {
-
         if (saturation < 0 || saturation > 1)
             throw new ArgumentException("bad value", nameof(saturation));
 
@@ -40,6 +39,7 @@ public static class ColorHelper
 
         return new Color(colours[0], colours[1], colours[2], opacity);
     }
+
     public static string GetHexPercentage(double percantage)
     {
         if (percantage < 0 || percantage > 1)

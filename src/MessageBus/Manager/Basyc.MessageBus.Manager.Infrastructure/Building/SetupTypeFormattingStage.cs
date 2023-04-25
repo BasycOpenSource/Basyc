@@ -7,12 +7,61 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building;
 
 public class SetupTypeFormattingStage
 {
-    public readonly IServiceCollection services;
-
     public SetupTypeFormattingStage(IServiceCollection services)
     {
-        this.services = services;
+        this.Services = services;
         SetDefaultFormatting();
+    }
+
+    public IServiceCollection Services { get; init; }
+
+    /// <summary>
+    /// Removes all formatters.
+    /// </summary>
+    public SetupTypeFormattingStage ResetFormatting()
+    {
+        Services.RemoveAll<ITypedDomainNameFormatter>();
+        Services.RemoveAll<ITypedRequestNameFormatter>();
+        Services.RemoveAll<ITypedParameterNameFormatter>();
+        Services.RemoveAll<ITypedResponseNameFormatter>();
+        Services.RemoveAll<IResponseFormatter>();
+        SetDefaultFormatting();
+        return this;
+    }
+
+    public SetupTypeFormattingStage SetDomainNameFormatter<TDomainNameFormatter>() where TDomainNameFormatter : class, ITypedDomainNameFormatter
+    {
+        Services.RemoveAll<ITypedDomainNameFormatter>();
+        Services.AddSingleton<ITypedDomainNameFormatter, TDomainNameFormatter>();
+        return this;
+    }
+
+    public SetupTypeFormattingStage SetRequestNameFormatter<TRequestNameFormatter>() where TRequestNameFormatter : class, ITypedRequestNameFormatter
+    {
+        Services.RemoveAll<ITypedRequestNameFormatter>();
+        Services.AddSingleton<ITypedRequestNameFormatter, TRequestNameFormatter>();
+        return this;
+    }
+
+    public SetupTypeFormattingStage SetParamaterNameFormatter<TParameterTypeNameFormatter>() where TParameterTypeNameFormatter : class, ITypedParameterNameFormatter
+    {
+        Services.RemoveAll<ITypedParameterNameFormatter>();
+        Services.AddSingleton<ITypedParameterNameFormatter, TParameterTypeNameFormatter>();
+        return this;
+    }
+
+    public SetupTypeFormattingStage SetResponseNameFormatter<TResponseNameFormatter>() where TResponseNameFormatter : class, ITypedResponseNameFormatter
+    {
+        Services.RemoveAll<ITypedResponseNameFormatter>();
+        Services.AddSingleton<ITypedResponseNameFormatter, TResponseNameFormatter>();
+        return this;
+    }
+
+    public SetupTypeFormattingStage SetResponseFormatter<TResponseFormatter>() where TResponseFormatter : class, IResponseFormatter
+    {
+        Services.RemoveAll<IResponseFormatter>();
+        Services.AddSingleton<IResponseFormatter, TResponseFormatter>();
+        return this;
     }
 
     private void SetDefaultFormatting()
@@ -22,52 +71,5 @@ public class SetupTypeFormattingStage
         SetParamaterNameFormatter<TypedParameterTypeNameFormatter>();
         SetResponseNameFormatter<TypedResponseNameFormatter>();
         SetResponseFormatter<JsonResponseFormatter>();
-    }
-
-    ///Removes all formatters
-    public SetupTypeFormattingStage ResetFormatting()
-    {
-        services.RemoveAll<ITypedDomainNameFormatter>();
-        services.RemoveAll<ITypedRequestNameFormatter>();
-        services.RemoveAll<ITypedParameterNameFormatter>();
-        services.RemoveAll<ITypedResponseNameFormatter>();
-        services.RemoveAll<IResponseFormatter>();
-        SetDefaultFormatting();
-        return this;
-    }
-
-    public SetupTypeFormattingStage SetDomainNameFormatter<TDomainNameFormatter>() where TDomainNameFormatter : class, ITypedDomainNameFormatter
-    {
-        services.RemoveAll<ITypedDomainNameFormatter>();
-        services.AddSingleton<ITypedDomainNameFormatter, TDomainNameFormatter>();
-        return this;
-    }
-
-    public SetupTypeFormattingStage SetRequestNameFormatter<TRequestNameFormatter>() where TRequestNameFormatter : class, ITypedRequestNameFormatter
-    {
-        services.RemoveAll<ITypedRequestNameFormatter>();
-        services.AddSingleton<ITypedRequestNameFormatter, TRequestNameFormatter>();
-        return this;
-    }
-
-    public SetupTypeFormattingStage SetParamaterNameFormatter<TParameterTypeNameFormatter>() where TParameterTypeNameFormatter : class, ITypedParameterNameFormatter
-    {
-        services.RemoveAll<ITypedParameterNameFormatter>();
-        services.AddSingleton<ITypedParameterNameFormatter, TParameterTypeNameFormatter>();
-        return this;
-    }
-
-    public SetupTypeFormattingStage SetResponseNameFormatter<TResponseNameFormatter>() where TResponseNameFormatter : class, ITypedResponseNameFormatter
-    {
-        services.RemoveAll<ITypedResponseNameFormatter>();
-        services.AddSingleton<ITypedResponseNameFormatter, TResponseNameFormatter>();
-        return this;
-    }
-
-    public SetupTypeFormattingStage SetResponseFormatter<TResponseFormatter>() where TResponseFormatter : class, IResponseFormatter
-    {
-        services.RemoveAll<IResponseFormatter>();
-        services.AddSingleton<IResponseFormatter, TResponseFormatter>();
-        return this;
     }
 }

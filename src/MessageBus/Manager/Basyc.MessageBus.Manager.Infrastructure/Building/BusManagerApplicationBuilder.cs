@@ -12,7 +12,6 @@ public class BusManagerApplicationBuilder : BuilderStageBase
 {
     public BusManagerApplicationBuilder(IServiceCollection services) : base(services)
     {
-
     }
 
     public SetupMessagesStage RegisterMessages() => new SetupMessagesStage(services);

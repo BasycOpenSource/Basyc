@@ -11,5 +11,6 @@ public class Parameter
     }
 
     public ParameterInfo ParameterInfo { get; init; }
+
     public object? Value { get; init; }
 }

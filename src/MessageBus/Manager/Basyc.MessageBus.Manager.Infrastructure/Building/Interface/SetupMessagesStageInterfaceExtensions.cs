@@ -9,11 +9,10 @@ public static class SetupMessagesStageInterfaceExtensions
 {
     // public static SetupGroupStage FromAssemblyScan(this SetupMessagesStage parent, params Assembly[] assembliesToScan)
     // {
-    // 	return new SetupGroupStage(parent.services, assembliesToScan);
+    //  return new SetupGroupStage(parent.services, assembliesToScan);
     // }
 
     public static TypeFilterStage FromAssemblyScan(this SetupMessagesStage parent, params Assembly[] assembliesToScan) => new TypeFilterStage(parent.services, assembliesToScan);
-
 
     public class TypeFilterStage : BuilderStageBase
     {

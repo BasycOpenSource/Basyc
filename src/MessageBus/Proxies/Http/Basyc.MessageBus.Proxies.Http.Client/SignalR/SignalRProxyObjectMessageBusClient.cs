@@ -18,7 +18,8 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
     private readonly IStrongTypedHubConnectionPusherAndReceiver<IMethodsClientCanCall, IClientMethodsServerCanCall> hubConnection;
     private readonly SignalRSessionManager sessionManager;
 
-    public SignalRProxyObjectMessageBusClient(IOptions<SignalROptions> options, IObjectToByteSerailizer byteSerializer,
+    public SignalRProxyObjectMessageBusClient(IOptions<SignalROptions> options,
+        IObjectToByteSerailizer byteSerializer,
         ISharedRequestIdCounter requestIdCounter)
     {
         sessionManager = new SignalRSessionManager(requestIdCounter);
@@ -32,10 +33,12 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await sessionManager.Start();
-        await hubConnection.StartAsync();
+        await hubConnection.StartAsync(cancellationToken);
     }
 
+#pragma warning disable CA2012
     public void Dispose() => hubConnection.DisposeAsync().GetAwaiter().GetResult();
+#pragma warning restore CA2012
 
     public BusTask PublishAsync(string eventType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => CreateAndStartBusTask(eventType, null, requestContext, cancellationToken).ToBusTask();
 
@@ -43,17 +46,22 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
 
     public BusTask<object> RequestAsync(string requestType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => BusTask<object>.FromBusTask(CreateAndStartBusTask(requestType, null, requestContext, cancellationToken), x => x!);
 
-    public BusTask<object> RequestAsync(string requestType, object requestData, RequestContext requestContext = default,
+    public BusTask<object> RequestAsync(string requestType,
+        object requestData,
+        RequestContext requestContext = default,
         CancellationToken cancellationToken = default) => BusTask<object>.FromBusTask(CreateAndStartBusTask(requestType, requestData, requestContext, cancellationToken), x => x!);
 
     public BusTask SendAsync(string commandType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => CreateAndStartBusTask(commandType, null, requestContext, cancellationToken).ToBusTask();
 
     public BusTask SendAsync(string commandType, object commandData, RequestContext requestContext = default, CancellationToken cancellationToken = default) => CreateAndStartBusTask(commandType, commandData, requestContext, cancellationToken).ToBusTask();
 
-    private BusTask<object?> CreateAndStartBusTask(string requestType, object? requestData = null, RequestContext requestContext = default,
+    private BusTask<object?> CreateAndStartBusTask(string requestType,
+        object? requestData = null,
+        RequestContext requestContext = default,
         CancellationToken cancellationToken = default)
     {
-        var createAndStartBusTaskActivity = DiagnosticHelper.Start("SignalRProxyObjectMessageBusClient.CreateAndStartBusTask", requestContext.TraceId,
+        var createAndStartBusTaskActivity = DiagnosticHelper.Start("SignalRProxyObjectMessageBusClient.CreateAndStartBusTask",
+            requestContext.TraceId,
             requestContext.ParentSpanId);
         var session = sessionManager.StartSession(requestContext.TraceId);
         var waitingForTaskRunActivity = DiagnosticHelper.Start("Waiting for Task.Run");
@@ -63,10 +71,14 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
         return BusTask<object?>.FromTask(session.TraceId, requestTask);
     }
 
-    private async Task<OneOf<object?, ErrorMessage>> BustaskMethod(string requestType, object? requestData, RequestContext requestContext,
-        ActivityDisposer createAndStartBusTaskActivity, SignalRSession session, ActivityDisposer waintingForTaskRunActivity)
+    private async Task<OneOf<object?, ErrorMessage>> BustaskMethod(string requestType,
+        object? requestData,
+        RequestContext requestContext,
+        ActivityDisposer createAndStartBusTaskActivity,
+        SignalRSession session,
+        ActivityDisposer waitingForTaskRunActivity)
     {
-        waintingForTaskRunActivity.Stop();
+        waitingForTaskRunActivity.Stop();
         var busTaskActivity = DiagnosticHelper.Start("BustaskMethod");
         var seriActivity = new Activity("Serializating request").Start();
 

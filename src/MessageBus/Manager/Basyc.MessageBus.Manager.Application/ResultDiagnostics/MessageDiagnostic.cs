@@ -1,4 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Logging;
+using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
@@ -8,7 +12,7 @@ public class MessageDiagnostic
     private readonly Dictionary<string, List<LogEntry>> missingActivityIdToLogsMap = new();
     private readonly Dictionary<string, List<ActivityContext>> missingParentIdToNestedActivityMap = new();
     private readonly List<ServiceIdentityContext> services = new();
-    public DateTimeOffset? MessageStart { get; private set; }
+    private readonly ObservableCollection<LogEntry> logEntries = new();
 
     public MessageDiagnostic(string traceId)
     {
@@ -16,14 +20,19 @@ public class MessageDiagnostic
         LogEntries = new ReadOnlyObservableCollection<LogEntry>(logEntries);
     }
 
-    private readonly ObservableCollection<LogEntry> logEntries = new();
+    public event EventHandler<LogEntry>? LogAdded;
+
+    public event EventHandler<ActivityStart>? ActivityStartAdded;
+
+    public event EventHandler<ActivityEnd>? ActivityEndAdded;
+
+    public DateTimeOffset? MessageStart { get; private set; }
+
     public ReadOnlyObservableCollection<LogEntry> LogEntries { get; init; }
+
     public IReadOnlyList<ServiceIdentityContext> Services => services;
 
     public string TraceId { get; init; }
-    public event EventHandler<LogEntry>? LogAdded;
-    public event EventHandler<ActivityStart>? ActivityStartAdded;
-    public event EventHandler<ActivityEnd>? ActivityEndAdded;
 
     public void AddLog(ServiceIdentity service, LogLevel logLevel, string message, string? spanId) => AddLog(service, DateTimeOffset.UtcNow, logLevel, message, spanId);
 
@@ -44,7 +53,9 @@ public class MessageDiagnostic
         if (newLogEntry.SpanId is not null)
         {
             if (activityIdToActivityMap.TryGetValue(newLogEntry.SpanId, out var activity))
+            {
                 activity.AddLog(newLogEntry);
+            }
             else
             {
                 missingActivityIdToLogsMap.TryAdd(newLogEntry.SpanId, new List<LogEntry>());
@@ -55,22 +66,17 @@ public class MessageDiagnostic
         OnLogAdded(newLogEntry);
     }
 
-    private static ObservableCollection<LogEntry> Sort(ObservableCollection<LogEntry> collection)
-    {
-        ObservableCollection<LogEntry> temp;
-        temp = new ObservableCollection<LogEntry>(collection.OrderBy(x => x.Time));
-        collection.Clear();
-        foreach (var j in temp) collection.Add(j);
-        return collection;
-
-    }
-
     public ActivityContext AddStartActivity(ActivityStart activityStart)
     {
         var serviceContext = EnsureServiceCreated(activityStart.Service);
-        var hasParent = activityStart.ParentId is not null;
-        var newActivityContext = new ActivityContext(activityStart.Service, activityStart.TraceId, hasParent, activityStart.ParentId, activityStart.Id,
-            activityStart.Name, activityStart.StartTime.GetDiagnosticTime(MessageStart.Value()));
+        bool hasParent = activityStart.ParentId is not null;
+        var newActivityContext = new ActivityContext(activityStart.Service,
+            activityStart.TraceId,
+            hasParent,
+            activityStart.ParentId,
+            activityStart.Id,
+            activityStart.Name,
+            activityStart.StartTime.GetDiagnosticTime(MessageStart.Value()));
         activityIdToActivityMap.Add(newActivityContext.Id, newActivityContext);
         if (missingActivityIdToLogsMap.TryGetValue(newActivityContext.Id, out var logs))
         {
@@ -98,12 +104,14 @@ public class MessageDiagnostic
             }
         }
         else
+        {
             serviceContext.AddActivity(newActivityContext);
+        }
 
-        var isMissingParent = missingParentIdToNestedActivityMap.TryGetValue(activityStart.Id, out var nestedActivities);
+        bool isMissingParent = missingParentIdToNestedActivityMap.TryGetValue(activityStart.Id, out var nestedActivities);
         if (isMissingParent)
         {
-            for (var nestedActivityIndex = 0; nestedActivityIndex < nestedActivities!.Count; nestedActivityIndex++)
+            for (int nestedActivityIndex = 0; nestedActivityIndex < nestedActivities!.Count; nestedActivityIndex++)
             {
                 var nestedActivity = nestedActivities![nestedActivityIndex];
                 nestedActivity.AssignParentData(newActivityContext);
@@ -120,8 +128,14 @@ public class MessageDiagnostic
     public void AddEndActivity(ActivityEnd activityEnd)
     {
         if (activityIdToActivityMap.TryGetValue(activityEnd.Id, out var activity) is false)
-            activity = AddStartActivity(new ActivityStart(activityEnd.Service, activityEnd.TraceId, activityEnd.ParentId, activityEnd.Id, activityEnd.Name,
+        {
+            activity = AddStartActivity(new ActivityStart(activityEnd.Service,
+                activityEnd.TraceId,
+                activityEnd.ParentId,
+                activityEnd.Id,
+                activityEnd.Name,
                 activityEnd.StartTime));
+        }
 
         var status = activityEnd.Status == System.Diagnostics.ActivityStatusCode.Unset
             ? System.Diagnostics.ActivityStatusCode.Ok
@@ -131,15 +145,13 @@ public class MessageDiagnostic
         OnActivityEndAdded(activityEnd);
     }
 
-    public void Start(DateTimeOffset messageStart)
-    {
-        MessageStart = messageStart;
-    }
+    public void Start(DateTimeOffset messageStart) => MessageStart = messageStart;
 
-    private void OnLogAdded(LogEntry newLogEntry)
-    {
-        LogAdded?.Invoke(this, newLogEntry);
-    }
+    public ActivityContext GetActivity(string activityId) => activityIdToActivityMap[activityId];
+
+    public bool TryGetActivity(string activityId, [NotNullWhen(true)] out ActivityContext? activityContext) => activityIdToActivityMap.TryGetValue(activityId, out activityContext);
+
+    private void OnLogAdded(LogEntry newLogEntry) => LogAdded?.Invoke(this, newLogEntry);
 
     private void OnActivityStartAdded(ActivityStart activityStart) => ActivityStartAdded?.Invoke(this, activityStart);
 
@@ -156,8 +168,4 @@ public class MessageDiagnostic
 
         return serviceVm;
     }
-
-    public ActivityContext GetActivity(string activityId) => activityIdToActivityMap[activityId];
-
-    public bool TryGetActivity(string activityId, [NotNullWhen(true)] out ActivityContext? activityContext) => activityIdToActivityMap.TryGetValue(activityId, out activityContext);
 }

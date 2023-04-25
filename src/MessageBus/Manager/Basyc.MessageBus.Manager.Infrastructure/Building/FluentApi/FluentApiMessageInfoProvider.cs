@@ -14,8 +14,7 @@ public class FluentApiMessageInfoProvider : IMessageInfoProvider
 
     public FluentApiMessageInfoProvider(IOptions<FluentApiDomainInfoProviderOptions> options,
         InMemoryRequestHandler inMemoryRequestHandler,
-        IRequesterSelector requesterSelector
-    )
+        IRequesterSelector requesterSelector)
     {
         this.options = options;
         this.inMemoryRequestHandler = inMemoryRequestHandler;
@@ -27,13 +26,18 @@ public class FluentApiMessageInfoProvider : IMessageInfoProvider
         List<MessageGroup> domainInfos = new();
         return domainInfos;
         //TODO: maybe remove - probably will be repalced with CommonMessageInfoProvider
+#pragma warning disable CS0162 // Unreachable code detected
+        // ReSharper disable once HeuristicUnreachableCode
         foreach (var domain in options.Value.GroupRegistrations)
         {
             var requestInfos = domain.InProgressMessages.Select(inProgressMessage =>
             {
                 var requestInfo = inProgressMessage.HasResponse
-                    ? new MessageInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.ResponseRunTimeType!,
-                        inProgressMessage.MessageDisplayName!, inProgressMessage.ResponseRunTimeTypeDisplayName!)
+                    ? new MessageInfo(inProgressMessage.MessageType,
+                    inProgressMessage.Parameters,
+                    inProgressMessage.ResponseRunTimeType!,
+                    inProgressMessage.MessageDisplayName!,
+                    inProgressMessage.ResponseRunTimeTypeDisplayName!)
                     : new MessageInfo(inProgressMessage.MessageType, inProgressMessage.Parameters, inProgressMessage.MessageDisplayName!);
                 inMemoryRequestHandler.AddHandler(requestInfo, inProgressMessage.RequestHandler!);
                 requesterSelector.AssignRequesterForMessage(requestInfo, InMemoryRequestHandler.InMemoryDelegateRequesterUniqueName);
@@ -43,5 +47,6 @@ public class FluentApiMessageInfoProvider : IMessageInfoProvider
         }
 
         return domainInfos;
+#pragma warning restore CS0162 // Unreachable code detected
     }
 }

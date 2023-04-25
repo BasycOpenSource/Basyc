@@ -14,7 +14,8 @@ public static class TypedProviderHelper
             .Select(paramInfo =>
             {
                 paramInfo.Name.ThrowIfNull();
-                return new ParameterInfo(paramInfo.ParameterType, paramInfo.Name,
+                return new ParameterInfo(paramInfo.ParameterType,
+                    paramInfo.Name,
                     parameterDisplayNameFormattter.Invoke(paramInfo.ParameterType));
             })
             .ToList();

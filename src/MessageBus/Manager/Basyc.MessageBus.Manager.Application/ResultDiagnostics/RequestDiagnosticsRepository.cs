@@ -1,4 +1,6 @@
-﻿namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
 public class RequestDiagnosticsRepository : IRequestDiagnosticsRepository
 {
@@ -22,9 +24,7 @@ public class RequestDiagnosticsRepository : IRequestDiagnosticsRepository
     }
 
     public bool TryGetDiagnostics(string traceId, [NotNullWhen(true)] out MessageDiagnostic? diagnosticContext)
-    {
-        return traceIdToContextMap.TryGetValue(traceId, out diagnosticContext);
-    }
+        => traceIdToContextMap.TryGetValue(traceId, out diagnosticContext);
 
     private void LogSource_ActivityStartsReceived(object? sender, ActivityStartsReceivedArgs e)
     {

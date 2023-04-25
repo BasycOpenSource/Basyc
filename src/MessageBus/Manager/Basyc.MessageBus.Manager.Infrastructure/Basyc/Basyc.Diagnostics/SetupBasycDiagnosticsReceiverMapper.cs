@@ -12,9 +12,8 @@ public class SetupBasycDiagnosticsReceiverMapper : BuilderStageBase
     }
 
     /// <summary>
-    ///     No mapping will be applied. Use only when receivers produces log entries with same id as local SessionId
+    ///     No mapping will be applied. Use only when receivers produces log entries with same id as local SessionId.
     /// </summary>
-    /// <returns></returns>
     public SetupRequesterStage NoTraceIdMapper()
     {
         services.AddSingleton<IBasycDiagnosticsReceiverTraceIdMapper, NullBasycDiagnosticsReceiverTraceIdMapper>();
@@ -22,10 +21,8 @@ public class SetupBasycDiagnosticsReceiverMapper : BuilderStageBase
     }
 
     /// <summary>
-    ///     Translates Ids received from daignostic receiver to local SessionId
+    ///     Translates Ids received from daignostic receiver to local SessionId.
     /// </summary>
-    /// <typeparam name="TMapper"></typeparam>
-    /// <returns></returns>
     public SetupRequesterStage UseTraceIdMapper<TMapper>() where TMapper : class, IBasycDiagnosticsReceiverTraceIdMapper
     {
         services.RemoveAll<IBasycDiagnosticsReceiverTraceIdMapper>();

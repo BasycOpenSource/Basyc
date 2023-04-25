@@ -4,7 +4,8 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.Duratio
 
 public static class DurationViewHelper
 {
-    private readonly static NumberFormatInfo numberFormatter;
+    private static readonly NumberFormatInfo numberFormatter;
+
     static DurationViewHelper()
     {
         numberFormatter = (NumberFormatInfo)CultureInfo.CurrentCulture.NumberFormat.Clone();

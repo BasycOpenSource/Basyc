@@ -1,32 +1,37 @@
-﻿namespace Basyc.MessageBus.Manager.Application.Requesting;
+﻿using Basyc.MessageBus.Manager.Application.Building;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public class InMemoryRequestHandler : IRequestHandler
 {
     public const string InMemoryDelegateRequesterUniqueName = nameof(InMemoryRequestHandler);
-    public static int ctorCounter;
 
-    private readonly Dictionary<MessageInfo, RequestHandlerDelegate> handlersMap;
+    private readonly Dictionary<MessageInfo, RequestHandler> handlersMap;
     private readonly IOptions<InMemoryRequestHandlerOptions> options;
 
     public InMemoryRequestHandler(IOptions<InMemoryRequestHandlerOptions> options)
     {
         this.options = options;
         handlersMap = options.Value.ResolveHandlers();
-        ctorCounter++;
+        CtorCounter++;
     }
+
+    public static int CtorCounter { get; private set; }
 
     public string UniqueName => InMemoryDelegateRequesterUniqueName;
 
-    public void StartRequest(MessageRequest request, ILogger logger)
+    public void StartRequest(MessageRequest requestResult, ILogger logger)
     {
         //var inMemoryRequesterAct = logger.StartActivity("InMemoryRequester", requestResult.TraceId);
         logger.LogInformation("Starting invoking in-memory delegate");
         //using var findingHandlerActivity = logger.StartActivity("Finding handler");
-        var handlerFound = handlersMap.TryGetValue(request.RequestInput.MessageInfo, out var handler);
+        bool handlerFound = handlersMap.TryGetValue(requestResult.RequestInput.MessageInfo, out var handler);
         if (handlerFound is false)
         {
-            request.Fail(
-                $"Requester: '{nameof(InMemoryRequestHandler)}' doesn't have handler for message with display name: '{request.RequestInput.MessageInfo.RequestDisplayName}'");
+            requestResult.Fail(
+                $"Requester: '{nameof(InMemoryRequestHandler)}' doesn't have handler for message with display name: '{requestResult.RequestInput.MessageInfo.RequestDisplayName}'");
             //findingHandlerActivity.Stop();
             return;
         }
@@ -36,30 +41,30 @@ public class InMemoryRequestHandler : IRequestHandler
         Task.Run(() =>
         {
             //waitingForTaskRun.Stop();
-            using var requestActivity = request.Start();
+            using var requestActivity = requestResult.Start();
             using var invokingHandlerActivity = logger.StartActivity("Invoking handler", requestActivity.TraceId, requestActivity.Id);
-            var handlerOutput = handler.Value().Invoke(request, logger);
+            var handlerOutput = handler.Value().Invoke(requestResult, logger);
             logger.LogInformation("Handler finished");
             var endTime = invokingHandlerActivity.Stop();
             requestActivity.End(endTime);
-            request.Stop(endTime);
+            requestResult.Stop(endTime);
 
-            if (request.RequestInput.MessageInfo.HasResponse)
-                request.SetResponse(handlerOutput);
+            if (requestResult.RequestInput.MessageInfo.HasResponse)
+                requestResult.SetResponse(handlerOutput);
             else
-                request.SetResponse();
+                requestResult.SetResponse();
 
             //inMemoryRequesterAct.Stop();
         }).ContinueWith(x =>
         {
             if (x.Status is TaskStatus.Faulted)
             {
-                logger.LogError($"Handler failed. {x.Exception.Value().Message}");
-                request.Fail(x.Exception.Value().Message);
+                logger.LogError("Handler failed. {Message}", x.Exception.Value().Message);
+                requestResult.Fail(x.Exception.Value().Message);
                 //inMemoryRequesterAct.Stop();
             }
         });
     }
 
-    public void AddHandler(MessageInfo requestInfo, RequestHandlerDelegate handler) => handlersMap.Add(requestInfo, handler);
+    public void AddHandler(MessageInfo requestInfo, RequestHandler handler) => handlersMap.Add(requestInfo, handler);
 }

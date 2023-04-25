@@ -7,7 +7,8 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class BusClientSetupProviderStageProxySignalRExtensions
 {
-    public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent, string signalRServerUri,
+    public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent,
+        string signalRServerUri,
         string hubPattern = SignalRConstants.ProxyClientHubPattern)
     {
         parent.services.AddBasycSerialization()

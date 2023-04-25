@@ -1,4 +1,5 @@
-﻿using Basyc.Diagnostics.Producing.Abstractions;
+﻿using System.Diagnostics.CodeAnalysis;
+using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Shared;
 using Basyc.MessageBus.NetMQ.Shared;
 using Basyc.MessageBus.NetMQ.Shared.Cases;
@@ -12,6 +13,7 @@ using NetMQ.Sockets;
 namespace Basyc.MessageBus.Broker.NetMQ;
 
 //https://netmq.readthedocs.io/en/latest/xpub-xsub/
+[SuppressMessage("Usage", "CA2254:Template should be a static expression", Justification = "Lazy to fix")]
 public class NetMqMessageBrokerServer : IMessageBrokerServer
 {
     private readonly RouterSocket brokerSocket;
@@ -26,8 +28,7 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
         IWorkerRegistry workerRegistry,
         ILogger<NetMqMessageBrokerServer> logger,
         INetMqMessageWrapper messageToByteSerializer,
-        IDiagnosticsExporter diagnosticsProducer
-    )
+        IDiagnosticsExporter diagnosticsProducer)
     {
         this.options = options;
         this.workerRegistry = workerRegistry;
@@ -85,8 +86,12 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
                         //messageToProducer.AppendEmptyFrame();
                         //messageToProducer.Append(messageToByteSerializer.CreateWrapperMessage(failure, TypedToSimpleConverter.ConvertTypeToSimple(typeof(ErrorMessage)), request.SessionId, request.TraceId, request.ParentSpanId, MessageCase.Response));
 
-                        var messageToProducer = CreateResponseNetMqMessage(senderAddressFrame, failure, request.SessionId, request.TraceId,
-                            request.ParentSpanId, MessageCase.Response);
+                        var messageToProducer = CreateResponseNetMqMessage(senderAddressFrame,
+                            failure,
+                            request.SessionId,
+                            request.TraceId,
+                            request.ParentSpanId,
+                            MessageCase.Response);
 
                         logger.LogError($"Sending failure: '{failure}' to {senderAddressString}");
                         brokerSocket.SendMultipartMessage(messageToProducer);
@@ -120,6 +125,7 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
                     logger.LogInformation($"Received event {@event.EventType} from producer {senderAddressString}:{@event.SessionId}");
 
                     if (workerRegistry.TryGetWorkersFor(@event.EventType, out var workers))
+                    {
                         foreach (var worker in workers)
                         {
                             var eventData = recievedMessageFrame[2].Buffer;
@@ -134,8 +140,11 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
                             brokerSocket.SendMultipartMessage(messageToProducer);
                             logger.LogInformation($"Sent event {@event.EventType} to consumer {worker}:{@event.SessionId}");
                         }
+                    }
                     else
+                    {
                         logger.LogInformation($"No worker for {@event.EventType} checked in");
+                    }
 
                     eventStartActivity.Stop();
                 },
@@ -151,7 +160,11 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
                     //messageToProducer.AppendEmptyFrame();
                     //messageToProducer.AppendEmptyFrame();
                     //messageToProducer.Append(messageToByteSerializer.CreateWrapperMessage(failResult, TypedToSimpleConverter.ConvertTypeToSimple(typeof(ErrorMessage)), failure.SessionId, failure.TraceId, failure.ParentSpanId, MessageCase.Response));
-                    var messageToProducer = CreateResponseNetMqMessage(sendFailToAddress, failResult, failure.SessionId, failure.TraceId, failure.ParentSpanId,
+                    var messageToProducer = CreateResponseNetMqMessage(sendFailToAddress,
+                        failResult,
+                        failure.SessionId,
+                        failure.TraceId,
+                        failure.ParentSpanId,
                         MessageCase.Response);
                     logger.LogInformation($"Sending failure: '{failure}' to {sendFailToAddressString}");
                     brokerSocket.SendMultipartMessage(messageToProducer);
@@ -172,7 +185,7 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
         }
         catch (Exception ex)
         {
-            logger.LogError($"NetMQ proxy stopped. Reason: {ex.Message}");
+            logger.LogError("NetMQ proxy stopped. Reason: {Reason}", ex.Message);
             throw;
         }
     }
@@ -185,33 +198,7 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
         logger.LogInformation("NetMQ proxy disposed");
     }
 
-    private NetMQMessage CreateResponseNetMqMessage<TData>(NetMQFrame addressToSend, TData data, int sessionId, string traceId, string parentSpanId,
-        MessageCase messageCase)
-    {
-        var mqMessage = new NetMQMessage();
-        mqMessage.Append(addressToSend);
-        mqMessage.AppendEmptyFrame();
-        mqMessage.AppendEmptyFrame();
-        mqMessage.AppendEmptyFrame();
-        mqMessage.Append(messageToByteSerializer.CreateWrapperMessage(data, TypedToSimpleConverter.ConvertTypeToSimple(typeof(TData)), sessionId, traceId,
-            parentSpanId, messageCase));
-        return mqMessage;
-    }
-
-    private NetMQMessage CreateRequestNetMqMessage<TData>(NetMQFrame addressToSend, NetMQFrame requestProducerAddress, TData data, int sessionId,
-        string traceId, string parentSpanId, MessageCase messageCase)
-    {
-        var mqMessage = new NetMQMessage();
-        mqMessage.Append(addressToSend);
-        mqMessage.AppendEmptyFrame();
-        mqMessage.Append(requestProducerAddress);
-        mqMessage.AppendEmptyFrame();
-        mqMessage.Append(messageToByteSerializer.CreateWrapperMessage(data, TypedToSimpleConverter.ConvertTypeToSimple(typeof(TData)), sessionId, traceId,
-            parentSpanId, messageCase));
-        return mqMessage;
-    }
-
-    private NetMQMessage CreateRequestNetMqMessage(string addressToSend, NetMQFrame requestProducerAddress, byte[] byteData)
+    private static NetMQMessage CreateRequestNetMqMessage(string addressToSend, NetMQFrame requestProducerAddress, byte[] byteData)
     {
         var mqMessage = new NetMQMessage();
         mqMessage.Append(addressToSend);
@@ -219,6 +206,49 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
         mqMessage.Append(requestProducerAddress);
         mqMessage.AppendEmptyFrame();
         mqMessage.Append(byteData);
+        return mqMessage;
+    }
+
+    private NetMQMessage CreateResponseNetMqMessage<TData>(NetMQFrame addressToSend,
+        TData data,
+        int sessionId,
+        string traceId,
+        string parentSpanId,
+        MessageCase messageCase)
+    {
+        var mqMessage = new NetMQMessage();
+        mqMessage.Append(addressToSend);
+        mqMessage.AppendEmptyFrame();
+        mqMessage.AppendEmptyFrame();
+        mqMessage.AppendEmptyFrame();
+        mqMessage.Append(messageToByteSerializer.CreateWrapperMessage(data,
+            TypedToSimpleConverter.ConvertTypeToSimple(typeof(TData)),
+            sessionId,
+            traceId,
+            parentSpanId,
+            messageCase));
+        return mqMessage;
+    }
+
+    private NetMQMessage CreateRequestNetMqMessage<TData>(NetMQFrame addressToSend,
+        NetMQFrame requestProducerAddress,
+        TData data,
+        int sessionId,
+        string traceId,
+        string parentSpanId,
+        MessageCase messageCase)
+    {
+        var mqMessage = new NetMQMessage();
+        mqMessage.Append(addressToSend);
+        mqMessage.AppendEmptyFrame();
+        mqMessage.Append(requestProducerAddress);
+        mqMessage.AppendEmptyFrame();
+        mqMessage.Append(messageToByteSerializer.CreateWrapperMessage(data,
+            TypedToSimpleConverter.ConvertTypeToSimple(typeof(TData)),
+            sessionId,
+            traceId,
+            parentSpanId,
+            messageCase));
         return mqMessage;
     }
 }

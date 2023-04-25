@@ -1,4 +1,8 @@
-﻿namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
+﻿using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Logging;
+using System.Diagnostics;
+
+namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
 public record class ActivityContext(
     ServiceIdentity Service,
@@ -9,21 +13,31 @@ public record class ActivityContext(
     string DisplayName,
     DiagnosticTime StartTime)
 {
+    private readonly List<ActivityContext> nestedActivities = new();
+    private readonly List<LogEntry> logs = new();
 
     public event EventHandler? ActivityEnded;
+
     public event EventHandler? NestedActivityAdded;
+
     public event EventHandler? NestedActivityEnded;
+
     public event EventHandler? ParentAssigned;
 
-    private readonly List<ActivityContext> nestedActivities = new();
     public IReadOnlyList<ActivityContext> NestedActivities => nestedActivities;
-    private readonly List<LogEntry> logs = new();
+
     public IReadOnlyList<LogEntry> Logs => logs;
+
     public bool HasEnded { get; private set; }
+
     public DiagnosticTime EndTime { get; private set; }
+
     public TimeSpan Duration { get; private set; }
+
     public ActivityStatusCode Status { get; private set; }
+
     public ActivityContext? ParentActivity { get; private set; }
+
     public void End(DateTimeOffset endTime, ActivityStatusCode status)
     {
         var endTimeRelative = new DiagnosticTime(endTime, StartTime.BaseTime);
@@ -33,6 +47,7 @@ public record class ActivityContext(
         HasEnded = true;
         ActivityEnded?.Invoke(this, EventArgs.Empty);
     }
+
     public void AddNestedActivity(ActivityContext activity)
     {
         nestedActivities.Add(activity);

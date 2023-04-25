@@ -15,6 +15,7 @@ public class ByteFromObjectMessageBusClient : IByteMessageBusClient
         this.objectMessageBusClient = objectMessageBusClient;
         this.byteSerailizer = byteSerailizer;
     }
+
     public BusTask PublishAsync(string eventType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.PublishAsync(eventType, cancellationToken);
 
     public BusTask PublishAsync(string eventType, byte[] eventData, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.PublishAsync(eventType, eventData, requestContext, cancellationToken);

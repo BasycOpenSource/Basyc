@@ -41,10 +41,6 @@
     private ICollection<MessageRequest> messages => ViewModel.History.Reverse().ToArray();
     [Parameter, EditorRequired] public MessageInfo MessageInfo { get; set; } = null!;
     [Parameter, EditorRequired] public NavigationService NavigationService { get; set; } = null!;
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
 
     protected override void OnParametersSet()
     {
@@ -52,8 +48,5 @@
         base.OnParametersSet();
     }
 
-    private void Click(MessageRequest messageRequest)
-    {
-        NavigationService.GoTo<MessagePageRequestPageView, MessagePageRequestPageViewModel, MessageRequest>(messageRequest);
-    }
+    private void Click(MessageRequest messageRequest) => NavigationService.GoTo<MessagePageRequestPageView, MessagePageRequestPageViewModel, MessageRequest>(messageRequest);
 }

@@ -3,22 +3,33 @@ using OneOf;
 using Throw;
 
 namespace Basyc.MessageBus.Client;
+#pragma warning disable SA1402
 
+#pragma warning disable SA1649
 public struct BusTaskCompleted
+#pragma warning restore SA1649
 {
 }
 
 public class BusTask : BusTask<BusTaskCompleted>
 {
-    protected BusTask(string sessionId, Task<OneOf<BusTaskCompleted, ErrorMessage>> value) : base(sessionId, value) { }
-    protected BusTask(string sessionId, ErrorMessage error) : base(sessionId, error) { }
-    protected BusTask(string sessionId, BusTaskCompleted value) : base(sessionId, value) { }
+    protected BusTask(string sessionId, Task<OneOf<BusTaskCompleted, ErrorMessage>> value) : base(sessionId, value)
+    {
+    }
+
+    protected BusTask(string sessionId, ErrorMessage error) : base(sessionId, error)
+    {
+    }
+
+    protected BusTask(string sessionId, BusTaskCompleted value) : base(sessionId, value)
+    {
+    }
 
     public static BusTask FromTask(string sessionId, Task nestedTask)
     {
         var wrapperTask = nestedTask.ContinueWith(x =>
         {
-            return (OneOf<BusTaskCompleted, ErrorMessage>)new BusTaskCompleted();
+            return (OneOf<BusTaskCompleted, ErrorMessage>)default(BusTaskCompleted);
         });
         return new BusTask(sessionId, wrapperTask);
     }
@@ -49,6 +60,7 @@ public class BusTask<TValue>
     }
 
     public Task<OneOf<TValue, ErrorMessage>> Task { get; init; }
+
     public string TraceId { get; init; }
 
     public static BusTask<TValue> FromTask(string sessionId, Task<OneOf<TValue, ErrorMessage>> nestedTask) => new BusTask<TValue>(sessionId, nestedTask);
@@ -74,7 +86,8 @@ public class BusTask<TValue>
         return FromTask(sessionId, wrapperTask);
     }
 
-    public static BusTask<TValue> FromTask<TNestedValue>(string sessionId, Task<TNestedValue> nestedTask,
+    public static BusTask<TValue> FromTask<TNestedValue>(string sessionId,
+        Task<TNestedValue> nestedTask,
         Func<TNestedValue, OneOf<TValue, ErrorMessage>> converter)
     {
         var wrapperTask = nestedTask.ContinueWith<OneOf<TValue, ErrorMessage>>(x =>
@@ -97,7 +110,8 @@ public class BusTask<TValue>
         return FromTask(sessionId, wrapperTask);
     }
 
-    public static BusTask<TValue> FromTask<TNestedValue>(string sessionId, Task<OneOf<TNestedValue, ErrorMessage>> nestedTask,
+    public static BusTask<TValue> FromTask<TNestedValue>(string sessionId,
+        Task<OneOf<TNestedValue, ErrorMessage>> nestedTask,
         Func<TNestedValue, OneOf<TValue, ErrorMessage>> converter)
     {
         var wrapperTask = nestedTask.ContinueWith<OneOf<TValue, ErrorMessage>>(x =>
@@ -125,12 +139,16 @@ public class BusTask<TValue>
 
     public static BusTask<TValue> FromValue(string sessionId, TValue value) => new BusTask<TValue>(sessionId, value);
 
-    public static BusTask<TValue> FromBusTask<TNestedValue>(BusTask<TNestedValue> nestedBusTask, Func<TNestedValue, OneOf<TValue, ErrorMessage>> converter) => FromBusTask(nestedBusTask.TraceId, nestedBusTask, converter);
+    public static BusTask<TValue> FromBusTask<TNestedValue>(BusTask<TNestedValue> nestedBusTask, Func<TNestedValue, OneOf<TValue, ErrorMessage>> converter) =>
+        FromBusTask(nestedBusTask.TraceId, nestedBusTask, converter);
 
-    public static BusTask<TValue> FromBusTask<TNestedValue>(string sessionId, BusTask<TNestedValue> nestedBusTask,
+    public static BusTask<TValue> FromBusTask<TNestedValue>(string sessionId,
+        BusTask<TNestedValue> nestedBusTask,
         Func<TNestedValue, OneOf<TValue, ErrorMessage>> converter) => FromTask(sessionId, nestedBusTask.Task, converter);
 
-    public BusTask<TNestedValue> ContinueWith<TNestedValue>(Func<TValue, OneOf<TNestedValue, ErrorMessage>> converter) => BusTask<TNestedValue>.FromBusTask(this, converter);
+    public BusTask<TNestedValue> ContinueWith<TNestedValue>(Func<TValue, OneOf<TNestedValue, ErrorMessage>> converter) =>
+        BusTask<TNestedValue>.FromBusTask(this, converter);
 
     public BusTask ToBusTask() => BusTask.FromTask(TraceId, Task);
 }
+#pragma warning restore SA1402

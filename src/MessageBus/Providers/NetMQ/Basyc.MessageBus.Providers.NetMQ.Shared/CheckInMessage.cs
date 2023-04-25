@@ -15,5 +15,6 @@ public record CheckInMessage
     }
 
     public string[] SupportedMessageTypes { get; init; }
+
     public string WorkerId { get; init; }
 }

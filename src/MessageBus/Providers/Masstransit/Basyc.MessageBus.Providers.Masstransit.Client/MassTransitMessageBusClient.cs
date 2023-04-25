@@ -17,7 +17,7 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
 
     BusTask ITypedMessageBusClient.PublishAsync<TEvent>(RequestContext requestContext, CancellationToken cancellationToken)
     {
-        var publishTask = massTransitBus.Publish<TEvent>(cancellationToken);
+        var publishTask = massTransitBus.Publish<TEvent>(new(), cancellationToken);
         return BusTask.FromTask("-1", publishTask);
     }
 
@@ -33,7 +33,9 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
         return BusTask<TResponse>.FromTask<Response<TResponse>>("-1", requestTask, x => (OneOf<TResponse, ErrorMessage>)x.Message);
     }
 
-    BusTask<TResponse> ITypedMessageBusClient.RequestAsync<TRequest, TResponse>(TRequest request, RequestContext requestContext,
+    BusTask<TResponse> ITypedMessageBusClient.RequestAsync<TRequest, TResponse>(
+        TRequest request,
+        RequestContext requestContext,
         CancellationToken cancellationToken)
     {
         var requestTask = massTransitBus.Request<TRequest, TResponse>(request, cancellationToken);
@@ -48,7 +50,10 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
         return bus.RequestAsync(requestType, requestData, responseType, requestContext, cancellationToken);
     }
 
-    public BusTask<object> RequestAsync(Type requestType, object request, Type responseType, RequestContext requestContext = default,
+    public BusTask<object> RequestAsync(Type requestType,
+        object requestData,
+        Type responseType,
+        RequestContext requestContext = default,
         CancellationToken cancellationToken = default)
     {
         var conType = typeof(SendContext<>).MakeGenericType(requestType);
@@ -63,24 +68,28 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
         //var busResponse = (Response<object>)await InvokeAsync(genericMethod, null, new object[] { massTransitBus, request, cancellationToken, default(RequestTimeout), null });
         //return busResponse.Message;
 
-        var busResponse = InvokeAsync(genericMethod, null, massTransitBus, request, cancellationToken, default(RequestTimeout), null!);
+        var busResponse = InvokeAsync(genericMethod, null, massTransitBus, requestData, cancellationToken, default(RequestTimeout), null!);
         var busTask = BusTask<object>.FromTask("-1", busResponse);
         return busTask;
     }
 
-    public BusTask SendAsync(Type requestType, object request, RequestContext requestContext = default, CancellationToken cancellationToken = default) =>
+    public BusTask SendAsync(
+        Type commandType,
+        object commandData,
+        RequestContext requestContext = default,
+        CancellationToken cancellationToken = default) =>
         //await _massTransitBus.Publish(request, requestType, cancellationToken); //Wont get response
         //await _massTransitBus.Send(request, requestType, cancellationToken); //Does not work
 
         //Command can return response, but should not query data, returning command completion status is allowed
-        RequestAsync(requestType, request, typeof(VoidCommandResult), requestContext, cancellationToken).ToBusTask();
+        RequestAsync(commandType, commandData, typeof(VoidCommandResult), requestContext, cancellationToken).ToBusTask();
 
-    public BusTask SendAsync(Type requestType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
+    public BusTask SendAsync(Type commandType, RequestContext requestContext = default, CancellationToken cancellationToken = default)
     {
-        var request = Activator.CreateInstance(requestType);
+        var request = Activator.CreateInstance(commandType);
         request.ThrowIfNull();
         //await _massTransitBus.Publish(request, requestType, cancellationToken);
-        return SendAsync(requestType, request, requestContext, cancellationToken);
+        return SendAsync(commandType, request, requestContext, cancellationToken);
     }
 
     BusTask ITypedMessageBusClient.SendAsync<TRequest>(RequestContext requestContext, CancellationToken cancellationToken) =>
@@ -99,7 +108,7 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
         }
         catch (Exception ex)
         {
-            throw new Exception("MassTransit timeout", ex);
+            throw new InvalidOperationException("MassTransit timeout", ex);
         }
     }
 

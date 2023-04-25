@@ -1,4 +1,9 @@
-﻿namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
+﻿using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
+using Basyc.ReactiveUi;
+using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
+
+namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
 
 public static class ServicesBusMangerExtensions
 {

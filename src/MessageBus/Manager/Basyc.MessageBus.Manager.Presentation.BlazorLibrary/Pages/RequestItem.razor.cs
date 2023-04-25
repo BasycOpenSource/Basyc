@@ -14,17 +14,6 @@ public partial class RequestItem
 
     public async Task SendMessage(MessageInfo request) => await OnMessageSending.InvokeAsync(this);
 
-    private string GetDefaultValueString(Type type)
-    {
-        if (type.IsValueType)
-        {
-            var defaultValue = type.GetDefaultValue();
-            return defaultValue is null ? "null" : defaultValue.ToString()!;
-        }
-
-        return type == typeof(string) ? string.Empty : "@null";
-    }
-
     protected override void OnInitialized()
     {
         //TODO Should be fixed
@@ -37,6 +26,17 @@ public partial class RequestItem
         }
 
         base.OnInitialized();
+    }
+
+    private static string GetDefaultValueString(Type type)
+    {
+        if (type.IsValueType)
+        {
+            var defaultValue = type.GetDefaultValue();
+            return defaultValue is null ? "null" : defaultValue.ToString()!;
+        }
+
+        return type == typeof(string) ? string.Empty : "@null";
     }
 
     private void ParameterValues_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

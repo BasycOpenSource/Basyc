@@ -24,10 +24,8 @@ public class FluentSetupMessageStage : BuilderStageBase
     }
 
     /// <summary>
-    ///     Registeres <typeparamref name="TMessage" /> public properties as message parameters
+    ///     Registeres <typeparamref name="TMessage" /> public properties as message parameters.
     /// </summary>
-    /// <typeparam name="TMessage"></typeparam>
-    /// <returns></returns>
     public FluentTMessageSetupMessageStage<TMessage> WithParametersFrom<TMessage>()
     {
         foreach (var parameter in typeof(TMessage).GetProperties(BindingFlags.Instance | BindingFlags.Public))

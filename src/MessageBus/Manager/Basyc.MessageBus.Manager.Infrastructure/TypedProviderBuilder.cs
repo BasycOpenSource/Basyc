@@ -6,16 +6,16 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class TypedProviderBuilder
 {
-    public IServiceCollection services;
-
     public TypedProviderBuilder(IServiceCollection services)
     {
-        this.services = services;
+        this.Services = services;
     }
+
+    public IServiceCollection Services { get; init; }
 
     public TypedProviderBuilder RegisterDomain(Action<TypedDomainSettings> settingsAction)
     {
-        services.Configure<TypedDomainProviderOptions>(options =>
+        Services.Configure<TypedDomainProviderOptions>(options =>
         {
             var settings = new TypedDomainSettings();
             settingsAction(settings);
@@ -24,5 +24,5 @@ public class TypedProviderBuilder
         return this;
     }
 
-    public SetupTypeFormattingStage ChangeFormatting() => new SetupTypeFormattingStage(services);
+    public SetupTypeFormattingStage ChangeFormatting() => new SetupTypeFormattingStage(Services);
 }

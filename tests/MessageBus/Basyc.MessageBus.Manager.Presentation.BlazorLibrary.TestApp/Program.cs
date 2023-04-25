@@ -23,175 +23,175 @@ var assembliesToScan = new[] { typeof(TestCommand).Assembly };
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddBasycDiagnosticsExporting()
-	.SetDefaultIdentity("BusManager")
-	//.AddSignalRExporter()
-	.AddInMemoryExporter()
-	.ListenFor()
-	.AnyActvity()
-	.AnyLog();
+    .SetDefaultIdentity("BusManager")
+    //.AddSignalRExporter()
+    .AddInMemoryExporter()
+    .ListenFor()
+    .AnyActvity()
+    .AnyLog();
 
 builder.Services.AddBasycDiagnosticsReceiving()
-	.AddInMemoryReceiver();
-// 	.SelectSignalRReceiver()
-// 	.SetServerUri("https://localhost:44310");
+    .AddInMemoryReceiver();
+//.SelectSignalRReceiver()
+//.SetServerUri("https://localhost:44310");
 
 builder.Services.AddBasycMessageBus()
-	.RegisterHandlersFromAssembly<TestCommandHandler>()
-	//.NoHandlers()
-	//.SelectSignalRProxyProvider("https://localhost:44310")
-	.SelectNullClient()
-	.EnableDiagnostics();
+    .RegisterHandlersFromAssembly<TestCommandHandler>()
+    //.NoHandlers()
+    //.SelectSignalRProxyProvider("https://localhost:44310")
+    .SelectNullClient()
+    .EnableDiagnostics();
 
 var busManagerBuilder = builder.Services.AddBasycBusManager();
 
 busManagerBuilder.EnableDiagnostics()
-	.AddBasycDiagnostics();
+    .AddBasycDiagnostics();
 
 busManagerBuilder.AddRequestHandler()
-	.UseTraceIdMapper<BusManagerBasycDiagnosticsReceiverTraceIdMapper>()
-	.UseBasycMessageBusHandler();
+    .UseTraceIdMapper<BusManagerBasycDiagnosticsReceiverTraceIdMapper>()
+    .UseBasycMessageBusHandler();
 
 // busManagerBuilder.RegisterMessages()
-// 	.FromAssemblyScan(assembliesToScan)
-// 	.InGroup("FromAssembly")
-// 	.FromInterface<IEvent>()
-// 	.UseTypeNameAsDisplayName()
-// 	.AsEvents()
-// 	.HandledByDefaultHandler();
+//  .FromAssemblyScan(assembliesToScan)
+//  .InGroup("FromAssembly")
+//  .FromInterface<IEvent>()
+//  .UseTypeNameAsDisplayName()
+//  .AsEvents()
+//  .HandledByDefaultHandler();
 //
 // busManagerBuilder.RegisterMessages()
-// 	.FromAssemblyScan(assembliesToScan)
-// 	.InGroup("FromAssembly")
-// 	.FromInterface<ICommand>()
-// 	.UseTypeNameAsDisplayName()
-// 	.AsCommands()
-// 	.NoResponse()
-// 	.HandledBy(BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
+//  .FromAssemblyScan(assembliesToScan)
+//  .InGroup("FromAssembly")
+//  .FromInterface<ICommand>()
+//  .UseTypeNameAsDisplayName()
+//  .AsCommands()
+//  .NoResponse()
+//  .HandledBy(BasycTypedMessageBusRequestHandler.BasycTypedMessageBusRequesterUniqueName);
 //
 // busManagerBuilder.RegisterMessages()
-// 	.FromAssemblyScan(assembliesToScan)
-// 	.InGroup("FromAssembly")
-// 	.FromInterface(typeof(ICommand<>))
-// 	.UseTypeNameAsDisplayName()
-// 	.AsQueries()
-// 	.HasResponse<int>()
-// 	.SetResponseDisplayName("responseType");
+//  .FromAssemblyScan(assembliesToScan)
+//  .InGroup("FromAssembly")
+//  .FromInterface(typeof(ICommand<>))
+//  .UseTypeNameAsDisplayName()
+//  .AsQueries()
+//  .HasResponse<int>()
+//  .SetResponseDisplayName("responseType");
 //
 // busManagerBuilder.RegisterMessages()
-// 	.FromAssemblyScan(assembliesToScan)
-// 	.InGroup("FromAssembly")
-// 	.FromInterface(typeof(IQuery<>))
-// 	.UseTypeNameAsDisplayName()
-// 	.AsQueries()
-// 	.HasResponse<int>()
-// 	.SetResponseDisplayName("asddas")
-// 	.HandledByDefaultHandler();
+//  .FromAssemblyScan(assembliesToScan)
+//  .InGroup("FromAssembly")
+//  .FromInterface(typeof(IQuery<>))
+//  .UseTypeNameAsDisplayName()
+//  .AsQueries()
+//  .HasResponse<int>()
+//  .SetResponseDisplayName("asddas")
+//  .HandledByDefaultHandler();
 
 busManagerBuilder.RegisterMessages()
-	.FromAssemblyScan(assembliesToScan)
-	.WhereImplements<ICommand>()
-	.Register((type, register) =>
-	{
-		register.InGroup("FromAssembly")
-			.AddMessage(type.Name)
-			.NoReturn()
-			.HandledBy((logger) =>
-			{
-				//var activity = DiagnosticHelper.Start("Handler logic");
-				//activity.Stop();
-				//x.Complete();
-			});
-	});
+    .FromAssemblyScan(assembliesToScan)
+    .WhereImplements<ICommand>()
+    .Register((type, register) =>
+    {
+        register.InGroup("FromAssembly")
+            .AddMessage(type.Name)
+            .NoReturn()
+            .HandledBy((logger) =>
+            {
+                //var activity = DiagnosticHelper.Start("Handler logic");
+                //activity.Stop();
+                //x.Complete();
+            });
+    });
 
 busManagerBuilder.RegisterMessages()
-	.FromAssemblyScan(assembliesToScan)
-	.WhereImplements(typeof(IQuery<>))
-	.Register((type, register) =>
-	{
-		register.InGroup("FromAssembly")
-			.AddMessage(type.Name)
-			.WithParametersFrom(type)
-			.Returns(type.GetTypeArgumentsFromParent(typeof(IQuery<>)).First())
-			.HandledBy((x, logger) =>
-			{
-				var text = (string)x.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).First().GetValue(x).Value();
-				return text.ToLowerInvariant();
-			});
-	});
+    .FromAssemblyScan(assembliesToScan)
+    .WhereImplements(typeof(IQuery<>))
+    .Register((type, register) =>
+    {
+        register.InGroup("FromAssembly")
+            .AddMessage(type.Name)
+            .WithParametersFrom(type)
+            .Returns(type.GetTypeArgumentsFromParent(typeof(IQuery<>)).First())
+            .HandledBy((x, logger) =>
+            {
+                string text = (string)x.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).First().GetValue(x).Value();
+                return text.ToLowerInvariant();
+            });
+    });
 
 busManagerBuilder.RegisterMessages()
-	.FromFluentApi()
-	.InGroup("FromFluentApi")
-	.AddMessage("Fluent Message 1")
-	.NoReturn()
-	.HandledBy(logger =>
-	{
-		if (Random.Shared.Next(0, 100) > 50)
-		{
-			Thread.Sleep(100);
-			logger.LogError("TestError");
-			throw new Exception("Test exception");
-		}
-	})
-	.AddMessage("ToUpper")
-	.WithParameter<string>("name")
-	.Returns<string>("nameToUpper")
-	.HandledBy((x, logger) =>
-	{
-		var name = (string)x.First().Value.Value();
-		return name.ToUpperInvariant();
-	})
-	.AddMessage("ToLower")
-	.WithParameter<string>("name")
-	.Returns<string>("nameToLower")
-	.HandledBy((x, logger) =>
-	{
-		var name = (string)x.First().Value.Value();
-		return name.ToLowerInvariant();
-	})
-	.AddMessage("Add Customer")
-	.WithParametersFrom<CustomerModel>()
-	.Returns<string>("errorCode")
-	.HandeledBy((CustomerModel x) =>
-	{
-		return "0";
-	})
-	.AddMessage("Create Customer")
-	.WithParametersFrom<CustomerModel>()
-	.Returns<CustomerModel>("new cutomer")
-	.HandeledBy((CustomerModel x) =>
-	{
-		return x;
-	})
-	.AddMessage("Inifinite Logging")
-	.NoReturn()
-	.HandledBy(async (logger) =>
-	{
-		var counter = 0;
-		while (true)
-		{
-			await Task.Delay(3500);
-			var message = $"Info: {++counter}";
-			logger.LogInformation(message);
-			logger.LogError(message);
-		}
-	})
-	.AddMessage("Log")
-	.WithParameter<int>("logCount")
-	.NoReturn()
-	.HandledBy((input, logger) =>
-	{
-		var logCounter = 0;
-		var desiredCount = (int)input.Parameters.First().Value.Value();
-		while (true)
-		{
-			logger.LogInformation("Info: " + logCounter++);
-			logger.LogError("Error: " + logCounter++);
-			if (logCounter >= desiredCount)
-				break;
-		}
-	})
-	;
+    .FromFluentApi()
+    .InGroup("FromFluentApi")
+    .AddMessage("Fluent Message 1")
+    .NoReturn()
+    .HandledBy(logger =>
+    {
+        if (Random.Shared.Next(0, 100) > 50)
+        {
+            Thread.Sleep(100);
+            logger.LogError("TestError");
+            throw new InvalidOperationException("Test exception");
+        }
+    })
+    .AddMessage("ToUpper")
+    .WithParameter<string>("name")
+    .Returns<string>("nameToUpper")
+    .HandledBy((x, logger) =>
+    {
+        string? name = (string)x.First().Value.Value();
+        return name.ToUpperInvariant();
+    })
+    .AddMessage("ToLower")
+    .WithParameter<string>("name")
+    .Returns<string>("nameToLower")
+    .HandledBy((x, logger) =>
+    {
+        string? name = (string)x.First().Value.Value();
+        return name.ToLowerInvariant();
+    })
+    .AddMessage("Add Customer")
+    .WithParametersFrom<CustomerModel>()
+    .Returns<string>("errorCode")
+    .HandeledBy((CustomerModel x) =>
+    {
+        return "0";
+    })
+    .AddMessage("Create Customer")
+    .WithParametersFrom<CustomerModel>()
+    .Returns<CustomerModel>("new cutomer")
+    .HandeledBy((CustomerModel x) =>
+    {
+        return x;
+    })
+    .AddMessage("Inifinite Logging")
+    .NoReturn()
+    .HandledBy(async (logger) =>
+    {
+        int counter = 0;
+        while (true)
+        {
+            await Task.Delay(3500);
+            string message = $"Info: {++counter}";
+            logger.LogInformation(message);
+            logger.LogError(message);
+        }
+    })
+    .AddMessage("Log")
+    .WithParameter<int>("logCount")
+    .NoReturn()
+    .HandledBy((input, logger) =>
+    {
+        int logCounter = 0;
+        int desiredCount = (int)input.Parameters.First().Value.Value();
+        while (true)
+        {
+            logger.LogInformation("Info: " + logCounter++);
+            logger.LogError("Error: " + logCounter++);
+            if (logCounter >= desiredCount)
+                break;
+        }
+    })
+    ;
 
 builder.Services.AddBasycBusManagerBlazorUi();
 BasycReactiveUi.Fix();
@@ -213,20 +213,20 @@ await blazorApp.RunAsync();
 
 static void WireUpInMemoryDiagnostics(WebAssemblyHost app)
 {
-	var serverReceiver = app.Services.GetRequiredService<InMemoryDiagnosticReceiver>();
-	var inMemoryProducer = app.Services.GetRequiredService<InMemoryDiagnosticsExporter>();
-	inMemoryProducer.LogProduced += (s, a) =>
-	{
-		serverReceiver.PushLog(a);
-	};
+    var serverReceiver = app.Services.GetRequiredService<InMemoryDiagnosticReceiver>();
+    var inMemoryProducer = app.Services.GetRequiredService<InMemoryDiagnosticsExporter>();
+    inMemoryProducer.LogProduced += (s, a) =>
+    {
+        serverReceiver.PushLog(a);
+    };
 
-	inMemoryProducer.StartProduced += (s, a) =>
-	{
-		serverReceiver.StartActivity(a);
-	};
+    inMemoryProducer.StartProduced += (s, a) =>
+    {
+        serverReceiver.StartActivity(a);
+    };
 
-	inMemoryProducer.EndProduced += (s, a) =>
-	{
-		serverReceiver.EndActivity(a);
-	};
+    inMemoryProducer.EndProduced += (s, a) =>
+    {
+        serverReceiver.EndActivity(a);
+    };
 }

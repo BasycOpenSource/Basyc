@@ -10,6 +10,8 @@ public class MessageTypeRecord
     }
 
     public string MessageType { get; }
+
     public List<string> WorkerIds { get; }
+
     public int LastUsedWorkerId { get; set; }
 }

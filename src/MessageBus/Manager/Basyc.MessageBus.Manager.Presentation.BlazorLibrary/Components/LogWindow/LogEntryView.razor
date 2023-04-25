@@ -70,18 +70,15 @@
                                     .AddClass("--error", LogIconTypeHelper.LogLevelToLogIconType(LogLevel) == LogIconType.Error)
                                     .Build();
 
-    private static string LogLevelToString(LogLevel logLevel)
+    private static string LogLevelToString(LogLevel logLevel) => logLevel switch
     {
-        return logLevel switch
-        {
-            LogLevel.Warning => "warn",
-            LogLevel.Information => "info",
-            LogLevel.Debug => "dbug",
-            LogLevel.Error => "erro",
-            LogLevel.Critical => "crit",
-            _ => logLevel.ToString()
+        LogLevel.Warning => "warn",
+        LogLevel.Information => "info",
+        LogLevel.Debug => "dbug",
+        LogLevel.Error => "erro",
+        LogLevel.Critical => "crit",
+        _ => logLevel.ToString()
         };
-    }
 
 
 

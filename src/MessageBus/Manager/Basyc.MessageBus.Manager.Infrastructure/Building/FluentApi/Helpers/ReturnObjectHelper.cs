@@ -6,7 +6,7 @@ public static class ReturnObjectHelper
     {
         if (returnObject is null)
         {
-            var cannotBeNull = expectedType.IsValueType || Nullable.GetUnderlyingType(expectedType) == null;
+            bool cannotBeNull = expectedType.IsValueType || Nullable.GetUnderlyingType(expectedType) == null;
             if (cannotBeNull is false)
             {
                 throw new InvalidOperationException($"Handler return null but expected type is {expectedType} does not support null");

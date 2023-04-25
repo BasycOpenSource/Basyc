@@ -258,15 +258,9 @@
 
 
 
-    private void OnActivityEnded(object? sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
+    private void OnActivityEnded(object? sender, EventArgs e) => StateHasChanged();
 
-    private void OnNestedActivityEnded(object? sender, EventArgs e)
-    {
-        StateHasChanged();
-    }
+    private void OnNestedActivityEnded(object? sender, EventArgs e) => StateHasChanged();
 
     public void Dispose()
     {

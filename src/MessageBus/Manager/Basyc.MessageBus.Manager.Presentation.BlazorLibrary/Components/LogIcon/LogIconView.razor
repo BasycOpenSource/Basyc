@@ -14,10 +14,4 @@
                             .AddClass("rectangle--error", LogIconTypeHelper.LogLevelToLogIconType(LogLevel) is LogIconType.Error)
                             .Build();
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        //Console.WriteLine("logIcon render");
-        base.OnAfterRender(firstRender);
-    }
-
 }

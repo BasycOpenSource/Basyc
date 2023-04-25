@@ -18,7 +18,8 @@ public partial class ProxyClientHub : Hub<IClientMethodsServerCanCall>, IMethods
 
     public async Task Request(RequestSignalRDto proxyRequest)
     {
-        var reqeustActivity = DiagnosticHelper.Start($"{nameof(ProxyClientHub)}.{nameof(Request)}", proxyRequest.RequestContext.TraceId,
+        var reqeustActivity = DiagnosticHelper.Start($"{nameof(ProxyClientHub)}.{nameof(Request)}",
+            proxyRequest.RequestContext.TraceId,
             proxyRequest.RequestContext.ParentSpanId);
         LogRequestReceived(proxyRequest.MessageType);
         if (proxyRequest.HasResponse)

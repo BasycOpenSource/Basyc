@@ -1,4 +1,9 @@
-﻿namespace Basyc.MessageBus.Manager.Application.Requesting;
+﻿using System.Diagnostics;
+using Basyc.Diagnostics.Shared;
+using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
+using Microsoft.Extensions.Logging;
+
+namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public class ResultLoggingContextLogger : ILogger
 {
@@ -17,8 +22,8 @@ public class ResultLoggingContextLogger : ILogger
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
-        var spanId = Activity.Current?.SpanId.ToString();
-        var message = formatter.Invoke(state, exception);
+        string? spanId = Activity.Current?.SpanId.ToString();
+        string message = formatter.Invoke(state, exception);
         loggingContext.AddLog(serviceIdentity, logLevel, message, spanId);
     }
 }

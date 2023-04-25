@@ -1,15 +1,19 @@
-﻿namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
+﻿using Basyc.Diagnostics.Shared;
+
+namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
 public class ServiceIdentityContext
 {
     private readonly List<ActivityContext> activities = new();
-    public IReadOnlyList<ActivityContext> Activities => activities;
-    public ServiceIdentity ServiceIdentity { get; }
 
     public ServiceIdentityContext(ServiceIdentity serviceIdentity)
     {
         ServiceIdentity = serviceIdentity;
     }
+
+    public ServiceIdentity ServiceIdentity { get; }
+
+    public IReadOnlyList<ActivityContext> Activities => activities;
 
     public void AddActivity(ActivityContext activity)
     {

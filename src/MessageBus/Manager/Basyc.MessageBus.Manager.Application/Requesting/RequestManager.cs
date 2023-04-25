@@ -1,4 +1,9 @@
-﻿using System.Collections.ObjectModel;
+﻿using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Durations;
+using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
+using Basyc.MessageBus.Manager.Application.ResultDiagnostics.Durations;
+using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 
 namespace Basyc.MessageBus.Manager.Application.Requesting;
 
@@ -10,27 +15,29 @@ public class RequestManager : IRequestManager
     private readonly ServiceIdentity requestManagerServiceIdentity;
     private int requestCounter;
 
-    public RequestManager(IRequesterSelector requesterSelector, IRequestDiagnosticsRepository loggingManager,
+    public RequestManager(IRequesterSelector requesterSelector,
+        IRequestDiagnosticsRepository loggingManager,
         InMemoryRequestDiagnosticsSource inMemoryRequestDiagnosticsSource)
     {
         this.requesterSelector = requesterSelector;
         requestDiagnosticsRepository = loggingManager;
         this.inMemoryRequestDiagnosticsSource = inMemoryRequestDiagnosticsSource;
         requestManagerServiceIdentity = ServiceIdentity.ApplicationWideIdentity;
-        MessageContexts = new ReadOnlyObservableCollection<MessageContext>(requests);
+        MessageContexts = new ReadOnlyObservableCollection<MessageContext>(Requests);
     }
 
-    private ObservableCollection<MessageContext> requests { get; } = new();
     public ReadOnlyObservableCollection<MessageContext> MessageContexts { get; }
+
+    private ObservableCollection<MessageContext> Requests { get; } = new();
 
     public MessageRequest StartRequest(RequestInput request)
     {
-        var traceId = Interlocked.Increment(ref requestCounter).ToString().PadLeft(32, '0');
+        string traceId = Interlocked.Increment(ref requestCounter).ToString().PadLeft(32, '0');
         var messageContext = MessageContexts.FirstOrDefault(x => x.MessageInfo == request.MessageInfo);
         if (messageContext == default)
         {
             messageContext = new MessageContext(request.MessageInfo);
-            requests.Add(messageContext);
+            Requests.Add(messageContext);
         }
 
         var requestDiagnostics = requestDiagnosticsRepository.CreateDiagnostics(traceId);

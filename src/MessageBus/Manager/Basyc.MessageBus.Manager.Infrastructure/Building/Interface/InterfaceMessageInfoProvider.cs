@@ -13,8 +13,10 @@ public class InterfaceMessageInfoProvider : IMessageInfoProvider
     private readonly IRequesterSelector requesterSelector;
     private readonly IRequestInfoTypeStorage requestInfoTypeStorage;
 
-    public InterfaceMessageInfoProvider(IOptions<InterfaceDomainProviderOptions> options, IRequesterSelector requesterSelector,
-        IRequestInfoTypeStorage requestInfoTypeStorage, IEnumerable<IRequestHandler> requesters)
+    public InterfaceMessageInfoProvider(IOptions<InterfaceDomainProviderOptions> options,
+        IRequesterSelector requesterSelector,
+        IRequestInfoTypeStorage requestInfoTypeStorage,
+        IEnumerable<IRequestHandler> requesters)
     {
         this.options = options;
         this.requesterSelector = requesterSelector;
@@ -24,7 +26,7 @@ public class InterfaceMessageInfoProvider : IMessageInfoProvider
 
     public List<MessageGroup> GetMessageInfos()
     {
-        var groupss = new Dictionary<string, List<MessageInfo>>();
+        var groups = new Dictionary<string, List<MessageInfo>>();
 
         foreach (var registration in options.Value.InterfaceRegistrations)
         {
@@ -32,8 +34,8 @@ public class InterfaceMessageInfoProvider : IMessageInfoProvider
             registration.MessageInterfaceType.ThrowIfNull();
             registration.DisplayNameFormatter.ThrowIfNull();
 
-            groupss.TryAdd(registration.GroupName, new List<MessageInfo>());
-            var infos = groupss[registration.GroupName];
+            groups.TryAdd(registration.GroupName, new List<MessageInfo>());
+            var infos = groups[registration.GroupName];
             foreach (var assemblyType in registration.AssembliesToScan.SelectMany(assembly => assembly.GetTypes()))
             {
                 if (registration.HasResponse)
@@ -42,14 +44,17 @@ public class InterfaceMessageInfoProvider : IMessageInfoProvider
                     registration.ResponseDisplayName.ThrowIfNull();
                 }
 
-                var implementsInterface = assemblyType.GetInterface(registration.MessageInterfaceType.Name) is not null;
+                bool implementsInterface = assemblyType.GetInterface(registration.MessageInterfaceType.Name) is not null;
                 if (implementsInterface is false)
                     continue;
 
                 var paramInfos = TypedProviderHelper.HarvestParameterInfos(assemblyType, x => x.Name);
-                var messageDisplayName = registration.DisplayNameFormatter.Invoke(assemblyType);
+                string messageDisplayName = registration.DisplayNameFormatter.Invoke(assemblyType);
                 var requestInfo = registration.HasResponse
-                    ? new MessageInfo(registration.RequestType, paramInfos, registration.ResponseType.Value(), messageDisplayName,
+                    ? new MessageInfo(registration.RequestType,
+                        paramInfos,
+                        registration.ResponseType.Value(),
+                        messageDisplayName,
                         registration.ResponseDisplayName.Value())
                     : new MessageInfo(registration.RequestType, paramInfos, messageDisplayName);
                 string requesterName;
@@ -76,7 +81,7 @@ public class InterfaceMessageInfoProvider : IMessageInfoProvider
             }
         }
 
-        var domainInfos = groupss.Select(x => new MessageGroup(x.Key, x.Value)).ToList();
+        var domainInfos = groups.Select(x => new MessageGroup(x.Key, x.Value)).ToList();
         return domainInfos;
     }
 }

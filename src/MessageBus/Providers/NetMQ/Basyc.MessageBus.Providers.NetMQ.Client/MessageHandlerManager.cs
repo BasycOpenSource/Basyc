@@ -40,8 +40,11 @@ public class MessageHandlerManager : IMessageHandlerManager
         }
     }
 
-    public async Task<OneOf<object, Exception>> ConsumeMessage(string messageType, object? messageData, CancellationToken cancellationToken, string traceId,
-        string parentSpanId)
+    public async Task<OneOf<object, Exception>> ConsumeMessage(string messageType,
+        object? messageData,
+        string traceId,
+        string parentId,
+        CancellationToken cancellationToken)
     {
         if (handlerTypesCacheMap.TryGetValue(messageType, out var handlerMetadata) is false)
         {
@@ -50,21 +53,6 @@ public class MessageHandlerManager : IMessageHandlerManager
 
         var handler = serviceProvider.GetRequiredService(handlerMetadata.HandlerRuntimeType)!;
         BusHandlerLoggerSessionManager.StartSession(new LoggingSession(traceId, handlerMetadata.HandlerInfo.HandleMethodInfo.Name));
-
-        //var activityTraceId = ActivityTraceId.CreateFromString(traceId);
-        //var activitySpanId = ActivitySpanId.CreateFromString(parentSpanId);
-        //var activityContext = new ActivityContext(activityTraceId, activitySpanId, ActivityTraceFlags.Recorded, null, true);
-
-        //using (var handlerStartedActivity = DiagnosticConstants.HandlerStarted.StartActivity("ConsumeMessage", ActivityKind.Internal, activityContext, new KeyValuePair<string, object?>[]
-        //{
-        //	new KeyValuePair<string, object?>(DiagnosticConstants.ShouldBeReceived ,true)
-        //}))
-        using var handlerStartedActivity = DiagnosticHelper.Start("ConsumeMessage");
-        //if (handlerStartedActivity is not null)
-        //{
-        //	handlerStartedActivity.AddBaggage(DiagnosticConstants.ShouldBeReceived, true.ToString());
-        //}
-
         var invokeActivity = DiagnosticHelper.Start("Invoking method info");
         var handlerResultTask = (Task)handlerMetadata.HandlerInfo.HandleMethodInfo.Invoke(handler, new[] { messageData!, cancellationToken })!;
         object? handlerResult;

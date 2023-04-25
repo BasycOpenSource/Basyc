@@ -61,10 +61,7 @@
 
     }
 
-    protected override bool ShouldRender()
-    {
-        return shouldRender;
-    }
+    protected override bool ShouldRender() => shouldRender;
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -107,8 +104,8 @@
 
     private void UpdateStyle()
     {
-        var visibility = isMouseOver || freezeTooltip ? "visible" : "collapse";
-        var cssText = $"left: {mousePositionX + 4}px; top: {mousePositionY + 4}px; visibility: {visibility}";
+        string visibility = isMouseOver || freezeTooltip ? "visible" : "collapse";
+        string cssText = $"left: {mousePositionX + 4}px; top: {mousePositionY + 4}px; visibility: {visibility}";
         ElementJsInterop.ChangeStyle(tooltipPopupComponent, cssText);
     }
 

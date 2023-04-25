@@ -79,10 +79,7 @@
     private string scrollId = @Random.Shared.Next().ToString();
 
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
+    protected override void OnInitialized() => base.OnInitialized();
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -99,20 +96,11 @@
         base.OnParametersSet();
     }
 
-    private void OnActivityStartAdded(object? sender, ActivityStart activityStart)
-    {
-        StateHasChanged();
-    }
+    private void OnActivityStartAdded(object? sender, ActivityStart activityStart) => StateHasChanged();
 
-    private void OnActivityEneAdded(object? sender, ActivityEnd activityEnd)
-    {
-        StateHasChanged();
-    }
+    private void OnActivityEneAdded(object? sender, ActivityEnd activityEnd) => StateHasChanged();
 
-    private void OnZoomInClick(MouseEventArgs args)
-    {
-        PixelsPerMs += 0.1 * PixelsPerMs * 3;
-    }
+    private void OnZoomInClick(MouseEventArgs args) => PixelsPerMs += 0.1 * PixelsPerMs * 3;
 
     private void OnZoomOutClick(MouseEventArgs args)
     {

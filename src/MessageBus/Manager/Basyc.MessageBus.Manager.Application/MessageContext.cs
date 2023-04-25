@@ -12,5 +12,6 @@ public class MessageContext : ReactiveObject
     }
 
     [Reactive] public ObservableCollection<MessageRequest> MessageRequests { get; init; } = new();
+
     [Reactive] public MessageInfo MessageInfo { get; init; }
 }

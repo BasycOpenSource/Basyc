@@ -9,8 +9,8 @@ public class FluentTMessageSetupMessageStage<TMessage> : BuilderStageBase
     private readonly FluentApiGroupRegistration fluentApiGroup;
     private readonly FluentApiMessageRegistration fluentApiMessage;
 
-    public FluentTMessageSetupMessageStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) :
-        base(services)
+    public FluentTMessageSetupMessageStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup)
+        : base(services)
     {
         this.fluentApiMessage = fluentApiMessage;
         this.fluentApiGroup = fluentApiGroup;

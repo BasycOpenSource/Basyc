@@ -10,30 +10,30 @@ public class NetMqMessageWrapper : INetMqMessageWrapper
     private static readonly string wrapperMessageType = TypedToSimpleConverter.ConvertTypeToSimple<ProtoMessageWrapper>();
     private readonly IObjectToByteSerailizer objectToByteSerializer;
 
-    public NetMqMessageWrapper(IObjectToByteSerailizer byteSerailizer)
+    public NetMqMessageWrapper(IObjectToByteSerailizer byteSerializer)
     {
-        objectToByteSerializer = byteSerailizer;
+        objectToByteSerializer = byteSerializer;
     }
 
-    public byte[] CreateWrapperMessage(object? messageData, string messageType, int sessionId, string traceId, string requesterSpanId, MessageCase messageCase)
+    public byte[] CreateWrapperMessage(object? messageData, string messageType, int sessionId, string traceId, string parentSpanId, MessageCase messageCase)
     {
         var messageBytes = messageData is byte[] bytes ? bytes : objectToByteSerializer.Serialize(messageData, messageType);
 
         if (messageBytes is null)
         {
-            throw new Exception();
+            throw new InvalidOperationException();
         }
 
-        var wrapperMessageData = new ProtoMessageWrapper(sessionId, messageCase, messageType, messageBytes, traceId, requesterSpanId);
+        var wrapperMessageData = new ProtoMessageWrapper(sessionId, messageCase, messageType, messageBytes, traceId, parentSpanId);
         return objectToByteSerializer.Serialize(wrapperMessageData, wrapperMessageType);
     }
 
-    public OneOf<CheckInMessage, RequestCase, ResponseCase, EventCase, DeserializationFailureCase> ReadWrapperMessage(byte[] wrapperBytes)
+    public OneOf<CheckInMessage, RequestCase, ResponseCase, EventCase, DeserializationFailureCase> ReadWrapperMessage(byte[] messageBytes)
     {
-        var wrapper = (ProtoMessageWrapper?)objectToByteSerializer.Deserialize(wrapperBytes, wrapperMessageType);
+        var wrapper = (ProtoMessageWrapper?)objectToByteSerializer.Deserialize(messageBytes, wrapperMessageType);
         if (wrapper is null)
         {
-            throw new Exception("Deserialization failed");
+            throw new InvalidOperationException("Deserialization failed");
         }
 
         switch (wrapper.MessageCase)
@@ -44,16 +44,26 @@ public class NetMqMessageWrapper : INetMqMessageWrapper
                     var checkIn = (CheckInMessage?)objectToByteSerializer.Deserialize(wrapper.MessageBytes, wrapper.MessageType);
                     if (checkIn is null)
                     {
-                        return new DeserializationFailureCase(wrapper.SessionId, wrapper.TraceId, wrapper.ParentSpanId, wrapper.MessageCase,
-                            wrapper.MessageType, null, string.Empty);
+                        return new DeserializationFailureCase(wrapper.SessionId,
+                            wrapper.TraceId,
+                            wrapper.ParentSpanId,
+                            wrapper.MessageCase,
+                            wrapper.MessageType,
+                            null,
+                            string.Empty);
                     }
 
                     return checkIn;
                 }
                 catch (Exception ex)
                 {
-                    return new DeserializationFailureCase(wrapper.SessionId, wrapper.TraceId, wrapper.ParentSpanId, wrapper.MessageCase, wrapper.MessageType,
-                        ex, $"{ex.Message}");
+                    return new DeserializationFailureCase(wrapper.SessionId,
+                        wrapper.TraceId,
+                        wrapper.ParentSpanId,
+                        wrapper.MessageCase,
+                        wrapper.MessageType,
+                        ex,
+                        $"{ex.Message}");
                 }
 
             case MessageCase.Request:
@@ -66,7 +76,7 @@ public class NetMqMessageWrapper : INetMqMessageWrapper
                 var eventCase = new EventCase(wrapper.SessionId, wrapper.TraceId, wrapper.ParentSpanId, wrapper.MessageType, wrapper.MessageBytes);
                 return eventCase;
             default:
-                throw new Exception();
+                throw new InvalidOperationException();
         }
     }
 }

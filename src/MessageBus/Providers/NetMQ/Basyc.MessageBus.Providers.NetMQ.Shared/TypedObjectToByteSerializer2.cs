@@ -14,31 +14,18 @@ public static class TypedObjectToByteSerializer2
     {
         if (objectData == null)
         {
-            return new byte[0];
+            return Array.Empty<byte>();
         }
 
         if (objectData.GetType().GetProperties().Length == 0)
         {
-            return new byte[0];
+            return Array.Empty<byte>();
         }
 
         using var stream = new MemoryStream();
         PrepareSerializer(objectType);
         Serializer.Serialize(stream, objectData);
         return stream.ToArray();
-    }
-
-    private static void PrepareSerializer(Type type)
-    {
-        if (RuntimeTypeModel.Default.CanSerialize(type) is false)
-        {
-            RuntimeTypeModel.Default.Add(type);
-            var parameters = type.GetConstructors().First().GetParameters();
-            foreach (var parameter in parameters)
-            {
-                PrepareSerializer(parameter.ParameterType);
-            }
-        }
     }
 
     public static T? Deserialize<T>(byte[] objectData) => (T?)Deserialize(objectData, typeof(T));
@@ -60,7 +47,7 @@ public static class TypedObjectToByteSerializer2
             }
             catch
             {
-                throw new Exception("Cannot deserialize message. Message data is empty and message does not have empty constructor.");
+                throw new InvalidOperationException("Cannot deserialize message. Message data is empty and message does not have empty constructor.");
             }
         }
 
@@ -70,5 +57,18 @@ public static class TypedObjectToByteSerializer2
 
         var result = Serializer.Deserialize(objectClrType, stream);
         return result;
+    }
+
+    private static void PrepareSerializer(Type type)
+    {
+        if (RuntimeTypeModel.Default.CanSerialize(type) is false)
+        {
+            RuntimeTypeModel.Default.Add(type);
+            var parameters = type.GetConstructors().First().GetParameters();
+            foreach (var parameter in parameters)
+            {
+                PrepareSerializer(parameter.ParameterType);
+            }
+        }
     }
 }

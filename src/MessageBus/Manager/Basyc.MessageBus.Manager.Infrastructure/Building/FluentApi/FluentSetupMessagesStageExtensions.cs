@@ -10,10 +10,10 @@ public static class FluentSetupMessagesStageExtensions
     {
         // var wasRegistered = parent.services.Any(x =>
         // {
-        // 	if (x.ImplementationType is null)
-        // 		return false;
+        //  if (x.ImplementationType is null)
+        //  return false;
         //
-        // 	return x.ImplementationType == typeof(FluentApiDomainInfoProvider);
+        //  return x.ImplementationType == typeof(FluentApiDomainInfoProvider);
         // });
         // if (wasRegistered is false)
         parent.services.AddSingleton<IMessageInfoProvider, FluentApiMessageInfoProvider>();

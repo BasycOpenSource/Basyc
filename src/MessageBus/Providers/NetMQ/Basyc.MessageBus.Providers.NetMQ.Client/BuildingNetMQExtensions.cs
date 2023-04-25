@@ -18,7 +18,9 @@ public static class BuildingNetMqExtensions
         int? brokerServerPort) => SelectNetMqProvider(builder);
 
     public static BusClientUseDiagnosticsStage SelectNetMqProvider(this BusClientSetupProviderStage builder,
-        string? clientId = null, int brokerServerPort = defaultBrokerServerPort, string brokerServerAddress = defaultBrokerServerAddress)
+        string? clientId = null,
+        int brokerServerPort = defaultBrokerServerPort,
+        string brokerServerAddress = defaultBrokerServerAddress)
     {
         var services = builder.services;
         AddClients(services);
@@ -56,7 +58,8 @@ public static class BuildingNetMqExtensions
                 //Type messageType = messageHandlerService.ServiceType!.GetTypeArgumentsFromParent(typeof(IMessageHandler<>))[0];
                 var messageType = messageHandlerService.ServiceType.GetGenericArguments()[0];
                 var handleMethodInfo = typeof(IMessageHandler<>).MakeGenericType(messageType).GetMethod(nameof(IMessageHandler<IMessage>.Handle))!;
-                handlerManagerOptions.HandlerInfos.Add(new NetMqMessageHandlerInfo(TypedToSimpleConverter.ConvertTypeToSimple(messageType), messageType,
+                handlerManagerOptions.HandlerInfos.Add(new NetMqMessageHandlerInfo(TypedToSimpleConverter.ConvertTypeToSimple(messageType),
+                    messageType,
                     handleMethodInfo));
             }
 
@@ -72,8 +75,10 @@ public static class BuildingNetMqExtensions
                 var handleWithResponseMethodInfo = typeof(IMessageHandler<,>)
                     .MakeGenericType(messageType, responseType)
                     .GetMethod(nameof(IMessageHandler<IMessage<object>, object>.Handle))!;
-                handlerManagerOptions.HandlerInfos.Add(new NetMqMessageHandlerInfo(TypedToSimpleConverter.ConvertTypeToSimple(messageType), messageType,
-                    responseType, handleWithResponseMethodInfo));
+                handlerManagerOptions.HandlerInfos.Add(new NetMqMessageHandlerInfo(TypedToSimpleConverter.ConvertTypeToSimple(messageType),
+                    messageType,
+                    responseType,
+                    handleWithResponseMethodInfo));
             }
         });
     }

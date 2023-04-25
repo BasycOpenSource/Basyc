@@ -10,13 +10,7 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Side
 
 public class SidebarHistoryViewModel : BasycReactiveViewModelBase
 {
-    [Reactive] public MessageInfo? MessageInfo { get; set; }
-    [Reactive] private MessageContext? messageContext { get; set; }
-    [Reactive] public int HistoryCount { get; init; }
-    [Reactive] public ReadOnlyObservableCollection<MessageRequest> History { get; private set; }
-
     private readonly IRequestManager requestManager;
-    public ViewModelActivator Activator { get; } = new ViewModelActivator();
 
     public SidebarHistoryViewModel(IRequestManager requestManager)
     {
@@ -26,15 +20,15 @@ public class SidebarHistoryViewModel : BasycReactiveViewModelBase
         this.ReactiveHandler(x => x.MessageInfo!,
                 x =>
                {
-                   messageContext = this.ReactiveAggregatorProperty(
-                   x => x.messageContext,
+                   MessageContext = this.ReactiveAggregatorProperty(
+                   x => x.MessageContext,
                    x => x.requestManager.MessageContexts,
                    x => x.FirstOrDefault(x => x.MessageInfo == MessageInfo));
                });
 
         History = this.ReactiveCollectionProperty(
                x => History!,
-               x => x.messageContext!.MessageRequests,
+               x => x.MessageContext!.MessageRequests,
                x => x);
         History = new(new());
 
@@ -43,14 +37,23 @@ public class SidebarHistoryViewModel : BasycReactiveViewModelBase
               x => x.History.Count);
 
         //Fixing ReactiveUI not propagating nulls
-        this.ReactiveHandler(x => x.messageContext!,
+        this.ReactiveHandler(x => x.MessageContext!,
                 x =>
                 {
                     if (x is null)
                     {
-                        messageContext = new MessageContext(null!);
+                        MessageContext = new MessageContext(null!);
                     }
                 });
-
     }
+
+    [Reactive] public MessageInfo? MessageInfo { get; set; }
+
+    [Reactive] public int HistoryCount { get; init; }
+
+    [Reactive] public ReadOnlyObservableCollection<MessageRequest> History { get; private set; }
+
+    public ViewModelActivator Activator { get; } = new ViewModelActivator();
+
+    [Reactive] private MessageContext? MessageContext { get; set; }
 }

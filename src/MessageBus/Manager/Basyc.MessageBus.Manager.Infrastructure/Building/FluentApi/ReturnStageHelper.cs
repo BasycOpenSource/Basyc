@@ -1,12 +1,6 @@
-﻿using Basyc.MessageBus.Manager.Application;
-using Basyc.MessageBus.Manager.Application.Initialization;
-using Basyc.MessageBus.Manager.Application.Requesting;
+﻿using Basyc.MessageBus.Manager.Application.Requesting;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Common;
-using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
-using Throw;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
@@ -16,7 +10,7 @@ public static class ReturnStageHelper
         IServiceCollection services,
         FluentApiGroupRegistration fluentApiGroup,
         FluentApiMessageRegistration fluentApiMessage,
-        RequestHandlerDelegate handler) => services.Configure<CommonMessageInfoProviderOptions>(x =>
+        RequestHandler handler) => services.Configure<CommonMessageInfoProviderOptions>(x =>
                                                 {
                                                     var messageRegistration = new MessageRegistration();
                                                     messageRegistration.MessageDisplayName = fluentApiMessage.MessageDisplayName;

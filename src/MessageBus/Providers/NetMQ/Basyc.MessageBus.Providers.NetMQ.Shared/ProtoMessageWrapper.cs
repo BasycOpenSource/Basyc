@@ -6,14 +6,6 @@ namespace Basyc.MessageBus.NetMQ.Shared;
 [ProtoContract]
 public class ProtoMessageWrapper
 {
-    //Supressing warning since this ctor is only used for serializers
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    protected ProtoMessageWrapper()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-    {
-
-    }
-
     public ProtoMessageWrapper(int sessionId, MessageCase messageCase, string messageType, byte[] messageData, string traceId, string parentSpanId)
     {
         SessionId = sessionId;
@@ -22,6 +14,13 @@ public class ProtoMessageWrapper
         MessageBytes = messageData;
         TraceId = traceId;
         ParentSpanId = parentSpanId;
+    }
+
+    //Suppressing warning since this ctor is only used for serializers
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    protected ProtoMessageWrapper()
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+    {
     }
 
     [ProtoMember(1)]

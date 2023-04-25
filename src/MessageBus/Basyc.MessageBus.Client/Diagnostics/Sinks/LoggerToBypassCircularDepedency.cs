@@ -6,7 +6,6 @@ namespace Basyc.MessageBus.Client.Diagnostics.Sinks;
 ///     Use this class instead of <see cref="ILogger{TCategoryName}" />
 ///     when having problem injection <see cref="ILogger{TCategoryName}" /> with error indicating circular depedency.
 /// </summary>
-/// <typeparam name="TCategory"></typeparam>
 public class LoggerToBypassCircularDepedency<TCategory> : ILogger<TCategory>
 {
     private readonly ILogger<TCategory> logger;

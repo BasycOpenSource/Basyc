@@ -5,8 +5,6 @@ using MassTransit.ExtensionsDependencyInjectionIntegration;
 using System;
 using System.Linq;
 
-#warning should add answer with my approach
-//https://stackoverflow.com/questions/52805079/how-to-register-a-generic-consumer-adapter-in-masstransit-if-i-have-a-list-of-me
 namespace Basyc.MessageBus.Client.MasstTransit;
 
 public static class MassTransitConfiguratorExtensions

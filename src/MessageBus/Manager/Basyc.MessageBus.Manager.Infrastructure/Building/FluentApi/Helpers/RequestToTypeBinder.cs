@@ -6,23 +6,25 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 
 public class RequestToTypeBinder
 {
-    protected static Type[]? requestParameterTypes;
-    protected readonly PropertyInfo[] messageClassProperties;
-    protected readonly Type messageRuntimeType;
-
     public RequestToTypeBinder(Type messageRuntimeType)
     {
-        this.messageRuntimeType = messageRuntimeType;
-        messageClassProperties = messageRuntimeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        this.MessageRuntimeType = messageRuntimeType;
+        MessageClassProperties = messageRuntimeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
     }
+
+    protected static Type[]? RequestParameterTypes { get; private set; }
+
+    protected PropertyInfo[] MessageClassProperties { get; private set; }
+
+    protected Type MessageRuntimeType { get; private set; }
 
     public object CreateMessage(RequestInput request)
     {
-        var message = TryCreateMessageWithCtor(request, out var messageInstance)
+        object message = TryCreateMessageWithCtor(request, out object? messageInstance)
             ? messageInstance
             : TryCreateMessageWithSetters(request, out messageInstance)
                 ? messageInstance
-                : throw new Exception("Failed to create instance of message");
+                : throw new InvalidOperationException("Failed to create instance of message");
 
         return message;
     }
@@ -31,7 +33,7 @@ public class RequestToTypeBinder
     {
         EnsureRequestTypeParameterTypesAreCached(request);
 
-        var promisingCtor = messageRuntimeType.GetConstructor(requestParameterTypes!);
+        var promisingCtor = MessageRuntimeType.GetConstructor(RequestParameterTypes!);
 
         if (promisingCtor is null)
         {
@@ -39,10 +41,10 @@ public class RequestToTypeBinder
             return false;
         }
 
-        var requestParameterValues = request.Parameters.Select(x => x.Value).ToArray();
+        object?[] requestParameterValues = request.Parameters.Select(x => x.Value).ToArray();
         try
         {
-            var messageInstance = promisingCtor.Invoke(requestParameterValues);
+            object messageInstance = promisingCtor.Invoke(requestParameterValues);
             message = messageInstance;
 #pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
             return true;
@@ -59,22 +61,22 @@ public class RequestToTypeBinder
     {
         EnsureRequestTypeParameterTypesAreCached(request);
 
-        if (messageClassProperties.Length != requestParameterTypes!.Length)
+        if (MessageClassProperties.Length != RequestParameterTypes!.Length)
         {
             message = default;
             return false;
         }
 
-        if (messageClassProperties.Select(x => x.PropertyType).SequenceEqual(requestParameterTypes) is false)
+        if (MessageClassProperties.Select(x => x.PropertyType).SequenceEqual(RequestParameterTypes) is false)
         {
             message = default;
             return false;
         }
 
-        var messageInstance = Activator.CreateInstance(messageRuntimeType);
-        for (var parameterIndex = 0; parameterIndex < requestParameterTypes.Length; parameterIndex++)
+        object? messageInstance = Activator.CreateInstance(MessageRuntimeType);
+        for (int parameterIndex = 0; parameterIndex < RequestParameterTypes.Length; parameterIndex++)
         {
-            var messagePropertyInfo = messageClassProperties[parameterIndex];
+            var messagePropertyInfo = MessageClassProperties[parameterIndex];
             var requestParameter = request.Parameters.ElementAt(parameterIndex);
 
             messagePropertyInfo.SetValue(messageInstance, requestParameter.Value);
@@ -86,10 +88,12 @@ public class RequestToTypeBinder
 #pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
     }
 
-    private static void EnsureRequestTypeParameterTypesAreCached(RequestInput request) => requestParameterTypes ??= request.MessageInfo.Parameters.Select(x => x.Type).ToArray();
+    private static void EnsureRequestTypeParameterTypesAreCached(RequestInput request) => RequestParameterTypes ??= request.MessageInfo.Parameters.Select(x => x.Type).ToArray();
 }
 
+#pragma warning disable SA1402
 public class RequestToTypeBinder<TMessage> : RequestToTypeBinder
+#pragma warning restore SA1402
 {
     public RequestToTypeBinder() : base(typeof(TMessage))
     {
@@ -97,11 +101,11 @@ public class RequestToTypeBinder<TMessage> : RequestToTypeBinder
 
     public new TMessage CreateMessage(RequestInput request)
     {
-        var message = TryCreateMessageWithCtor(request, out var messageInstance)
+        object message = TryCreateMessageWithCtor(request, out object? messageInstance)
             ? messageInstance
             : TryCreateMessageWithSetters(request, out messageInstance)
                 ? messageInstance
-                : throw new Exception("Failed to create instance of message");
+                : throw new InvalidOperationException("Failed to create instance of message");
 
         return (TMessage)message;
     }

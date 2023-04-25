@@ -17,25 +17,17 @@ public readonly struct Color
         Opacity = opacity;
     }
 
-    private static void IsValidPercentage(double opacity)
-    {
-        if (opacity is < 0 or > 1)
-            throw new ArgumentException("bad value", nameof(opacity));
-    }
-
     public int Red { get; }
+
     public int Green { get; }
+
     public int Blue { get; }
+
     public double Opacity { get; }
 
     /// <summary>
-    /// Create new color with edited values
+    /// Create new color with edited values.
     /// </summary>
-    /// <param name="red"></param>
-    /// <param name="green"></param>
-    /// <param name="blue"></param>
-    /// <param name="opacity"></param>
-    /// <returns></returns>
     public Color Edit(int? red = null, int? green = null, int? blue = null, double? opacity = null)
     {
         red ??= Red;
@@ -63,9 +55,9 @@ public readonly struct Color
     {
         IsValidPercentage(percentage);
 
-        var red = (int)Math.Round(Red - Red * percentage);
-        var green = (int)Math.Round(Green - Green * percentage);
-        var blue = (int)Math.Round(Blue - Blue * percentage);
+        var red = (int)Math.Round(Red - (Red * percentage));
+        var green = (int)Math.Round(Green - (Green * percentage));
+        var blue = (int)Math.Round(Blue - (Blue * percentage));
 
         return new Color(red, green, blue, Opacity);
     }
@@ -74,14 +66,20 @@ public readonly struct Color
     {
         IsValidPercentage(percentage);
 
-        var red = (int)Math.Round(Red + Red * percentage);
-        var green = (int)Math.Round(Green + Green * percentage);
-        var blue = (int)Math.Round(Blue + Blue * percentage);
+        var red = (int)Math.Round(Red + (Red * percentage));
+        var green = (int)Math.Round(Green + (Green * percentage));
+        var blue = (int)Math.Round(Blue + (Blue * percentage));
 
         return new Color(red, green, blue, Opacity);
     }
 
     public override string ToString() => ToHtml();
+
+    private static void IsValidPercentage(double opacity)
+    {
+        if (opacity is < 0 or > 1)
+            throw new ArgumentException("bad value", nameof(opacity));
+    }
 
     private static void IsValidColorValue(int value)
     {

@@ -25,7 +25,9 @@ public class BasycDiagnosticsReceiversRequestDiagnosticsSource : IRequestDiagnos
     }
 
     public event EventHandler<LogsUpdatedArgs>? LogsReceived;
+
     public event EventHandler<ActivityEndsReceivedArgs>? ActivityEndsReceived;
+
     public event EventHandler<ActivityStartsReceivedArgs>? ActivityStartsReceived;
 
     private void LogReceiver_LogsReceived(object? sender, LogsReceivedArgs e)

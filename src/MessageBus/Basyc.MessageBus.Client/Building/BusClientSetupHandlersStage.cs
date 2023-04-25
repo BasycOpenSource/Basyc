@@ -23,21 +23,13 @@ public class BusClientSetupHandlersStage : BuilderStageBase
             var handlerTypesInAssembly = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<>)));
             foreach (var handlerType in handlerTypesInAssembly)
             {
-
-                //var serviceType = typeof(IMessageHandler<>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<>)));
-                //services.AddScoped(serviceType, serviceProvider => RegisterHandlerHelper.CreateHandlerWithDecoratedLogger(handlerType, serviceProvider));
-                //EnsureDecoratedLoggerRegistered(services, handlerType);
                 HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handlerType);
             }
 
             var handlerTypesInAssembly2 = typesInAssembly.Where(x => x.IsAssignableToGenericType(typeof(IMessageHandler<,>)));
             foreach (var handlerType in handlerTypesInAssembly2)
             {
-                //var serviceType = typeof(IMessageHandler<,>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<,>)));
-                //services.AddScoped(serviceType, serviceProvider => RegisterHandlerHelper.CreateHandlerWithDecoratedLogger(handlerType, serviceProvider));
-                //EnsureDecoratedLoggerRegistered(services, handlerType);
                 HandlerRegisteringHelper.RegisterHandlerWithDecoratedLogger(services, handlerType);
-
             }
         }
 

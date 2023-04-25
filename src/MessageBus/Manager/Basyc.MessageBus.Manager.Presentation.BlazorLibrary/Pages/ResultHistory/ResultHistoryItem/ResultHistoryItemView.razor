@@ -112,12 +112,9 @@
 		base.OnParametersSet();
 	}
 
-	private void ReqeustContextResultStateChanged(object? sender, EventArgs eventArgs)
-	{
-		StateHasChanged();
-	}
+	private void ReqeustContextResultStateChanged(object? sender, EventArgs eventArgs) => StateHasChanged();
 
-	//private static string CreateInputOverviewJson(IEnumerable<Parameter> parameters)
+    //private static string CreateInputOverviewJson(IEnumerable<Parameter> parameters)
 	//{
 	//    StringBuilder stringBuilder = new StringBuilder();
 	//    stringBuilder.Append("{");
@@ -140,14 +137,8 @@
 	//}
 
 
-	private void ItemClick()
-	{
-		IsSelected = !IsSelected;
-	}
+	private void ItemClick() => IsSelected = !IsSelected;
 
-	public void Dispose()
-	{
-		RequestContext.StateChanged -= ReqeustContextResultStateChanged;
-	}
+    public void Dispose() => RequestContext.StateChanged -= ReqeustContextResultStateChanged;
 
 }

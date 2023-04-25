@@ -15,11 +15,10 @@ public static class HandlerRegisteringHelper
             ? typeof(IMessageHandler<>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<>)))
             : handlerType.IsAssignableToGenericType(typeof(IMessageHandler<,>))
                 ? typeof(IMessageHandler<,>).MakeGenericType(handlerType.GetTypeArgumentsFromParent(typeof(IMessageHandler<,>)))
-                : throw new ArgumentException();
+                : throw new ArgumentException("Handler type incorrect", nameof(handlerType));
         services.AddScoped(serviceType, serviceProvider => CreateHandlerWithDecoratedLogger(handlerType, serviceProvider));
         EnsureDecoratedLoggerRegistered(services, handlerType);
         return services;
-
     }
 
     public static IServiceCollection RegisterHandlerWithDecoratedLogger<TMessage>(IServiceCollection services, Action<TMessage, ILogger> handlerDelegate)
@@ -58,18 +57,18 @@ public static class HandlerRegisteringHelper
             var ctorParam = ctorParams[paramIndex];
             //if (ctorParam.ParameterType == typeof(ILogger))
             //{
-            //	var handlerLogger = services.GetRequiredService(typeof(BusHandlerLogger));
-            //	ctorArguments[paramIndex] = handlerLogger;
-            //	continue;
+            //  var handlerLogger = services.GetRequiredService(typeof(BusHandlerLogger));
+            //  ctorArguments[paramIndex] = handlerLogger;
+            //  continue;
             //}
 
             //if (ctorParam.ParameterType.IsAssignableToGenericType(typeof(ILogger<>)))
             //{
-            //	var originalLoggerGenericArgument = ctorParam.ParameterType.GetTypeArgumentsFromParent(typeof(ILogger<>))[0];
-            //	var decoLoggerType = typeof(BusHandlerLogger<>).MakeGenericType(originalLoggerGenericArgument);
-            //	var decoLogger = services.GetRequiredService(decoLoggerType);
-            //	ctorArguments[paramIndex] = decoLogger;
-            //	continue;
+            //  var originalLoggerGenericArgument = ctorParam.ParameterType.GetTypeArgumentsFromParent(typeof(ILogger<>))[0];
+            //  var decoLoggerType = typeof(BusHandlerLogger<>).MakeGenericType(originalLoggerGenericArgument);
+            //  var decoLogger = services.GetRequiredService(decoLoggerType);
+            //  ctorArguments[paramIndex] = decoLogger;
+            //  continue;
             //}
             if (ctorParam.ParameterType.IsAssignableTo(typeof(ILogger)))
             {
@@ -78,6 +77,7 @@ public static class HandlerRegisteringHelper
                 {
                     loggerTParam = ctorParam.ParameterType.GetTypeArgumentsFromParent(typeof(ILogger<>))[0];
                 }
+
                 GetDecoratedLogger(services, loggerTParam);
                 continue;
             }
@@ -106,14 +106,16 @@ public static class HandlerRegisteringHelper
             services.TryAddSingleton(busLoggerType);
         }
         else
+        {
             services.TryAddSingleton(typeof(BusHandlerLogger));
+        }
     }
 
     private static ConstructorInfo GetHandlerConstructor(Type handlerType)
     {
         var handlerConstructors = handlerType.GetConstructors();
         if (handlerConstructors.Length > 1)
-            throw new Exception("Multiple contructors not supported");
+            throw new InvalidOperationException("Multiple constructors not supported");
 
         var handlerConstrucor = handlerConstructors[0];
         return handlerConstrucor;

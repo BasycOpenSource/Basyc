@@ -12,7 +12,7 @@ public class TypedDddDomainNameFormatter : ITypedDomainNameFormatter
         assemblyName.ThrowIfNull();
         assemblyName.Name.ThrowIfNull();
 
-        var customName = assemblyName.Name.Split('.')[^2];
+        string customName = assemblyName.Name.Split('.')[^2];
         return customName;
     }
 }

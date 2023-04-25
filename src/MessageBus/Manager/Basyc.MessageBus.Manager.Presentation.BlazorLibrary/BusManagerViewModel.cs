@@ -7,11 +7,12 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary;
 public class BusManagerViewModel : BasycReactiveViewModelBase
 {
     private readonly NavigationService navigationService;
-    [Reactive] public RenderFragment? CurrentPage { get; private set; }
 
     public BusManagerViewModel(NavigationService navigationService)
     {
         this.navigationService = navigationService;
         CurrentPage = this.ReactiveProperty(x => x.CurrentPage, x => x.navigationService.CurrentPage);
     }
+
+    [Reactive] public RenderFragment? CurrentPage { get; private set; }
 }

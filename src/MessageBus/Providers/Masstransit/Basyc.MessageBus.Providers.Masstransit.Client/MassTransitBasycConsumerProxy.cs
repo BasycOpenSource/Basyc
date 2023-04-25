@@ -26,9 +26,11 @@ public class MassTransitBasycConsumerProxy<TRequest> : IConsumer<TRequest>
     }
 }
 
+#pragma warning disable SA1402
 public class MassTransitBasycConsumerProxy<TRequest, TResponse> : IConsumer<TRequest>
- where TRequest : class, IMessage<TResponse>
- where TResponse : class
+#pragma warning restore SA1402
+    where TRequest : class, IMessage<TResponse>
+    where TResponse : class
 {
     private readonly IMessageHandler<TRequest, TResponse> requestHandler;
 

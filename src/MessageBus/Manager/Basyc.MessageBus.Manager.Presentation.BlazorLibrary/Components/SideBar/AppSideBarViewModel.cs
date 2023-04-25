@@ -15,4 +15,3 @@ public class AppSideBarViewModel : BasycReactiveViewModelBase
 
     public void SelectMessage(MessageInfo messageInfo) => navigationService.GoTo<MessagePageView, MessagePageViewModel, MessageInfo>(messageInfo);
 }
-

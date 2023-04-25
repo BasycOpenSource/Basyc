@@ -7,7 +7,7 @@ public record RepositoryChangeReport(string GitRepoLocalDirectory, bool CouldCom
 {
     public HashSet<string> GetTestProjectsToRun(Solution solution, string testProjectNameSuffix)
     {
-        var testProjectFileNameEnding = $"{testProjectNameSuffix}.csproj";
+        string testProjectFileNameEnding = $"{testProjectNameSuffix}.csproj";
 
         var unitTestProjectsPaths = ChangedSolutions
             .SelectMany(x => x.ChangedProjects)
@@ -20,9 +20,9 @@ public record RepositoryChangeReport(string GitRepoLocalDirectory, bool CouldCom
             .Select(x => x.ProjectFullPath)
             .Where(x => x.EndsWith(testProjectFileNameEnding) is false);
 
-        foreach (var changedProject in changedSourceProjectsPaths)
+        foreach (string? changedProject in changedSourceProjectsPaths)
         {
-            var unitTestProjectName = Path.GetFileNameWithoutExtension(changedProject) + testProjectNameSuffix;
+            string unitTestProjectName = Path.GetFileNameWithoutExtension(changedProject) + testProjectNameSuffix;
             var unitTestProject = solution!.GetProject(unitTestProjectName);
             if (unitTestProject is null)
             {

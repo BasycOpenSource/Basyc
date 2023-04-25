@@ -11,5 +11,6 @@ public class ResultLoggingContextLoggerScopeEnder : IDisposable
     {
         this.durationSegmentBuilder = durationSegmentBuilder;
     }
+
     public void Dispose() => durationSegmentBuilder.End();
 }

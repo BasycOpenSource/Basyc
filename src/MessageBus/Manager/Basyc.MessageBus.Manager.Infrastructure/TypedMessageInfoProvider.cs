@@ -25,8 +25,7 @@ public class TypedMessageInfoProvider : IMessageInfoProvider
         ITypedParameterNameFormatter parameterNameFormatter,
         ITypedResponseNameFormatter responseNameFormatter,
         IRequestInfoTypeStorage requestInfoTypeStorage,
-        IRequesterSelector requesterSelector
-    )
+        IRequesterSelector requesterSelector)
     {
         this.options = options;
         this.domainNameFormatter = domainNameFormatter;
@@ -58,8 +57,7 @@ public class TypedMessageInfoProvider : IMessageInfoProvider
                     paramInfos,
                     typePair.ResponseType,
                     requestNameFormatter.GetFormattedName(typePair.RequestType),
-                    responseNameFormatter.GetFormattedName(typePair.ResponseType)
-                );
+                    responseNameFormatter.GetFormattedName(typePair.ResponseType));
                 requestInfos.Add(requestInfo);
                 requestInfoTypeStorage.AddRequest(requestInfo, typePair.RequestType);
             }
@@ -79,8 +77,7 @@ public class TypedMessageInfoProvider : IMessageInfoProvider
                     paramInfos,
                     typePair.ResponseType,
                     requestNameFormatter.GetFormattedName(typePair.RequestType),
-                    responseNameFormatter.GetFormattedName(typePair.ResponseType)
-                );
+                    responseNameFormatter.GetFormattedName(typePair.ResponseType));
                 requestInfos.Add(requestInfo);
                 requestInfoTypeStorage.AddRequest(requestInfo, typePair.RequestType);
             }
@@ -92,8 +89,7 @@ public class TypedMessageInfoProvider : IMessageInfoProvider
                     paramInfos,
                     typePair.ResponseType,
                     requestNameFormatter.GetFormattedName(typePair.RequestType),
-                    responseNameFormatter.GetFormattedName(typePair.ResponseType)
-                );
+                    responseNameFormatter.GetFormattedName(typePair.ResponseType));
                 requestInfos.Add(requestInfo);
                 requestInfoTypeStorage.AddRequest(requestInfo, typePair.RequestType);
             }

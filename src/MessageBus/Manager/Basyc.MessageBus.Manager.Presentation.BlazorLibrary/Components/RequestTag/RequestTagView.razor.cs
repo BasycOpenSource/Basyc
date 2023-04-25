@@ -9,7 +9,9 @@ public partial class RequestTagView
     public string? WordContent { get; private set; }
 
     [Parameter]
+#pragma warning disable BL0007
     public RequestTagType RequestType
+#pragma warning restore BL0007
     {
         get => requestType;
         set

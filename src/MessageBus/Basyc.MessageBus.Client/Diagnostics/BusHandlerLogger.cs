@@ -6,10 +6,6 @@ using System.Diagnostics;
 
 namespace Basyc.MessageBus.Client.Diagnostics;
 
-public class DummyLoggerCategory
-{
-}
-
 public class BusHandlerLogger : ILogger
 {
     private readonly IOptions<BusDiagnosticsOptions> busDiagnosticOptions;
@@ -34,8 +30,10 @@ public class BusHandlerLogger : ILogger
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         if (BusHandlerLoggerSessionManager.HasSession(out var session) is false)
+        {
             throw new InvalidOperationException(
                 $"Can't log without starting {nameof(BusHandlerLoggerSessionManager.StartSession)}. This logger should be only used for bus handlers");
+        }
 
         if (normalLogger.IsEnabled(logLevel))
             normalLogger.Log(logLevel, eventId, state, exception, formatter);
@@ -50,7 +48,9 @@ public class BusHandlerLogger : ILogger
     }
 }
 
+#pragma warning disable SA1402
 public class BusHandlerLogger<THandler> : BusHandlerLogger, ILogger<THandler>
+#pragma warning restore SA1402
 {
     public BusHandlerLogger(ILogger<THandler> normalLogger, IEnumerable<IDiagnosticsExporter> logSinks, IOptions<BusDiagnosticsOptions> busDiagnosticOptions)
         : base(normalLogger, logSinks, busDiagnosticOptions)

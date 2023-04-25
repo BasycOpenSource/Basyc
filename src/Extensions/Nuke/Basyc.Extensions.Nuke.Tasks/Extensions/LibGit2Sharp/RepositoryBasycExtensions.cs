@@ -9,7 +9,7 @@ internal static class RepositoryBasycExtensions
     public static bool HasUncommitedChanges(this Repository repo)
     {
         var giStatus = repo.RetrieveStatus();
-        var hasUncommitedChanges = giStatus.Any();
+        bool hasUncommitedChanges = giStatus.Any();
         return hasUncommitedChanges;
     }
 

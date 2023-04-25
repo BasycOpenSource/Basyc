@@ -7,15 +7,6 @@ using ReactiveUI.Fody.Helpers;
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Sidebar;
 public class SidebarHistoryItemViewModel : BasycReactiveViewModelBase
 {
-    [Reactive] public MessageRequest? MessageRequest { get; set; }
-    [Reactive] public RequestResultState State { get; init; }
-    [Reactive] public TimeSpan Duration { get; init; }
-    [Reactive] public int LogsInformationCount { get; init; }
-    [Reactive] public int LogsWarningCount { get; init; }
-    [Reactive] public int LogsErrorCount { get; init; }
-    [Reactive] public NavigationService? NavigationService { get; set; }
-    [Reactive] public bool IsSelected { get; init; }
-
     public SidebarHistoryItemViewModel()
     {
         State = this.ReactiveProperty(
@@ -47,4 +38,20 @@ public class SidebarHistoryItemViewModel : BasycReactiveViewModelBase
             x => x.MessageRequest,
             x => x.Item1 is MessageRequest messageRequest && messageRequest == x.Item2);
     }
+
+    [Reactive] public MessageRequest? MessageRequest { get; set; }
+
+    [Reactive] public RequestResultState State { get; init; }
+
+    [Reactive] public TimeSpan Duration { get; init; }
+
+    [Reactive] public int LogsInformationCount { get; init; }
+
+    [Reactive] public int LogsWarningCount { get; init; }
+
+    [Reactive] public int LogsErrorCount { get; init; }
+
+    [Reactive] public NavigationService? NavigationService { get; set; }
+
+    [Reactive] public bool IsSelected { get; init; }
 }

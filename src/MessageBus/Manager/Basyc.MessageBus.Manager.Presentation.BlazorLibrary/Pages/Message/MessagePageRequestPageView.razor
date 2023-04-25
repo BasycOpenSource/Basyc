@@ -115,8 +115,5 @@
 
 @code {
     public MessageRequest MessageRequest { get; private set; } = null!;
-    public override void OnVisit(MessageRequest queryParams)
-    {
-        MessageRequest = queryParams;
-    }
+    public override void OnVisit(MessageRequest queryParams) => MessageRequest = queryParams;
 }

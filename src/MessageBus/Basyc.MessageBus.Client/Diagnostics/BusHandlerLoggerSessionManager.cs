@@ -6,6 +6,7 @@ namespace Basyc.MessageBus.Client.Diagnostics;
 public static class BusHandlerLoggerSessionManager
 {
     private static AsyncLocal<LoggingSession> SessionId { get; } = new AsyncLocal<LoggingSession>();
+
     private static AsyncLocal<bool> HasSesion { get; } = new AsyncLocal<bool>() { Value = false };
 
     public static void StartSession(LoggingSession loggingSession)

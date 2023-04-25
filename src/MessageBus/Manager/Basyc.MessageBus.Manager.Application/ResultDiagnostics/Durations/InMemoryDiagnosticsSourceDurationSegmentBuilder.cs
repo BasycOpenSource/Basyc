@@ -40,6 +40,7 @@ internal class InMemoryDiagnosticsSourceDurationSegmentBuilder : DurationSegment
         var endTime = End();
         return parent!.StartNested(segmentName, endTime);
     }
+
     public override ValueTask Log(string message, LogLevel logLevel)
     {
         diagnosticsSource.PushLog(new LogEntry(Service, TraceId, DateTimeOffset.UtcNow, logLevel, message, Id));
@@ -48,7 +49,7 @@ internal class InMemoryDiagnosticsSourceDurationSegmentBuilder : DurationSegment
 
     public override IDurationSegmentBuilder StartNested(ServiceIdentity service, string segmentName, DateTimeOffset start)
     {
-        var nestedId = IdGeneratorHelper.GenerateNewSpanId();
+        string nestedId = IdGeneratorHelper.GenerateNewSpanId();
         diagnosticsSource.StartActivity(new ActivityStart(service, TraceId, Id, nestedId, segmentName, start));
         return new InMemoryDiagnosticsSourceDurationSegmentBuilder(this, TraceId, nestedId, segmentName, service, diagnosticsSource);
     }

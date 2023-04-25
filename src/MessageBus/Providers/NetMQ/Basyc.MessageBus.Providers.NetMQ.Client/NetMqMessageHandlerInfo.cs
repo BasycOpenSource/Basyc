@@ -20,10 +20,12 @@ public class NetMqMessageHandlerInfo
     }
 
     public Type MessageType { get; }
+
     public Type? ResponseType { get; }
+
     public bool HasResponse { get; }
+
     public MethodInfo HandleMethodInfo { get; }
 
     public string MessageSimpleType { get; }
-    //public Type HandlerType { get; }
 }

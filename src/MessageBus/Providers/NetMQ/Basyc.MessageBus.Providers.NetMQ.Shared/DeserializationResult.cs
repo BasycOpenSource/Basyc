@@ -9,19 +9,12 @@ namespace Basyc.MessageBus.NetMQ.Shared;
 
 public class DeserializationResult
 {
-    public RequestCase? Request { get; init; }
-    public ResponseCase? Response { get; init; }
-    public CheckInMessage? CheckIn { get; init; }
-    public EventCase? Event { get; init; }
-    public DeserializationFailureCase? Failure { get; init; }
-    public MessageCase MessageCase { get; init; }
-    public bool Failed { get; init; }
-
     private DeserializationResult(MessageCase messageCase)
     {
         this.MessageCase = messageCase;
         Failed = false;
     }
+
     private DeserializationResult(RequestCase requestCase) : this(MessageCase.Request)
     {
         Request = requestCase;
@@ -36,6 +29,7 @@ public class DeserializationResult
     {
         CheckIn = checkIn;
     }
+
     private DeserializationResult(EventCase @event) : this(MessageCase.Event)
     {
         Event = @event;
@@ -46,6 +40,20 @@ public class DeserializationResult
         Failure = failure;
         Failed = true;
     }
+
+    public RequestCase? Request { get; init; }
+
+    public ResponseCase? Response { get; init; }
+
+    public CheckInMessage? CheckIn { get; init; }
+
+    public EventCase? Event { get; init; }
+
+    public DeserializationFailureCase? Failure { get; init; }
+
+    public MessageCase MessageCase { get; init; }
+
+    public bool Failed { get; init; }
 
     public static DeserializationResult CreateCheckIn(CheckInMessage checkIn) => new DeserializationResult(checkIn);
 
