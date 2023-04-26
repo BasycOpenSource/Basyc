@@ -2,5 +2,5 @@
 
 public record MessageGroupRegistration(string Name)
 {
-    public List<MessageRegistration> MessageRegistrations { get; init; } = new();
+    public ICollection<MessageRegistration> MessageRegistrations { get; init; } = new List<MessageRegistration>();
 }

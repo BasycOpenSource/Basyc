@@ -1,5 +1,7 @@
 ﻿namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
 
+#pragma warning disable CA1002 // Do not expose generic lists
+
 public class UnitTestSettings
 {
     public List<ProjectTestExceptionPath> ProjectExceptions { get; init; } = new();

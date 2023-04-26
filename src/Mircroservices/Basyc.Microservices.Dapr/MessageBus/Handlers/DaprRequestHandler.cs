@@ -8,7 +8,7 @@ public abstract class DaprRequestHandler<TRequest, TResponse> : IRequestHandler<
     private readonly DaprClient daprClient;
     private readonly string appName;
 
-    public DaprRequestHandler(DaprClient daprClient, string appName)
+    protected DaprRequestHandler(DaprClient daprClient, string appName)
     {
         this.daprClient = daprClient;
         this.appName = appName;

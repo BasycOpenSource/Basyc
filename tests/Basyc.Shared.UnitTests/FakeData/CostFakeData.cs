@@ -4,6 +4,8 @@ using Bogus;
 
 namespace Basyc.Shared.Tests.FakeData;
 
+#pragma warning disable CA1002 // Do not expose generic lists
+
 public static class CostFakeData
 {
     public static List<AccommodationCost> GetAccommodationCosts(int count, Currencies? sharedCurrency = null)

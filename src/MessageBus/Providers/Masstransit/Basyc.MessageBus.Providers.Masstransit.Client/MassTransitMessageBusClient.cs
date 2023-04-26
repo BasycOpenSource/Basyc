@@ -5,6 +5,7 @@ using System.Reflection;
 using Throw;
 
 namespace Basyc.MessageBus.Client.MasstTransit;
+#pragma warning disable CA1033 // Interface methods should be callable by child types
 
 public class MassTransitMessageBusClient : ITypedMessageBusClient
 {
@@ -118,7 +119,9 @@ public class MassTransitMessageBusClient : ITypedMessageBusClient
     {
         var task = (Task)masstransitRequestMethod.Invoke(obj, parameters)!;
         await task.ConfigureAwait(false);
+#pragma warning disable CA1849 // Call async methods when in an async method
         var resultProperty = task.GetType().GetProperty(nameof(Task<object>.Result));
+#pragma warning restore CA1849 // Call async methods when in an async method
         resultProperty.ThrowIfNull();
         var value = resultProperty.GetValue(task);
         value.ThrowIfNull();

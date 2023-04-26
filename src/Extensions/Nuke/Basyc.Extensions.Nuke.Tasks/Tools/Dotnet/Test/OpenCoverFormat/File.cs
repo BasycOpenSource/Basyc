@@ -2,6 +2,8 @@
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test.OpenCoverFormat;
 
+#pragma warning disable CA1724 // class name same as namespace part
+
 [XmlRoot(ElementName = "File")]
 public class File
 {

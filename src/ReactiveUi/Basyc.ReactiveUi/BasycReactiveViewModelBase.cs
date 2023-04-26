@@ -1,6 +1,9 @@
 ﻿using ReactiveUI;
 
 namespace Basyc.ReactiveUi;
+
+#pragma warning disable CA1030 // Use events where appropriate
+
 public abstract class BasycReactiveViewModelBase : ReactiveObject, IBasycReactiveViewModel
 {
     public List<IDisposable> Disposables { get; } = new();

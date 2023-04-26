@@ -6,16 +6,17 @@ using System.Diagnostics;
 namespace Basyc.Diagnostics.Producing.Shared.Listening.SystemDiagnostics;
 #pragma warning disable CS0067 // The event 'SystemDiagnosticsListener.LogsReceived' is never used
 
-public class SystemDiagnosticsListener : IDiagnosticListener
+public class SystemDiagnosticsListener : IDiagnosticListener, IDisposable
 {
     private readonly ServiceIdentity service;
+    private readonly ActivityListener listener;
 
     public SystemDiagnosticsListener(IOptions<SystemDiagnosticsListenerOptions> options)
     {
         service = ServiceIdentity.ApplicationWideIdentity;
         Activity.DefaultIdFormat = ActivityIdFormat.W3C;
         Activity.ForceDefaultIdFormat = true;
-        var listener = new ActivityListener();
+        listener = new ActivityListener();
         listener.ShouldListenTo = activity =>
         {
             return true;
@@ -59,6 +60,8 @@ public class SystemDiagnosticsListener : IDiagnosticListener
     public event EventHandler<ActivityStart>? ActivityStartsReceived;
 
     public event EventHandler<ActivityEnd>? ActivityEndsReceived;
+
+    public void Dispose() => listener.Dispose();
 
     public Task Start() => Task.CompletedTask;
 }

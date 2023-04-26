@@ -6,9 +6,9 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public static class TypedProviderHelper
 {
-    public static List<ParameterInfo> HarvestParameterInfos(Type requestType, ITypedParameterNameFormatter parameterNameFormatter) => HarvestParameterInfos(requestType, parameterNameFormatter.GetCustomTypeName);
+    public static ParameterInfo[] HarvestParameterInfos(Type requestType, ITypedParameterNameFormatter parameterNameFormatter) => HarvestParameterInfos(requestType, parameterNameFormatter.GetCustomTypeName);
 
-    public static List<ParameterInfo> HarvestParameterInfos(Type requestType, Func<Type, string> parameterDisplayNameFormattter) => requestType.GetConstructors()
+    public static ParameterInfo[] HarvestParameterInfos(Type requestType, Func<Type, string> parameterDisplayNameFormattter) => requestType.GetConstructors()
             .First()
             .GetParameters()
             .Select(paramInfo =>
@@ -18,5 +18,5 @@ public static class TypedProviderHelper
                     paramInfo.Name,
                     parameterDisplayNameFormattter.Invoke(paramInfo.ParameterType));
             })
-            .ToList();
+            .ToArray();
 }

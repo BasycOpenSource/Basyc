@@ -1,5 +1,6 @@
 ﻿namespace Basyc.Diagnostics.Shared.Logging;
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 public readonly struct ActivityStart
 {
     public ActivityStart(

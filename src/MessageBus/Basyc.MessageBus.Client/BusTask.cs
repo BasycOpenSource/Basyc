@@ -30,7 +30,8 @@ public class BusTask : BusTask<BusTaskCompleted>
         var wrapperTask = nestedTask.ContinueWith(x =>
         {
             return (OneOf<BusTaskCompleted, ErrorMessage>)default(BusTaskCompleted);
-        });
+        },
+        TaskScheduler.Default);
         return new BusTask(sessionId, wrapperTask);
     }
 
@@ -82,7 +83,8 @@ public class BusTask<TValue>
             x.Exception.ThrowIfNull();
 
             return new ErrorMessage(x.Exception.Message);
-        });
+        },
+        TaskScheduler.Default);
         return FromTask(sessionId, wrapperTask);
     }
 
@@ -106,7 +108,8 @@ public class BusTask<TValue>
             x.Exception.ThrowIfNull();
 
             return new ErrorMessage(x.Exception.Message);
-        });
+        },
+        TaskScheduler.Default);
         return FromTask(sessionId, wrapperTask);
     }
 
@@ -131,7 +134,8 @@ public class BusTask<TValue>
             x.Exception.ThrowIfNull();
 
             return new ErrorMessage(x.Exception.Message);
-        });
+        },
+        TaskScheduler.Default);
         return FromTask(sessionId, wrapperTask);
     }
 

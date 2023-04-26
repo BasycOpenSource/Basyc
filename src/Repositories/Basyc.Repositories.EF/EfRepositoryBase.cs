@@ -7,7 +7,7 @@ public abstract class EfRepositoryBase<TEntity, TModel> where TEntity : class
 {
     private static bool isDbContextValidated;
 
-    public EfRepositoryBase(DbContext dbContext, ILogger<EfRepositoryBase<TEntity, TModel>> logger)
+    protected EfRepositoryBase(DbContext dbContext, ILogger<EfRepositoryBase<TEntity, TModel>> logger)
     {
         DbContext = dbContext;
         Logger = logger;

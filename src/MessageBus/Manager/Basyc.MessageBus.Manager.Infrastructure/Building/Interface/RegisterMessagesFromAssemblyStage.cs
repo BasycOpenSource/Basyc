@@ -12,7 +12,7 @@ public class RegisterMessagesFromAssemblyStage : BuilderStageBase
         GroupName = groupName;
     }
 
-    public Assembly[] AssembliesToScan { get; init; }
+    public IReadOnlyCollection<Assembly> AssembliesToScan { get; init; }
 
     public string GroupName { get; init; }
 }

@@ -8,7 +8,7 @@ using System.Net;
 namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
 #pragma warning disable SA1402
 #pragma warning disable SA1204
-#pragma warning disable IDE0060
+#pragma warning disable CA1724
 
 public class HubConnectionMockBuilder : IHubConnectionBuilder
 {

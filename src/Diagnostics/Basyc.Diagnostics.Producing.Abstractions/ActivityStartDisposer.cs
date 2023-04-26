@@ -1,8 +1,9 @@
-﻿using System.Diagnostics;
-using Basyc.Diagnostics.Shared.Logging;
+﻿using Basyc.Diagnostics.Shared.Logging;
+using System.Diagnostics;
 
 namespace Basyc.Diagnostics.Producing.Abstractions;
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 public struct ActivityStartDisposer : IDisposable
 {
     private readonly IDiagnosticsExporter diagnosticsProducer;

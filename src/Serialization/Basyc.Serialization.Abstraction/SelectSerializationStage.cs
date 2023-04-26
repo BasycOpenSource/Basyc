@@ -4,7 +4,7 @@ public class SelectSerializationStage
 {
     public SelectSerializationStage(IServiceCollection services)
     {
-        this.Services = services;
+        Services = services;
     }
 
     public IServiceCollection Services { get; init; }

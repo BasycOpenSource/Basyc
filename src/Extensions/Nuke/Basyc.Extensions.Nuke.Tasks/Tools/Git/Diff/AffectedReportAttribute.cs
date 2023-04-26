@@ -8,7 +8,7 @@ using static Basyc.Extensions.Nuke.Tasks.Tools.Git.GitTasks;
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 
 [UsedImplicitly(ImplicitUseKindFlags.Default)]
-public class AffectedReportAttribute : ValueInjectionAttributeBase
+public sealed class AffectedReportAttribute : ValueInjectionAttributeBase
 {
     public override object GetValue(MemberInfo member, object instance)
     {

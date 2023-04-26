@@ -6,6 +6,8 @@ using System.Net;
 
 namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
 
+#pragma warning disable CA1003 // Use generic event handler instances
+
 public class HubConnectionMock : HubConnection
 {
     private readonly Pipe pipe;

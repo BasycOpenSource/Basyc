@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Basyc.Extensions.Nuke.Tasks.Extensions.LibGit2Sharp;
+﻿using Basyc.Extensions.Nuke.Tasks.Extensions.LibGit2Sharp;
 using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using GlobExpressions;
 using LibGit2Sharp;
@@ -7,6 +6,7 @@ using Nuke.Common;
 using Nuke.Common.Git;
 using Nuke.Common.Utilities.Collections;
 using Serilog;
+using System.Diagnostics.CodeAnalysis;
 using static Nuke.Common.Tools.Git.GitTasks;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Git;
@@ -24,7 +24,7 @@ public static partial class GitTasks
     //ProjectModelTasks.Initialize(); //https://github.com/nuke-build/nuke/issues/844
     public static RepositoryChangeReport GitGetAffectedReport(string localGitFolder, string? oldBranchName = null)
     {
-        localGitFolder = localGitFolder.Replace("\\", "/");
+        localGitFolder = localGitFolder.Replace("\\", "/", StringComparison.InvariantCulture);
         if (oldBranchName == null)
         {
             if (TryGetBranchToCompareName(out oldBranchName) is false)

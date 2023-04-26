@@ -56,6 +56,7 @@ public class MessageHandlerManager : IMessageHandlerManager
         var invokeActivity = DiagnosticHelper.Start("Invoking method info");
         var handlerResultTask = (Task)handlerMetadata.HandlerInfo.HandleMethodInfo.Invoke(handler, new[] { messageData!, cancellationToken })!;
         object? handlerResult;
+#pragma warning disable CA1031 // Do not catch general exception types
         try
         {
             if (handlerMetadata.HandlerInfo.HasResponse)
@@ -79,6 +80,7 @@ public class MessageHandlerManager : IMessageHandlerManager
             invokeActivity.Stop();
             return ex;
         }
+#pragma warning restore CA1031 // Do not catch general exception types
 
         var endSessionActivity = DiagnosticHelper.Start("Basyc.MessageBus.Client.NetMQ.MessageHandlerManager End BusHandlerLoggerSessionManager session");
         BusHandlerLoggerSessionManager.EndSession();

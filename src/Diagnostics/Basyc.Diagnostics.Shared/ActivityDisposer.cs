@@ -2,6 +2,7 @@
 
 namespace Basyc.Diagnostics.Shared;
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 public readonly struct ActivityDisposer : IDisposable
 {
     public ActivityDisposer(Activity? activity)

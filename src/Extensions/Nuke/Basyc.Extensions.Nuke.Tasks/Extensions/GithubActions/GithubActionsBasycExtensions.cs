@@ -8,8 +8,8 @@ public static class GithubActionsBasycExtensions
     /// <summary>
     ///     Returns nuget feed url in format: https://nuget.pkg.github.com/[OWNER]/index.json.
     /// </summary>
-    public static string GetNugetSourceUrl(this GitHubActions gitHubActions) =>
-        $"https://nuget.pkg.{gitHubActions.ServerUrl.Split("//")[1]}/{gitHubActions.RepositoryOwner}/index.json";
+    public static Uri GetNugetSourceUrl(this GitHubActions gitHubActions) =>
+        new($"https://nuget.pkg.{gitHubActions.ServerUrl.Split("//")[1]}/{gitHubActions.RepositoryOwner}/index.json");
 
     public static string GetPullRequestTargetBranch(this GitHubActions gitHubActions) => gitHubActions.BaseRef;
 

@@ -28,6 +28,7 @@ public class NetMqMessageWrapper : INetMqMessageWrapper
         switch (wrapper.MessageCase)
         {
             case MessageCase.CheckIn:
+#pragma warning disable CA1031 // Do not catch general exception types
                 try
                 {
                     var checkIn = (CheckInMessage?)objectToByteSerializer.Deserialize(wrapper.MessageBytes, wrapper.MessageType);
@@ -54,6 +55,7 @@ public class NetMqMessageWrapper : INetMqMessageWrapper
                         ex,
                         $"{ex.Message}");
                 }
+#pragma warning restore CA1031 // Do not catch general exception types
 
             case MessageCase.Request:
                 var requestCase = new RequestCase(wrapper.SessionId, wrapper.TraceId, wrapper.ParentSpanId, wrapper.MessageType, wrapper.MessageBytes, false);

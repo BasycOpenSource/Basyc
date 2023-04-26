@@ -2,7 +2,6 @@
 #pragma warning disable SA1201
 #pragma warning disable SA1649
 #pragma warning disable SA1402
-#pragma warning disable IDE0060 // Remove unused parameter
 
 public interface IWrongHubClientHasReturnValues : ICorrectMethodsClientCanCallVoids
 {
@@ -57,7 +56,9 @@ public class WrongHubClientIsClass
 {
 }
 
+#pragma warning disable CA1052 // Static holder types should be Static or NotInheritable
 public class WrongHubClientIsClassNumbersExceptions
+#pragma warning restore CA1052 // Static holder types should be Static or NotInheritable
 {
     public static void ThrowNumberVoid(int number) => throw MethodExceptionHelperException.CreateForCurrentMethod();
 

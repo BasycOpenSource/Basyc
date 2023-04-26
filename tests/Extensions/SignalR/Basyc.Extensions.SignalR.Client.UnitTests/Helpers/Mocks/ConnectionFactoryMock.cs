@@ -13,5 +13,7 @@ public class ConnectionFactoryMock : IConnectionFactory
         this.pipe = pipe;
     }
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
     public ValueTask<ConnectionContext> ConnectAsync(EndPoint endpoint, CancellationToken cancellationToken = default) => new(new ConnectionContextMock(pipe));
+#pragma warning restore CA2000 // Dispose objects before losing scope
 }

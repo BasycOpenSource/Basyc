@@ -2,6 +2,9 @@
 
 namespace Basyc.MessageBus.HttpProxy.Shared.Http;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CA1819 // Properties should not return arrays
+
 [ProtoContract]
 public class RequestHttpDto
 {
@@ -14,9 +17,7 @@ public class RequestHttpDto
     }
 
     //Needed for serialization
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected RequestHttpDto()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
     }
 

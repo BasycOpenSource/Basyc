@@ -4,6 +4,7 @@ public interface ITypedByteSerializer : ISerializer<object?, byte[], Type>
 {
     public bool TrySerialize<T>(T deserializedObject, out byte[]? serializedObject, out SerializationFailure? error)
     {
+#pragma warning disable CA1031 // Do not catch general exception types
         try
         {
             serializedObject = Serialize(deserializedObject, typeof(T));
@@ -16,10 +17,12 @@ public interface ITypedByteSerializer : ISerializer<object?, byte[], Type>
             error = new SerializationFailure(ex);
             return false;
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 
     public bool TryDeserialize<T>(byte[] serializedObject, out T? deserializedObject, out SerializationFailure? error)
     {
+#pragma warning disable CA1031 // Do not catch general exception types
         try
         {
             deserializedObject = (T?)Deserialize(serializedObject, typeof(T));
@@ -32,6 +35,7 @@ public interface ITypedByteSerializer : ISerializer<object?, byte[], Type>
             error = new SerializationFailure(ex);
             return false;
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 
     public byte[] Serialize<T>(object? deserializedObject) => Serialize(deserializedObject, typeof(T));

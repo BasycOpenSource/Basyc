@@ -10,7 +10,9 @@ public static class BusClientSetupProxyStageHttpExtensions
     {
         builder.Services.AddBasycSerialization()
             .SelectProtobufNet();
+#pragma warning disable CA2000 // Dispose objects before losing scope
         builder.Services.AddSingleton(new HttpClient());
+#pragma warning restore CA2000 // Dispose objects before losing scope
         builder.Services.AddSingleton<IObjectMessageBusClient, HttpProxyObjectMessageBusClient>();
         builder.Services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
 

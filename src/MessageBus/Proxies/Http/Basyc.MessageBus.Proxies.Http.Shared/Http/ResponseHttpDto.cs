@@ -1,6 +1,8 @@
 ﻿using ProtoBuf;
 
 namespace Basyc.MessageBus.HttpProxy.Shared.Http;
+#pragma warning disable CS8618
+#pragma warning disable CA1819 // Properties should not return arrays
 
 [ProtoContract]
 public class ResponseHttpDto
@@ -16,9 +18,7 @@ public class ResponseHttpDto
         ResponseType = responseType;
     }
 
-#pragma warning disable CS8618
     protected ResponseHttpDto()
-#pragma warning restore CS8618
     {
     }
 

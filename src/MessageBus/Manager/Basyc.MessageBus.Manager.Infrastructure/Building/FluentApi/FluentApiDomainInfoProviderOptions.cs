@@ -4,5 +4,5 @@ namespace Basyc.MessageBus.Manager.Application;
 
 public class FluentApiDomainInfoProviderOptions
 {
-    public List<FluentApiGroupRegistration> GroupRegistrations { get; } = new();
+    public ICollection<FluentApiGroupRegistration> GroupRegistrations { get; init; } = new List<FluentApiGroupRegistration>();
 }

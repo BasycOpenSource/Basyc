@@ -2,5 +2,5 @@
 
 public class InterfaceDomainProviderOptions
 {
-    public List<InterfaceRegistration> InterfaceRegistrations { get; } = new();
+    public ICollection<InterfaceRegistration> InterfaceRegistrations { get; init; } = new List<InterfaceRegistration>();
 }

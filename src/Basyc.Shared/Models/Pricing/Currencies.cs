@@ -5,19 +5,19 @@ public enum Currencies
     /// <summary>
     ///     Euro.
     /// </summary>
-    Eur = 1,
+    Eur = 0,
 
     /// <summary>
     ///     Dollar.
     /// </summary>
-    Usd = 2,
+    Usd = 1,
 
     /// <summary>
     ///     Czech crown.
     /// </summary>
-    Czk = 3,
+    Czk = 2,
 
     /// <summary>
     /// </summary>
-    Pln = 4
+    Pln = 3
 }

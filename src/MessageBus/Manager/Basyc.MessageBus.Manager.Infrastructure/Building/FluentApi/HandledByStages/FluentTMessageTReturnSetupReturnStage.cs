@@ -8,14 +8,9 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledBySt
 
 public class FluentTMessageTReturnSetupReturnStage<TMessage, TReturn> : BuilderStageBase
 {
-    private static readonly RequestToTypeBinder<TMessage> messageBinder;
+    private static readonly RequestToTypeBinder<TMessage> messageBinder = new RequestToTypeBinder<TMessage>();
     private readonly FluentApiGroupRegistration fluentApiGroup;
     private readonly FluentApiMessageRegistration fluentApiMessage;
-
-    static FluentTMessageTReturnSetupReturnStage()
-    {
-        messageBinder = new RequestToTypeBinder<TMessage>();
-    }
 
     public FluentTMessageTReturnSetupReturnStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup)
         : base(services)

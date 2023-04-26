@@ -4,6 +4,8 @@ using Basyc.MessageBus.Manager.Application.Requesting;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
+#pragma warning disable CA1002 // Do not expose generic lists
+
 public class FluentApiMessageRegistration
 {
     public string? MessageDisplayName { get; set; }

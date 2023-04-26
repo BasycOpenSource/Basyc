@@ -31,7 +31,9 @@ internal class StrongTypedHubConnectionReceiver<TMethodsServerCanCall> : StrongT
 {
     public StrongTypedHubConnectionReceiver(HubConnection hubConnection, TMethodsServerCanCall serverMethods) : base(hubConnection)
     {
+#pragma warning disable CA2000 // Dispose objects before losing scope
         OnMultipleExtension.OnMultiple(hubConnection, serverMethods);
+#pragma warning restore CA2000 // Dispose objects before losing scope
     }
 }
 
@@ -39,8 +41,8 @@ internal class StrongTypedHubConnectionPusherAndReceiver<TMethodsClientCanCall, 
 {
     public StrongTypedHubConnectionPusherAndReceiver(TMethodsClientCanCall clientMethods, HubConnection hubConnection, TMethodsServerCanCall serverMethods) : base(clientMethods, hubConnection)
     {
+#pragma warning disable CA2000 // Dispose objects before losing scope
         OnMultipleExtension.OnMultiple(hubConnection, serverMethods);
+#pragma warning restore CA2000 // Dispose objects before losing scope
     }
 }
-#pragma warning restore SA1402 // File may only contain a single type
-

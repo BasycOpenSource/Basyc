@@ -10,7 +10,11 @@ public static class RegisterMessagesFromAssemblyStageInterfaceExtensions
     public static SetupDisplayNameStage FromInterface(this RegisterMessagesFromAssemblyStage fromAssemblyStage, Type interfaceType)
     {
         var interfaceRegistration = new InterfaceRegistration();
-        interfaceRegistration.AssembliesToScan.AddRange(fromAssemblyStage.AssembliesToScan);
+        foreach (var assembly in fromAssemblyStage.AssembliesToScan)
+        {
+            interfaceRegistration.AssembliesToScan.Add(assembly);
+        }
+
         interfaceRegistration.MessageInterfaceType = interfaceType;
         interfaceRegistration.GroupName = fromAssemblyStage.GroupName;
         interfaceRegistration.DisplayNameFormatter = x => x.Name;

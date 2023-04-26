@@ -2,6 +2,8 @@
 
 namespace Basyc.Diagnostics.Producing.Abstractions;
 
+#pragma warning disable CA1003 // Use generic event handler instances
+
 public class InMemoryDiagnosticsExporter : IDiagnosticsExporter
 {
     public event EventHandler<LogEntry>? LogProduced;

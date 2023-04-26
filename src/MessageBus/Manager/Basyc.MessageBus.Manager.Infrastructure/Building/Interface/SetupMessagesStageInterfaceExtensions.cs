@@ -5,6 +5,8 @@ using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+#pragma warning disable CA1034 // Nested types should not be visible
+
 public static class SetupMessagesStageInterfaceExtensions
 {
     // public static SetupGroupStage FromAssemblyScan(this SetupMessagesStage parent, params Assembly[] assembliesToScan)

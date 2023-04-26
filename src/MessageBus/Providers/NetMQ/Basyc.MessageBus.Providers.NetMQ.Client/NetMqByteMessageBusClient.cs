@@ -16,10 +16,12 @@ using System.Text;
 
 namespace Basyc.MessageBus.Client.NetMQ;
 
+#pragma warning disable CA1033 // Interface methods should be callable by child types
+
 //https://zguide.zeromq.org/docs/chapter3/#A-Load-Balancing-Message-Broker
 public class NetMqByteMessageBusClient : IByteMessageBusClient, IDisposable
 {
-    private static readonly string tokenString = "PublicKeyToken=null";
+    private const string tokenString = "PublicKeyToken=null";
     private static readonly int tokenLenght = "PublicKeyToken=nul".Length;
     private readonly DealerSocket dealerSocket;
     private readonly IMessageHandlerManager handlerManager;
@@ -96,7 +98,7 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient, IDisposable
     {
         if (messageType.AsSpan(messageType.Length - tokenLenght) == tokenString)
         {
-            var firstCommaIndex = messageType.IndexOf(',');
+            var firstCommaIndex = messageType.IndexOf(',', StringComparison.InvariantCulture);
             var clrType = messageType.AsSpan(0, firstCommaIndex);
             var lastDotIndex = clrType.LastIndexOf('.');
             var typeName = clrType.Slice(lastDotIndex);
@@ -269,6 +271,7 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient, IDisposable
             cancellationToken.ThrowIfCancellationRequested();
 
             logger.LogInformation("Publishing '{Type}' session: '{SessionId}'", FormatType(eventType), newSession.SessionId);
+#pragma warning disable CA1031 // Do not catch general exception types
             try
             {
                 dealerSocket.SendMultipartMessage(messageToBroker);
@@ -279,6 +282,7 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient, IDisposable
                 var sessionResult = CreateErrorMessageBytes("Failed to publish");
                 sessionManager.TryCompleteSession(newSession.SessionId, sessionResult);
             }
+#pragma warning restore CA1031 // Do not catch general exception types
 
             logger.LogInformation("Published '{Type}'", FormatType(eventType));
             var publishResult = "Published";
@@ -327,6 +331,7 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient, IDisposable
             cancellationToken.ThrowIfCancellationRequested();
 
             logger.LogInformation("Requesting '{Type}'", FormatType(requestType));
+#pragma warning disable CA1031 // Do not catch general exception types
             try
             {
                 using var sendingActivity = DiagnosticHelper.Start("NetMQ.SendMultipartMessage");
@@ -338,6 +343,7 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient, IDisposable
                 var sessionResultError = CreateErrorMessageBytes("Failed to send request");
                 sessionManager.TryCompleteSession(newSession.SessionId, sessionResultError);
             }
+#pragma warning restore CA1031 // Do not catch general exception types
 
             logger.LogInformation("Requested '{Type}'", FormatType(requestType));
             var sessionResult = await newSession.ResponseSource.Task;

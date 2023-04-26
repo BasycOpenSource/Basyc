@@ -1,5 +1,5 @@
-﻿using System.Text;
-using CliWrap;
+﻿using CliWrap;
+using System.Text;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Git;
 
@@ -18,7 +18,7 @@ public static class GitCliWrapper
 
         string outputStr = stdOutBuffer.ToString();
         string errorStr = stdErrBuffer.ToString();
-        if (errorStr != string.Empty)
+        if (!string.IsNullOrEmpty(errorStr))
             throw new InvalidOperationException(errorStr);
 
         string[] credentials = outputStr.Split('\n');

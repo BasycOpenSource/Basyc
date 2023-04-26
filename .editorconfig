@@ -20,9 +20,19 @@ dotnet_diagnostic.CA1848.severity = none # CA1848: Use the LoggerMessage delegat
 dotnet_diagnostic.CA1304.severity = none # CA1304: Specify CultureInfo
 dotnet_diagnostic.CA1311.severity = none # CA1311: Specify a culture or use an invariant version
 dotnet_diagnostic.CS1591.severity = none # CS1591: Missing XML comment for publicly visible type or member
-dotnet_diagnostic.IDE0060.severity = none # IDE0060: Remove unused parameter #does not work well with extension methods
-dotnet_diagnostic.IDE0003.severity = error 
+dotnet_diagnostic.IDE0060.severity = none # IDE0060: Remove unused parameter #does not work well with extension methods 
+dotnet_diagnostic.CA1062.severity = none # CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1063.severity = none # CA1063: Implement IDisposable Correctly
+dotnet_diagnostic.CA2007.severity = none # CA2007: Consider calling ConfigureAwait on the awaited task
+dotnet_diagnostic.CA1065.severity = none # CA1065: Do not raise exceptions in unexpected locations
+dotnet_diagnostic.CA5394.severity = none # CA5394: Dont use Random when security matters
+dotnet_diagnostic.CA1040.severity = none # CA1040: Avoid empty interfaces
+dotnet_diagnostic.CA1032.severity = none # CA1032: Implement standard exception constructors
+dotnet_diagnostic.CA1815.severity = none # CA1815: Override equals and operator equals on value types
 #dotnet_analyzer_diagnostic.category-Style.severity = none
+#dotnet_analyzer_diagnostic.category-CodeQuality.severity = error
+
+
 
 # New line preferences
 csharp_new_line_before_catch = true
@@ -400,6 +410,7 @@ dotnet_diagnostic.CA1707.severity = none # CA1707: Dont use underscores
 [*Tests.cs]
 dotnet_diagnostic.CA1707.severity = none # CA1707: Dont use underscores in names
 dotnet_diagnostic.SA1202.severity = none # SA1202: Private must be after public
+dotnet_diagnostic.CA2000.severity = none # call dispose when leaving the scope
 
 
 

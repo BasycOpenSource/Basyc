@@ -1,12 +1,13 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Basyc.Extensions.IO;
+﻿using Basyc.Extensions.IO;
 using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Utilities.Collections;
+using System.Diagnostics.CodeAnalysis;
 using static Nuke.Common.ProjectModel.ProjectModelTasks;
 
 namespace Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 [ExcludeFromCodeCoverage]
 public readonly struct TemporarySolution : IDisposable
 {

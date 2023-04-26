@@ -3,6 +3,8 @@ using Basyc.Diagnostics.Shared.Durations;
 
 namespace Basyc.MessageBus.Manager.Application.Tests.Durations;
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
 public class DurationMapBuilderTests
 {
     private static readonly ServiceIdentity testServiceIndentity = new("TestService");
@@ -13,7 +15,7 @@ public class DurationMapBuilderTests
         var mapBuilder = new DurationMapBuilder(testServiceIndentity, "1");
         var durationMap = mapBuilder.Build();
 
-        durationMap.Segments.Length.Should().Be(0);
+        durationMap.Segments.Count.Should().Be(0);
         durationMap.TotalDuration.Should().BeCloseTo(TimeSpan.FromMilliseconds(0), TimeSpan.FromMilliseconds(1));
     }
 
@@ -42,7 +44,7 @@ public class DurationMapBuilderTests
         const string segment1Name = "segment1";
         _ = mapBuilder.StartNewSegment(segment1Name);
         var durationMap = mapBuilder.Build();
-        durationMap.Segments.Length.Should().Be(1);
+        durationMap.Segments.Count.Should().Be(1);
         var firstSegment = durationMap.Segments.First();
         firstSegment.EndTime.Should().NotBe(default);
         durationMap.TotalDuration.Should().NotBe(default);
@@ -63,7 +65,7 @@ public class DurationMapBuilderTests
         }
 
         var durationMap = durationMapBuilder.Build();
-        durationMap.Segments.Length.Should().Be(numberOfSegments);
+        durationMap.Segments.Count.Should().Be(numberOfSegments);
         var totalSegmentsDuration = TimeSpan.FromSeconds(0);
         foreach (var segment in durationMap.Segments)
         {
@@ -71,7 +73,7 @@ public class DurationMapBuilderTests
             totalSegmentsDuration += segment.EndTime - segment.StartTime;
         }
 
-        if (durationMap.Segments.Length > 0)
+        if (durationMap.Segments.Count > 0)
         {
             durationMapBuilder.EndTime.Should().BeOnOrAfter(durationMap.Segments.Max(x => x.EndTime));
         }
@@ -111,8 +113,8 @@ public class DurationMapBuilderTests
         }
 
         var durationMap = mapBuilder.Build();
-        durationMap.Segments.Length.Should().Be(numberOfSegments);
-        durationMap.Segments.All(x => x.NestedSegments.Length == 0).Should().BeTrue();
+        durationMap.Segments.Count.Should().Be(numberOfSegments);
+        durationMap.Segments.All(x => x.NestedSegments.Count == 0).Should().BeTrue();
         var totalSegmentsDuration = TimeSpan.FromMilliseconds(durationsMs.Sum());
 
         //https://stackoverflow.com/questions/31742521/accuracy-of-task-delay

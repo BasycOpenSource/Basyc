@@ -4,5 +4,5 @@ public class MessageHandlerManagerOptions
 {
     public bool IsDiagnosticLoggingEnabled { get; set; }
 
-    public List<NetMqMessageHandlerInfo> HandlerInfos { get; } = new();
+    public ICollection<NetMqMessageHandlerInfo> HandlerInfos { get; init; } = new List<NetMqMessageHandlerInfo>();
 }

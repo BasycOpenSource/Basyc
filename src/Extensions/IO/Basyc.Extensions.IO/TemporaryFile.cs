@@ -2,7 +2,9 @@
 
 public readonly record struct TemporaryFile(string FullPath) : IDisposable
 {
+#pragma warning disable CA2225 // Operator overloads have named alternates
     public static explicit operator TemporaryFile(string path)
+#pragma warning restore CA2225 // Operator overloads have named alternates
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         return new TemporaryFile(path);

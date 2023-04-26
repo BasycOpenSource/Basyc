@@ -43,7 +43,7 @@ public class TemporaryDirectoryTests : IDisposable
     {
         var tempDir = TemporaryDirectory.CreateNew();
         dirsToCleanAfterTest.Add(tempDir.FullPath);
-        tempDir.GetInfo();
+        var dirInfo = tempDir.DirectoryInfo;
     }
 
     [Fact]

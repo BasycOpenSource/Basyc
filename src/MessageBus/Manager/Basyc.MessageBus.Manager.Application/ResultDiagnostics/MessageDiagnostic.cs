@@ -6,6 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
+#pragma warning disable CA1003 // Use generic event handler instances
+
 public class MessageDiagnostic
 {
     private readonly Dictionary<string, ActivityContext> activityIdToActivityMap = new();

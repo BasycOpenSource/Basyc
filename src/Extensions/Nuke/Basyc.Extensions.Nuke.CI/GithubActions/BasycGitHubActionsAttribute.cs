@@ -3,13 +3,23 @@ using Nuke.Common.Utilities;
 
 namespace Basyc.Extensions.Nuke.CI.GithubActions;
 
+#pragma warning disable CA1813 // Avoid unsealed attributes
 public class BasycGitHubActionsAttribute : GitHubActionsAttribute
 {
     public BasycGitHubActionsAttribute(string name, GitHubActionsImage image, params GitHubActionsImage[] images) : base(name, image, images)
     {
+        Name = name;
+        Image = image;
+        Images = images;
     }
 
     public string[] ImportParameters { get; set; } = Array.Empty<string>();
+
+    public string Name { get; }
+
+    public GitHubActionsImage Image { get; }
+
+    public GitHubActionsImage[] Images { get; }
 
     protected override IEnumerable<(string Key, string Value)> GetImports()
     {

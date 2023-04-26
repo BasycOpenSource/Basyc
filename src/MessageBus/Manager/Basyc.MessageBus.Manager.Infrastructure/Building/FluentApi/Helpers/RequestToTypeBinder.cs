@@ -4,6 +4,8 @@ using System.Reflection;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 
+#pragma warning disable CA1819 // Properties should not return arrays
+
 public class RequestToTypeBinder
 {
     public RequestToTypeBinder(Type messageRuntimeType)
@@ -42,19 +44,19 @@ public class RequestToTypeBinder
         }
 
         object?[] requestParameterValues = request.Parameters.Select(x => x.Value).ToArray();
+#pragma warning disable CA1031 // Do not catch general exception types
         try
         {
             object messageInstance = promisingCtor.Invoke(requestParameterValues);
             message = messageInstance;
-#pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
             return true;
-#pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
         }
         catch (Exception)
         {
             message = default;
             return false;
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 
     protected bool TryCreateMessageWithSetters(RequestInput request, [NotNullWhen(true)] out object? message)

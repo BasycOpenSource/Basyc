@@ -1,5 +1,6 @@
 ﻿namespace Basyc.Shared.Models;
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 public struct NullableResult<T>
 {
     public NullableResult(T value, bool wasFound, bool checkValueType = true)

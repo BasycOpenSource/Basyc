@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Basyc.Diagnostics.Producing.Abstractions;
+﻿using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Shared;
 using Basyc.MessageBus.NetMQ.Shared;
 using Basyc.MessageBus.NetMQ.Shared.Cases;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NetMQ;
 using NetMQ.Sockets;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Basyc.MessageBus.Broker.NetMQ;
 
@@ -189,6 +189,7 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
     public void Dispose()
     {
         brokerSocket.Dispose();
+        poller.Dispose();
         logger.LogInformation("NetMQ proxy disposed");
     }
 

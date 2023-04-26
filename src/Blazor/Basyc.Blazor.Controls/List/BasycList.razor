@@ -58,7 +58,7 @@
     [Parameter]
     public bool Virtualize { get; set; } = true;
 
-    private string scrollId = @Random.Shared.Next().ToString();
+    private string scrollId = Random.Shared.Next().ToString();
     private Action? unsubcribeAction;
 
     protected override void OnParametersSet()

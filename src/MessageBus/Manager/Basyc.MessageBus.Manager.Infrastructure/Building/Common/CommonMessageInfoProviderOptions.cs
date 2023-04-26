@@ -2,5 +2,5 @@
 
 public record CommonMessageInfoProviderOptions
 {
-    public List<MessageGroupRegistration> MessageGroupRegistration { get; } = new List<MessageGroupRegistration>();
+    public ICollection<MessageGroupRegistration> MessageGroupRegistration { get; init; } = new List<MessageGroupRegistration>();
 }

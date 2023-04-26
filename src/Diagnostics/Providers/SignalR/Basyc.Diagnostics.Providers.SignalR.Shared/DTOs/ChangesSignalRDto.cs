@@ -3,6 +3,7 @@ using Basyc.Diagnostics.Shared.Logging;
 
 namespace Basyc.Diagnostics.SignalR.Shared.DTOs;
 
+#pragma warning disable CA1819 // Properties should not return arrays
 public record ChangesSignalRDto(LogEntrySignalRDto[] Logs, ActivityStartSignalRDto[] ActivityStarts, ActivityEndSignalRDto[] ActivityEnds)
 {
     public static DiagnosticChanges FromDto(ChangesSignalRDto dto)

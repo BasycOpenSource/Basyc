@@ -63,7 +63,8 @@ public class InMemoryRequestHandler : IRequestHandler
                 requestResult.Fail(x.Exception.Value().Message);
                 //inMemoryRequesterAct.Stop();
             }
-        });
+        },
+        TaskScheduler.Default);
     }
 
     public void AddHandler(MessageInfo requestInfo, RequestHandler handler) => handlersMap.Add(requestInfo, handler);

@@ -18,7 +18,9 @@ public static class HubConnectionBuilderBasycExtensions
         this IHubConnectionBuilder hubConnectionBuilder)
         where TMethodsClientCanCall : class
     {
+#pragma warning disable CA2000 // Dispose objects before losing scope
         CreateMethodsClientCanCallProxy<TMethodsClientCanCall>(hubConnectionBuilder, out var connection, out var hubClientProxy);
+#pragma warning restore CA2000 // Dispose objects before losing scope
         return new StrongTypedHubConnectionPusher<TMethodsClientCanCall>(hubClientProxy, connection);
     }
 
@@ -26,8 +28,11 @@ public static class HubConnectionBuilderBasycExtensions
         TMethodsServerCanCall>(this IHubConnectionBuilder hubConnectionBuilder, TMethodsServerCanCall serverMethods)
         where TMethodsClientCanCall : class
     {
+#pragma warning disable CA2000 // Dispose objects before losing scope
         CreateMethodsClientCanCallProxy<TMethodsClientCanCall>(hubConnectionBuilder, out var connection, out var hubClientProxy);
         return new StrongTypedHubConnectionPusherAndReceiver<TMethodsClientCanCall, TMethodsServerCanCall>(hubClientProxy, connection, serverMethods);
+#pragma warning restore CA2000 // Dispose objects before losing scope
+
     }
 
     private static void CreateMethodsClientCanCallProxy<TMethodsClientCanCall>(

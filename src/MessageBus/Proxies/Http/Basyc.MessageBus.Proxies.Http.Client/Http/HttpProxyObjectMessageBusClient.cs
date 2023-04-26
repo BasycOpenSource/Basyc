@@ -16,7 +16,6 @@ public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
     private static readonly string proxyResponseSimpleDataType = TypedToSimpleConverter.ConvertTypeToSimple(typeof(ResponseHttpDto));
     private readonly HttpClient httpClient;
     private readonly IObjectToByteSerailizer objectToByteSerializer;
-    private readonly IOptions<HttpProxyObjectMessageBusClientOptions> options;
     private readonly AsyncPolicyWrap retryPolicy;
     private readonly string wrapperMessageType = TypedToSimpleConverter.ConvertTypeToSimple(typeof(RequestHttpDto));
 
@@ -25,7 +24,6 @@ public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
     {
         retryPolicy = Policy.Handle<Exception>().RetryAsync(0).WrapAsync(Policy.TimeoutAsync(10, TimeoutStrategy.Pessimistic));
         httpClient = new HttpClient { BaseAddress = options.Value.ProxyHostUri };
-        this.options = options;
         objectToByteSerializer = byteSerializer;
     }
 
@@ -54,9 +52,7 @@ public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
 
     public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    void IDisposable.Dispose()
-    {
-    }
+    public void Dispose() => httpClient.Dispose();
 
     private BusTask<ProxyResponse> HttpCallToProxyServer(string messageType,
         object? messageData,
@@ -77,9 +73,9 @@ public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
             return BusTask<ProxyResponse>.FromValue("-1", new ProxyResponse(error, true, true, null));
         }
 
-        var httpContent = new ByteArrayContent(proxyRequestBytes);
+        using var httpContent = new ByteArrayContent(proxyRequestBytes);
         //var httpResult = retryPolicy.ExecuteAsync(async () => await httpClient.PostAsync("", httpContent)).GetAwaiter().GetResult();
-        var httpResultTask = retryPolicy.ExecuteAsync(async () => await httpClient.PostAsync(string.Empty, httpContent, cancellationToken));
+        var httpResultTask = retryPolicy.ExecuteAsync(async () => await httpClient.PostAsync(new Uri(string.Empty), httpContent, cancellationToken));
         httpResultTask.Wait(cancellationToken);
         var httpResult = httpResultTask.Result;
 

@@ -1,8 +1,8 @@
 ﻿namespace Basyc.Localizator.Abstraction;
 
-public class LocalizationStorageChangedArgs
+public class LocalizationStorageChangedEventArgs : EventArgs
 {
-    public LocalizationStorageChangedArgs(HashSet<string> sections)
+    public LocalizationStorageChangedEventArgs(HashSet<string> sections)
     {
         ChangedSectionUniqueNames = sections;
     }

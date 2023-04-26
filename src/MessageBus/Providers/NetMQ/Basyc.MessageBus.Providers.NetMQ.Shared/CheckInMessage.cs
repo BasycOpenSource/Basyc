@@ -1,5 +1,7 @@
 ﻿namespace Basyc.MessageBus.NetMQ.Shared;
 
+#pragma warning disable CA1819 // Properties should not return arrays
+
 public record CheckInMessage
 {
     public CheckInMessage(string workerId, string[] supportedMessageTypes)

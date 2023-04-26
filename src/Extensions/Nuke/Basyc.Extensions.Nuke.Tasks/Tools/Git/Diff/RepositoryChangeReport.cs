@@ -3,6 +3,7 @@ using Serilog;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 
+#pragma warning disable CA1819 // Properties should not return arrays
 public record RepositoryChangeReport(string GitRepoLocalDirectory, bool CouldCompare, SolutionChangeReport[] ChangedSolutions)
 {
     public HashSet<string> GetTestProjectsToRun(Solution solution, string testProjectNameSuffix)

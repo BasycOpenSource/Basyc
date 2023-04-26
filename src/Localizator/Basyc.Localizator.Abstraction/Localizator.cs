@@ -4,6 +4,8 @@ using Throw;
 
 namespace Basyc.Localizator.Abstraction;
 
+#pragma warning disable CA1724 // class name same as namespace part
+
 public class Localizator : ILocalizator
 {
     private IDictionary<string, string> values;

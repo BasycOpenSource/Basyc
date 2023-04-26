@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using Basyc.MessageBus.Manager.Application;
+﻿using Basyc.MessageBus.Manager.Application;
+using System.Reflection;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.Interface;
 
@@ -7,7 +7,7 @@ public class InterfaceRegistration
 {
     public const string DefaultRequestHandlerUniqueName = "DefaultRequester";
 
-    public List<Assembly> AssembliesToScan { get; init; } = new();
+    public ICollection<Assembly> AssembliesToScan { get; init; } = new List<Assembly>();
 
     public string? GroupName { get; set; }
 

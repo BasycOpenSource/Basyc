@@ -1,5 +1,6 @@
 ﻿namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
 
+#pragma warning disable CA1002 // Do not expose generic lists
 public record AggregatedDotnetFormatReport(List<AggregatedDocumentReport> Documents)
 {
     private enum ProjectType
@@ -59,7 +60,7 @@ public record AggregatedDotnetFormatReport(List<AggregatedDocumentReport> Docume
 
     private sealed record TempDocument(string DocumentId, string FilePath, string FileName, string ProjectId, List<string> Changes);
 
-    private sealed record SolutionProject(string Id, ProjectType ProjectType, string Name, string CsharpProjectId);
+    //private sealed record SolutionProject(string Id, ProjectType ProjectType, string Name, string CsharpProjectId);
 }
 
-public record AggregatedDocumentReport(string FilePath, string FileName, string ProjectId, string ProjectName, string[] Changes);
+public record AggregatedDocumentReport(string FilePath, string FileName, string ProjectId, string ProjectName, IReadOnlyCollection<string> Changes);

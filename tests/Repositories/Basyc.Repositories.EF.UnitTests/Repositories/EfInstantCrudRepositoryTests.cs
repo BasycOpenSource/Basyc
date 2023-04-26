@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Throw;
 using Xunit;
 //using Kontrer.Shared.Repositories.EF.Tests;
+#pragma warning disable CA2213 // Disposable fields should be disposed
 
 namespace Basyc.Repositories.EF.Tests.Repositories;
 

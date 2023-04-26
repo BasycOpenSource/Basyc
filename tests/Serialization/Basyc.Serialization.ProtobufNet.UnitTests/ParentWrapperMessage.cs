@@ -1,11 +1,10 @@
-﻿//using Bogus;
-//using FluentAssertions;
-//using System.Text.Json;
-//using Xunit;
-
-using ProtoBuf;
+﻿using ProtoBuf;
 
 namespace Basyc.Serialization.ProtobufNet.UnitTests;
+
+#pragma warning disable CA1819 // Properties should not return arrays
+//Supressing warning since this ctor is only used for serializers
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 [ProtoContract]
 public class ParentWrapperMessage
@@ -17,10 +16,7 @@ public class ParentWrapperMessage
         MessageData = messageData;
     }
 
-    //Supressing warning since this ctor is only used for serializers
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     protected ParentWrapperMessage()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
     }
 

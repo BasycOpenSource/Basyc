@@ -2,5 +2,5 @@
 
 public class TypedDomainProviderOptions
 {
-    public List<TypedDomainSettings> TypedDomainOptions { get; set; } = new List<TypedDomainSettings>();
+    public ICollection<TypedDomainSettings> TypedDomainOptions { get; init; } = new List<TypedDomainSettings>();
 }

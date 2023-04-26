@@ -80,7 +80,9 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
     {
         waitingForTaskRunActivity.Stop();
         var busTaskActivity = DiagnosticHelper.Start("BustaskMethod");
-        var seriActivity = new Activity("Serializating request").Start();
+#pragma warning disable CA2000 // Dispose objects before losing scope
+        using var seriActivity = new Activity("Serializating request").Start();
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
         if (byteSerializer.TrySerialize(requestData, requestType, out var requestDataBytes, out var error) is false)
         {
@@ -89,9 +91,9 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
         }
 
         seriActivity.Stop();
-
         var signalRActivity = DiagnosticHelper.Start("SignalR Sending request");
 
+#pragma warning disable CA1031 // Do not catch general exception types
         try
         {
             await hubConnection.Call.Request(new RequestSignalRDto(requestType, true, requestDataBytes, RequestContext: requestContext));
@@ -101,6 +103,7 @@ public class SignalRProxyObjectMessageBusClient : IObjectMessageBusClient
             signalRActivity.Stop();
             return new ErrorMessage("Failed while requesting. " + ex.Message);
         }
+#pragma warning restore CA1031 // Do not catch general exception types
 
         signalRActivity.Stop();
 

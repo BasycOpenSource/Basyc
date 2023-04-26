@@ -1,4 +1,5 @@
 ﻿namespace Basyc.MessageBus.Manager.Infrastructure;
+#pragma warning disable CA2225 // Operator overloads have named alternates
 
 public record TypedReqeustResponseTypePair(Type RequestType, Type ResponseType)
 {

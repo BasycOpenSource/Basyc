@@ -4,7 +4,7 @@ namespace Basyc.Diagnostics.Shared.Durations;
 
 public abstract class DurationSegmentBuilderBase : IDisposable, IDurationSegmentBuilder
 {
-    public DurationSegmentBuilderBase(ServiceIdentity service, string traceId, string id, string name)
+    protected DurationSegmentBuilderBase(ServiceIdentity service, string traceId, string id, string name)
     {
         Name = name;
         Service = service;

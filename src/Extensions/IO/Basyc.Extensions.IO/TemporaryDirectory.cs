@@ -2,7 +2,7 @@
 
 public readonly record struct TemporaryDirectory(string FullPath) : IDisposable
 {
-    public DirectoryInfo GetInfo() => new(FullPath);
+    public DirectoryInfo DirectoryInfo { get; } = new(FullPath);
 
     public static string GetNewPath(string directoryNameStart = "Basyc_temp_dir", bool includeUniqueNumber = true)
     {

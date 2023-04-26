@@ -3,6 +3,7 @@ using Nuke.Common.Utilities.Collections;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 public readonly struct TestRunSettingsMultiple : IDisposable
 {
     private readonly Dictionary<string, TemporaryFile> temporaryFiles = new();

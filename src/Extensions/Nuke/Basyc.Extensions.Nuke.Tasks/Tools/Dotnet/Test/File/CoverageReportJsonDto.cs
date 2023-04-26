@@ -2,6 +2,8 @@
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test.File;
 
+#pragma warning disable CA1819 // Properties should not return arrays
+
 public class CoverageReportJsonDto
 {
     public CoverageReportJsonDto(ProjectCoverageReport[] projects)

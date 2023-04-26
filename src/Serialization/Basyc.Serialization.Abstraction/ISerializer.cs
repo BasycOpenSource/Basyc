@@ -9,6 +9,7 @@ public interface ISerializer<TDeserialized, TSerialized, TSerializationMetadata>
         [NotNullWhen(true)] out TSerialized? serializedObject,
         [NotNullWhen(false)] out SerializationFailure? error)
     {
+#pragma warning disable CA1031 // Do not catch general exception types
         try
         {
             serializedObject = Serialize(deserializedObject, dataType);
@@ -23,6 +24,7 @@ public interface ISerializer<TDeserialized, TSerialized, TSerializationMetadata>
             error = new SerializationFailure(ex);
             return false;
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 
     bool TryDeserialize(TSerialized serializedObject,
@@ -30,6 +32,7 @@ public interface ISerializer<TDeserialized, TSerialized, TSerializationMetadata>
         [NotNullWhen(true)] out TDeserialized? deserializedObject,
         [NotNullWhen(false)] out SerializationFailure? error)
     {
+#pragma warning disable CA1031 // Do not catch general exception types
         try
         {
             deserializedObject = Deserialize(serializedObject, dataType);
@@ -44,6 +47,7 @@ public interface ISerializer<TDeserialized, TSerialized, TSerializationMetadata>
             error = new SerializationFailure(ex);
             return false;
         }
+#pragma warning restore CA1031 // Do not catch general exception types
     }
 
     /// <summary>

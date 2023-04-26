@@ -4,5 +4,5 @@ public class FluentApiGroupRegistration
 {
     public string? Name { get; set; }
 
-    public List<FluentApiMessageRegistration> InProgressMessages { get; } = new();
+    public ICollection<FluentApiMessageRegistration> InProgressMessages { get; init; } = new List<FluentApiMessageRegistration>();
 }

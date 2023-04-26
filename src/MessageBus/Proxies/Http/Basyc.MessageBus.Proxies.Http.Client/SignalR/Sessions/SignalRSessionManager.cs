@@ -8,12 +8,10 @@ namespace Basyc.MessageBus.HttpProxy.Client.SignalR.Sessions;
 public class SignalRSessionManager : IClientMethodsServerCanCall
 {
     private readonly Channel<object> clientServerChannel = Channel.CreateUnbounded<object>();
-    private readonly ISharedRequestIdCounter requestIdCounter;
     private readonly Dictionary<string, SignalRSession> sessionMap = new();
 
     public SignalRSessionManager(ISharedRequestIdCounter requestIdCounter)
     {
-        this.requestIdCounter = requestIdCounter;
     }
 
     public Task ReceiveRequestFailed(RequestFailedSignalRDto requestFailed) => clientServerChannel.Writer.WriteAsync(requestFailed).AsTask();

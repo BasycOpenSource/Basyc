@@ -2,6 +2,9 @@
 
 namespace Basyc.Extensions.SignalR.Client.Tests.Helpers;
 
+#pragma warning disable CA1032 // Implement standard exception constructors
+#pragma warning disable CA1819 // Properties should not return arrays
+
 public class MethodExceptionHelperException : Exception
 {
     public MethodExceptionHelperException(string methodName, DateTimeOffset time, object?[] methodArguments)

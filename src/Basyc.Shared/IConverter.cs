@@ -1,5 +1,7 @@
 ﻿namespace Basyc.Shared;
 
+#pragma warning disable CA1002 // Do not expose generic lists
+
 public interface IConverter<TSource, TTarget>
 {
     TSource ToSource(TTarget target);

@@ -1,5 +1,7 @@
 ﻿namespace Basyc.Extensions.Nuke.Tasks.Helpers.GitFlow;
 
+#pragma warning disable CA1034 // Nested types should not be visible
+
 public abstract record GitFlowBranch(string Name, GitFlowBranchType BranchType)
 {
     public record Main() : GitFlowBranch("main", GitFlowBranchType.Main);

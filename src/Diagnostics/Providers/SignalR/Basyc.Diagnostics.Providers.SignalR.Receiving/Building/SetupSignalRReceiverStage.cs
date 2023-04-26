@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Basyc.Diagnostics.Receiving.SignalR.Building;
+#pragma warning disable CA1054 // URI-like parameters should not be strings
 
 public class SetupSignalRReceiverStage : BuilderStageBase
 {

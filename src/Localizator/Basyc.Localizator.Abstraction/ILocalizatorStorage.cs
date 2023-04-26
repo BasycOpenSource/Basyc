@@ -7,7 +7,7 @@ namespace Basyc.Localizator.Abstraction;
 /// </summary>
 public interface ILocalizatorStorage
 {
-    event EventHandler<LocalizationStorageChangedArgs> StorageChanged;
+    event EventHandler<LocalizationStorageChangedEventArgs> StorageChanged;
 
     Task<IDictionary<string, ILocalizatedSection>> GetSectionsAsync();
 

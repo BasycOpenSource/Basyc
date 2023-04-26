@@ -6,8 +6,6 @@ using Throw;
 
 // ReSharper disable InconsistentNaming
 #pragma warning disable SA1402
-#pragma warning disable SA1401
-#pragma warning disable CA2211
 
 namespace Basyc.Repositories.EF;
 
@@ -19,7 +17,7 @@ public abstract class EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TMode
 {
     private static bool isInitialized;
 
-    public EfAsyncInstantCrudRepositoryBase(DbContext dbContext,
+    protected EfAsyncInstantCrudRepositoryBase(DbContext dbContext,
         Expression<Func<TEntity, TEntityId>> entityIdPropertyNameSelector,
         Expression<Func<TModel, TModelId>> modelIdPropertyNameSelector,
         ILogger<EfAsyncInstantCrudRepositoryBase<TEntity, TEntityId, TModel, TModelId>> logger)
@@ -148,7 +146,7 @@ public abstract class EfInstantCrudRepositoryBase<TEntity, TModelId, TModel> : E
     where TEntity : class, new()
     where TModelId : notnull
 {
-    public EfInstantCrudRepositoryBase(DbContext dbContext,
+    protected EfInstantCrudRepositoryBase(DbContext dbContext,
         Expression<Func<TEntity, TModelId>> entityIdSelector,
         Expression<Func<TModel, TModelId>> modelIdSelector,
         ILogger<EfInstantCrudRepositoryBase<TEntity, TModelId, TModel>> logger)

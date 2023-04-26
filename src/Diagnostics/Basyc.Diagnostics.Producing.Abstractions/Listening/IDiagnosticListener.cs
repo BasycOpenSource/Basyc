@@ -2,6 +2,8 @@
 
 namespace Basyc.Diagnostics.Producing.Shared.Listening;
 
+#pragma warning disable CA1003 // Use generic event handler instances
+
 public interface IDiagnosticListener
 {
     event EventHandler<LogEntry> LogsReceived;

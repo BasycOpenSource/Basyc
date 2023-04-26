@@ -123,7 +123,7 @@ public static partial class DotNetTasks
 
         foreach (var document in report.Documents)
         {
-            stringBuilder.AppendLine($"{document.FileName} required changes: {document.Changes.Length}");
+            stringBuilder.AppendLine($"{document.FileName} required changes: {document.Changes.Count}");
             foreach (string change in document.Changes)
                 stringBuilder.AppendLine(change);
 

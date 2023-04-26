@@ -19,7 +19,7 @@ public class EfLocalizatorStorage : ILocalizatorStorage
         this.options = options;
     }
 
-    public event EventHandler<LocalizationStorageChangedArgs>? StorageChanged;
+    public event EventHandler<LocalizationStorageChangedEventArgs>? StorageChanged;
 
     public async Task<IDictionary<string, ILocalizatedSection>> GetSectionsAsync()
     {

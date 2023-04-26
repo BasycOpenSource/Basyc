@@ -9,7 +9,7 @@ public abstract class DependencyBuilderBase<TParentBuilder>
 
     protected DependencyBuilderBase(IServiceCollection services, TParentBuilder parentBuilder)
     {
-        this.Services = services;
+        Services = services;
         this.parentBuilder = parentBuilder;
     }
 
@@ -23,9 +23,9 @@ public abstract class DependencyBuilderBase<TParentBuilder>
 
 public abstract class DependencyBuilderBase
 {
-    public DependencyBuilderBase(IServiceCollection services)
+    protected DependencyBuilderBase(IServiceCollection services)
     {
-        this.Services = services;
+        Services = services;
     }
 
     public IServiceCollection Services { get; init; }

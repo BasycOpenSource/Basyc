@@ -106,7 +106,8 @@ public class BasycTypedMessageBusRequestHandler : IRequestHandler
 
                 startSegment.Stop();
                 //dummyStartSegment.End();
-            });
+            },
+            TaskScheduler.Default);
         }
         else
         {
@@ -148,7 +149,8 @@ public class BasycTypedMessageBusRequestHandler : IRequestHandler
 
                 startSegment.Stop();
                 //dummyStartSegment.End();
-            });
+            },
+            TaskScheduler.Default);
         }
     }
 }

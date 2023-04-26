@@ -3,6 +3,8 @@ using Basyc.Diagnostics.Shared.Durations;
 
 namespace Basyc.MessageBus.Manager.Application.Tests.Durations;
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
+
 public class DurationSegmentBuilderTests
 {
     private static ServiceIdentity serviceIdentity = new("test");
@@ -17,7 +19,7 @@ public class DurationSegmentBuilderTests
         segmentBuilder.HasEnded.Should().BeTrue();
         var segment = segmentBuilder.Build();
 
-        segment.NestedSegments.Length.Should().Be(0);
+        segment.NestedSegments.Count.Should().Be(0);
         segment.StartTime.Should().NotBe(default);
         segment.EndTime.Should().NotBe(default);
     }
@@ -52,8 +54,8 @@ public class DurationSegmentBuilderTests
         nestedSegmentBuilder2.EndTime.Should().Be(default);
 
         var rootSegment = rootSegmentBuilder.Build();
-        rootSegment.NestedSegments.Length.Should().Be(2);
-        rootSegment.NestedSegments.All(x => x.NestedSegments.Length == 0).Should().BeTrue();
+        rootSegment.NestedSegments.Count.Should().Be(2);
+        rootSegment.NestedSegments.All(x => x.NestedSegments.Count == 0).Should().BeTrue();
     }
 
     private static InMemoryDurationSegmentBuilder CreateNesting(uint nestedSegmentsNumber, uint levelOfNestingInNestedSegments, out List<IDurationSegmentBuilder> allBuilders)
@@ -97,7 +99,7 @@ public class DurationSegmentBuilderTests
         }
 
         var rootSegment = rootSegmentBuilder.Build();
-        rootSegment.NestedSegments.Length.Should().Be(nestedSegmentsNumber);
+        rootSegment.NestedSegments.Count.Should().Be(nestedSegmentsNumber);
     }
 
     [Theory]
@@ -119,7 +121,7 @@ public class DurationSegmentBuilderTests
         }
 
         var rootSegment = rootSegmentBuilder.Build();
-        rootSegment.NestedSegments.Length.Should().Be(nestedSegmentsNumber);
+        rootSegment.NestedSegments.Count.Should().Be(nestedSegmentsNumber);
     }
 
     [Fact]
@@ -151,8 +153,8 @@ public class DurationSegmentBuilderTests
         }
 
         var rootSegment = rootSegmentBuilder.Build();
-        rootSegment.NestedSegments.Length.Should().Be(segmentsInParrarel);
-        rootSegment.NestedSegments.DistinctBy(x => x.StartTime).Count().Should().Be(rootSegment.NestedSegments.Length);
+        rootSegment.NestedSegments.Count.Should().Be(segmentsInParrarel);
+        rootSegment.NestedSegments.DistinctBy(x => x.StartTime).Count().Should().Be(rootSegment.NestedSegments.Count);
         rootSegment.NestedSegments.DistinctBy(x => x.EndTime).Count().Should().Be(1);
     }
 
@@ -165,7 +167,7 @@ public class DurationSegmentBuilderTests
         rootSegmentBuilder.HasStarted.Should().BeTrue();
 
         var rootSegment = rootSegmentBuilder.Build();
-        rootSegment.NestedSegments.Length.Should().Be(1);
+        rootSegment.NestedSegments.Count.Should().Be(1);
         rootSegment.NestedSegments.First().StartTime.Should().Be(rootSegment.StartTime);
     }
 

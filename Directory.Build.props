@@ -9,8 +9,13 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <!--xx-->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <!--<AnalysisLevel>latest-Recommended</AnalysisLevel>-->
+    <AnalysisMode>All</AnalysisMode>
+    <!--<AnalysisModeStyle></AnalysisModeStyle>-->
+    <!--https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#analysismode-->
   </PropertyGroup>
 
   <ItemGroup>

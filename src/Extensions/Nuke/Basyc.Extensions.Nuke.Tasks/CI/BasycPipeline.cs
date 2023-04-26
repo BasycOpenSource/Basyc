@@ -8,6 +8,7 @@ using Nuke.Common.Utilities;
 
 namespace Basyc.Extensions.Nuke.Tasks.CI;
 
+#pragma warning disable CA1813 // Avoid unsealed attributes
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
 public class BasycPipeline : ConfigurationAttributeBase
 {
@@ -33,6 +34,14 @@ public class BasycPipeline : ConfigurationAttributeBase
             CiProvider.AzurePipelines => throw new NotImplementedException(),
             _ => throw new NotImplementedException()
         };
+        Name = name;
+        Provider = provider;
+        PipelineOs = pipelineOs;
+        GitFlowBranches = gitFlowBranches;
+        Trigger = trigger;
+        Targets = targets;
+        ImportSecrets = importSecrets;
+        ImportParameters = importParameters;
     }
 
     public override string IdPostfix => base.IdPostfix + GetType().Name;
@@ -46,6 +55,22 @@ public class BasycPipeline : ConfigurationAttributeBase
     public override IEnumerable<string> RelevantTargetNames => baseProvider.RelevantTargetNames;
 
     public override IEnumerable<string> IrrelevantTargetNames => baseProvider.IrrelevantTargetNames;
+
+    public string Name { get; }
+
+    public CiProvider Provider { get; }
+
+    public PipelineOs PipelineOs { get; }
+
+    public GitFlowBranchType[] GitFlowBranches { get; }
+
+    public Trigger Trigger { get; }
+
+    public string[] Targets { get; }
+
+    public string[]? ImportSecrets { get; }
+
+    public string[]? ImportParameters { get; }
 
     public override CustomFileWriter CreateWriter(StreamWriter streamWriter) => baseProvider.CreateWriter(streamWriter);
 

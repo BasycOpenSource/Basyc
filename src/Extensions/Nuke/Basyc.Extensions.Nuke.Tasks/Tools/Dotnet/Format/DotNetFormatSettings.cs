@@ -1,8 +1,10 @@
-﻿using System.Diagnostics.Contracts;
-using Nuke.Common.Tooling;
+﻿using Nuke.Common.Tooling;
+using System.Diagnostics.Contracts;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
+
+#pragma warning disable CA1002 // Do not expose generic lists
 
 [Serializable]
 public class DotNetFormatSettings : ToolSettings

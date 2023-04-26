@@ -3,20 +3,20 @@
 public abstract class QueryableTrackingAsyncInstantCrudRepositoryBase<TModel, TKey> : TrackingAsyncInstantCrudRepositoryBase<TModel, TKey>
     where TModel : class where TKey : notnull
 {
-    public QueryableTrackingAsyncInstantCrudRepositoryBase(IEnumerable<TModel> allRecords,
+    protected QueryableTrackingAsyncInstantCrudRepositoryBase(IEnumerable<TModel> allRecords,
         Func<TModel, TKey> keySelector) : this(allRecords.AsQueryable(), keySelector)
     {
     }
 
-    public QueryableTrackingAsyncInstantCrudRepositoryBase(IDictionary<TKey, TModel> allRecords,
+    protected QueryableTrackingAsyncInstantCrudRepositoryBase(IDictionary<TKey, TModel> allRecords,
         Func<TModel, TKey> keySelector) : this(allRecords.Values.AsQueryable(), keySelector)
     {
     }
 
-    public QueryableTrackingAsyncInstantCrudRepositoryBase(IQueryable<TModel> allRecords, Func<TModel, TKey> keySelector)
+    protected QueryableTrackingAsyncInstantCrudRepositoryBase(IQueryable<TModel> allRecords, Func<TModel, TKey> keySelector)
     {
-        this.AllRecords = allRecords;
-        this.KeySelector = keySelector;
+        AllRecords = allRecords;
+        KeySelector = keySelector;
     }
 
     protected Func<TModel, TKey> KeySelector { get; init; }

@@ -5,6 +5,8 @@ using Basyc.MessageBus.HttpProxy.Shared.SignalR;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+#pragma warning disable CA1054 // URI-like parameters should not be strings
+
 public static class BusClientSetupProviderStageProxySignalRExtensions
 {
     public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent,
