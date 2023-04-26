@@ -4,28 +4,16 @@
 @using Microsoft.JSInterop;
 
 <tooltipView>
-    <childContent id="@childContentId">
+    <childContent id="@ChildContentId">
         <TooltipContent Messenger="@messenger">
             @ChildContent
         </TooltipContent>
     </childContent>
-    <TooltipPopup Messenger="@messenger" OwnerId="@childContentId">
+    <TooltipPopup Messenger="@messenger" OwnerId="@ChildContentId">
         @TooltipContent
     </TooltipPopup>
 </tooltipView>
 
-@code {
-    [Inject] private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
-    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
-    [Parameter] public RenderFragment? TooltipContent { get; set; } = null;
 
-    private string childContentId { get; init; } = Random.Shared.Next().ToString();
-    private TooltipPartsMessenger messenger = new TooltipPartsMessenger();
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
-}
 
 

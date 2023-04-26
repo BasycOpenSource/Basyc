@@ -8,7 +8,7 @@
 <basycList id="@scrollId">
     @if (Virtualize)
     {
-        <Virtualize TItem="TItem" Context="item" Items="@itemsCasted">
+        <Virtualize TItem="TItem" Context="item" Items="@ItemsCasted">
             <ItemContent>
                 @if (ItemTemplate is not null)
                 {
@@ -42,49 +42,4 @@
     }
 </basycList>
 
-@code {
 
-    [Inject]
-    public ScrollJsInterop ScrollJsInterop { get; init; } = null!;
-
-    [Parameter, EditorRequired]
-    public IEnumerable<TItem> Items { get; set; } = null!;
-
-    private ICollection<TItem> itemsCasted { get; set; } = null!;
-
-    [Parameter]
-    public RenderFragment<TItem>? ItemTemplate { get; set; }
-
-    [Parameter]
-    public bool Virtualize { get; set; } = true;
-
-    private string scrollId = Random.Shared.Next().ToString();
-    private Action? unsubcribeAction;
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-
-        unsubcribeAction?.Invoke();
-        if (Items is INotifyCollectionChanged collection)
-        {
-            collection.CollectionChanged += ItemAdded;
-            unsubcribeAction = () => { collection.CollectionChanged -= ItemAdded; };
-        }
-
-        itemsCasted = (ICollection<TItem>)Items;
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
-        Console.WriteLine("BasycList render");
-        base.OnAfterRender(firstRender);
-        ScrollJsInterop.AddDragToScroll(scrollId);
-    }
-
-    private void ItemAdded(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        InvokeAsync(StateHasChanged);
-    }
-
-}
