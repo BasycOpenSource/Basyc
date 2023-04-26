@@ -60,9 +60,7 @@ public class InterfaceMessageInfoProvider : IMessageInfoProvider
                 string requesterName;
                 if (registration.RequestHandlerUniqueName == InterfaceRegistration.DefaultRequestHandlerUniqueName)
                 {
-                    var defaultRequester = requesters.FirstOrDefault();
-                    if (defaultRequester is null)
-                        throw new InvalidOperationException("Cant determine default requester, 0 requesters found");
+                    var defaultRequester = requesters.FirstOrDefault().Value("Cant determine default requester, 0 requesters found");
 
                     requesterName = defaultRequester.UniqueName;
                 }

@@ -7,7 +7,7 @@ public abstract class DependencyBuilderBase<TParentBuilder>
 {
     private readonly TParentBuilder parentBuilder;
 
-    public DependencyBuilderBase(IServiceCollection services, TParentBuilder parentBuilder)
+    protected DependencyBuilderBase(IServiceCollection services, TParentBuilder parentBuilder)
     {
         this.Services = services;
         this.parentBuilder = parentBuilder;

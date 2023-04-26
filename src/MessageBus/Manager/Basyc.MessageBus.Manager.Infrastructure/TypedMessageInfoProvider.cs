@@ -10,7 +10,6 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class TypedMessageInfoProvider : IMessageInfoProvider
 {
-    private readonly ITypedDomainNameFormatter domainNameFormatter;
     private readonly IOptions<TypedDomainProviderOptions> options;
     private readonly ITypedParameterNameFormatter parameterNameFormatter;
     private readonly IRequesterSelector requesterSelector;
@@ -28,7 +27,6 @@ public class TypedMessageInfoProvider : IMessageInfoProvider
         IRequesterSelector requesterSelector)
     {
         this.options = options;
-        this.domainNameFormatter = domainNameFormatter;
         this.requestNameFormatter = requestNameFormatter;
         this.parameterNameFormatter = parameterNameFormatter;
         this.responseNameFormatter = responseNameFormatter;

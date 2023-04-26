@@ -1,9 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Text;
-using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
+﻿using Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
 using Basyc.Extensions.Nuke.Tasks.Tools.Git.Diff;
 using Nuke.Common.Tooling;
 using Serilog;
+using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 // ReSharper disable CheckNamespace
@@ -80,7 +80,7 @@ public static partial class DotNetTasks
 
         if (isSolution)
         {
-            aggregatedReport = AggregatedDotnetFormatReport.CreateForSolution(projectOrSolutionPath, report!);
+            aggregatedReport = AggregatedDotnetFormatReport.CreateForSolution(report!);
         }
         else
         {

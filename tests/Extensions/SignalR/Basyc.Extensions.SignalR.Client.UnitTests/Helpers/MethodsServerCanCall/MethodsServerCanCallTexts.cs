@@ -1,4 +1,5 @@
 ﻿namespace Basyc.Extensions.SignalR.Client.Tests.MethodsServerCanCall;
+#pragma warning disable IDE0060 // Remove unused parameter
 
 public class MethodsServerCanCallTexts : IMethodsServerCanCallEmpty, IMethodsServerCanCallText
 {

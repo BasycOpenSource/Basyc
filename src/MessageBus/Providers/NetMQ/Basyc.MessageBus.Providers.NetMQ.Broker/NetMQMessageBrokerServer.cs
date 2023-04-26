@@ -17,12 +17,9 @@ namespace Basyc.MessageBus.Broker.NetMQ;
 public class NetMqMessageBrokerServer : IMessageBrokerServer
 {
     private readonly RouterSocket brokerSocket;
-    private readonly IDiagnosticsExporter diagnosticsProducer;
     private readonly ILogger<NetMqMessageBrokerServer> logger;
     private readonly INetMqMessageWrapper messageToByteSerializer;
-    private readonly IOptions<NetMqMessageBrokerServerOptions> options;
     private readonly NetMQPoller poller = new();
-    private readonly IWorkerRegistry workerRegistry;
 
     public NetMqMessageBrokerServer(IOptions<NetMqMessageBrokerServerOptions> options,
         IWorkerRegistry workerRegistry,
@@ -30,11 +27,8 @@ public class NetMqMessageBrokerServer : IMessageBrokerServer
         INetMqMessageWrapper messageToByteSerializer,
         IDiagnosticsExporter diagnosticsProducer)
     {
-        this.options = options;
-        this.workerRegistry = workerRegistry;
         this.logger = logger;
         this.messageToByteSerializer = messageToByteSerializer;
-        this.diagnosticsProducer = diagnosticsProducer;
         brokerSocket = new RouterSocket($"@tcp://{options.Value.BrokerServerAddress}:{options.Value.BrokerServerPort}");
 
         brokerSocket.ReceiveReady += (s, a) =>

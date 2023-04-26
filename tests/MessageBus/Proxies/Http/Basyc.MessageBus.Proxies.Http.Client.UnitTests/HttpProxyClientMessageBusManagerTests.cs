@@ -1,23 +1,23 @@
-using Basyc.MessageBus.HttpProxy.Client.Http;
-using Basyc.Serialization.Abstraction;
-using Basyc.Serialization.ProtobufNet;
-using Microsoft.Extensions.Options;
-using Moq;
+// using Basyc.MessageBus.HttpProxy.Client.Http;
+// using Basyc.Serialization.Abstraction;
+// using Basyc.Serialization.ProtobufNet;
+// using Microsoft.Extensions.Options;
+// using Moq;
 
 namespace Basyc.MessageBus.HttpProxy.Client.Tests;
 
 public class HttpProxyClientMessageBusManagerTests : IDisposable
 {
-    private readonly HttpProxyObjectMessageBusClient manager;
-    private readonly Mock<HttpMessageHandler> httpHandlerMock;
-
-    public HttpProxyClientMessageBusManagerTests()
-    {
-        httpHandlerMock = new Mock<HttpMessageHandler>();
-        var serilizer = new ObjectFromTypedByteSerializer(new ProtobufByteSerializer());
-        var options = Options.Create(new HttpProxyObjectMessageBusClientOptions() { ProxyHostUri = new Uri("https://localhost:6969/") });
-        manager = new HttpProxyObjectMessageBusClient(options, serilizer);
-    }
+    // private readonly HttpProxyObjectMessageBusClient manager;
+    // private readonly Mock<HttpMessageHandler> httpHandlerMock;
+    //
+    // public HttpProxyClientMessageBusManagerTests()
+    // {
+    //     httpHandlerMock = new Mock<HttpMessageHandler>();
+    //     var serilizer = new ObjectFromTypedByteSerializer(new ProtobufByteSerializer());
+    //     var options = Options.Create(new HttpProxyObjectMessageBusClientOptions() { ProxyHostUri = new Uri("https://localhost:6969/") });
+    //     manager = new HttpProxyObjectMessageBusClient(options, serilizer);
+    // }
 
     public void Dispose() => throw new NotImplementedException();
 

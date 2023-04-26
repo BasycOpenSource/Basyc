@@ -7,13 +7,11 @@ namespace Basyc.MessageBus.Client;
 
 public sealed class TypedFromObjectMessageBusClient : ITypedMessageBusClient
 {
-    private readonly IDiagnosticsExporter diagnosticExporter;
     private readonly IObjectMessageBusClient objectBusClient;
 
     public TypedFromObjectMessageBusClient(IObjectMessageBusClient messageBusClient, IDiagnosticsExporter diagnosticExporter)
     {
         objectBusClient = messageBusClient;
-        this.diagnosticExporter = diagnosticExporter;
     }
 
     public Task StartAsync(CancellationToken cancellationToken = default) => objectBusClient.StartAsync(cancellationToken);

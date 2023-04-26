@@ -242,25 +242,13 @@ public class NetMqByteMessageBusClient : IByteMessageBusClient, IDisposable
     private BusTask PublishAsync(byte[]? eventBytes, string eventType, RequestContext requestContext, CancellationToken cancellationToken)
     {
         //string traceId = requestContext.TraceId is null ? IdGeneratorHelper.GenerateNewSpanId() : requestContext.TraceId;
-        string traceId;
-        if (requestContext.TraceId is not null)
-        {
-            traceId = requestContext.TraceId;
-        }
-        else
-        {
-            traceId = Activity.Current is not null ? Activity.Current.TraceId.ToString() : IdGeneratorHelper.GenerateNewTraceId();
-        }
+        string traceId = requestContext.TraceId is not null
+            ? requestContext.TraceId
+            : Activity.Current is not null ? Activity.Current.TraceId.ToString() : IdGeneratorHelper.GenerateNewTraceId();
 
-        string requesterSpanId;
-        if (requestContext.ParentSpanId is not null)
-        {
-            requesterSpanId = requestContext.ParentSpanId;
-        }
-        else
-        {
-            requesterSpanId = Activity.Current is not null ? Activity.Current.SpanId.ToString() : IdGeneratorHelper.GenerateNewSpanId();
-        }
+        string requesterSpanId = requestContext.ParentSpanId is not null
+            ? requestContext.ParentSpanId
+            : Activity.Current is not null ? Activity.Current.SpanId.ToString() : IdGeneratorHelper.GenerateNewSpanId();
 
         //var publishActivity = DiagnosticHelper.Start("NetMQByteMessageBusClient.PublishAsync", traceId, requesterSpanId);
 

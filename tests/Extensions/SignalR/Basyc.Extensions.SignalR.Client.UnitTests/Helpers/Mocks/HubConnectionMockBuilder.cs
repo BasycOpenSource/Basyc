@@ -6,6 +6,9 @@ using System.IO.Pipelines;
 using System.Net;
 
 namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
+#pragma warning disable SA1402
+#pragma warning disable SA1204
+#pragma warning disable IDE0060
 
 public class HubConnectionMockBuilder : IHubConnectionBuilder
 {
@@ -46,11 +49,7 @@ public class HubConnectionMockBuilder : IHubConnectionBuilder
     private static Task HubConnection_Closed(Exception? arg) => Task.CompletedTask;
 }
 
-#pragma warning disable SA1402
-#pragma warning disable SA1204
 public static class Extensions
-#pragma warning restore SA1204
-#pragma warning restore SA1402
 {
     public static HubConnectionMock BuildAsMock(this HubConnectionMockBuilder builder) => HubConnectionMockBuilder.Create();
 }

@@ -2,6 +2,7 @@
 #pragma warning disable SA1201
 #pragma warning disable SA1649
 #pragma warning disable SA1402
+#pragma warning disable IDE0060 // Remove unused parameter
 
 public interface IWrongHubClientHasReturnValues : ICorrectMethodsClientCanCallVoids
 {

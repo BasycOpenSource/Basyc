@@ -17,25 +17,14 @@ public class NetMqMessageWrapper : INetMqMessageWrapper
 
     public byte[] CreateWrapperMessage(object? messageData, string messageType, int sessionId, string traceId, string parentSpanId, MessageCase messageCase)
     {
-        var messageBytes = messageData is byte[] bytes ? bytes : objectToByteSerializer.Serialize(messageData, messageType);
-
-        if (messageBytes is null)
-        {
-            throw new InvalidOperationException();
-        }
-
+        var messageBytes = messageData as byte[] ?? objectToByteSerializer.Serialize(messageData, messageType).Value();
         var wrapperMessageData = new ProtoMessageWrapper(sessionId, messageCase, messageType, messageBytes, traceId, parentSpanId);
         return objectToByteSerializer.Serialize(wrapperMessageData, wrapperMessageType);
     }
 
     public OneOf<CheckInMessage, RequestCase, ResponseCase, EventCase, DeserializationFailureCase> ReadWrapperMessage(byte[] messageBytes)
     {
-        var wrapper = (ProtoMessageWrapper?)objectToByteSerializer.Deserialize(messageBytes, wrapperMessageType);
-        if (wrapper is null)
-        {
-            throw new InvalidOperationException("Deserialization failed");
-        }
-
+        var wrapper = (ProtoMessageWrapper)objectToByteSerializer.Deserialize(messageBytes, wrapperMessageType).Value("Deserialization failed");
         switch (wrapper.MessageCase)
         {
             case MessageCase.CheckIn:

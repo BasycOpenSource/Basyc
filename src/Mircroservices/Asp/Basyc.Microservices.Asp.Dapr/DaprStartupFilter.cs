@@ -8,11 +8,8 @@ namespace Basyc.MicroService.Asp.Dapr;
 
 public class DaprStartupFilter : IStartupFilter
 {
-    private readonly ITypedMessageBusClient messageBusManager;
-
     public DaprStartupFilter(ITypedMessageBusClient messageBusManager)
     {
-        this.messageBusManager = messageBusManager;
     }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => (app) =>

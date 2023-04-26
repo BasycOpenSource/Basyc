@@ -30,13 +30,11 @@ public class InProgressReport
         }
     }
 
-#pragma warning disable SA1316 // Tuple element names should use correct casing
     public void AddRange(
-        IEnumerable<(string projectToTestName, string? testProjectPath, bool testProjectFound, bool shouldBeExcluded)> items, UnitTestSettings testExceptions) => items.ForEach(x =>
+        IEnumerable<(string ProjectToTestName, string? TestProjectPath, bool TestProjectFound, bool ShouldBeExcluded)> items) => items.ForEach(x =>
     {
-        Add(x.projectToTestName, x.testProjectPath, x.testProjectFound, x.shouldBeExcluded);
+        Add(x.ProjectToTestName, x.TestProjectPath, x.TestProjectFound, x.ShouldBeExcluded);
     });
-#pragma warning restore SA1316 // Tuple element names should use correct casing
 
     public void AddRange(Solution solution, IEnumerable<string> sourceProjectsPaths, string testProjectSuffix, UnitTestSettings testExceptions) => AddRange(
         sourceProjectsPaths.Select(projectToTestPath =>
@@ -55,10 +53,9 @@ public class InProgressReport
             }
 
             return (projectName, testProject.Path.ToString(), true, excluded);
-        })!,
-        testExceptions);
+        })!);
 
-    public void AddSolution(Solution solution, string testProjectSuffix, UnitTestSettings testExceptions)
+    public void AddSolution(Solution solution, string testProjectSuffix)
     {
         string[] sourceProjectsPaths = solution.AllProjects
             .Where(x => x.Name.EndsWith(testProjectSuffix) is false)
@@ -80,8 +77,7 @@ public class InProgressReport
                 }
 
                 return (projectName, testProject.Path.ToString(), true, excluded);
-            })!,
-            testExceptions);
+            })!);
     }
 
     public InProgressProjectReport[] GetAllReports() => allReports.Values.ToArray();

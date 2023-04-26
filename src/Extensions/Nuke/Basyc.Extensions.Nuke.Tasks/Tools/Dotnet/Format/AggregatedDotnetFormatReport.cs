@@ -1,6 +1,4 @@
-﻿using Nuke.Common.ProjectModel;
-
-namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
+﻿namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Format;
 
 public record AggregatedDotnetFormatReport(List<AggregatedDocumentReport> Documents)
 {
@@ -10,7 +8,7 @@ public record AggregatedDotnetFormatReport(List<AggregatedDocumentReport> Docume
         Folder
     }
 
-    public static AggregatedDotnetFormatReport CreateForSolution(string solutionPath, DotnetFormatReport report)
+    public static AggregatedDotnetFormatReport CreateForSolution(DotnetFormatReport report)
     {
         var documentIdToTempDocumentMap = CreateDocumentMap(report);
 

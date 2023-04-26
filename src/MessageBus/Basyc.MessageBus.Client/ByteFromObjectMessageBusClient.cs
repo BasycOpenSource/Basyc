@@ -6,12 +6,10 @@ namespace Basyc.MessageBus.Client;
 public class ByteFromObjectMessageBusClient : IByteMessageBusClient
 {
     private readonly IObjectMessageBusClient objectMessageBusClient;
-    private readonly IObjectToByteSerailizer byteSerailizer;
 
     public ByteFromObjectMessageBusClient(IObjectMessageBusClient objectMessageBusClient, IObjectToByteSerailizer byteSerailizer)
     {
         this.objectMessageBusClient = objectMessageBusClient;
-        this.byteSerailizer = byteSerailizer;
     }
 
     public BusTask PublishAsync(string eventType, RequestContext requestContext = default, CancellationToken cancellationToken = default) => objectMessageBusClient.PublishAsync(eventType, cancellationToken, cancellationToken: cancellationToken);

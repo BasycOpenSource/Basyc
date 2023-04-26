@@ -1,11 +1,11 @@
 ﻿<requestTag class="requestTag-@RequestType.ToString().ToLower()">
 
-    @if (this.TagStyle is TagStyle.Word)
+    @if (TagStyle is TagStyle.Word)
     {
         @WordContent
     }
 
-    @if (this.TagStyle is TagStyle.Icon)
+    @if (TagStyle is TagStyle.Icon)
     {
         <b>
         @switch (RequestType)
