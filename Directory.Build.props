@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
     <Nullable>enable</Nullable>
-    <WarningsAsErrors>Nullable,RZ2012</WarningsAsErrors>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <PreferredUILang>en</PreferredUILang>
@@ -11,7 +10,7 @@
     <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
     <!--xx-->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <!--<EnableNETAnalyzers>true</EnableNETAnalyzers>-->
     <!--<AnalysisLevel>latest-Recommended</AnalysisLevel>-->
     <AnalysisMode>All</AnalysisMode>
     <!--<AnalysisModeStyle></AnalysisModeStyle>-->
@@ -23,7 +22,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
