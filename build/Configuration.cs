@@ -1,10 +1,9 @@
 using Nuke.Common.Tooling;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable CA2211 // Non-constant fields should not be visible
+#pragma warning disable CA1050 // Declare types in namespaces
 [TypeConverter(typeof(TypeConverter<Configuration>))]
-[SuppressMessage("Usage", "CA2211")]
-[SuppressMessage("Design", "CA1050")]
 public class Configuration : Enumeration
 {
     public static Configuration Debug = new() { Value = nameof(Debug) };
