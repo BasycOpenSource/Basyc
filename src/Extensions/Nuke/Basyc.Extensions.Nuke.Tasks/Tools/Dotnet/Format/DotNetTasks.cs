@@ -66,7 +66,9 @@ public static partial class DotNetTasks
         [NotNullWhen(false)] out AggregatedDotnetFormatReport? aggregatedReport,
         out ProcessException? processException)
     {
+        using var fix = FormatWithStyleEnforceFix.Fix(projectOrSolutionPath);
         bool isFormatted = DotnetCliWrapper.FormatVerifyNoChanges(workingDirectory, projectOrSolutionPath, filesToCheck, out var report, out processException);
+        fix.Dispose();
         if (isFormatted)
         {
             Log.Information("Files formatted correctly");
