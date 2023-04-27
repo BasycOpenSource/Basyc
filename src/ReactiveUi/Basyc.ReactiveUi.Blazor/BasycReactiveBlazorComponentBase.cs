@@ -32,7 +32,7 @@ public abstract class BasycReactiveBlazorComponentBase<TViewModel, TQueryParams>
 
     public void RaisePropertyChanging(PropertyChangingEventArgs args) => PropertyChanging?.Invoke(this, args);
 
-    public void RaisePropertyChanged(PropertyChangedEventArgs args) => this.OnPropertyChanged(args.PropertyName);
+    public void RaisePropertyChanged(PropertyChangedEventArgs args) => OnPropertyChanged(args.PropertyName);
 
     protected override void OnInitialized()
     {

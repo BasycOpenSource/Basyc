@@ -6,7 +6,7 @@ public class BuilderStageBase
 {
     public BuilderStageBase(IServiceCollection services)
     {
-        this.Services = services;
+        Services = services;
     }
 
     public IServiceCollection Services { get; init; }

@@ -6,7 +6,7 @@ public class DuplexPipeMock : IDuplexPipe
 {
     public DuplexPipeMock(Pipe pipe)
     {
-        this.Pipe = pipe;
+        Pipe = pipe;
     }
 
     public Pipe Pipe { get; init; }
