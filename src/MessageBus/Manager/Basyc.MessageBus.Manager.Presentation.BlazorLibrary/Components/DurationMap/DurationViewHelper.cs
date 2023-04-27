@@ -4,11 +4,10 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.Duratio
 
 public static class DurationViewHelper
 {
-    private static readonly NumberFormatInfo numberFormatter;
+    private static readonly NumberFormatInfo numberFormatter = (NumberFormatInfo)CultureInfo.CurrentCulture.NumberFormat.Clone();
 
     static DurationViewHelper()
     {
-        numberFormatter = (NumberFormatInfo)CultureInfo.CurrentCulture.NumberFormat.Clone();
         numberFormatter.NumberDecimalSeparator = ".";
     }
 

@@ -14,7 +14,7 @@ public class LocalizatorEntity
 
     public string SectionUniqueName { get; set; }
 
-    public Dictionary<string, string> Values { get; set; }
+    public Dictionary<string, string> Values { get; init; }
 
     public LocalizatorSectionEntity Section { get; set; }
 }

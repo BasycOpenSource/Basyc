@@ -1,7 +1,7 @@
 ﻿using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors;
 using System.Text;
 
-namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 
 public static partial class Html
 {

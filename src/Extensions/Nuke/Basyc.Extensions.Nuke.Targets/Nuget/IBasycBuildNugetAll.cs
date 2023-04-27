@@ -29,7 +29,7 @@ public interface IBasycBuildNugetAll : IBasycBuildCommonAll
 
             var nugetPackages = packagesVersionedDirectory / "*.nupkg";
             DotNetNuGetPush(_ => _
-                .SetSource(NugetSettings.SourceUrl)
+                .SetSource(NugetSettings.SourceUrl.Value().ToString())
                 .SetApiKey(NugetSettings.SourceApiKey)
                 .SetTargetPath(nugetPackages));
         });

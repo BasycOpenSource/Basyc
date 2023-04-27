@@ -1,12 +1,13 @@
 ﻿using Basyc.Diagnostics.Shared;
 using Basyc.Diagnostics.Shared.Logging;
 using Microsoft.Extensions.Logging;
+using System.Collections.ObjectModel;
 
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal;
 
-public static class LogAggregator
+public static partial class LogAggregator
 {
-    public static List<AggregatedLog> AggregateLogs(IEnumerable<LogEntry> logEntries, double pixelsPerMs, double logMinWidth, double logMaxWidth, double logWidthMultiplier)
+    public static ReadOnlyCollection<AggregatedLog> AggregateLogs(IEnumerable<LogEntry> logEntries, double pixelsPerMs, double logMinWidth, double logMaxWidth, double logWidthMultiplier)
     {
         double boundingTimeDiffLimitMs = 4 / pixelsPerMs;
         List<AggregatedLogInProgress> aggregatedLogsInProgress = new();
@@ -28,27 +29,8 @@ public static class LogAggregator
             aggregatedLogInProgress.AddLog(logEntry);
         }
 
-        var aggLogs = aggregatedLogsInProgress.Select(x => new AggregatedLog(x.BoundingTime, x.WorstLogLevel, x.Service, x.Logs)).ToList();
+        var aggLogs = aggregatedLogsInProgress.Select(x => new AggregatedLog(x.BoundingTime, x.WorstLogLevel, x.Service, x.Logs)).ToList().AsReadOnly();
         return aggLogs;
-    }
-
-    public struct AggregatedLog
-    {
-        public AggregatedLog(DateTimeOffset startTime, LogLevel worstLogLevel, ServiceIdentity service, IReadOnlyList<LogEntry> logs)
-        {
-            Time = startTime;
-            WorstLogLevel = worstLogLevel;
-            Service = service;
-            Logs = logs;
-        }
-
-        public IReadOnlyList<LogEntry> Logs { get; init; }
-
-        public DateTimeOffset Time { get; init; }
-
-        public LogLevel WorstLogLevel { get; set; }
-
-        public ServiceIdentity Service { get; init; }
     }
 
     private struct AggregatedLogInProgress

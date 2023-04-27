@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.ResultHistory;
 
+#pragma warning disable CA1002 // Do not expose generic lists
+#pragma warning disable BL0007 // Component parameters should be auto properties
+#pragma warning disable CA2227 // Collection properties should be read only
 public partial class ResultHistoryView
 {
     private MessageRequest? selectedRequestResults;
@@ -11,9 +14,7 @@ public partial class ResultHistoryView
     public List<MessageRequest>? RequestContexts { get; set; }
 
     [Parameter]
-#pragma warning disable BL0007 // Component parameters should be auto properties
     public MessageRequest? SelectedRequestResults
-#pragma warning restore BL0007 // Component parameters should be auto properties
     {
         get => selectedRequestResults;
         set

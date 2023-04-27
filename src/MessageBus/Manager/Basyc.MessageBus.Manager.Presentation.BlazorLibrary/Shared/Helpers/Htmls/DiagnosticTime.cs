@@ -1,6 +1,6 @@
 ﻿using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 
-namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 public static partial class Html
 {
     public static string DiagnosticTime(this DiagnosticTime relativeTime)

@@ -108,7 +108,9 @@ public class HttpProxyObjectMessageBusClient : IObjectMessageBusClient
         return BusTask<ProxyResponse>.FromValue(proxyResponse.TraceId, new ProxyResponse(deserializedResponse, true, false, proxyResponse.TraceId));
     }
 
+#pragma warning disable CA1812
     private sealed class UnknownResponseType
+#pragma warning restore CA1812
     {
     }
 }

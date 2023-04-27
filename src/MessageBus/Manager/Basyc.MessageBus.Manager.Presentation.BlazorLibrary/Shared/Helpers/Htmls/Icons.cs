@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 
 public static partial class Html
 {

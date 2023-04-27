@@ -76,7 +76,9 @@
     [Parameter]
     public double PixelsPerMs { get; set; } = 1;
 
-    private string scrollId = @Random.Shared.Next().ToString();
+#pragma warning disable CA5394
+    private string scrollId = Random.Shared.Next().ToString();
+#pragma warning restore CA5394
 
 
     protected override void OnInitialized() => base.OnInitialized();

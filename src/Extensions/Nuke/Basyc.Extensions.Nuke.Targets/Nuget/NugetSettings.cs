@@ -2,13 +2,13 @@
 
 public class NugetSettings
 {
-    public string? SourceUrl { get; private set; }
+    public Uri? SourceUrl { get; private set; }
 
     public string? SourceApiKey { get; private set; }
 
     public static NugetSettings Create() => new();
 
-    public NugetSettings SetSourceUrl(string sourceUrl)
+    public NugetSettings SetSourceUrl(Uri sourceUrl)
     {
         SourceUrl = sourceUrl;
         return this;

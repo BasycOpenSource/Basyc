@@ -8,14 +8,15 @@ public static class ResponseResultConverter
     public static string CreateInputOverview(IEnumerable<Parameter> parameters)
     {
         StringBuilder stringBuilder = new StringBuilder();
-        foreach (var parameter in parameters)
+        var parametersEnumerated = parameters.ToArray();
+        foreach (var parameter in parametersEnumerated)
         {
             var paramterValueString = parameter.Value is null ? "null" : parameter.Value.ToString();
             stringBuilder.Append(paramterValueString);
             stringBuilder.Append(", ");
         }
 
-        if (parameters.Any())
+        if (parametersEnumerated.Any())
         {
             stringBuilder.Remove(stringBuilder.Length - 2, 2);
         }

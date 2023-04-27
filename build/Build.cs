@@ -45,7 +45,7 @@ sealed class Build : NukeBuild, IBasycBuilds
     string IBasycBuildBase.BuildProjectName => "_build";
 
     NugetSettings IBasycBuildNugetAll.NugetSettings => NugetSettings.Create()
-        .SetSourceUrl(nugetSource)
+        .SetSourceUrl(new Uri(nugetSource))
         .SetSourceApiKey(nugetApiKey);
 
     UnitTestSettings IBasycBuildBase.UnitTestSettings => UnitTestSettings.Create()

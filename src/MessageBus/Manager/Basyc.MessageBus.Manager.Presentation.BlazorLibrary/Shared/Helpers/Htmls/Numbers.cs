@@ -1,14 +1,13 @@
 ﻿using System.Globalization;
 
-namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 
 public static partial class Html
 {
-    private static readonly NumberFormatInfo numberFormatter;
+    private static readonly NumberFormatInfo numberFormatter = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
 
     static Html()
     {
-        numberFormatter = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
         numberFormatter.NumberDecimalSeparator = ".";
     }
 

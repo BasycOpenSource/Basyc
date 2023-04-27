@@ -2,7 +2,7 @@
 @using Basyc.Diagnostics.Shared;
 <durationMapView>
 
-	@if (DurationMap is null || DurationMap.Segments.Length == 0)
+	@if (DurationMap is null || DurationMap.Segments.Count == 0)
 	{
 		@:Nothing to show
 	}

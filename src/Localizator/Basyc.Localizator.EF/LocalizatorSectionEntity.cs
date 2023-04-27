@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace Basyc.Localizator.Infrastructure.EF;
+#pragma warning disable CA1002 // Do not expose generic lists
 
 public class LocalizatorSectionEntity
 {

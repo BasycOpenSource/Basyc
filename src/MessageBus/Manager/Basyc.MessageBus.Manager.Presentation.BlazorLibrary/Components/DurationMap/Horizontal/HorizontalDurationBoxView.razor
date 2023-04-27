@@ -1,8 +1,9 @@
 ﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
 @using Microsoft.AspNetCore.Components.Web.Virtualization
+@using System.Collections.ObjectModel;
 @using Throw
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls
 @using Color = Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors.Color
 @using static Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal.LogAggregator;
 @implements IDisposable
@@ -211,7 +212,7 @@
     private const double logMaxWidthPixels = 10;
     private readonly PeriodicTimer updateUnfinishedTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
     private string width = "0rem";
-    private List<AggregatedLog> AggragatedLogs => LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
+    private ReadOnlyCollection<AggregatedLog> AggragatedLogs => LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
 
     protected override void OnInitialized()
     {

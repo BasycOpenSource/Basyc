@@ -5,7 +5,7 @@ namespace Basyc.Localizator.Abstraction;
 
 public interface ILocalizator : IStringLocalizer
 {
-    event EventHandler<LocalizatorValuesChangedArgs> ValuesChanged;
+    event EventHandler<LocalizatorValuesChangedEventArgs> ValuesChanged;
 
     CultureInfo Culture { get; }
 

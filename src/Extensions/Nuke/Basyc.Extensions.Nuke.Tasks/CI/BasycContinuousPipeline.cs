@@ -9,6 +9,4 @@ public class BasycContinuousPipeline : BasycPipeline
         : base("continuous", provider, pipelineOs, new[] { GitFlowBranchType.Feature, GitFlowBranchType.Release, GitFlowBranchType.HotFix }, Trigger.Push, targets, importSecrets, importParameters)
     {
     }
-
-
 }

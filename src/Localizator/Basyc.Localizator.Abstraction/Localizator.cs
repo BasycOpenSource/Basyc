@@ -22,7 +22,7 @@ public class Localizator : ILocalizator
         SectionUniqueName = sectionName;
     }
 
-    public event EventHandler<LocalizatorValuesChangedArgs>? ValuesChanged;
+    public event EventHandler<LocalizatorValuesChangedEventArgs>? ValuesChanged;
 
     public ILocalizator? BackupLocalizator { get; }
 
@@ -136,5 +136,5 @@ public class Localizator : ILocalizator
         return Task.CompletedTask;
     }
 
-    private void OnValuesChanged(IDictionary<string, string> newValues) => ValuesChanged?.Invoke(this, new LocalizatorValuesChangedArgs(newValues));
+    private void OnValuesChanged(IDictionary<string, string> newValues) => ValuesChanged?.Invoke(this, new LocalizatorValuesChangedEventArgs(newValues));
 }

@@ -1,4 +1,4 @@
-﻿namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html;
+﻿namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 
 #pragma warning disable CA1711
 #pragma warning disable SA1300

@@ -1,8 +1,8 @@
 ﻿namespace Basyc.Localizator.Abstraction;
 
-public class LocalizatorValuesChangedArgs : EventArgs
+public class LocalizatorValuesChangedEventArgs : EventArgs
 {
-    public LocalizatorValuesChangedArgs(IDictionary<string, string> newValues)
+    public LocalizatorValuesChangedEventArgs(IDictionary<string, string> newValues)
     {
         NewValues = newValues;
     }

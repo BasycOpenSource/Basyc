@@ -43,7 +43,7 @@ public partial class RequestItem
     {
         var newValue = (string)e.NewItems![0]!;
         var defaultValue = GetDefaultValueString(RequestItemViewModel.RequestInfo.Parameters[e.NewStartingIndex].Type);
-        if (newValue == string.Empty && newValue != defaultValue)
+        if (string.IsNullOrEmpty(newValue) && newValue != defaultValue)
         {
             //TODO Should be fixed
             //RequestItemViewModel.ParameterValues[e.NewStartingIndex] = defaultValue;

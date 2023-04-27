@@ -116,7 +116,7 @@ busManagerBuilder.RegisterMessages()
             .HandledBy((x, logger) =>
             {
                 string text = (string)x.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).First().GetValue(x).Value();
-                return text.ToLowerInvariant();
+                return text.ToUpperInvariant();
             });
     });
 
@@ -148,7 +148,7 @@ busManagerBuilder.RegisterMessages()
     .HandledBy((x, logger) =>
     {
         string? name = (string)x.First().Value.Value();
-        return name.ToLowerInvariant();
+        return name.ToUpperInvariant();
     })
     .AddMessage("Add Customer")
     .WithParametersFrom<CustomerModel>()
