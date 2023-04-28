@@ -42,8 +42,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
+  
+  <!--Connfig file for style cop anaylyzer-->
+  <ItemGroup>
+    <None Remove="$(SolutionDir)stylecop.json" />
+  </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(SolutionDir)stylecop.json"/>
   </ItemGroup>
+  
 </Project>
