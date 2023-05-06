@@ -73,12 +73,12 @@ messagePage {
 
     button {
         background-color: #D1266620;
-        border: 0.5px solid #9e184a3d;
+        /*border: 0.5px solid #9e184a3d;*/
         font-family: "Segoe UI";
         font-weight: 300;
         color: #C2BEC2;
         font-size: 16px;
-        padding: 1px 32px;
+        padding: 4px 32px;
         text-transform: lowercase;
         border-radius: 3px;
         display: flex;
@@ -105,6 +105,23 @@ messagePage {
     @extend .styleSharedDefaults;
     background-color: #0C0B10;
     color: #636986;
+
+    button {
+        background-color: #1C1D2E;
+        color: #717BA7;
+        font-family: "Segoe UI";
+        font-weight: 300;
+        font-size: 16px;
+        padding: 16px;
+        height: 40px;
+        border: 0px;
+        border-radius: 3px;
+        display: flex;
+    }
+
+    button:hover {
+        background-color: rgb(150, 187, 254, 0.22) !important;
+    }
 }
 
 

@@ -47,16 +47,27 @@
             <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />
             <BasycHeading Size="HeadingSize.H4">
                 <logHeading>
-                    Logs
+                    <logHeadingText>
+                        Logs
+                    </logHeadingText>
+                    <logHeadingCounters>
                     <BasycSpaceLine Start="SpaceLineSize.Medium" Direction="SpaceLineDirection.Vertical" Visible="false" />
                     <LogIconView LogLevel="LogLevel.Information" />
-                    @LogsInformationCount
+                    <logCountNumber>
+                        @LogsInformationCount
+                    </logCountNumber>
                     <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
                     <LogIconView LogLevel="LogLevel.Warning" />
-                    @LogsWarningCount
+                    <logCountNumber>
+                        @LogsWarningCount
+                    </logCountNumber>
                     <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
                     <LogIconView LogLevel="LogLevel.Error" />
-                    @LogsErrorCount
+                    <logCountNumber>
+                        @LogsErrorCount
+                    </logCountNumber>
+                    </logHeadingCounters>
+
                 </logHeading>
             </BasycHeading>
             <logs>
@@ -68,7 +79,7 @@
                                     <LogIconView LogLevel="log.LogLevel" />
                                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
                                     @log.Time.ToString("HH:mm:ss:fff")
-                                    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false"/>
+                                    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
                                     @log.Message
                                 </logLayout>
                             </BasycSpaceBorder>

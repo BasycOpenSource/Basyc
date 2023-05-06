@@ -6,7 +6,7 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
 <horizontalDurationMapView>
     <zoomToolBar>
-        <MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />
+        @*<MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />*@
         <button @onclick="@OnZoomInClick">+</button>
         <button @onclick="@OnZoomOutClick">-</button>
         <button @onclick="@OnZoomFitClick">fit</button>
