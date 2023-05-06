@@ -4,26 +4,26 @@ public class TemporaryFileTests : IDisposable
     private readonly List<string> filesToCleanAfterTest = new();
 
     [Fact]
-    public void GetNewName_Should_GiveUniqueName()
+    public void GetNew_Should_GiveUniqueName()
     {
-        string[] names = Enumerable.Range(0, 10).Select(x => TemporaryFile.GetNewName()).ToArray();
+        string[] names = Enumerable.Range(0, 10).Select(x => TemporaryFile.GetNew()).ToArray();
         names.Should().OnlyHaveUniqueItems();
     }
 
     [Fact]
-    public void GetNewName_Should_GiveUniqueName_With_Selected_FriendlyName()
+    public void GetNew_Should_GiveUniqueName_With_Selected_FriendlyName()
     {
         string friendlyName = "friendlyname";
-        string[] names = Enumerable.Range(0, 10).Select(x => TemporaryFile.GetNewName(nameFriendlyPart: friendlyName)).ToArray();
+        string[] names = Enumerable.Range(0, 10).Select(x => TemporaryFile.GetNew(nameFriendlyPart: friendlyName)).ToArray();
         names.Should().OnlyHaveUniqueItems();
         names.Should().AllSatisfy(x => x.Should().Contain(friendlyName));
     }
 
     [Fact]
-    public void GetNewName_Should_GiveUniqueName_With_Selected_Extension()
+    public void GetNew_Should_GiveUniqueName_With_Selected_Extension()
     {
         string extension = "tmp2";
-        string[] names = Enumerable.Range(0, 10).Select(x => TemporaryFile.GetNewName(fileExtension: extension)).ToArray();
+        string[] names = Enumerable.Range(0, 10).Select(x => TemporaryFile.GetNew(fileExtension: extension)).ToArray();
         names.Should().OnlyHaveUniqueItems();
         names.Should().AllSatisfy(x => x.Should().EndWith($".{extension}"));
     }

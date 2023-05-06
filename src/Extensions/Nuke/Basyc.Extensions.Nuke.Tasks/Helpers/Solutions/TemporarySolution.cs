@@ -7,7 +7,6 @@ using static Nuke.Common.ProjectModel.ProjectModelTasks;
 
 namespace Basyc.Extensions.Nuke.Tasks.Helpers.Solutions;
 
-#pragma warning disable CA1815 // Override equals and operator equals on value types
 [ExcludeFromCodeCoverage]
 public readonly struct TemporarySolution : IDisposable
 {
@@ -23,7 +22,7 @@ public readonly struct TemporarySolution : IDisposable
     /// </summary>
     public static TemporarySolution CreateNew(Solution solution, string buildProjectName)
     {
-        string uniqueName = TemporaryFile.GetNewName("temporary.generated", "sln");
+        string uniqueName = TemporaryFile.GetNew("temporary.generated", "sln");
         var newSolution = CreateSolution($"{uniqueName}", new[] { solution }, x => x == solution ? null : x.Name);
         newSolution.RemoveProject(newSolution.GetProject(buildProjectName));
         newSolution.Save();
@@ -55,9 +54,9 @@ public readonly struct TemporarySolution : IDisposable
     public static TemporarySolution CreateNew(Solution solution, string? buildProjectName, IEnumerable<string> projectsPaths)
     {
         var projectsPathsSet = projectsPaths.ToHashSet();
-        string uniqueName = TemporaryFile.GetNewName("temporary.generated", "sln");
+        string temporarySolutionFilePath = TemporaryFile.GetNew("temporary.generated", "sln", solution.Directory);
 
-        var newSolution = CreateSolution($"{uniqueName}", new[] { solution }, x => x == solution ? null : x.Name);
+        var newSolution = CreateSolution($"{temporarySolutionFilePath}", new[] { solution }, x => x == solution ? null : x.Name);
 
         newSolution.AllProjects
             .Where(x => projectsPathsSet.Contains(x.Path.ToString().NormalizePath()) is false)
