@@ -3,21 +3,22 @@ using Basyc.Diagnostics.Shared.Logging;
 
 namespace Basyc.Diagnostics.SignalR.Shared.DTOs;
 
+#pragma warning disable CA1819 // Properties should not return arrays
 public record ChangesSignalRDto(LogEntrySignalRDto[] Logs, ActivityStartSignalRDto[] ActivityStarts, ActivityEndSignalRDto[] ActivityEnds)
 {
-	public static DiagnosticChanges FromDto(ChangesSignalRDto dto)
-	{
-		var logs = dto.Logs.Select(x => LogEntrySignalRDto.ToEntry(x)).ToArray();
-		var starts = dto.ActivityStarts.Select(x => ActivityStartSignalRDto.ToEntry(x)).ToArray();
-		var ends = dto.ActivityEnds.Select(x => ActivityEndSignalRDto.ToEntry(x)).ToArray();
-		return new DiagnosticChanges(logs, starts, ends);
-	}
+    public static DiagnosticChanges FromDto(ChangesSignalRDto dto)
+    {
+        var logs = dto.Logs.Select(LogEntrySignalRDto.ToEntry).ToArray();
+        var starts = dto.ActivityStarts.Select(ActivityStartSignalRDto.ToEntry).ToArray();
+        var ends = dto.ActivityEnds.Select(ActivityEndSignalRDto.ToEntry).ToArray();
+        return new DiagnosticChanges(logs, starts, ends);
+    }
 
-	public static ChangesSignalRDto ToDto(DiagnosticChanges model)
-	{
-		var logDtos = model.Logs.Select(x => LogEntrySignalRDto.FromEntry(x)).ToArray();
-		var activityStartDtos = model.ActivityStarts.Select(x => ActivityStartSignalRDto.FromEntry(x)).ToArray();
-		var activityEndDtos = model.ActivityEnds.Select(x => ActivityEndSignalRDto.FromEntry(x)).ToArray();
-		return new ChangesSignalRDto(logDtos, activityStartDtos, activityEndDtos);
-	}
+    public static ChangesSignalRDto ToDto(DiagnosticChanges model)
+    {
+        var logDtos = model.Logs.Select(LogEntrySignalRDto.FromEntry).ToArray();
+        var activityStartDtos = model.ActivityStarts.Select(ActivityStartSignalRDto.FromEntry).ToArray();
+        var activityEndDtos = model.ActivityEnds.Select(ActivityEndSignalRDto.FromEntry).ToArray();
+        return new ChangesSignalRDto(logDtos, activityStartDtos, activityEndDtos);
+    }
 }

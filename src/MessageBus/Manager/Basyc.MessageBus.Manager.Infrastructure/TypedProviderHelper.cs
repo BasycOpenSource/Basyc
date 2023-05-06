@@ -6,22 +6,17 @@ namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public static class TypedProviderHelper
 {
-	public static List<ParameterInfo> HarvestParameterInfos(Type requestType, ITypedParameterNameFormatter parameterNameFormatter)
-	{
-		return HarvestParameterInfos(requestType, type => parameterNameFormatter.GetCustomTypeName(type));
-	}
+    public static ParameterInfo[] HarvestParameterInfos(Type requestType, ITypedParameterNameFormatter parameterNameFormatter) => HarvestParameterInfos(requestType, parameterNameFormatter.GetCustomTypeName);
 
-	public static List<ParameterInfo> HarvestParameterInfos(Type requestType, Func<Type, string> parameterDisplayNameFormattter)
-	{
-		return requestType.GetConstructors()
-			.First()
-			.GetParameters()
-			.Select(paramInfo =>
-			{
-				paramInfo.Name.ThrowIfNull();
-				return new ParameterInfo(paramInfo.ParameterType, paramInfo.Name,
-					parameterDisplayNameFormattter.Invoke(paramInfo.ParameterType));
-			})
-			.ToList();
-	}
+    public static ParameterInfo[] HarvestParameterInfos(Type requestType, Func<Type, string> parameterDisplayNameFormattter) => requestType.GetConstructors()
+            .First()
+            .GetParameters()
+            .Select(paramInfo =>
+            {
+                paramInfo.Name.ThrowIfNull();
+                return new ParameterInfo(paramInfo.ParameterType,
+                    paramInfo.Name,
+                    parameterDisplayNameFormattter.Invoke(paramInfo.ParameterType));
+            })
+            .ToArray();
 }

@@ -4,13 +4,14 @@ namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
 
 public class DuplexPipeMock : IDuplexPipe
 {
-	public readonly Pipe pipe;
+    public DuplexPipeMock(Pipe pipe)
+    {
+        Pipe = pipe;
+    }
 
-	public DuplexPipeMock(Pipe pipe)
-	{
-		this.pipe = pipe;
-	}
-	public PipeReader Input => pipe.Reader;
+    public Pipe Pipe { get; init; }
 
-	public PipeWriter Output => pipe.Writer;
+    public PipeReader Input => Pipe.Reader;
+
+    public PipeWriter Output => Pipe.Writer;
 }

@@ -2,5 +2,5 @@
 
 public interface IMethodsServerCanCallText
 {
-	public void ReceiveText(string text);
+    public void ReceiveText(string text);
 }

@@ -5,22 +5,25 @@ using Basyc.MessageBus.HttpProxy.Shared.SignalR;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+#pragma warning disable CA1054 // URI-like parameters should not be strings
+
 public static class BusClientSetupProviderStageProxySignalRExtensions
 {
-	public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent, string signalRServerUri,
-		string hubPattern = SignalRConstants.ProxyClientHubPattern)
-	{
-		parent.services.AddBasycSerialization()
-			.SelectProtobufNet();
-		parent.services.AddSingleton<IObjectMessageBusClient, SignalRProxyObjectMessageBusClient>();
-		parent.services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
+    public static BusClientUseDiagnosticsStage SelectSignalRProxyProvider(this BusClientSetupProviderStage parent,
+        string signalRServerUri,
+        string hubPattern = SignalRConstants.ProxyClientHubPattern)
+    {
+        parent.Services.AddBasycSerialization()
+            .SelectProtobufNet();
+        parent.Services.AddSingleton<IObjectMessageBusClient, SignalRProxyObjectMessageBusClient>();
+        parent.Services.AddSingleton<ITypedMessageBusClient, TypedFromObjectMessageBusClient>();
 
-		parent.services.Configure<SignalROptions>(options =>
-		{
-			options.SignalRServerUri = signalRServerUri;
-			options.ProxyClientHubPattern = hubPattern;
-		});
+        parent.Services.Configure<SignalROptions>(options =>
+        {
+            options.SignalRServerUri = signalRServerUri;
+            options.ProxyClientHubPattern = hubPattern;
+        });
 
-		return new BusClientUseDiagnosticsStage(parent.services);
-	}
+        return new BusClientUseDiagnosticsStage(parent.Services);
+    }
 }

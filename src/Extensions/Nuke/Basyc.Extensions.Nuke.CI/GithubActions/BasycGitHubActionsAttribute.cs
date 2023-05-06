@@ -1,34 +1,35 @@
 ﻿using Nuke.Common.CI.GitHubActions;
-using Nuke.Common.CI.GitHubActions.Configuration;
-using Nuke.Common.Execution;
 using Nuke.Common.Utilities;
 
 namespace Basyc.Extensions.Nuke.CI.GithubActions;
 
+#pragma warning disable CA1813 // Avoid unsealed attributes
 public class BasycGitHubActionsAttribute : GitHubActionsAttribute
 {
-	public BasycGitHubActionsAttribute(string name, GitHubActionsImage image, params GitHubActionsImage[] images) : base(name, image, images)
-	{
-	}
+    public BasycGitHubActionsAttribute(string name, GitHubActionsImage image, params GitHubActionsImage[] images) : base(name, image, images)
+    {
+        Name = name;
+        Image = image;
+        Images = images;
+    }
 
-	public string[] ImportParameters { get; set; } = Array.Empty<string>();
+    public string[] ImportParameters { get; set; } = Array.Empty<string>();
 
-	protected override IEnumerable<(string Key, string Value)> GetImports()
-	{
-		foreach (var valueTuple in base.GetImports())
-		{
-			yield return valueTuple;
-		}
+    public string Name { get; }
 
-		foreach (var param in ImportParameters)
-		{
-			yield return (param, GetParameterValue(param));
-		}
+    public GitHubActionsImage Image { get; }
 
-	}
+    public GitHubActionsImage[] Images { get; }
 
-	private static string GetParameterValue(string parameter)
-	{
-		return $"${{{{ vars.{parameter.SplitCamelHumpsWithKnownWords().JoinUnderscore().ToUpperInvariant()} }}}}";
-	}
+    protected override IEnumerable<(string Key, string Value)> GetImports()
+    {
+        foreach (var valueTuple in base.GetImports())
+            yield return valueTuple;
+
+        foreach (string param in ImportParameters)
+            yield return (param, GetParameterValue(param));
+    }
+
+    private static string GetParameterValue(string parameter) =>
+        $"${{{{ vars.{parameter.SplitCamelHumpsWithKnownWords().JoinUnderscore().ToUpperInvariant()} }}}}";
 }

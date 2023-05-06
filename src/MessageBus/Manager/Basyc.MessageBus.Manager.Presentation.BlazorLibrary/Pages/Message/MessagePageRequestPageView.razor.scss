@@ -1,0 +1,85 @@
+﻿messagePageRequestPageView {
+    display: block;
+    flex: 1;
+}
+
+infoRow {
+    display: flex;
+    flex-direction: row;
+}
+
+infoSection {
+    display: flex;
+    flex-direction: column;
+}
+
+infoTable {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+labels {
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+}
+
+label {
+    color: #55555E;
+    font-size: 16px
+}
+
+values {
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+}
+
+value {
+    display: block;
+    color: #AFAFAF;
+    font-size: 16px
+}
+
+inputBox {
+    display: block;
+    flex: 1;
+    background-color: #0F0F15;
+    padding: 16px;
+}
+
+arrow {
+    display: flex;
+    width: 64px;
+    align-items: center;
+    justify-content: center;
+    color: #14161E;
+    font-weight: bolder;
+}
+::deep .mud-tabs{
+    height: 100%;
+}
+
+::deep .mud-tabs-panels {
+    height: 100%;
+}
+
+::deep .mud-tabs-toolbar {
+    background-color: transparent !important;
+    box-shadow: 0 0 0 0 transparent;
+}
+
+::deep .mud-tabs-toolbar-wrapper {
+    border-bottom: 1px solid #1E2025;
+}
+
+::deep .mud-tab.mud-tab-active {
+    color: #A19DA1;
+    background-color: #150914;
+}
+
+::deep .mud-tab-slider.mud-tab-slider-horizontal {
+    height: 1px;
+    background-color: #5F1950;
+}

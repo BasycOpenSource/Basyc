@@ -7,12 +7,9 @@ namespace Basyc.MessageBus.Broker.NetMQ.Building;
 
 public class SelectDiagnosticStage : BuilderStageBase
 {
-	public SelectDiagnosticStage(IServiceCollection services) : base(services)
-	{
-	}
+    public SelectDiagnosticStage(IServiceCollection services) : base(services)
+    {
+    }
 
-	public void NoDiagnostics()
-	{
-		services.TryAddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
-	}
+    public void NoDiagnostics() => Services.TryAddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
 }

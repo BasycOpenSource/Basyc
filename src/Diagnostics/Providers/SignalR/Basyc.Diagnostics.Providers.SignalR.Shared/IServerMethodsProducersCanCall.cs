@@ -4,5 +4,5 @@ namespace Basyc.Diagnostics.SignalR.Shared;
 
 public interface IServerMethodsProducersCanCall
 {
-	Task ReceiveChangesFromProducer(ChangesSignalRDto changesDto);
+    Task ReceiveChangesFromProducer(ChangesSignalRDto changesDto);
 }

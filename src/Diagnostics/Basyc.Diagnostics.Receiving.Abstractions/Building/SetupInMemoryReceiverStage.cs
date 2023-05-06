@@ -5,7 +5,7 @@ namespace Basyc.Diagnostics.Receiving.Abstractions.Building;
 
 public class SetupInMemoryReceiverStage : BuilderStageBase
 {
-	public SetupInMemoryReceiverStage(IServiceCollection services) : base(services)
-	{
-	}
+    public SetupInMemoryReceiverStage(IServiceCollection services) : base(services)
+    {
+    }
 }

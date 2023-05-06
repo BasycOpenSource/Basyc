@@ -6,15 +6,12 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.Interface;
 
 public class SetupGroupStage : BuilderStageBase
 {
-	private readonly Assembly[] assemblies;
+    private readonly Assembly[] assemblies;
 
-	public SetupGroupStage(IServiceCollection services, Assembly[] assemblies) : base(services)
-	{
-		this.assemblies = assemblies;
-	}
+    public SetupGroupStage(IServiceCollection services, Assembly[] assemblies) : base(services)
+    {
+        this.assemblies = assemblies;
+    }
 
-	public RegisterMessagesFromAssemblyStage InGroup(string groupName)
-	{
-		return new RegisterMessagesFromAssemblyStage(services, groupName, assemblies);
-	}
+    public RegisterMessagesFromAssemblyStage InGroup(string groupName) => new(Services, groupName, assemblies);
 }

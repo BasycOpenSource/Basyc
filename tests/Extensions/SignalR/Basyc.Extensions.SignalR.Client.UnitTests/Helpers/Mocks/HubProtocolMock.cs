@@ -8,45 +8,39 @@ namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
 
 public class HubProtocolMock : IHubProtocol
 {
-	private Queue<HubProtocolMockMessage> mockMessages { get; set; } = new();
+    public HubProtocolMock()
+    {
+    }
 
-	public HubProtocolMock()
-	{
-	}
-	public string Name => nameof(HubProtocolMock);
+    public string Name => nameof(HubProtocolMock);
 
-	public int Version => 1;
+    public int Version => 1;
 
-	public TransferFormat TransferFormat => throw new NotImplementedException();
+    public TransferFormat TransferFormat => throw new NotImplementedException();
 
-	public ReadOnlyMemory<byte> GetMessageBytes(HubMessage message)
-	{
-		throw new NotImplementedException();
-	}
+    private Queue<HubProtocolMockMessage> MockMessages { get; set; } = new();
 
-	public bool IsVersionSupported(int version) => true;
+    public ReadOnlyMemory<byte> GetMessageBytes(HubMessage message) => throw new NotImplementedException();
 
-	public bool TryParseMessage(ref ReadOnlySequence<byte> input, IInvocationBinder binder, [NotNullWhen(true)] out HubMessage? message)
-	{
-		if (mockMessages.TryDequeue(out var getterMessage) is false)
-		{
-			message = null;
-			return false;
-		}
+    public bool IsVersionSupported(int version) => true;
 
-		//binder.GetParameterTypes()
-		InvocationMessage? invocationMessage = new InvocationMessage(getterMessage.Target, getterMessage.Arguments);
-		message = invocationMessage;
-		return true;
-	}
+    public bool TryParseMessage(ref ReadOnlySequence<byte> input, IInvocationBinder binder, [NotNullWhen(true)] out HubMessage? message)
+    {
+        if (MockMessages.TryDequeue(out var getterMessage) is false)
+        {
+            message = null;
+            return false;
+        }
 
-	public void WriteMessage(HubMessage message, IBufferWriter<byte> output)
-	{
+        //binder.GetParameterTypes()
+        InvocationMessage? invocationMessage = new InvocationMessage(getterMessage.Target, getterMessage.Arguments);
+        message = invocationMessage;
+        return true;
+    }
 
-	}
+    public void WriteMessage(HubMessage message, IBufferWriter<byte> output)
+    {
+    }
 
-	public void AddReceivingMessage(HubProtocolMockMessage message)
-	{
-		mockMessages.Enqueue(message);
-	}
+    public void AddReceivingMessage(HubProtocolMockMessage message) => MockMessages.Enqueue(message);
 }

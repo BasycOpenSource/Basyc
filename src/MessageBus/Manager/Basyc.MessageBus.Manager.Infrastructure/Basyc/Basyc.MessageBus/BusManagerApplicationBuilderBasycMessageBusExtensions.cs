@@ -4,9 +4,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class BusManagerApplicationBuilderBasycMessageBusExtensions
 {
-	public static SetupBasycDiagnosticsReceiverMapper AddRequestHandler(this BusManagerApplicationBuilder parent)
-	{
-		// parent.services.TryAddSingleton<IRequester, BasycTypedMessageBusRequester>();
-		return new SetupBasycDiagnosticsReceiverMapper(parent.services);
-	}
+    public static SetupBasycDiagnosticsReceiverMapper AddRequestHandler(this BusManagerApplicationBuilder parent) =>
+        // parent.services.TryAddSingleton<IRequester, BasycTypedMessageBusRequester>();
+        new(parent.Services);
 }

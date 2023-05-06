@@ -6,59 +6,50 @@ using System.IO.Pipelines;
 using System.Net;
 
 namespace Basyc.Extensions.SignalR.Client.Tests.Mocks;
+#pragma warning disable SA1402
+#pragma warning disable SA1204
+#pragma warning disable CA1724
 
 public class HubConnectionMockBuilder : IHubConnectionBuilder
 {
-	public HubConnectionMockBuilder()
-	{
+    public HubConnectionMockBuilder()
+    {
+    }
 
-	}
-	public IServiceCollection Services => throw new NotImplementedException();
+    public IServiceCollection Services => throw new NotImplementedException();
 
-	public HubConnection Build()
-	{
-		return Create();
-	}
+    public static HubConnectionMock Create()
+    {
+        var pipe = new Pipe();
+        var connectionFactory = new ConnectionFactoryMock(pipe);
+        var hubProtocol = new HubProtocolMock();
+        var endpoint = new IPEndPoint(0, 0);
+        var serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging(x => x.AddDebug());
+        var serviceProvider = serviceCollection.BuildServiceProvider();
+        var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+        var retryPolicyMock = new Mock<IRetryPolicy>();
+        var hubConnectionMock = new HubConnectionMock(pipe, connectionFactory, hubProtocol, endpoint, serviceProvider, loggerFactory, retryPolicyMock.Object);
+        hubConnectionMock.ServerTimeout = TimeSpan.FromSeconds(1000);
+        hubConnectionMock.HandshakeTimeout = TimeSpan.FromSeconds(1000);
+        hubConnectionMock.KeepAliveInterval = TimeSpan.FromSeconds(1000);
+        hubConnectionMock.Closed += HubConnection_Closed;
+        hubConnectionMock.Reconnecting += HubConnection_Reconnecting;
+        hubConnectionMock.Reconnected += HubConnection_Reconnected;
 
-	public HubConnectionMock BuildAsMock()
-	{
-		return Create();
-	}
+        return hubConnectionMock;
+    }
 
-	public static HubConnectionMock Create()
-	{
-		var pipe = new Pipe();
-		var connectionFactory = new ConnectionFactoryMock(pipe);
-		var hubProtocol = new HubProtocolMock();
-		var endpoint = new IPEndPoint(0, 0);
-		var serviceCollction = new ServiceCollection();
-		serviceCollction.AddLogging(x => x.AddDebug());
-		var serviceProvider = serviceCollction.BuildServiceProvider();
-		var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-		var retryPolicyMock = new Mock<IRetryPolicy>();
-		var hubConnectionMock = new HubConnectionMock(pipe, connectionFactory, hubProtocol, endpoint, serviceProvider, loggerFactory, retryPolicyMock.Object);
-		hubConnectionMock.ServerTimeout = TimeSpan.FromSeconds(1000);
-		hubConnectionMock.HandshakeTimeout = TimeSpan.FromSeconds(1000);
-		hubConnectionMock.KeepAliveInterval = TimeSpan.FromSeconds(1000);
-		hubConnectionMock.Closed += HubConnection_Closed;
-		hubConnectionMock.Reconnecting += HubConnection_Reconnecting;
-		hubConnectionMock.Reconnected += HubConnection_Reconnected;
+    public HubConnection Build() => Create();
 
-		return hubConnectionMock;
-	}
+    private static Task HubConnection_Reconnected(string? arg) => Task.CompletedTask;
 
-	private static Task HubConnection_Reconnected(string? arg)
-	{
-		return Task.CompletedTask;
-	}
+    private static Task HubConnection_Reconnecting(Exception? arg) => Task.CompletedTask;
 
-	private static Task HubConnection_Reconnecting(Exception? arg)
-	{
-		return Task.CompletedTask;
-	}
+    private static Task HubConnection_Closed(Exception? arg) => Task.CompletedTask;
+}
 
-	private static Task HubConnection_Closed(Exception? arg)
-	{
-		return Task.CompletedTask;
-	}
+public static class Extensions
+{
+    public static HubConnectionMock BuildAsMock(this HubConnectionMockBuilder builder) => HubConnectionMockBuilder.Create();
 }

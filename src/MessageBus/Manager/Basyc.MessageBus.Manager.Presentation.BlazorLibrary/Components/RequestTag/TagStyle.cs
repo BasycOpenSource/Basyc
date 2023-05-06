@@ -2,6 +2,6 @@
 
 public enum TagStyle
 {
-	Word,
-	Icon
+    Word,
+    Icon
 }

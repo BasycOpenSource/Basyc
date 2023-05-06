@@ -7,207 +7,199 @@ namespace Basyc.Serialization.ProtobufNet;
 
 public class ProtobufByteSerializer : ITypedByteSerializer
 {
-	public static ProtobufByteSerializer Singlenton = new();
-	private static readonly Dictionary<Type, PreparedTypeMetadata> knownTypes = new();
-	private static PreparedTypeMetadata PrepareSerializer(Type typeToPrepare)
-	{
-		if (knownTypes.TryGetValue(typeToPrepare, out var metadata))
-		{
-			return metadata;
-		}
+    public static readonly ProtobufByteSerializer Singlenton = new();
 
-		var publicProperties = typeToPrepare.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-		bool hasZeroProperties = publicProperties.Length == 0;
-		var newMetadata = new PreparedTypeMetadata(hasZeroProperties, publicProperties);
-		knownTypes.Add(typeToPrepare, newMetadata);
+    private static readonly Dictionary<Type, PreparedTypeMetadata> knownTypes = new();
 
-		bool couldBeSerializedByDefault = RuntimeTypeModel.Default.CanSerialize(typeToPrepare);
-		if (couldBeSerializedByDefault is false)
-		{
-			FixPotentialMissingPropertiesInCtor(typeToPrepare);
+    public byte[] Serialize(object? deserializedObject, Type dataType)
+    {
+        var typeMetadata = PrepareSerializer(dataType);
 
-			if (RuntimeTypeModel.Default.CanSerialize(typeToPrepare) is false)
-			{
-				if (TryFixWithSkippingEmptyCtor(typeToPrepare) is false)
-				{
+        if (deserializedObject == null)
+        {
+            return Array.Empty<byte>();
+        }
 
-					RuntimeTypeModel.Default.Add(typeToPrepare);
-					if (RuntimeTypeModel.Default.CanSerialize(typeToPrepare) is false)
-					{
-						throw new Exception($"Could not prepare type '{typeToPrepare.Name}'");
-					}
-				}
-			}
-		}
+        if (typeMetadata.HasZeroProperties)
+        {
+            return Array.Empty<byte>();
+        }
 
-		return newMetadata;
-	}
+        using var stream = new MemoryStream();
+        Serializer.Serialize(stream, deserializedObject);
+        return stream.ToArray();
+    }
 
-	/// <summary>
-	/// Workaround for scenarios when class has empty ctor. Returns false when fix cant be applied.
-	/// </summary>
-	/// <param name="typeToPrepare"></param>
-	/// <returns></returns>
-	private static bool TryFixWithSkippingEmptyCtor(Type typeToPrepare)
-	{
-		if (IsTypeHavingExtraEmptyCtorProblem(typeToPrepare))
-		{
-			PrepareButSkipCtor(typeToPrepare);
-		}
-		else
-		{
-			//Problem could be even nested
+    public object? Deserialize(byte[] serializedInput, Type dataType)
+    {
+        PrepareSerializer(dataType);
 
-			var properties = typeToPrepare.GetProperties();
-			foreach (var property in properties)
-			{
-				bool canSeriProperty = RuntimeTypeModel.Default.CanSerialize(property.PropertyType);
-				if (canSeriProperty)
-				{
-					continue;
-				}
+        if (serializedInput == null)
+        {
+            return dataType.GetDefaultValue();
+        }
 
-				//PrepareSerializer(property.PropertyType);
-				TryFixWithSkippingEmptyCtor(property.PropertyType);
-			}
-		}
+        var stream = new MemoryStream(serializedInput);
+        stream.Write(serializedInput, 0, serializedInput.Length);
+        stream.Seek(0, SeekOrigin.Begin);
 
-		return RuntimeTypeModel.Default.CanSerialize(typeToPrepare);
-	}
+        object result = Serializer.Deserialize(dataType, stream);
+        return result;
+    }
 
-	private static void PrepareButSkipCtor(Type typeToPrepare)
-	{
-		var serializationMetadata = RuntimeTypeModel.Default.Add(typeToPrepare);
-		serializationMetadata.UseConstructor = false;
-		foreach (var property in typeToPrepare.GetProperties())
-		{
-			serializationMetadata.Add(property.Name);
-		}
-	}
+    public bool TrySerialize<T>(T deserializedObject, out byte[]? serializedObject, out SerializationFailure? error)
+    {
+        var thisCasted = (ITypedByteSerializer)this;
+        return thisCasted.TrySerialize(deserializedObject, typeof(T), out serializedObject, out error);
+    }
 
-	private static bool IsTypeHavingExtraEmptyCtorProblem(Type type)
-	{
-		var ctors = type.GetConstructors();
+    public bool TryDeserialize<T>(byte[] serializedObject, out T? deserializedObject, out SerializationFailure? error)
+    {
+        var thisCasted = (ITypedByteSerializer)this;
+        bool wasSuccesful = thisCasted.TryDeserialize(serializedObject, typeof(T), out object? inputObject, out error);
+        deserializedObject = (T?)inputObject;
+        return wasSuccesful;
+    }
 
-		if (ctors.Length <= 1)
-		{
-			return false;
-		}
+    public byte[] Serialize<T>(object? deserializedObject) => Serialize(deserializedObject, typeof(T));
 
-		//Must contain empty ctor to have the problem
-		if (ctors.FirstOrDefault(x => x.GetParameters().Length != 0) is null)
-		{
-			return false;
-		}
+    public object? Deserialize<T>(byte[] serializedObject) => Deserialize(serializedObject, typeof(T));
 
-		//Must contain ctor with all properties
-		if (ctors.Any(x => x.GetParameters().Length == type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Length) is false)
-		{
-			return false;
-		}
+    private static PreparedTypeMetadata PrepareSerializer(Type typeToPrepare)
+    {
+        if (knownTypes.TryGetValue(typeToPrepare, out var metadata))
+        {
+            return metadata;
+        }
 
-		return true;
-	}
+        var publicProperties = typeToPrepare.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        bool hasZeroProperties = publicProperties.Length == 0;
+        var newMetadata = new PreparedTypeMetadata(hasZeroProperties, publicProperties);
+        knownTypes.Add(typeToPrepare, newMetadata);
 
-	private static bool IsTypeMissingPropertiesInCtor(Type type)
-	{
-		var publicProperties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-		if (publicProperties.Length is 0)
-		{
-			return false;
-		}
+        bool couldBeSerializedByDefault = RuntimeTypeModel.Default.CanSerialize(typeToPrepare);
+        if (couldBeSerializedByDefault is false)
+        {
+            FixPotentialMissingPropertiesInCtor(typeToPrepare);
 
-		var notEmptyCtors = type.GetConstructors().Where(x => x.GetParameters().Length > 0);
-		if (notEmptyCtors.Any(x => x.GetParameters().Length == publicProperties.Length) is false)
-		{
-			return true;
-		}
+            if (RuntimeTypeModel.Default.CanSerialize(typeToPrepare) is false)
+            {
+                if (TryFixWithSkippingEmptyCtor(typeToPrepare) is false)
+                {
+                    RuntimeTypeModel.Default.Add(typeToPrepare);
+                    if (RuntimeTypeModel.Default.CanSerialize(typeToPrepare) is false)
+                    {
+                        throw new InvalidOperationException($"Could not prepare type '{typeToPrepare.Name}'");
+                    }
+                }
+            }
+        }
 
-		return false;
-	}
+        return newMetadata;
+    }
 
-	private static bool FixPotentialMissingPropertiesInCtor(Type type)
-	{
-		bool hadProblem = false;
-		if (IsTypeMissingPropertiesInCtor(type))
-		{
-			PrepareButSkipCtor(type);
-			hadProblem = true;
-		}
-		else
-		{
-			//Problem can be nested
-			var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-			foreach (var property in properties)
-			{
-				if (FixPotentialMissingPropertiesInCtor(property.PropertyType) is true)
-				{
-					hadProblem = true;
-				}
-			}
-		}
+    /// <summary>
+    /// Workaround for scenarios when class has empty ctor. Returns false when fix cant be applied.
+    /// </summary>
+    private static bool TryFixWithSkippingEmptyCtor(Type typeToPrepare)
+    {
+        if (IsTypeHavingExtraEmptyCtorProblem(typeToPrepare))
+        {
+            PrepareButSkipCtor(typeToPrepare);
+        }
+        else
+        {
+            //Problem could be even nested
 
-		return hadProblem;
-	}
+            var properties = typeToPrepare.GetProperties();
+            foreach (var property in properties)
+            {
+                bool canSeriProperty = RuntimeTypeModel.Default.CanSerialize(property.PropertyType);
+                if (canSeriProperty)
+                {
+                    continue;
+                }
 
-	public byte[] Serialize(object? input, Type dataType)
-	{
-		var typeMetadata = PrepareSerializer(dataType);
+                //PrepareSerializer(property.PropertyType);
+                TryFixWithSkippingEmptyCtor(property.PropertyType);
+            }
+        }
 
-		if (input == null)
-		{
-			return new byte[0];
-		}
+        return RuntimeTypeModel.Default.CanSerialize(typeToPrepare);
+    }
 
-		if (typeMetadata.HasZeroProperties)
-		{
-			return new byte[0];
-		}
+    private static void PrepareButSkipCtor(Type typeToPrepare)
+    {
+        var serializationMetadata = RuntimeTypeModel.Default.Add(typeToPrepare);
+        serializationMetadata.UseConstructor = false;
+        foreach (var property in typeToPrepare.GetProperties())
+        {
+            serializationMetadata.Add(property.Name);
+        }
+    }
 
-		using var stream = new MemoryStream();
-		Serializer.Serialize(stream, input);
-		return stream.ToArray();
-	}
+    private static bool IsTypeHavingExtraEmptyCtorProblem(Type type)
+    {
+        var ctors = type.GetConstructors();
 
-	public object? Deserialize(byte[] input, Type dataType)
-	{
-		PrepareSerializer(dataType);
+        if (ctors.Length <= 1)
+        {
+            return false;
+        }
 
-		if (input == null)
-		{
-			return dataType.GetDefaultValue();
-		}
+        //Must contain empty ctor to have the problem
+        if (ctors.FirstOrDefault(x => x.GetParameters().Length != 0) is null)
+        {
+            return false;
+        }
 
-		var stream = new MemoryStream(input);
-		stream.Write(input, 0, input.Length);
-		stream.Seek(0, SeekOrigin.Begin);
+        //Must contain ctor with all properties
+        if (ctors.Any(x => x.GetParameters().Length == type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Length) is false)
+        {
+            return false;
+        }
 
-		object result = Serializer.Deserialize(dataType, stream);
-		return result;
-	}
+        return true;
+    }
 
-	public bool TrySerialize<T>(T input, out byte[]? output, out SerializationFailure? error)
-	{
-		var thisCasted = (ITypedByteSerializer)this;
-		return thisCasted.TrySerialize(input, typeof(T), out output, out error);
-	}
+    private static bool IsTypeMissingPropertiesInCtor(Type type)
+    {
+        var publicProperties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        if (publicProperties.Length is 0)
+        {
+            return false;
+        }
 
-	public bool TryDeserialize<T>(byte[] serializedInput, out T? input, out SerializationFailure? error)
-	{
-		var thisCasted = (ITypedByteSerializer)this;
-		bool wasSuccesful = thisCasted.TryDeserialize(serializedInput, typeof(T), out object? inputObject, out error);
-		input = (T?)inputObject;
-		return wasSuccesful;
+        var notEmptyCtors = type.GetConstructors().Where(x => x.GetParameters().Length > 0);
+        if (notEmptyCtors.Any(x => x.GetParameters().Length == publicProperties.Length) is false)
+        {
+            return true;
+        }
 
-	}
+        return false;
+    }
 
-	public byte[] Serialize<T>(object? deserializedObject)
-	{
-		return Serialize(deserializedObject, typeof(T));
-	}
+    private static bool FixPotentialMissingPropertiesInCtor(Type type)
+    {
+        bool hadProblem = false;
+        if (IsTypeMissingPropertiesInCtor(type))
+        {
+            PrepareButSkipCtor(type);
+            hadProblem = true;
+        }
+        else
+        {
+            //Problem can be nested
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (var property in properties)
+            {
+                if (FixPotentialMissingPropertiesInCtor(property.PropertyType) is true)
+                {
+                    hadProblem = true;
+                }
+            }
+        }
 
-	public object? Deserialize<T>(byte[] serializedObject)
-	{
-		return Deserialize(serializedObject, typeof(T));
-	}
+        return hadProblem;
+    }
 }

@@ -1,18 +1,12 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
-using System.Collections.Generic;
+﻿using Basyc.MessageBus.Manager.Application.Building;
 
 namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public class RequesterSelectorOptions
 {
-	private readonly Dictionary<RequestInfo, string> requesterNameToRequestInfoMap = new();
-	public void AssignRequester(RequestInfo requestInfo, string requesterUniqueName)
-	{
-		requesterNameToRequestInfoMap.Add(requestInfo, requesterUniqueName);
-	}
+    private readonly Dictionary<MessageInfo, string> requesterNameToRequestInfoMap = new();
 
-	public Dictionary<RequestInfo, string> ResolveRequesterMap()
-	{
-		return requesterNameToRequestInfoMap;
-	}
+    public void AssignRequester(MessageInfo requestInfo, string requesterUniqueName) => requesterNameToRequestInfoMap.Add(requestInfo, requesterUniqueName);
+
+    public Dictionary<MessageInfo, string> ResolveRequesterMap() => requesterNameToRequestInfoMap;
 }

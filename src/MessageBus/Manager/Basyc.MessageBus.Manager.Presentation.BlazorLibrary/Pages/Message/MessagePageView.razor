@@ -1,0 +1,44 @@
+﻿@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Application.Building;
+@using Basyc.MessageBus.Manager.Application.Initialization;
+@using Basyc.MessageBus.Manager.Application.Requesting;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.SideBar
+@using System.Text.Json;
+@using System.ComponentModel;
+@using System.Collections.ObjectModel;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Sidebar
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
+@using Basyc.ReactiveUi.Blazor;
+@inherits BasycReactiveBlazorComponentBase<MessagePageViewModel, MessageInfo>
+
+<messagePageView>
+    <requestFormPage>
+        <SidebarView MessageInfo="@MessageInfo" NavigationService="@ViewModel.NavigationService" />
+    </requestFormPage>
+    <page>
+        <BasycStyleSection SectionName="3">
+            @if (ViewModel.PageToDisplay is null)
+            {
+                @:select
+            }
+            else
+            {
+                @ViewModel.PageToDisplay
+            }
+        </BasycStyleSection>
+    </page>
+</messagePageView>
+
+@code {
+    [Parameter]
+    public MessageInfo MessageInfo { get; set; } = null!;
+
+    public override void OnVisit(MessageInfo messageInfo)
+    {
+        MessageInfo = messageInfo;
+        ViewModel.NavigationService.Clear();
+    }
+
+
+
+}

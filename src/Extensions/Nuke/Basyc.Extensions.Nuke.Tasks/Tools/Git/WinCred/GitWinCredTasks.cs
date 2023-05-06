@@ -2,9 +2,7 @@
 
 public static partial class GitTasks
 {
-	public static async Task<GitCredentials> GetCredentialsWindows()
-	{
-		// var tt = global::Nuke.Common.Tools.Git.GitTasks.Git("");
-		return await GitCliWrapper.GetCredentialsWindows();
-	}
+    public static async Task<GitCredentials> GetCredentialsWindows() =>
+        // var tt = global::Nuke.Common.Tools.Git.GitTasks.Git("");
+        await GitCliWrapper.GetCredentialsWindows();
 }

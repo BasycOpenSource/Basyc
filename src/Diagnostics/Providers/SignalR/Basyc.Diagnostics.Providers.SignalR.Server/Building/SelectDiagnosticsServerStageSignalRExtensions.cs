@@ -7,16 +7,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SelectDiagnosticsServerStageSignalRExtensions
 {
-	/// <summary>
-	/// Call <see cref="WepApplicationDiagnosticsSignalRExtensions.MapBasycSignalRDiagnosticsServer(WebApplication, string)"/> to start 
-	/// </summary>
-	/// <param name="parent"></param>
-	/// <returns></returns>
-	public static void SelectSignalRPusher(this SelectDiagnosticsServerStage parent)
-	{
-		parent.services.AddSignalR();
-		parent.services.TryAddSingleton<InMemoryServerDiagnosticReceiver>();
-		parent.services.AddSingleton<IServerDiagnosticReceiver, InMemoryServerDiagnosticReceiver>(x => x.GetRequiredService<InMemoryServerDiagnosticReceiver>());
-		parent.services.AddSingleton<IServerDiagnosticPusher, SignalRServerDiagnosticPusher>();
-	}
+    /// <summary>
+    ///     Call <see cref="WepApplicationDiagnosticsSignalRExtensions.MapBasycSignalRDiagnosticsServer(WebApplication, string, string)" /> to start.
+    /// </summary>
+    public static void SelectSignalRPusher(this SelectDiagnosticsServerStage parent)
+    {
+        parent.Services.AddSignalR();
+        parent.Services.TryAddSingleton<InMemoryServerDiagnosticReceiver>();
+        parent.Services.AddSingleton<IServerDiagnosticReceiver, InMemoryServerDiagnosticReceiver>(x =>
+            x.GetRequiredService<InMemoryServerDiagnosticReceiver>());
+        parent.Services.AddSingleton<IServerDiagnosticPusher, SignalRServerDiagnosticPusher>();
+    }
 }

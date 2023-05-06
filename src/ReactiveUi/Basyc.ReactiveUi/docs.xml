@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--https://stackoverflow.com/questions/58505706/c-sharp-xml-documentation-include-tag-not-appearing-in-intellisense-->
+<Docs>
+	<ReactiveProperty>
+		<SummaryStart>
+			Binds a view-model's property to another view-model's property.
+		</SummaryStart>
+		<Remarks>
+			<remarks>
+				Everytime owner class of <see cref="sourceProperty"/> produces proper <see cref="INotifyPropertyChanged"/> event
+				the <see cref="targetProperty"/> will be updated.
+				<see cref="sourceProperty"/> can be even deeply nested property of private field (x=>x.Property1.Property1) but all path segments (Property1, Property2) must be observable aka
+				must produce <see cref="INotifyPropertyChanged"/> events.
+			</remarks>
+		</Remarks>
+		<Params>
+			<param name="viewModel">
+				viewmodel owning <see cref="targetProperty"/> and <see cref="sourceProperty"/>.
+			</param>
+			<param name="targetProperty">Selector of property to update.</param>
+			<param name="sourceProperty">Selector of property to listen to.</param>
+			<param name="sourceFilePath">❌❌ Ignore, used for debug experience. ❌❌</param>
+			<param name="sourceLineNumber">❌❌ Ignore, used for debug experience. ❌❌</param>
+		</Params>
+		<Return>
+			<returns>
+				Initial value of target property that should be assigned to the <see cref="targetProperty"/> inview model's constructor.
+			</returns>
+		</Return>
+	</ReactiveProperty>
+
+	<ReactiveCommand>
+		<SummaryStart>
+			Creates <see cref="ICommand"/>
+		</SummaryStart>
+		<Remarks>
+			<remarks>
+
+			</remarks>
+		</Remarks>
+		<Params>
+			<param name="viewModel">viewmodel owning command property. </param>
+			<param name="execute">Delegate to execute</param>
+		</Params>
+		<Return>
+			<returns>
+				New instance of <see cref="ICommand"/> that should be assigned to command property in view model's constructor.
+			</returns>
+		</Return>
+	</ReactiveCommand>
+</Docs>
+
+
+

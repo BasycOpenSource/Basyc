@@ -1,0 +1,116 @@
+﻿busManager {
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+    overflow: hidden;
+    font-family: "Segoe UI";
+    background-color: #0C0B10;
+}
+
+sideBar {
+    flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+}
+
+
+messagePage {
+    flex: 100;
+    overflow: hidden;
+}
+
+
+.styleSharedDefaults {
+    /*font-weight: 300;*/
+
+    ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #9ab3db29;
+        border-radius: 40px;
+    }
+
+    ::-webkit-scrollbar-corner {
+        visibility: collapse;
+        background-color: #3D3D3D;
+    }
+
+    .headingDefalts {
+        font-weight: 300;
+    }
+
+    h1 {
+        @extend .headingDefalts;
+    }
+
+    h2 {
+        @extend .headingDefalts;
+    }
+
+    h3 {
+        @extend .headingDefalts;
+        font-size: 18px;
+    }
+
+    h4 {
+        @extend .headingDefalts;
+        font-size: 16px;
+    }
+
+    button {
+        background-color: #D1266620;
+        border: 0.5px solid #9e184a3d;
+        font-family: "Segoe UI";
+        font-weight: 300;
+        color: #C2BEC2;
+        font-size: 16px;
+        padding: 1px 32px;
+        text-transform: lowercase;
+        border-radius: 3px;
+        display: flex;
+    }
+
+    button:hover {
+        background-color: rgba(254, 150, 189, 0.22) !important;
+    }
+}
+
+::deep .style1 {
+    @extend .styleSharedDefaults;
+    color: #7a657d;
+}
+
+::deep .style2 {
+    @extend .styleSharedDefaults;
+    background-color: #08080B;
+    color: rgba(194, 197, 212, 0.4);
+
+}
+
+::deep .style3 {
+    @extend .styleSharedDefaults;
+    background-color: #0C0B10;
+    color: #636986;
+}
+
+
+layout {
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+    height: 100%
+}

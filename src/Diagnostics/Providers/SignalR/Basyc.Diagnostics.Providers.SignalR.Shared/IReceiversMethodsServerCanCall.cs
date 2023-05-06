@@ -4,5 +4,5 @@ namespace Basyc.Diagnostics.SignalR.Shared;
 
 public interface IReceiversMethodsServerCanCall
 {
-	Task ReceiveChangesFromServer(ChangesSignalRDto changes);
+    Task ReceiveChangesFromServer(ChangesSignalRDto changes);
 }

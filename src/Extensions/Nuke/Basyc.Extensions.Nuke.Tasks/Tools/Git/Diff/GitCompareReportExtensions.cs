@@ -2,9 +2,9 @@
 
 public static class GitCompareReportExtensions
 {
-	public static void ThrowIfNotValid(this RepositoryChangeReport report)
-	{
-		if (report is null || report.CouldCompare is false)
-			throw new InvalidOperationException("Git compare report is not valid");
-	}
+    public static void ThrowIfNotValid(this RepositoryChangeReport report)
+    {
+        if (report is null || report.CouldCompare is false)
+            throw new InvalidOperationException("Git compare report is not valid");
+    }
 }

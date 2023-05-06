@@ -7,20 +7,20 @@ namespace Basyc.Diagnostics.Producing.Shared.Building;
 
 public class SetupProducersStage : BuilderStageBase
 {
-	public SetupProducersStage(IServiceCollection services) : base(services)
-	{
-	}
+    public SetupProducersStage(IServiceCollection services) : base(services)
+    {
+    }
 
-	public SetupProducersStage AddInMemoryExporter()
-	{
-		services.TryAddSingleton<InMemoryDiagnosticsExporter>();
-		services.AddSingleton<IDiagnosticsExporter, InMemoryDiagnosticsExporter>(x => x.GetRequiredService<InMemoryDiagnosticsExporter>());
-		return new SetupProducersStage(services);
-	}
+    public SetupProducersStage AddInMemoryExporter()
+    {
+        Services.TryAddSingleton<InMemoryDiagnosticsExporter>();
+        Services.AddSingleton<IDiagnosticsExporter, InMemoryDiagnosticsExporter>(x => x.GetRequiredService<InMemoryDiagnosticsExporter>());
+        return new SetupProducersStage(Services);
+    }
 
-	public SetupProducersStage AddNullExporter()
-	{
-		services.AddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
-		return new SetupProducersStage(services);
-	}
+    public SetupProducersStage AddNullExporter()
+    {
+        Services.AddSingleton<IDiagnosticsExporter, NullDiagnosticsExporter>();
+        return new SetupProducersStage(Services);
+    }
 }

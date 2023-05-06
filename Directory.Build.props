@@ -1,7 +1,54 @@
 <Project>
   <PropertyGroup>
     <Nullable>enable</Nullable>
-    <WarningsAsErrors>Nullable</WarningsAsErrors>
     <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <PreferredUILang>en</PreferredUILang>
+    
+    <!--https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA0001.md-->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn),1573,1591,1712</NoWarn>
+    <CodeAnalysisTreatWarningsAsErrors>true</CodeAnalysisTreatWarningsAsErrors>
+    <!--xx-->
+
+    <!-- 
+    Cant run dotnet format when EnforceCodeStyleInBuild is true in dotnet7 and above (pipeline fails). 
+    Now running only in IDE. 
+    Pipeline does not need it since it is calling dotnet format manually and failing based on format result
+    https://github.com/dotnet/format/issues/1805
+    https://github.com/dotnet/format/issues/1800
+    -->
+    <!--<ShouldEnforceFormat>$([MSBuild]::ValueOrDefault('$(BuildingInsideVisualStudio)', 'false'))</ShouldEnforceFormat>-->
+    <!--<EnforceCodeStyleInBuild>$(ShouldEnforceFormat)</EnforceCodeStyleInBuild>-->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    
+    
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    
+    <AnalysisMode>All</AnalysisMode>
+    <!--https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#analysismode-->
+    <!--<AnalysisLevel>latest-Recommended</AnalysisLevel>-->
+    <!--<AnalysisModeStyle></AnalysisModeStyle>-->
   </PropertyGroup>
+
+
+
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
+    <!--<PackageReference Include="StyleCop.Analyzers" Version="1.1.118">-->
+    <!--<PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.406">-->
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  
+  <!--Connfig file for style cop anaylyzer-->
+  <ItemGroup>
+    <None Remove="$(SolutionDir)stylecop.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="$(SolutionDir)stylecop.json"/>
+  </ItemGroup>
+  
 </Project>

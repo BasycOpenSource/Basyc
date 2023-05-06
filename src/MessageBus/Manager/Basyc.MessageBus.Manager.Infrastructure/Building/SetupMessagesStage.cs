@@ -5,7 +5,7 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building;
 
 public class SetupMessagesStage : BuilderStageBase
 {
-	public SetupMessagesStage(IServiceCollection services) : base(services)
-	{
-	}
+    public SetupMessagesStage(IServiceCollection services) : base(services)
+    {
+    }
 }

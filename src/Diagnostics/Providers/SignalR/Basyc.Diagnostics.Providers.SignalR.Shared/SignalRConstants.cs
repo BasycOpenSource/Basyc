@@ -1,7 +1,7 @@
 ﻿namespace Basyc.Diagnostics.Producing.SignalR.Shared;
 
-public class SignalRConstants
+public static class SignalRConstants
 {
-	public const string ProducersHubPattern = "/producersHub";
-	public const string ReceiversHubPattern = "/receiversHub";
+    public const string ProducersHubPattern = "/producersHub";
+    public const string ReceiversHubPattern = "/receiversHub";
 }

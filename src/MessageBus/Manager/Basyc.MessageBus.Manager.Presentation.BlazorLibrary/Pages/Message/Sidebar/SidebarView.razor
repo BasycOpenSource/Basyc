@@ -1,0 +1,213 @@
+﻿@using Basyc.MessageBus.Manager.Application.Building;
+@using Basyc.MessageBus.Manager.Application.Initialization;
+@using System.ComponentModel;
+@using System.Text.Json;
+@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Application.Requesting;
+@using System.Collections.ObjectModel;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message.Sidebar
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
+@using System.Diagnostics.CodeAnalysis;
+@using WpfGridLayout.Blazor
+<BasycStyleSection SectionName="2">
+    <reqeustSideBarView>
+
+        <grid>
+            @*<BasycSpaceBorder Size="SpacerSize.Medium">*@
+            <formRow>
+
+                <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
+                    <BasycSpaceLine Visible="false" Start="SpaceLineSize.Medium" />
+                    <BasycHeading Size="HeadingSize.H3">
+                        Create request
+                    </BasycHeading>
+                    <BasycSpaceLine Visible="false" Start="SpaceLineSize.Medium" />
+                </BasycSpaceBorder>
+                <requestform>
+                    @if (MessageInfo is null)
+                    {
+                        <ghostLabel>
+                            Select request
+                        </ghostLabel>
+                    }
+                    else
+                    {
+                        <paramSection>
+                            <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
+                                <table class="paramTable paddingContainer">
+                                    @for (var i = 0; i < MessageInfo.Parameters.Count; i++)
+                                    {
+                                        var index = i;
+                                        var paramInfo = MessageInfo.Parameters[index];
+                                        var paramValue = parameterValues[index];
+                                        var isPrimitive = paramInfo.Type.IsPrimitive || paramInfo.Type.IsArray || paramInfo.Type == typeof(string);
+                                        <tr>
+                                            <td>
+                                                <paramType class="paramType-isPrimitive-@isPrimitive">@paramInfo.TypeDisplayName</paramType>
+                                                <paramLabel>@paramInfo.ParameterDisplayName </paramLabel>
+                                            </td>
+                                        </tr>
+                                        <tr class="paramRow">
+                                            <td>
+                                                <paramInput class="inputBorder">
+                                                    <input class="paramTextBox" @bind-value="@parameterValues[index]" />
+                                                </paramInput>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+
+
+                                @if (MessageInfo.Parameters.Count == 0)
+                                {
+                                    <ghostLabel>
+                                        This message does not have paramters
+                                    </ghostLabel>
+
+                                }
+                            </BasycSpaceBorder>
+                        </paramSection>
+
+                        <buttonSection>
+                            <BasycSpaceBorder Size="SpacerSize.Medium">
+                                @if (hasInputError)
+                                {
+                                    @:error when parsing
+                                }
+                                <button @onclick="SendMessage">
+                                    send
+                                </button>
+                            </BasycSpaceBorder>
+                        </buttonSection>
+                    }
+                </requestform>
+            </formRow>
+
+            @*</BasycSpaceBorder>*@
+            <historyRow>
+                <BasycSpaceLine Visible="false" />
+                <SidebarHistoryView MessageInfo="@MessageInfo" NavigationService="NavigationService" />
+            </historyRow>
+
+        </grid>
+
+    </reqeustSideBarView>
+</BasycStyleSection>
+
+@code {
+
+    [Inject] private IRequestManager RequestClient { get; set; } = null!;
+
+    private ObservableCollection<string> parameterValues = new();
+
+
+    [Parameter] public MessageInfo MessageInfo { get; set; } = null!;
+    [Parameter, EditorRequired] public NavigationService NavigationService { get; set; } = null!;
+    private bool hasInputError = false;
+
+    protected override void OnInitialized()
+    {
+        if (MessageInfo is not null)
+        {
+            parameterValues = new ObservableCollection<string>(Enumerable.Range(0, MessageInfo.Parameters.Count).Select(x => string.Empty).ToList());
+        }
+
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (MessageInfo is not null)
+        {
+            parameterValues = new ObservableCollection<string>(Enumerable.Range(0, MessageInfo.Parameters.Count).Select(x => string.Empty).ToList());
+        }
+
+    }
+
+    private static bool TryParseParamInputValue(string paramStringValue, ParameterInfo parameterInfo, out object? parsedInput)
+    {
+        if (paramStringValue == "@null")
+        {
+            parsedInput = null;
+            return true;
+
+        }
+
+        if (paramStringValue == string.Empty)
+        {
+            parsedInput = parameterInfo.Type.GetDefaultValue();
+            return true;
+        }
+
+        if (parameterInfo.Type == typeof(string))
+        {
+            parsedInput = paramStringValue;
+            return true;
+        }
+
+        var toParamTypeConverter = TypeDescriptor.GetConverter(parameterInfo.Type);
+        object? castedParam;
+        if (toParamTypeConverter.CanConvertFrom(typeof(string)))
+        {
+            try
+            {
+                castedParam = toParamTypeConverter.ConvertFromInvariantString(paramStringValue);
+                parsedInput = castedParam;
+                return true;
+
+            }
+            catch
+            {
+                //Example: when providing string but the string is not number.
+                parsedInput = null;
+                return false;
+            }
+        }
+
+        var toStringConverter = TypeDescriptor.GetConverter(typeof(string));
+        if (toStringConverter.CanConvertFrom(parameterInfo.Type))
+        {
+            castedParam = toStringConverter.ConvertFromInvariantString(paramStringValue);
+            parsedInput = castedParam;
+            return true;
+        }
+
+        try
+        {
+            castedParam = Convert.ChangeType(paramStringValue, parameterInfo.Type);
+            parsedInput = castedParam;
+            return true;
+        }
+        catch
+        {
+            //Try change type, if fails, use json Deserialize
+        }
+
+        castedParam = JsonSerializer.Deserialize(paramStringValue, parameterInfo.Type);
+        parsedInput = castedParam;
+        return true;
+    }
+
+    public Task SendMessage()
+    {
+        var requestInfo = MessageInfo;
+        var parameters = new List<Parameter>(requestInfo.Parameters.Count);
+        for (var i = 0; i < requestInfo.Parameters.Count; i++)
+        {
+            var paramInfo = requestInfo.Parameters[i];
+            var paramStringValue = parameterValues[i];
+            if (TryParseParamInputValue(paramStringValue, paramInfo, out var castedParamValue) is false)
+            {
+                hasInputError = true;
+                return Task.CompletedTask;
+            }
+            parameters.Add(new Parameter(paramInfo, castedParamValue));
+        }
+        hasInputError = false;
+        var request = new RequestInput(requestInfo, parameters.AsReadOnly());
+        var requestResult = RequestClient.StartRequest(request);
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+}

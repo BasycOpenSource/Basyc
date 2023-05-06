@@ -1,6 +1,6 @@
 ﻿using Basyc.DependencyInjection;
+using Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.HandledByStages;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Reflection;
 using ParameterInfo = Basyc.MessageBus.Manager.Application.Initialization.ParameterInfo;
 
@@ -8,62 +8,61 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi;
 
 public class FluentSetupMessageStage : BuilderStageBase
 {
-	private readonly InProgressMessageRegistration inProgressMessage;
-	private readonly InProgressGroupRegistration inProgressGroup;
+    private readonly FluentApiGroupRegistration fluentApiGroup;
+    private readonly FluentApiMessageRegistration fluentApiMessage;
 
-	public FluentSetupMessageStage(IServiceCollection services, InProgressMessageRegistration inProgressMessage, InProgressGroupRegistration inProgressGroup) : base(services)
-	{
-		this.inProgressMessage = inProgressMessage;
-		this.inProgressGroup = inProgressGroup;
-	}
+    public FluentSetupMessageStage(IServiceCollection services, FluentApiMessageRegistration fluentApiMessage, FluentApiGroupRegistration fluentApiGroup) : base(services)
+    {
+        this.fluentApiMessage = fluentApiMessage;
+        this.fluentApiGroup = fluentApiGroup;
+    }
 
-	public FluentSetupMessageStage WithParameter<TParameter>(string parameterDisplayName)
-	{
-		inProgressMessage.Parameters.Add(new ParameterInfo(typeof(TParameter), parameterDisplayName, typeof(TParameter).Name));
-		return new FluentSetupMessageStage(services, inProgressMessage, inProgressGroup);
-	}
+    public FluentSetupMessageStage WithParameter<TParameter>(string parameterDisplayName)
+    {
+        fluentApiMessage.Parameters.Add(new ParameterInfo(typeof(TParameter), parameterDisplayName, typeof(TParameter).Name));
+        return new FluentSetupMessageStage(Services, fluentApiMessage, fluentApiGroup);
+    }
 
-	/// <summary>
-	/// Registeres <typeparamref name="TMessage"/> public properties as message parameters
-	/// </summary>
-	/// <typeparam name="TMessage"></typeparam>
-	/// <returns></returns>
-	public FluentTMessageSetupMessageStage<TMessage> WithParameters<TMessage>()
-	{
-		foreach (var parameter in typeof(TMessage).GetProperties(BindingFlags.Instance | BindingFlags.Public))
-		{
-			inProgressMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
-		}
+    /// <summary>
+    ///     Registeres <typeparamref name="TMessage" /> public properties as message parameters.
+    /// </summary>
+    public FluentTMessageSetupMessageStage<TMessage> WithParametersFrom<TMessage>()
+    {
+        foreach (var parameter in typeof(TMessage).GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
+        fluentApiMessage.ParametersFromType = typeof(TMessage);
+        return new FluentTMessageSetupMessageStage<TMessage>(Services, fluentApiMessage, fluentApiGroup);
+    }
 
-		return new FluentTMessageSetupMessageStage<TMessage>(services, inProgressMessage, inProgressGroup);
-	}
+    public FluentSetupMessageStage WithParametersFrom(Type type)
+    {
+        foreach (var parameter in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+            fluentApiMessage.Parameters.Add(new ParameterInfo(parameter.PropertyType, parameter.Name, parameter.PropertyType.Name));
+        fluentApiMessage.ParametersFromType = type;
+        //return new FluentTMessageSetupMessageStage<object>(services, fluentApiMessage, fluentApiGroup);
+        return new FluentSetupMessageStage(Services, fluentApiMessage, fluentApiGroup);
+    }
 
-	public FluentSetupNoReturnStage NoReturn()
-	{
-		return new FluentSetupNoReturnStage(services, inProgressMessage, inProgressGroup);
-	}
+    public FluentSetupNoReturnHandledByStage NoReturn() => new(Services, fluentApiMessage, fluentApiGroup);
 
-	public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)
-	{
-		inProgressMessage.ResponseRunTimeType = messageResponseRuntimeType;
-		inProgressMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
-		return new FluentSetupTypeOfReturnStage(services, inProgressMessage, inProgressGroup);
-	}
+    public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType, string repsonseTypeDisplayName)
+    {
+        fluentApiMessage.ResponseRunTimeType = messageResponseRuntimeType;
+        fluentApiMessage.ResponseRunTimeTypeDisplayName = repsonseTypeDisplayName;
+        return new FluentSetupTypeOfReturnStage(Services, fluentApiMessage, fluentApiGroup);
+    }
 
-	public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType)
-	{
-		return Returns(messageResponseRuntimeType, messageResponseRuntimeType.Name);
-	}
+    public FluentSetupTypeOfReturnStage Returns(Type messageResponseRuntimeType) => Returns(messageResponseRuntimeType, messageResponseRuntimeType.Name);
 
-	public FluentSetupTypeOfReturnStage Returns<TReponse>()
-	{
-		var responseType = typeof(TReponse);
-		return Returns(responseType);
-	}
+    public FluentSetupTypeOfReturnStage Returns<TReponse>()
+    {
+        var responseType = typeof(TReponse);
+        return Returns(responseType);
+    }
 
-	public FluentSetupTypeOfReturnStage Returns<TReponse>(string repsonseTypeDisplayName)
-	{
-		var responseType = typeof(TReponse);
-		return Returns(responseType, repsonseTypeDisplayName);
-	}
+    public FluentSetupTypeOfReturnStage Returns<TReponse>(string repsonseTypeDisplayName)
+    {
+        var responseType = typeof(TReponse);
+        return Returns(responseType, repsonseTypeDisplayName);
+    }
 }

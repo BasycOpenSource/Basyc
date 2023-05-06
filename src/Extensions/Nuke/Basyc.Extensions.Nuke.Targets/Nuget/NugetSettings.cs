@@ -2,23 +2,21 @@
 
 public class NugetSettings
 {
-	public string? SourceUrl { get; private set; }
-	public string? SourceApiKey { get; private set; }
+    public Uri? SourceUrl { get; private set; }
 
-	public static NugetSettings Create()
-	{
-		return new NugetSettings();
-	}
+    public string? SourceApiKey { get; private set; }
 
-	public NugetSettings SetSourceUrl(string sourceUrl)
-	{
-		SourceUrl = sourceUrl;
-		return this;
-	}
+    public static NugetSettings Create() => new();
 
-	public NugetSettings SetSourceApiKey(string sourceApiKey)
-	{
-		SourceApiKey = sourceApiKey;
-		return this;
-	}
+    public NugetSettings SetSourceUrl(Uri sourceUrl)
+    {
+        SourceUrl = sourceUrl;
+        return this;
+    }
+
+    public NugetSettings SetSourceApiKey(string sourceApiKey)
+    {
+        SourceApiKey = sourceApiKey;
+        return this;
+    }
 }

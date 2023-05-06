@@ -1,18 +1,12 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
+﻿using Basyc.MessageBus.Manager.Application.Building;
 
 namespace Basyc.MessageBus.Manager.Application.Requesting;
 
 public class InMemoryRequestHandlerOptions
 {
-	private readonly Dictionary<RequestInfo, Action<RequestContext>> handlerMap = new();
+    private readonly Dictionary<MessageInfo, RequestHandler> handlerMap = new();
 
-	public void AddDelegateHandler(RequestInfo requestInfo, Action<RequestContext> handler)
-	{
-		handlerMap.Add(requestInfo, handler);
-	}
+    public void AddDelegateHandler(MessageInfo requestInfo, RequestHandler handler) => handlerMap.Add(requestInfo, handler);
 
-	public Dictionary<RequestInfo, Action<RequestContext>> ResolveHandlers()
-	{
-		return handlerMap;
-	}
+    public Dictionary<MessageInfo, RequestHandler> ResolveHandlers() => handlerMap;
 }

@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Basyc.Shared\Basyc.Shared.csproj" />
+    <ProjectReference Include="..\..\..\..\Extensions\Basyc.Extensions.System\Basyc.Extensions.System.csproj" />
     <ProjectReference Include="..\..\..\..\Serialization\Basyc.Serialization.Abstraction\Basyc.Serialization.Abstraction.csproj" />
     <ProjectReference Include="..\..\..\..\Serialization\Basyc.Serialization.ProtobufNet\Basyc.Serialization.ProtobufNet.csproj" />
     <ProjectReference Include="..\..\..\Basyc.MessageBus.Shared\Basyc.MessageBus.Shared.csproj" />

@@ -2,5 +2,5 @@
 
 public interface IMethodsClientCanCall
 {
-	Task Request(RequestSignalRDto proxyRequest);
+    Task Request(RequestSignalRDto proxyRequest);
 }

@@ -1,0 +1,45 @@
+﻿@using System.Collections.ObjectModel;
+@using System.Collections.Specialized;
+@using Basyc.Blazor.Controls.Interops;
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@namespace Basyc.Blazor.Controls
+@typeparam TItem
+
+<basycList id="@scrollId">
+    @if (Virtualize)
+    {
+        <Virtualize TItem="TItem" Context="item" Items="@ItemsCasted">
+            <ItemContent>
+                @if (ItemTemplate is not null)
+                {
+                    @ItemTemplate(item)
+                }
+                else
+                {
+                    @item
+                }
+            </ItemContent>
+            <Placeholder>
+                <p>
+                    Please wait.
+                </p>
+            </Placeholder>
+        </Virtualize>
+    }
+    else
+    {
+        foreach(var item in Items)
+        {
+            @if (ItemTemplate is not null)
+            {
+                @ItemTemplate(item)
+            }
+            else
+            {
+                @item
+            }
+        }
+    }
+</basycList>
+
+

@@ -1,46 +1,40 @@
-﻿using Basyc.Diagnostics.Shared.Durations;
+﻿using Basyc.Diagnostics.Shared;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace Basyc.Diagnostics.Producing.Shared.Listening.MicrosoftLogging;
 
-internal class ExporterLogger : ILogger
+internal sealed class ExporterLogger : ILogger
 {
+    private readonly MicrosoftLoggingDiagnosticListener listener;
 
-	private class NullScope : IDisposable
-	{
-		public static IDisposable Instance { get; } = new NullScope();
+    public ExporterLogger(MicrosoftLoggingDiagnosticListener listener)
+    {
+        this.listener = listener;
+    }
 
-		public void Dispose()
-		{
-		}
-	}
+    public IDisposable BeginScope<TState>(TState state) => NullScope.Instance;
 
-	private readonly MicrosoftLoggingDiagnosticListener listener;
-	public ExporterLogger(MicrosoftLoggingDiagnosticListener listener)
-	{
-		this.listener = listener;
-	}
+    public bool IsEnabled(LogLevel logLevel) => true;
 
-	public IDisposable BeginScope<TState>(TState state)
-	{
-		return NullScope.Instance;
-	}
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        if (Activity.Current is null)
+            return;
 
-	public bool IsEnabled(LogLevel logLevel)
-	{
-		return true;
-	}
+        string message = formatter.Invoke(state, exception);
+        string traceId = Activity.Current.TraceId.ToString();
+        string spanId = Activity.Current.SpanId.ToString();
+        var logEntry = new Diagnostics.Shared.Logging.LogEntry(ServiceIdentity.ApplicationWideIdentity, traceId, DateTimeOffset.UtcNow, logLevel, message, spanId);
+        listener.ReceiveLog(logEntry);
+    }
 
-	public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-	{
-		if (Activity.Current is null)
-			return;
+    private sealed class NullScope : IDisposable
+    {
+        public static IDisposable Instance { get; } = new NullScope();
 
-		var message = formatter.Invoke(state, exception);
-		var traceId = Activity.Current.TraceId.ToString();
-		var spanId = Activity.Current.SpanId.ToString();
-		var logEntry = new Diagnostics.Shared.Logging.LogEntry(ServiceIdentity.ApplicationWideIdentity, traceId, DateTimeOffset.UtcNow, logLevel, message, spanId);
-		listener.ReceiveLog(logEntry);
-	}
+        public void Dispose()
+        {
+        }
+    }
 }

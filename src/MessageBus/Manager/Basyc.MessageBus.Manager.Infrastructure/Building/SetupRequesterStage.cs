@@ -7,14 +7,14 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Building;
 
 public class SetupRequesterStage : BuilderStageBase
 {
-	public SetupRequesterStage(IServiceCollection services) : base(services)
-	{
-	}
+    public SetupRequesterStage(IServiceCollection services) : base(services)
+    {
+    }
 
-	public SetupTypeFormattingStage UseHandler<TRequestHandler>()
-		where TRequestHandler : class, IRequestHandler
-	{
-		services.TryAddSingleton<IRequestHandler, TRequestHandler>();
-		return new SetupTypeFormattingStage(services);
-	}
+    public SetupTypeFormattingStage UseHandler<TRequestHandler>()
+        where TRequestHandler : class, IRequestHandler
+    {
+        Services.TryAddSingleton<IRequestHandler, TRequestHandler>();
+        return new SetupTypeFormattingStage(Services);
+    }
 }

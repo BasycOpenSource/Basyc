@@ -35,7 +35,8 @@
 				<requestBody class="@RequestBodyClass">
 					<bodySection>
 						<table class="paramTable">
-							@for (var i = 0; i < RequestItemViewModel.RequestInfo.Parameters.Count; i++)
+                            @*TODO SHOULD BE FIXED*@
+@*						@for (var i = 0; i < RequestItemViewModel.RequestInfo.Parameters.Count; i++)
 							{
 								var index = i;
 								var paramInfo = RequestItemViewModel.RequestInfo.Parameters[index];
@@ -48,13 +49,13 @@
 									<td>
 										<paramInput class="inputBorder">
 											<paramType class="paramType-isPrimitive-@isPrimitive">@paramInfo.TypeDisplayName</paramType>
-											@*<input class="paramTextBox" value="@paramValue" @onchange="(a)=>SetParamValue(index,a.Value)" />*@
 											<input class="paramTextBox" @bind-value="@RequestItemViewModel.ParameterValues[index]"/>
-											@*<button class="secondaryButton" @onclick="()=> SetParamDefaultValue(index)">default</button>*@
 										</paramInput>
 									</td>
 								</tr>
 							}
+*@
+
 						</table>
 						<br/>
 						<button class="sendRequestButton" disabled="@RequestItemViewModel.IsLoading" @onclick="() => SendMessage(RequestItemViewModel.RequestInfo)">send</button>

@@ -2,28 +2,25 @@
 
 public class MethodsServerCanCallNumbers : IMethodsServerCanCallEmpty, IMethodsServerCanCallNumbers
 {
-	public int LastReceivedNumber { get; private set; }
+    public int LastReceivedNumber { get; private set; }
 
-	public void ReceiveNumber(int number)
-	{
-		LastReceivedNumber = number;
-	}
+    public void ReceiveNumber(int number) => LastReceivedNumber = number;
 
-	public async Task ReceiveNumbers(int number, int number2)
-	{
-		LastReceivedNumber = number2;
-		await Task.Delay(150);
-	}
+    public async Task ReceiveNumbers(int number, int number2)
+    {
+        LastReceivedNumber = number2;
+        await Task.Delay(150);
+    }
 
-	public async Task ReceiveNumbers(int number, int number2, int number3)
-	{
-		LastReceivedNumber = number3;
-		await Task.Delay(150);
-	}
+    public async Task ReceiveNumbers(int number, int number2, int number3)
+    {
+        LastReceivedNumber = number3;
+        await Task.Delay(150);
+    }
 
-	public async Task ReceiveNumberAsync(int number)
-	{
-		LastReceivedNumber = number;
-		await Task.Delay(150);
-	}
+    public async Task ReceiveNumberAsync(int number)
+    {
+        LastReceivedNumber = number;
+        await Task.Delay(150);
+    }
 }

@@ -1,0 +1,19 @@
+@GetVariables()
+<basycControls>
+
+</basycControls>
+
+@code {
+
+    static MarkupString GetVariables() => (MarkupString)@"
+<style>
+:root {
+--space-small: 8px;
+--space-medium: 32px;
+--space-big: 64px;
+}
+</style>
+";
+
+
+}

@@ -1,23 +1,12 @@
-﻿using Basyc.MessageBus.Manager.Application.Initialization;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Basyc.MessageBus.Manager.Application.Building;
 
 namespace Basyc.MessageBus.Manager.Infrastructure;
 
 public class InMemoryRequestInfoTypeStorage : IRequestInfoTypeStorage
 {
-	private readonly Dictionary<RequestInfo, Type> storage = new Dictionary<RequestInfo, Type>();
+    private readonly Dictionary<MessageInfo, Type> storage = new();
 
-	public void AddRequest(RequestInfo requestInfo, Type requestType)
-	{
-		storage.Add(requestInfo, requestType);
-	}
+    public void AddRequest(MessageInfo requestInfo, Type requestType) => storage.Add(requestInfo, requestType);
 
-	public Type GetRequestType(RequestInfo requestInfo)
-	{
-		return storage[requestInfo];
-	}
+    public Type GetRequestType(MessageInfo requestInfo) => storage[requestInfo];
 }

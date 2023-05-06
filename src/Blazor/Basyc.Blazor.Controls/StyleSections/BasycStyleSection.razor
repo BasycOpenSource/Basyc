@@ -1,0 +1,16 @@
+﻿@namespace Basyc.Blazor.Controls
+@using System.Collections.ObjectModel;
+@using Basyc.Blazor.Controls.StyleSections;
+@using BlazorComponentUtilities;
+@using System.Diagnostics.CodeAnalysis;
+<basycStyleSection class="@styleSection.CssClass">
+        <style>
+            @if(styleSection is not null)
+            {
+                @(styleSection.Style)
+            }
+        </style>
+    @ChildContent
+</basycStyleSection>
+
+

@@ -6,29 +6,25 @@ namespace Basyc.MicroService.Asp.Bootstrapper.Actors;
 
 public class ActorRegistrator
 {
-	private readonly IMicroserviceProvider microserviceProvider;
+    private readonly IMicroserviceProvider microserviceProvider;
 
-	public ActorRegistrator(IMicroserviceProvider microserviceProvider)
-	{
-		this.microserviceProvider = microserviceProvider;
-	}
+    public ActorRegistrator(IMicroserviceProvider microserviceProvider)
+    {
+        this.microserviceProvider = microserviceProvider;
+    }
 
-	/// <summary>
-	///     <typeparamref name="TStartup" /> must be in default namespace besides Actors folder
-	/// </summary>
-	/// <typeparam name="TStartup"></typeparam>
-	public void RegisterActors<TStartup>()
-	{
-		RegisterActors(typeof(TStartup).Namespace + "/Actors");
-	}
+    /// <summary>
+    ///     <typeparamref name="TStartup" /> must be in default namespace besides Actors folder.
+    /// </summary>
+    public void RegisterActors<TStartup>() => RegisterActors(typeof(TStartup).Namespace + "/Actors");
 
-	public void RegisterActors(string actorsNamespace)
-	{
-		var actorTypes = Assembly.GetEntryAssembly()!.DefinedTypes.Where(x =>
-			x.IsClass && x.ImplementedInterfaces.Contains(typeof(IActor)) && x.Namespace!.StartsWith(actorsNamespace));
-		foreach (var actor in actorTypes)
-		{
-			microserviceProvider.RegisterActor(actor);
-		}
-	}
+    public void RegisterActors(string actorsNamespace)
+    {
+        var actorTypes = Assembly.GetEntryAssembly()!.DefinedTypes.Where(x =>
+            x.IsClass && x.ImplementedInterfaces.Contains(typeof(IActor)) && x.Namespace!.StartsWith(actorsNamespace));
+        foreach (var actor in actorTypes)
+        {
+            microserviceProvider.RegisterActor(actor);
+        }
+    }
 }

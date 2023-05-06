@@ -1,37 +1,40 @@
 ﻿namespace Basyc.Shared.Models;
 
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 public struct NullableResult<T>
 {
-	public T Value { get; set; }
-	public bool WasFound { get; init; }
-	public readonly T? DefaultValue { get; init; }
+    public NullableResult(T value, bool wasFound, bool checkValueType = true)
+    {
+        Value = value;
+        WasFound = wasFound;
+        DefaultValue = checkValueType ? (T)GetDefaultValue(value!.GetType()!)! : default;
+    }
 
-	public NullableResult(T value, bool wasFound, bool checkValueType = true)
-	{
-		Value = value;
-		WasFound = wasFound;
-		DefaultValue = checkValueType ? (T)GetDefaultValue(value!.GetType()!)! : default;
-	}
+    public NullableResult(T value, bool wasFound, T defaultValue)
+    {
+        Value = value;
+        WasFound = wasFound;
+        DefaultValue = defaultValue;
+    }
 
-	public NullableResult(T value, bool wasFound, T defaultValue)
-	{
-		Value = value;
-		WasFound = wasFound;
-		DefaultValue = defaultValue;
-	}
+    public T Value { get; set; }
 
-	private static object? GetDefaultValue(Type type)
-	{
-		if (type.IsValueType)
-		{
-			if (type == typeof(string))
-			{
-				return string.Empty;
-			}
+    public bool WasFound { get; init; }
 
-			return Activator.CreateInstance(type);
-		}
+    public readonly T? DefaultValue { get; init; }
 
-		return null;
-	}
+    private static object? GetDefaultValue(Type type)
+    {
+        if (type.IsValueType)
+        {
+            if (type == typeof(string))
+            {
+                return string.Empty;
+            }
+
+            return Activator.CreateInstance(type);
+        }
+
+        return null;
+    }
 }

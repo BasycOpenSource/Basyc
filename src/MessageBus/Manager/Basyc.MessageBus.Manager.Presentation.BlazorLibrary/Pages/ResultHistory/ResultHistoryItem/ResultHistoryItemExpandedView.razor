@@ -4,7 +4,7 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogWindow
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Html
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls
 <resultHistoryItemExpandedView>
 	<basicSection>
 		<basicTable>
@@ -39,7 +39,7 @@
 		<dataSubSection>
 			<requestBox>
 				<textValue>
-					@ResponseResultConverter.CreateInputOverview(RequestContext.Request.Parameters)
+					@ResponseResultConverter.CreateInputOverview(RequestContext.RequestInput.Parameters)
 				</textValue>
 			</requestBox>
 			<arrow>
@@ -56,7 +56,7 @@
 					<textValue>
 						@if (RequestContext.State == RequestResultState.Completed)
 						{
-							if (RequestContext.Request.RequestInfo.HasResponse)
+							if (RequestContext.RequestInput.MessageInfo.HasResponse)
 							{
 								@RequestContext.Response
 							}
@@ -105,6 +105,6 @@
 
 	[Parameter]
 	[EditorRequired]
-	public RequestContext RequestContext { get; set; } = null!;
+	public MessageRequest RequestContext { get; set; } = null!;
 
 }

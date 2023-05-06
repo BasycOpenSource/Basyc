@@ -6,103 +6,88 @@ namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
 
 public class InProgressReport
 {
-	private readonly Dictionary<string, InProgressProjectReport> allReports = new();
-	public int ProjectCount { get; private set; }
+    private readonly Dictionary<string, InProgressProjectReport> allReports = new();
 
-	public InProgressProjectReport GetReport(string projectName)
-	{
-		return allReports[projectName];
-	}
+    public int ProjectCount { get; private set; }
 
-	public void Complete(string projectName, ProjectCoverageReport report)
-	{
-		GetReport(projectName).Report = report;
-	}
+    public InProgressProjectReport GetReport(string projectName) => allReports[projectName];
 
-	public void Add(string projectToTestName, string? testProjectPath, bool testProjectFound, bool isExcluded)
-	{
-		allReports.Add(projectToTestName, new InProgressProjectReport(projectToTestName, testProjectPath, testProjectFound, isExcluded));
-		ProjectCount += 1;
-		if (testProjectFound is false)
-		{
-			Complete(projectToTestName, new ProjectCoverageReport(projectToTestName, testProjectFound, isExcluded, 0, 0, Array.Empty<ClassCoverageReport>()));
-			return;
-		}
+    public void Complete(string projectName, ProjectCoverageReport report) => GetReport(projectName).Report = report;
 
-		if (isExcluded)
-		{
-			Complete(projectToTestName, new ProjectCoverageReport(projectToTestName, testProjectFound, isExcluded, 0, 0, Array.Empty<ClassCoverageReport>()));
-		}
-	}
+    public void Add(string projectToTestName, string? testProjectPath, bool testProjectFound, bool isExcluded)
+    {
+        allReports.Add(projectToTestName, new(projectToTestName, testProjectPath, testProjectFound, isExcluded));
+        ProjectCount += 1;
+        if (testProjectFound is false)
+        {
+            Complete(projectToTestName, new(projectToTestName, testProjectFound, isExcluded, 0, 0, Array.Empty<ClassCoverageReport>()));
+            return;
+        }
 
-	public void AddRange(IEnumerable<(string projectToTestName, string? testProjectPath, bool testProjectFound, bool shouldBeExcluded)> items,
-		UnitTestSettings testExceptions)
-	{
-		items.ForEach(x =>
-		{
-			Add(x.projectToTestName, x.testProjectPath, x.testProjectFound, x.shouldBeExcluded);
-		});
-	}
+        if (isExcluded)
+        {
+            Complete(projectToTestName, new(projectToTestName, testProjectFound, isExcluded, 0, 0, Array.Empty<ClassCoverageReport>()));
+        }
+    }
 
-	public void AddRange(Solution solution, IEnumerable<string> sourceProjectsPaths, string testProjectSuffix, UnitTestSettings testExceptions)
-	{
-		AddRange(sourceProjectsPaths.Select(projectToTestPath =>
-			{
-				var projectToTest = solution.GetProject(projectToTestPath.NormalizeForCurrentOs());
-				var projectToTestAttributes = projectToTest.GetItems("AssemblyAttribute");
-				bool excluded = projectToTestAttributes.Contains("System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute") ||
-								testExceptions.ProjectExceptions.Any(y => y.Path == projectToTestPath);
+    public void AddRange(
+        IEnumerable<(string ProjectToTestName, string? TestProjectPath, bool TestProjectFound, bool ShouldBeExcluded)> items) => items.ForEach(x =>
+    {
+        Add(x.ProjectToTestName, x.TestProjectPath, x.TestProjectFound, x.ShouldBeExcluded);
+    });
 
-				string projectName = Path.GetFileNameWithoutExtension(projectToTestPath);
-				string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
-				var testProject = solution!.GetProject(unitTestProjectName);
-				if (testProject is null)
-				{
-					return (projectName, null!, false, excluded);
-				}
+    public void AddRange(Solution solution, IEnumerable<string> sourceProjectsPaths, string testProjectSuffix, UnitTestSettings testExceptions) => AddRange(
+        sourceProjectsPaths.Select(projectToTestPath =>
+        {
+            var projectToTest = solution.GetProject(projectToTestPath.NormalizeForCurrentOs());
+            var projectToTestAttributes = projectToTest.GetItems("AssemblyAttribute");
+            bool excluded = projectToTestAttributes.Contains("System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute") ||
+                            testExceptions.ProjectExceptions.Any(y => y.Path == projectToTestPath);
 
-				return (projectName, testProject.Path.ToString(), true, excluded);
-			})!,
-			testExceptions);
-	}
+            string projectName = Path.GetFileNameWithoutExtension(projectToTestPath);
+            string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
+            var testProject = solution!.GetProject(unitTestProjectName);
+            if (testProject is null)
+            {
+                return (projectName, null!, false, excluded);
+            }
 
-	public void AddSolution(Solution solution, string testProjectSuffix, UnitTestSettings testExceptions)
-	{
-		string[] sourceProjectsPaths = solution.AllProjects
-			.Where(x => x.Name.EndsWith(testProjectSuffix) is false)
-			.Select(x => x.Path.ToString())
-			.ToArray();
+            return (projectName, testProject.Path.ToString(), true, excluded);
+        })!);
 
-		AddRange(sourceProjectsPaths.Select(projectToTestPath =>
-			{
-				var projectToTest = solution.GetProject(projectToTestPath);
-				var projectToTestAttributes = projectToTest.GetItems("AssemblyAttribute");
-				bool excluded = projectToTestAttributes.Contains("System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute");
+    public void AddSolution(Solution solution, string testProjectSuffix)
+    {
+        string[] sourceProjectsPaths = solution.AllProjects
+            .Where(x => x.Name.EndsWith(testProjectSuffix) is false)
+            .Select(x => x.Path.ToString())
+            .ToArray();
 
-				string projectName = Path.GetFileNameWithoutExtension(projectToTestPath);
-				string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
-				var testProject = solution!.GetProject(unitTestProjectName);
-				if (testProject is null)
-				{
-					return (projectName, null!, false, excluded);
-				}
+        AddRange(sourceProjectsPaths.Select(projectToTestPath =>
+            {
+                var projectToTest = solution.GetProject(projectToTestPath);
+                var projectToTestAttributes = projectToTest.GetItems("AssemblyAttribute");
+                bool excluded = projectToTestAttributes.Contains("System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute");
 
-				return (projectName, testProject.Path.ToString(), true, excluded);
-			})!,
-			testExceptions);
-	}
+                string projectName = Path.GetFileNameWithoutExtension(projectToTestPath);
+                string unitTestProjectName = Path.GetFileNameWithoutExtension(projectToTestPath) + testProjectSuffix;
+                var testProject = solution!.GetProject(unitTestProjectName);
+                if (testProject is null)
+                {
+                    return (projectName, null!, false, excluded);
+                }
 
-	public InProgressProjectReport[] GetAllReports()
-	{
-		return allReports.Values.ToArray();
-	}
+                return (projectName, testProject.Path.ToString(), true, excluded);
+            })!);
+    }
 
-	public InProgressProjectReport[] GetReportsToExecute()
-	{
-		var testProjectsToRun = GetAllReports()
-			.Where(x => x.TestProjectFound && x.CoverageExcluded is false)
-			.ToArray();
+    public InProgressProjectReport[] GetAllReports() => allReports.Values.ToArray();
 
-		return testProjectsToRun;
-	}
+    public InProgressProjectReport[] GetReportsToExecute()
+    {
+        var testProjectsToRun = GetAllReports()
+            .Where(x => x.TestProjectFound && x.CoverageExcluded is false)
+            .ToArray();
+
+        return testProjectsToRun;
+    }
 }

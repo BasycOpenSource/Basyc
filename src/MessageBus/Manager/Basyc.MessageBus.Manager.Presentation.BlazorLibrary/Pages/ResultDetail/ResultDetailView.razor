@@ -10,7 +10,7 @@
 	}
 }
 
-@inject IRequestDiagnosticsManager ResultLoggingManager;
+@inject IRequestDiagnosticsRepository ResultLoggingManager;
 
 <requestDetailView class="@requestDetailViewClass">
 	@if (RequestResult is null)
@@ -42,7 +42,7 @@
 					Input
 				</label>
 				<inputs>
-					@foreach (var parameter in RequestResult.Request.Parameters)
+					@foreach (var parameter in RequestResult.RequestInput.Parameters)
 					{
 						<parameterRow>
 							<parameterName>
@@ -67,7 +67,7 @@
 					}
 					@if (RequestResult.State == RequestResultState.Completed)
 					{
-						@if (RequestResult.Request.RequestInfo.HasResponse)
+						@if (RequestResult.RequestInput.MessageInfo.HasResponse)
 						{
 							@RequestResult.Response
 						}
@@ -91,7 +91,7 @@
 			<paddedSection>
 				<label>
 					Duration
-					<LatencyView RequestResult="RequestResult"/>
+                    <LatencyView RequestContext="RequestResult" />
 				</label>
 				<durationMap>
 					@if (RequestResult.State == RequestResultState.Started)
@@ -108,17 +108,17 @@
 			<label>
 				Log
 			</label>
-			<LogWindowView LoggingContext="loggingContext"/>
+            <LogWindowView DiagnosticsContext="RequestResult.Diagnostics" />
 		</requestDetailNotEmpty>
 	}
 
 </requestDetailView>
 
 @code {
-	private RequestContext requestResult = null!;
-
+	private MessageRequest requestResult = null!;
+#pragma warning disable BL0007 // Component parameters should be auto properties
 	[Parameter]
-	public RequestContext RequestResult
+	public MessageRequest RequestResult
 	{
 		get => requestResult;
 		set
@@ -132,9 +132,5 @@
 		}
 	}
 
-	private void ResultStateChanged(object? sender, EventArgs eventArgs)
-	{
-		StateHasChanged();
-	}
-
+	private void ResultStateChanged(object? sender, EventArgs eventArgs) => StateHasChanged();
 }

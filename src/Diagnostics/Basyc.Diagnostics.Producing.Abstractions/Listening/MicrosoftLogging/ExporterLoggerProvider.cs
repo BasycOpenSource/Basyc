@@ -3,21 +3,17 @@
 namespace Basyc.Diagnostics.Producing.Shared.Listening.MicrosoftLogging;
 
 public class ExporterLoggerProvider : ILoggerProvider
-
 {
-	private readonly ExporterLogger exporterLogger;
+    private readonly ExporterLogger exporterLogger;
 
-	public ExporterLoggerProvider(MicrosoftLoggingDiagnosticListener listener)
-	{
-		exporterLogger = new ExporterLogger(listener);
+    public ExporterLoggerProvider(MicrosoftLoggingDiagnosticListener listener)
+    {
+        exporterLogger = new(listener);
+    }
 
-	}
-	public ILogger CreateLogger(string categoryName)
-	{
-		return exporterLogger;
-	}
+    public ILogger CreateLogger(string categoryName) => exporterLogger;
 
-	public void Dispose()
-	{
-	}
+    public void Dispose()
+    {
+    }
 }

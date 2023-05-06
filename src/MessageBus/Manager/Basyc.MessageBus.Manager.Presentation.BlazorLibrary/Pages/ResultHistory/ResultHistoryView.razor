@@ -1,7 +1,7 @@
 ﻿@using Basyc.MessageBus.Manager.Application
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.ResultHistory.ResultHistoryItem
-@inject IRequestDiagnosticsManager ResultLoggingManager;
+@inject IRequestDiagnosticsRepository ResultLoggingManager;
 
 
 <historyView>
@@ -28,22 +28,3 @@
 	}
 </historyView>
 
-@code {
-
-	[Parameter]
-	public List<RequestContext>? RequestContexts { get; set; }
-
-	private RequestContext? selectedRequestResults;
-
-	[Parameter]
-	public RequestContext? SelectedRequestResults
-	{
-		get => selectedRequestResults;
-		set
-		{
-			if (value == selectedRequestResults) return;
-			selectedRequestResults = value;
-		}
-	}
-
-}

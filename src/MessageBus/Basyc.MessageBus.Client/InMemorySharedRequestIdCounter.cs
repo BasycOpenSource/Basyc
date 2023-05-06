@@ -1,17 +1,10 @@
-﻿using System.Threading;
-
-namespace Basyc.MessageBus.Client;
+﻿namespace Basyc.MessageBus.Client;
 
 public class InMemorySharedRequestIdCounter : ISharedRequestIdCounter
 {
-	private int counter;
-	public int GetLastId()
-	{
-		return counter;
-	}
+    private int counter;
 
-	public int GetNextId()
-	{
-		return Interlocked.Increment(ref counter);
-	}
+    public int GetLastId() => counter;
+
+    public int GetNextId() => Interlocked.Increment(ref counter);
 }

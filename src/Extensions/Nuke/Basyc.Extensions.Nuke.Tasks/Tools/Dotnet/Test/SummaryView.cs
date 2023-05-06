@@ -2,6 +2,6 @@
 
 public enum SummaryView
 {
-	Console,
-	MarkDown
+    Console,
+    MarkDown
 }

@@ -1,96 +1,114 @@
 ﻿using Basyc.MessageBus.Manager.Application;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Building.FluentApi.Helpers;
 
-public class RequestToTypeBinder<TMessage>
+#pragma warning disable CA1819 // Properties should not return arrays
+
+public class RequestToTypeBinder
 {
-	private static readonly Type messageRuntimeType;
-	private static Type[]? requestParameterTypes;
-	private static readonly PropertyInfo[] messageClassProperties;
+    public RequestToTypeBinder(Type messageRuntimeType)
+    {
+        MessageRuntimeType = messageRuntimeType;
+        MessageClassProperties = messageRuntimeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+    }
 
-	static RequestToTypeBinder()
-	{
-		messageRuntimeType = typeof(TMessage);
-		messageClassProperties = messageRuntimeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-	}
+    protected static Type[]? RequestParameterTypes { get; private set; }
 
-	public TMessage CreateMessage(Request request)
-	{
-		if (TryCreateMessageWithCtor(request, out var messageInstance))
-		{
-			return messageInstance!;
-		}
+    protected PropertyInfo[] MessageClassProperties { get; private set; }
 
-		if (TryCreateMessageWithSetters(request, out messageInstance))
-		{
-			return messageInstance!;
-		}
+    protected Type MessageRuntimeType { get; private set; }
 
-		throw new Exception("Failed to create instance of message");
-	}
+    public object CreateMessage(RequestInput request)
+    {
+        object message = TryCreateMessageWithCtor(request, out object? messageInstance)
+            ? messageInstance
+            : TryCreateMessageWithSetters(request, out messageInstance)
+                ? messageInstance
+                : throw new InvalidOperationException("Failed to create instance of message");
 
-	public bool TryCreateMessageWithCtor(Request request, out TMessage? message)
-	{
-		EnsureRequestTypeParameterTypesAreCached(request);
+        return message;
+    }
 
-		var promisingCtor = messageRuntimeType.GetConstructor(requestParameterTypes!);
+    protected bool TryCreateMessageWithCtor(RequestInput request, [NotNullWhen(true)] out object? message)
+    {
+        EnsureRequestTypeParameterTypesAreCached(request);
 
-		if (promisingCtor is null)
-		{
-			message = default;
-			return false;
-		}
+        var promisingCtor = MessageRuntimeType.GetConstructor(RequestParameterTypes!);
 
-		var requestParameterValues = request.Parameters.Select(x => x.Value).ToArray();
-		try
-		{
-			var messageInstance = (TMessage)promisingCtor.Invoke(requestParameterValues);
-			message = messageInstance;
-			return true;
-		}
-		catch (Exception ex)
-		{
-			message = default;
-			return false;
-		}
-	}
+        if (promisingCtor is null)
+        {
+            message = default;
+            return false;
+        }
 
-	private bool TryCreateMessageWithSetters(Request request, out TMessage? message)
-	{
-		EnsureRequestTypeParameterTypesAreCached(request);
+        object?[] requestParameterValues = request.Parameters.Select(x => x.Value).ToArray();
+#pragma warning disable CA1031 // Do not catch general exception types
+        try
+        {
+            object messageInstance = promisingCtor.Invoke(requestParameterValues);
+            message = messageInstance;
+            return true;
+        }
+        catch (Exception)
+        {
+            message = default;
+            return false;
+        }
+#pragma warning restore CA1031 // Do not catch general exception types
+    }
 
-		if (messageClassProperties.Length != requestParameterTypes!.Length)
-		{
-			message = default;
-			return false;
-		}
+    protected bool TryCreateMessageWithSetters(RequestInput request, [NotNullWhen(true)] out object? message)
+    {
+        EnsureRequestTypeParameterTypesAreCached(request);
 
-		if (messageClassProperties.Select(x => x.PropertyType).SequenceEqual(requestParameterTypes))
-		{
-			message = default;
-			return false;
-		}
+        if (MessageClassProperties.Length != RequestParameterTypes!.Length)
+        {
+            message = default;
+            return false;
+        }
 
-		var messageInstance = Activator.CreateInstance<TMessage>();
-		for (var parameterIndex = 0; parameterIndex < requestParameterTypes.Length; parameterIndex++)
-		{
-			var requestParameterType = requestParameterTypes[parameterIndex];
-			var messagePropertyInfo = messageClassProperties[parameterIndex];
-			var requestParameter = request.Parameters.ElementAt(parameterIndex);
+        if (MessageClassProperties.Select(x => x.PropertyType).SequenceEqual(RequestParameterTypes) is false)
+        {
+            message = default;
+            return false;
+        }
 
-			messagePropertyInfo.SetValue(messageInstance, requestParameter.Value);
-		}
+        object? messageInstance = Activator.CreateInstance(MessageRuntimeType);
+        for (int parameterIndex = 0; parameterIndex < RequestParameterTypes.Length; parameterIndex++)
+        {
+            var messagePropertyInfo = MessageClassProperties[parameterIndex];
+            var requestParameter = request.Parameters.ElementAt(parameterIndex);
 
-		message = messageInstance;
-		return true;
-	}
+            messagePropertyInfo.SetValue(messageInstance, requestParameter.Value);
+        }
 
-	private static void EnsureRequestTypeParameterTypesAreCached(Request request)
-	{
-		if (requestParameterTypes is null)
-		{
-			requestParameterTypes = request.RequestInfo.Parameters.Select(x => x.Type).ToArray();
-		}
-	}
+        message = messageInstance;
+#pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
+        return true;
+#pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
+    }
+
+    private static void EnsureRequestTypeParameterTypesAreCached(RequestInput request) => RequestParameterTypes ??= request.MessageInfo.Parameters.Select(x => x.Type).ToArray();
+}
+
+#pragma warning disable SA1402
+public class RequestToTypeBinder<TMessage> : RequestToTypeBinder
+#pragma warning restore SA1402
+{
+    public RequestToTypeBinder() : base(typeof(TMessage))
+    {
+    }
+
+    public new TMessage CreateMessage(RequestInput request)
+    {
+        object message = TryCreateMessageWithCtor(request, out object? messageInstance)
+            ? messageInstance
+            : TryCreateMessageWithSetters(request, out messageInstance)
+                ? messageInstance
+                : throw new InvalidOperationException("Failed to create instance of message");
+
+        return (TMessage)message;
+    }
 }

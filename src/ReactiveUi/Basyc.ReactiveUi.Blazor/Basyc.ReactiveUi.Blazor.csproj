@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI.Blazor" Version="18.4.26" />
+    <!--<PackageReference Include="ReactiveUI.Fody" Version="18.4.26" />-->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Extensions\Basyc.Extensions.System\Basyc.Extensions.System.csproj" />
+    <ProjectReference Include="..\Basyc.ReactiveUi\Basyc.ReactiveUi.csproj" />
+  </ItemGroup>
+
+</Project>

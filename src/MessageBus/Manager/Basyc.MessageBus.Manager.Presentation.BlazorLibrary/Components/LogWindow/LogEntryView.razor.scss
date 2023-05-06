@@ -2,29 +2,28 @@
 
 
 message {
-    color: #d1d1d1;
+    color: #C2BEC2;
 }
 
 logEntryView {
     display: block;
     color: white;
-    padding: 0.3rem 1.5rem;
-    background-color: #00000012;
+    padding: 8px 16px;
+    background-color: #0F0F15;
 }
 
 logEntryView:hover {
-    background-color: #626262;
+    background-color: #111724;
 }
 
 
-.logEntryView--alternate {
+/*.logEntryView--alternate {
     background-color: #00000000;
-}
+}*/
+
 
 time {
-    margin-right: 0.3rem;
-    margin-left: -0.5rem;
-    color: #ffffff74;
+    color: #646B88;
 }
 
 serviceName {
@@ -34,13 +33,11 @@ serviceName {
     min-height: 0px;
     width: 5rem;
     color: white;
-    padding: 0rem 0.4rem;
-    border-radius: 2px;
-    margin-right: 0.3rem;
 }
 
 activityName {
-    @extend serviceName;
+    display: inline-flex;
+    color: #575862;
 }
 
 serviceName > * {
@@ -51,23 +48,21 @@ serviceName > * {
     text-overflow: ellipsis;
 }
 
-level {
-    display: inline;
-    padding: 0px;
+
+.message--info {
 }
 
-.level--Debug {
-    color: $Log-Debug-Foreground;
+.message--warning {
+    color: #AE8C59;
 }
 
-.level--Information {
-    color: $Log-Information-Foreground;
-}
-
-.level--Warning {
-    background-color: $Log-Warning-Background;
-}
-
-.level--Error {
+.message--error {
     background-color: $Log-Error-Background;
+}
+
+slash {
+    display: inline-block;
+    color: #575862;
+    margin-left: 0.3em;
+    margin-right: -0.3em;
 }

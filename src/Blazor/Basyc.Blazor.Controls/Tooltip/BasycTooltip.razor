@@ -1,0 +1,19 @@
+﻿@namespace Basyc.Blazor.Controls
+@using Basyc.Blazor.Controls.Interops;
+@using Basyc.Blazor.Controls.Tooltip;
+@using Microsoft.JSInterop;
+
+<tooltipView>
+    <childContent id="@ChildContentId">
+        <TooltipContent Messenger="@messenger">
+            @ChildContent
+        </TooltipContent>
+    </childContent>
+    <TooltipPopup Messenger="@messenger" OwnerId="@ChildContentId">
+        @TooltipContent
+    </TooltipPopup>
+</tooltipView>
+
+
+
+

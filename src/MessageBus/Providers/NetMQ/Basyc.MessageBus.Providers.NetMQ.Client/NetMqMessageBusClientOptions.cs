@@ -2,7 +2,9 @@
 
 public class NetMqMessageBusClientOptions
 {
-	public int BrokerServerPort { get; set; }
-	public string? BrokerServerAddress { get; set; }
-	public string? WorkerId { get; set; }
+    public int BrokerServerPort { get; set; }
+
+    public string? BrokerServerAddress { get; set; }
+
+    public string? WorkerId { get; set; }
 }

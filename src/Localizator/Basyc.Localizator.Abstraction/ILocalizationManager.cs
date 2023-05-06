@@ -5,22 +5,20 @@ namespace Basyc.Localizator.Abstraction;
 
 public interface ILocalizationManager
 {
-	CultureInfo DefaultCulture { get; set; }
+    event EventHandler<SectionCultureChangedEventArgs> SectionCultureChanged;
 
-	IDictionary<string, ILocalizatedSection> GetSections();
-	ILocalizatedSection GetSection(string sectionName);
+    CultureInfo DefaultCulture { get; set; }
 
-	/// <summary>
-	///     Returns false if section does not exist.
-	/// </summary>
-	/// <param name="sectionName"></param>
-	/// <returns></returns>
-	bool TryGetSection(string sectionName, [NotNullWhen(true)] out ILocalizatedSection? localizatedSection);
+    IDictionary<string, ILocalizatedSection> GetSections();
 
-	Task SaveOrUpdateLocalizators(params ILocalizator[] localizators);
+    ILocalizatedSection GetSection(string sectionName);
 
-	event EventHandler<SectionCultureChangedArgs> SectionCultureChanged;
+    /// <summary>
+    ///     Returns false if section does not exist.
+    /// </summary>
+    bool TryGetSection(string sectionName, [NotNullWhen(true)] out ILocalizatedSection? localizatedSection);
 
-	//void ChangeDefaultCulture(CultureInfo newCulture);
-	void ChangeDefaultSectionCulture(string sectionName, CultureInfo newCulture);
+    Task SaveOrUpdateLocalizators(params ILocalizator[] localizators);
+
+    void ChangeDefaultSectionCulture(string sectionName, CultureInfo newCulture);
 }

@@ -1,12 +1,8 @@
-﻿using Basyc.Shared.Models.Pricing;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 
 namespace Basyc.Shared.Models.Pricing.Costs;
 
 public record AccommodationCost(
-	ReadOnlyCollection<RoomCost> Rooms,
-	ReadOnlyCollection<ItemCost> AccomodationItems,
-	Cash TotalCost);
+    ReadOnlyCollection<RoomCost> Rooms,
+    ReadOnlyCollection<ItemCost> AccomodationItems,
+    Cash TotalCost);

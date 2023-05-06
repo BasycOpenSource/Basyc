@@ -1,3 +1,4 @@
 ﻿namespace Basyc.MessageBus.Client.NetMQ;
 
-public record NetMqSessionResult(byte[] bytes, string responseType);
+#pragma warning disable CA1819 // Properties should not return arrays
+public record NetMqSessionResult(byte[] Bytes, string ResponseType);

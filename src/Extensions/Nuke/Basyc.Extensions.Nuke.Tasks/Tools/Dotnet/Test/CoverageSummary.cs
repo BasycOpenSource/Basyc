@@ -1,16 +1,16 @@
 ﻿using Basyc.Extensions.IO;
 
 namespace Basyc.Extensions.Nuke.Tasks.Tools.Dotnet.Test;
+
+#pragma warning disable CA1815 // Override equals and operator equals on value types
 public readonly struct CoverageSummary : IDisposable
 {
-	public TemporaryDirectory Directory { get; init; }
-	public CoverageSummary(string summaryDirectory)
-	{
-		Directory = TemporaryDirectory.CreateFromExisting(summaryDirectory);
-	}
+    public CoverageSummary(string summaryDirectory)
+    {
+        Directory = TemporaryDirectory.CreateFromExisting(summaryDirectory);
+    }
 
-	public void Dispose()
-	{
-		Directory.Dispose();
-	}
+    public TemporaryDirectory Directory { get; init; }
+
+    public void Dispose() => Directory.Dispose();
 }
