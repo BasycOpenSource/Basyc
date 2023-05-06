@@ -92,5 +92,7 @@ public class EfInstantCrudRepositoryTests : IDisposable
         personFromRepo.Name.Should().Be(newName);
     }
 
-    public void Dispose() => throw new NotImplementedException();
+    public void Dispose()
+    {
+    }
 }
