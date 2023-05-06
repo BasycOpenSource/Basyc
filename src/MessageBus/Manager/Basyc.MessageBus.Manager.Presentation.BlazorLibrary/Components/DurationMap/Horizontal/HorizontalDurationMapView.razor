@@ -113,7 +113,7 @@
 
     private void OnZoomFitClick(MouseEventArgs args)
     {
-        double aviableWidthPx = 1000; //this can be dynamic value obtained from js
+        double aviableWidthPx = 1250; //this can be dynamic value obtained from js
         DurationViewHelper.GetCssDurationValue(GetLatestEndTime(RequestContext.Diagnostics) - RequestContext.StartTime, 1, out var normalWidthPx);
         var newPixelsPerMs = aviableWidthPx / normalWidthPx;
         PixelsPerMs = newPixelsPerMs;

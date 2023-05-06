@@ -59,5 +59,5 @@ sealed class Build : NukeBuild, IBasycBuilds
         .SetSourceBranch(GitHubActions.Instance?.GetPullRequestSourceBranch())
         .SetTargetBranch(GitHubActions.Instance?.GetPullRequestTargetBranch());
 
-    public static int Main() => Execute<Build>(x => ((IBasycBuilds)x).StaticCodeAnalysisAffected, x => ((IBasycBuilds)x).CompileAffected);
+    public static int Main() => Execute<Build>(x => ((IBasycBuilds)x).CompileAll);
 }

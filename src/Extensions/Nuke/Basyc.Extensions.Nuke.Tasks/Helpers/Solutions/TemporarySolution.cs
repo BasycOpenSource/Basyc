@@ -22,18 +22,37 @@ public readonly struct TemporarySolution : IDisposable
     /// </summary>
     public static TemporarySolution CreateNew(Solution solution, string buildProjectName)
     {
-        string uniqueName = TemporaryFile.GetNew("temporary.generated", "sln");
-        var newSolution = CreateSolution($"{uniqueName}", new[] { solution }, x => x == solution ? null : x.Name);
-        newSolution.RemoveProject(newSolution.GetProject(buildProjectName));
-        newSolution.Save();
-        return new(newSolution);
+        string temporarySolutionFilePath = TemporaryFile.GetNew("temporary.generated", "sln", solution.Directory);
+        var temporarySolution = CreateSolution($"{temporarySolutionFilePath}", new[] { solution }, x => x == solution ? null : x.Name);
+        TryRemoveBuildProject(buildProjectName, temporarySolution);
+
+        temporarySolution.Save();
+        return new(temporarySolution);
+    }
+
+    /// <summary>
+    ///     Creates new <see cref="TemporarySolution" /> containing specified projecs from existing solution exluding build project.
+    /// </summary>
+    public static TemporarySolution CreateNew(Solution solution, string? buildProjectName, IEnumerable<string> projectsPaths)
+    {
+        string temporarySolutionFilePath = TemporaryFile.GetNew("temporary.generated", "sln", solution.Directory);
+        var temporarySolution = CreateSolution($"{temporarySolutionFilePath}", new[] { solution }, x => x == solution ? null : x.Name);
+
+        var projectsPathsSet = projectsPaths.ToHashSet();
+        temporarySolution.AllProjects
+            .Where(x => projectsPathsSet.Contains(x.Path.ToString().NormalizePath()) is false)
+            .ForEach(temporarySolution.RemoveProject);
+        TryRemoveBuildProject(buildProjectName, temporarySolution);
+
+        temporarySolution.Save();
+        return new(temporarySolution);
     }
 
     public static TemporarySolution GetAffectedAsSolution(
-        RepositoryChangeReport gitCompareReport,
-        string unitTestSuffix,
-        string buildProjectName,
-        Solution solution)
+    RepositoryChangeReport gitCompareReport,
+    string unitTestSuffix,
+    string buildProjectName,
+    Solution solution)
     {
         var changedProjectsPaths = gitCompareReport.ChangedSolutions
             .SelectMany(x => x.ChangedProjects)
@@ -48,29 +67,15 @@ public readonly struct TemporarySolution : IDisposable
         return solutionToUse;
     }
 
-    /// <summary>
-    ///     Creates new <see cref="TemporarySolution" /> containing specified projecs from existing solution exluding build project.
-    /// </summary>
-    public static TemporarySolution CreateNew(Solution solution, string? buildProjectName, IEnumerable<string> projectsPaths)
+    public void Dispose() => File.Delete(Solution);
+
+    private static void TryRemoveBuildProject(string? buildProjectName, Solution temporarySolution)
     {
-        var projectsPathsSet = projectsPaths.ToHashSet();
-        string temporarySolutionFilePath = TemporaryFile.GetNew("temporary.generated", "sln", solution.Directory);
-
-        var newSolution = CreateSolution($"{temporarySolutionFilePath}", new[] { solution }, x => x == solution ? null : x.Name);
-
-        newSolution.AllProjects
-            .Where(x => projectsPathsSet.Contains(x.Path.ToString().NormalizePath()) is false)
-            .ForEach(newSolution.RemoveProject);
         if (buildProjectName is not null)
         {
-            var buildProject = newSolution.GetProject(buildProjectName);
+            var buildProject = temporarySolution.GetProject(buildProjectName);
             if (buildProject is not null)
-                newSolution.RemoveProject(buildProject);
+                temporarySolution.RemoveProject(buildProject);
         }
-
-        newSolution.Save();
-        return new(newSolution);
     }
-
-    public void Dispose() => File.Delete(Solution);
 }
