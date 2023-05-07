@@ -20,6 +20,9 @@ sidebarHistoryView {
 historyItem {
     display: block;
     cursor: pointer;
+    margin-bottom: 16px;
+    margin-left: 32px;
+    margin-right: 32px;
 }
 
 historyItem:hover {

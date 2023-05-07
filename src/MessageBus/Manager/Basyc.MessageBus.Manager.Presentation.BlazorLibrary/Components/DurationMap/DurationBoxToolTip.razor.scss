@@ -1,8 +1,8 @@
 ﻿durationBoxToolTipView {
     display: block;
     background: #000000bf;
-    width: 460px;
     backdrop-filter: blur(10px);
+    width: 460px;
     height: 400px;
     overflow: hidden;
 }
@@ -47,6 +47,14 @@ logLayout {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+time {
+    color: #646B88;
+}
+
+message {
+    color: #C2BEC2;
 }
 
 logHeading {

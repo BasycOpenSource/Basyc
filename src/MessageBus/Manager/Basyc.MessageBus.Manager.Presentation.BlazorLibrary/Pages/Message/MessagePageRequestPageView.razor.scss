@@ -11,6 +11,10 @@ infoRow {
 infoSection {
     display: flex;
     flex-direction: column;
+    background-color: #090916;
+    padding: 32px 48px;
+    border-radius: 8px;
+    flex: 1;
 }
 
 infoTable {
@@ -43,10 +47,11 @@ value {
 }
 
 inputBox {
-    display: block;
+    display: flex;
+    flex-direction: column;
     flex: 1;
-    background-color: #0F0F15;
-    padding: 16px;
+    background-color: #121626;
+    padding: 16px 40px;
 }
 
 arrow {
@@ -57,7 +62,8 @@ arrow {
     color: #14161E;
     font-weight: bolder;
 }
-::deep .mud-tabs{
+
+::deep .mud-tabs {
     height: 100%;
 }
 
@@ -84,8 +90,12 @@ arrow {
     background-color: #5F1950;
 }
 
-ioGrid{
+::deep .panelClass{
+    margin-top:32px;
+}
+
+ioGrid {
     display: flex;
     flex-direction: row;
-    column-gap: 8px;
+    column-gap: 16px;
 }

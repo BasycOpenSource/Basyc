@@ -8,13 +8,9 @@
     <BasycSpaceBorder Size="SpacerSize.Big" StretchHeight="true">
         <infoRow>
             <infoSection>
-                <BasycHeading Size="HeadingSize.H3">
-                    Results
-                </BasycHeading>
-                <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Small" />
                 <infoTable>
                     <labels>
-                        <label>Order Index</label>
+                        @*<label>Order Index</label>*@
                         <label>Started</label>
                         <label>State</label>
                         <label>Duration</label>
@@ -22,7 +18,7 @@
                     </labels>
                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium" />
                     <values>
-                        <value>@MessageRequest.OrderIndex</value>
+                        @*<value>@MessageRequest.OrderIndex</value>*@
                         <value>@MessageRequest.CreationTime.ToString("hh:mm:ss")</value>
                         <value>@MessageRequest.State.ToString()</value>
                         <value>@Html.Time(MessageRequest.Duration)</value>
@@ -30,52 +26,26 @@
                     </values>
                 </infoTable>
             </infoSection>
-            <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Big" />
-            @*            <inputBox>
-            @ResponseResultConverter.CreateInputOverview(MessageRequest.RequestInput.Parameters)
-            </inputBox>
-            <arrow>
-            |>
-            </arrow>
-            <inputBox>
-            @if (MessageRequest.State == RequestResultState.Started)
-            {
-            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
-            }
-            else
-            {
-            <textValue>
-            @if (MessageRequest.State == RequestResultState.Completed)
-            {
-            if (MessageRequest.RequestInput.MessageInfo.HasResponse)
-            {
-            @MessageRequest.Response
-            }
-            else
-            {
-            <ghostLabel>
-            Result does not have an output
-            </ghostLabel>
-            }
-            }
-            @if (MessageRequest.State == RequestResultState.Failed)
-            {
-            @MessageRequest.ErrorMessage
-            }
-            </textValue>
-            }
-            </inputBox>*@
         </infoRow>
         <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Big" />
 
-        <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="false">
+        <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="false" PanelClass="panelClass">
             <ChildContent>
                 <MudTabPanel Text="IO">
                     <ioGrid>
                         <inputBox>
+                            <BasycHeading Size="HeadingSize.H4">
+                                Input
+                            </BasycHeading>
+                            <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Medium" />
                             @ResponseResultConverter.CreateInputOverview(MessageRequest.RequestInput.Parameters)
                         </inputBox>
                         <inputBox>
+                            <BasycHeading Size="HeadingSize.H4">
+                                Output
+                            </BasycHeading>
+                            <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Medium" />
+
                             @if (MessageRequest.State == RequestResultState.Started)
                             {
                                 <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />

@@ -71,8 +71,13 @@ messagePage {
         font-size: 16px;
     }
 
+    h5 {
+        @extend .headingDefalts;
+        font-size: 14px;
+    }
+
     button {
-        background-color: #D1266620;
+        background-color: #3B0D25;
         /*border: 0.5px solid #9e184a3d;*/
         font-family: "Segoe UI";
         font-weight: 300;
@@ -91,6 +96,11 @@ messagePage {
 
 ::deep .style1 {
     @extend .styleSharedDefaults;
+
+    .headingDefalts {
+        color: #717BA7;
+    }
+
     color: #7a657d;
 }
 
@@ -103,11 +113,11 @@ messagePage {
 
 ::deep .style3 {
     @extend .styleSharedDefaults;
-    background-color: #0C0B10;
+    background-color: #0F0F1C;
     color: #636986;
 
     button {
-        background-color: #1C1D2E;
+        background-color: #151626;
         color: #717BA7;
         font-family: "Segoe UI";
         font-weight: 300;

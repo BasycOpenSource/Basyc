@@ -11,12 +11,12 @@
 <durationBoxToolTipView>
     <BasycSpaceBorder Size="SpacerSize.Medium" StretchHeight="true">
         <layout>
-            <activityName>
+            @*<activityName>
                 <BasycHeading Size="HeadingSize.H3">
                     @Name
                 </BasycHeading>
             </activityName>
-            <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />
+            <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />*@
             <infoItems>
                 <infoItem>
                     <div>
@@ -51,21 +51,21 @@
                         Logs
                     </logHeadingText>
                     <logHeadingCounters>
-                    <BasycSpaceLine Start="SpaceLineSize.Medium" Direction="SpaceLineDirection.Vertical" Visible="false" />
-                    <LogIconView LogLevel="LogLevel.Information" />
-                    <logCountNumber>
-                        @LogsInformationCount
-                    </logCountNumber>
-                    <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
-                    <LogIconView LogLevel="LogLevel.Warning" />
-                    <logCountNumber>
-                        @LogsWarningCount
-                    </logCountNumber>
-                    <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
-                    <LogIconView LogLevel="LogLevel.Error" />
-                    <logCountNumber>
-                        @LogsErrorCount
-                    </logCountNumber>
+                        <BasycSpaceLine Start="SpaceLineSize.Medium" Direction="SpaceLineDirection.Vertical" Visible="false" />
+                        <LogIconView LogLevel="LogLevel.Information" />
+                        <logCountNumber>
+                            @LogsInformationCount
+                        </logCountNumber>
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
+                        <LogIconView LogLevel="LogLevel.Warning" />
+                        <logCountNumber>
+                            @LogsWarningCount
+                        </logCountNumber>
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
+                        <LogIconView LogLevel="LogLevel.Error" />
+                        <logCountNumber>
+                            @LogsErrorCount
+                        </logCountNumber>
                     </logHeadingCounters>
 
                 </logHeading>
@@ -78,9 +78,13 @@
                                 <logLayout>
                                     <LogIconView LogLevel="log.LogLevel" />
                                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
-                                    @log.Time.ToString("HH:mm:ss:fff")
+                                    <time>
+                                        @Html.DiagnosticTime(new DiagnosticTime(log.Time, ActivityContext.StartTime.BaseTime))
+                                    </time>
                                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
-                                    @log.Message
+                                    <message>
+                                        @log.Message
+                                    </message>
                                 </logLayout>
                             </BasycSpaceBorder>
                         </log>

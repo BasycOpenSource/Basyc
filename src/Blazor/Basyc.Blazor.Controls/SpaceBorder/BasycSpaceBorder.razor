@@ -2,7 +2,7 @@
 
 @namespace Basyc.Blazor.Controls
 
-<basycSpaceBorder class="@classToRender">
+<basycSpaceBorder class="@classToRender" style="@styleToRender">
     @ChildContent
 </basycSpaceBorder>
 
@@ -14,28 +14,61 @@
     [Parameter]
     public SpacerSize Size { get; set; }
 
+    private SpacerSize? sizeTop;
     [Parameter]
-    public bool ShrinkTopBottom { get; set; }
+    public SpacerSize SizeTop
+    {
+        get => sizeTop ?? Size;
+        set => sizeTop = value;
+    }
 
+    private SpacerSize? sizeBottom;
     [Parameter]
-    public bool ShrinkLeftRight { get; set; }
+    public SpacerSize SizeBottom
+    {
+        get => sizeBottom ?? Size;
+        set => sizeBottom = value;
+    }
+
+    private SpacerSize? sizeLeft;
+    [Parameter]
+    public SpacerSize SizeLeft
+    {
+        get => sizeLeft ?? Size;
+        set => sizeLeft = value;
+    }
+
+    private SpacerSize? sizeRight;
+    [Parameter]
+    public SpacerSize SizeRight
+    {
+        get => sizeRight ?? Size;
+        set => sizeRight = value;
+    }
 
     [Parameter]
     public bool StretchHeight { get; set; }
 
 
     private string classToRender = "";
+    private string styleToRender = "";
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
         classToRender = new CssBuilder()
-            .AddClass("spacer-topBottom--small", Size == SpacerSize.Small && !ShrinkTopBottom)
-            .AddClass("spacer-topBottom--medium", Size == SpacerSize.Medium && !ShrinkTopBottom)
-            .AddClass("spacer-topBottom--big", Size == SpacerSize.Big && !ShrinkTopBottom)
-            .AddClass("spacer-leftRight--small", Size == SpacerSize.Small && !ShrinkLeftRight)
-            .AddClass("spacer-leftRight--medium", Size == SpacerSize.Medium && !ShrinkLeftRight)
-            .AddClass("spacer-leftRight--big", Size == SpacerSize.Big && !ShrinkLeftRight)
             .AddClass("basycSpaceBorder--strechHeight", StretchHeight)
             .Build();
+
+        styleToRender = $"padding-top: {GetSizeCssVariable(SizeTop)}; padding-bottom: {GetSizeCssVariable(SizeBottom)}; padding-left: {GetSizeCssVariable(SizeLeft)}; padding-right: {GetSizeCssVariable(SizeRight)};";
+
     }
+
+    private static string GetSizeCssVariable(SpacerSize size) => size switch
+    {
+        SpacerSize.None => "0px",
+        SpacerSize.Small => "var(--space-small)",
+        SpacerSize.Medium => "var(--space-medium)",
+        SpacerSize.Big => "var(--space-big)",
+        _ => throw new ArgumentException()
+    };
 }

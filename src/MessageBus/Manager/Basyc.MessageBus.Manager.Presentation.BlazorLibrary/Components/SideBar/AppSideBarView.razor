@@ -3,12 +3,10 @@
 @inherits BasycReactiveBlazorComponentBase<AppSideBarViewModel>
 <sideMenu>
     <BasycStyleSection SectionName="1">
-        <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
-            <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />
+        <BasycSpaceBorder Size="SpacerSize.Medium" SizeBottom="SpacerSize.None">
             <BasycHeading Size="HeadingSize.H4">
                 Endpoints
             </BasycHeading>
-            @*<BasycSpaceLine Start="SpaceLineSize.Small" Visible="false"/>*@
         </BasycSpaceBorder>
 
         <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">

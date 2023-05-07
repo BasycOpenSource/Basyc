@@ -1,6 +1,7 @@
 ﻿index {
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 30px;
 }
 
@@ -18,6 +19,7 @@ sidebarHistoryItemView {
     padding: 8px 0px;
     display: block;
     border: 0.5px solid transparent;
+    background-color: #0D0E1A;
 }
 
 .sidebarHistoryItemView--selected {

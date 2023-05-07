@@ -72,10 +72,10 @@ zoomToolBar {
     display: flex;
     flex-direction: row;
     position: sticky;
-    margin-top: 32px;
     left: 0px;
     bottom: 0px;
     width: 5rem;
+    column-gap: 2px;
 }
 
 
