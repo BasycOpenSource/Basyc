@@ -49,6 +49,9 @@
     [Parameter]
     public bool StretchHeight { get; set; }
 
+    [Parameter]
+    public bool StretchWidth { get; set; } = true;
+
 
     private string classToRender = "";
     private string styleToRender = "";
@@ -57,6 +60,7 @@
         base.OnParametersSet();
         classToRender = new CssBuilder()
             .AddClass("basycSpaceBorder--strechHeight", StretchHeight)
+            .AddClass("basycSpaceBorder--strechWidth", StretchWidth)
             .Build();
 
         styleToRender = $"padding-top: {GetSizeCssVariable(SizeTop)}; padding-bottom: {GetSizeCssVariable(SizeBottom)}; padding-left: {GetSizeCssVariable(SizeLeft)}; padding-right: {GetSizeCssVariable(SizeRight)};";

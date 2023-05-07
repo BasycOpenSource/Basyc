@@ -1,1 +1,1 @@
-﻿basycSpaceBorder{display:block;overflow:hidden;display:flex;flex-direction:column;}.basycSpaceBorder--strechHeight{height:100%;}
+﻿basycSpaceBorder{display:block;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;}.basycSpaceBorder--strechHeight{height:100%;}.basycSpaceBorder--strechWidth{align-items:stretch;}

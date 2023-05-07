@@ -7,7 +7,6 @@ using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
-using Basyc.ReactiveUi;
 using Basyc.Shared.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
@@ -191,21 +190,10 @@ busManagerBuilder.RegisterMessages()
             if (logCounter >= desiredCount)
                 break;
         }
-    })
-    ;
-
+    });
 builder.Services.AddBasycBusManagerBlazorUi();
-BasycReactiveUi.Fix();
-//builder.Services.UseMicrosoftDependencyResolver(); //Splat config
-//var resolver = Locator.CurrentMutable;
-//resolver.InitializeSplat();
-//resolver.InitializeReactiveUI();
-
-//Locator.CurrentMutable.Register(() => new SidebarHistory(), typeof(IViewFor<SidebarHistoryViewModel>)); //Splat!
-
-//CreateTestingMessages(busManagerBuilder);
-
 var blazorApp = builder.Build();
+
 WireUpInMemoryDiagnostics(blazorApp);
 await blazorApp.Services.StartBasycDiagnosticsReceivers();
 await blazorApp.Services.StartBasycDiagnosticExporters();

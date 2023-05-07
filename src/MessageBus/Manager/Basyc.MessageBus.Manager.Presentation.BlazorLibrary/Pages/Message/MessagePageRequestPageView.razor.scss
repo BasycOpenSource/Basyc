@@ -11,8 +11,9 @@ infoRow {
 infoSection {
     display: flex;
     flex-direction: column;
-    background-color: #090916;
+    background-color: #0B0B13;
     padding: 32px 48px;
+    border: 1px solid #26262d99;
     border-radius: 8px;
     flex: 1;
 }
@@ -90,12 +91,13 @@ arrow {
     background-color: #5F1950;
 }
 
-::deep .panelClass{
-    margin-top:32px;
+::deep .panelClass {
+    padding-top: 32px;
 }
 
 ioGrid {
     display: flex;
     flex-direction: row;
     column-gap: 16px;
+    height: 100%;
 }

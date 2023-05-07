@@ -27,7 +27,7 @@
                 </infoTable>
             </infoSection>
         </infoRow>
-        <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Big" />
+        <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Medium" />
 
         <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="false" PanelClass="panelClass">
             <ChildContent>
@@ -37,14 +37,14 @@
                             <BasycHeading Size="HeadingSize.H4">
                                 Input
                             </BasycHeading>
-                            <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Medium" />
+                            <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Small" />
                             @ResponseResultConverter.CreateInputOverview(MessageRequest.RequestInput.Parameters)
                         </inputBox>
                         <inputBox>
                             <BasycHeading Size="HeadingSize.H4">
                                 Output
                             </BasycHeading>
-                            <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Medium" />
+                            <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Small" />
 
                             @if (MessageRequest.State == RequestResultState.Started)
                             {
@@ -57,7 +57,10 @@
                                     {
                                         if (MessageRequest.RequestInput.MessageInfo.HasResponse)
                                         {
-                                            @MessageRequest.Response
+                                            if(MessageRequest.Response is Task responseTask)
+                                                @(((dynamic) responseTask).Result)
+                                            else
+                                                @MessageRequest.Response
                                         }
                                         else
                                         {

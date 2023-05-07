@@ -3,38 +3,13 @@ basycSpaceBorder {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    align-items: flex-start
 }
 
 .basycSpaceBorder--strechHeight {
     height: 100%;
 }
 
-/*.spacer-topBottom--small {
-    padding-top: var(--space-small);
-    padding-bottom: var(--space-small);
+.basycSpaceBorder--strechWidth {
+    align-items: stretch;
 }
-
-.spacer-topBottom--medium {
-    padding-top: var(--space-medium);
-    padding-bottom: var(--space-medium);
-}
-
-.spacer-topBottom--big {
-    padding-top: var(--space-big);
-    padding-bottom: var(--space-big);
-}
-
-.spacer-leftRight--small {
-    padding-left: var(--space-small);
-    padding-right: var(--space-small);
-}
-
-.spacer-leftRight--medium {
-    padding-left: var(--space-medium);
-    padding-right: var(--space-medium);
-}
-
-.spacer-leftRight--big {
-    padding-left: var(--space-big);
-    padding-right: var(--space-big);
-}*/

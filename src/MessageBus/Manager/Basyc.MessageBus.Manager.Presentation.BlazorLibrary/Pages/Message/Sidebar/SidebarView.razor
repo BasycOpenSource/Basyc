@@ -16,7 +16,7 @@
             @*<BasycSpaceBorder Size="SpacerSize.Medium">*@
             <formRow>
 
-                <BasycSpaceBorder Size="SpacerSize.Medium" SizeBottom="SpacerSize.Small">
+                <BasycSpaceBorder Size="SpacerSize.Medium" SizeBottom="SpacerSize.Small" StretchHeight="false">
                     <BasycHeading Size="HeadingSize.H4">
                         Create request
                     </BasycHeading>
@@ -31,7 +31,7 @@
                     else
                     {
                         <paramSection>
-                            <BasycSpaceBorder Size="SpacerSize.Medium" SizeTop="SpacerSize.None">
+                            <BasycSpaceBorder Size="SpacerSize.Medium" SizeTop="SpacerSize.None" SizeBottom="SpacerSize.None">
                                 <table class="paramTable paddingContainer">
                                     @for (var i = 0; i < MessageInfo.Parameters.Count; i++)
                                     {
@@ -67,7 +67,7 @@
                         </paramSection>
 
                         <buttonSection>
-                            <BasycSpaceBorder Size="SpacerSize.Medium">
+                            <BasycSpaceBorder Size="SpacerSize.Medium" StretchWidth="false">
                                 @if (hasInputError)
                                 {
                                     @:error when parsing

@@ -20,10 +20,4 @@ public class BusManagerJsInterop : IAsyncDisposable
             await module.DisposeAsync();
         }
     }
-
-    public async Task ApplyChangesToIndexHtml()
-    {
-        var module = await moduleTask.Value;
-        //await module.InvokeVoidAsync("addBusMangerStaticFiles");
-    }
 }

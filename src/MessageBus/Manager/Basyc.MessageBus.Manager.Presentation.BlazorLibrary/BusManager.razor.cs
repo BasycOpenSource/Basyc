@@ -1,5 +1,6 @@
 ﻿using Basyc.Blazor.Controls;
 using Basyc.MessageBus.Manager.Application.Building;
+using Excubo.Blazor.ScriptInjection;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -7,6 +8,8 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary;
 
 public partial class BusManager
 {
+    private bool jsLoaded;
+
     public MessageInfo? SelectedMessageInfo { get; private set; }
 
     public MudTheme MudTheme { get; init; } = new()
@@ -19,7 +22,8 @@ public partial class BusManager
         },
     };
 
-    [Inject] private BusManagerJsInterop BusManagerJSInterop { get; set; } = null!;
+    [Inject]
+    private IScriptInjectionTracker Script_injection_tracker { get; init; } = null!;
 
     protected override void OnInitialized()
     {
@@ -41,23 +45,10 @@ public partial class BusManager
             "style3"));
     }
 
-    protected override async Task OnParametersSetAsync()
-    {
-        await BusManagerJSInterop.ApplyChangesToIndexHtml();
-        await base.OnParametersSetAsync();
-    }
-
     protected override async Task OnInitializedAsync()
     {
-        await BusManagerJSInterop.ApplyChangesToIndexHtml();
+        await Script_injection_tracker.LoadedAsync("_content/MudBlazor/MudBlazor.min.js");
+        jsLoaded = true;
         await base.OnInitializedAsync();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            await BusManagerJSInterop.ApplyChangesToIndexHtml();
-
-        await base.OnAfterRenderAsync(firstRender);
     }
 }
