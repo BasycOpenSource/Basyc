@@ -8,6 +8,7 @@ public partial class BasycList<TItem>
 {
     private readonly string scrollId = Random.Shared.Next().ToString();
     private Action? unsubcribeAction;
+    private string styleToRender = string.Empty;
 
     [Inject]
     public ScrollJsInterop ScrollJsInterop { get; init; } = null!;
@@ -20,6 +21,8 @@ public partial class BasycList<TItem>
 
     [Parameter]
     public bool Virtualize { get; set; } = true;
+
+    [Parameter] public SpaceSize RowGap { get; set; }
 
     private ICollection<TItem> ItemsCasted { get; set; } = null!;
 
@@ -37,6 +40,7 @@ public partial class BasycList<TItem>
         }
 
         ItemsCasted = (ICollection<TItem>)Items;
+        styleToRender = $"row-gap: {RowGap.GetSizeCssVariable()};";
     }
 
     protected override void OnAfterRender(bool firstRender)

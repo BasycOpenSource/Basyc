@@ -12,35 +12,35 @@
     public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public SpacerSize Size { get; set; }
+    public SpaceSize Size { get; set; }
 
-    private SpacerSize? sizeTop;
+    private SpaceSize? sizeTop;
     [Parameter]
-    public SpacerSize SizeTop
+    public SpaceSize SizeTop
     {
         get => sizeTop ?? Size;
         set => sizeTop = value;
     }
 
-    private SpacerSize? sizeBottom;
+    private SpaceSize? sizeBottom;
     [Parameter]
-    public SpacerSize SizeBottom
+    public SpaceSize SizeBottom
     {
         get => sizeBottom ?? Size;
         set => sizeBottom = value;
     }
 
-    private SpacerSize? sizeLeft;
+    private SpaceSize? sizeLeft;
     [Parameter]
-    public SpacerSize SizeLeft
+    public SpaceSize SizeLeft
     {
         get => sizeLeft ?? Size;
         set => sizeLeft = value;
     }
 
-    private SpacerSize? sizeRight;
+    private SpaceSize? sizeRight;
     [Parameter]
-    public SpacerSize SizeRight
+    public SpaceSize SizeRight
     {
         get => sizeRight ?? Size;
         set => sizeRight = value;
@@ -63,16 +63,7 @@
             .AddClass("basycSpaceBorder--strechWidth", StretchWidth)
             .Build();
 
-        styleToRender = $"padding-top: {GetSizeCssVariable(SizeTop)}; padding-bottom: {GetSizeCssVariable(SizeBottom)}; padding-left: {GetSizeCssVariable(SizeLeft)}; padding-right: {GetSizeCssVariable(SizeRight)};";
+        styleToRender = $"padding-top: {SizeTop.GetSizeCssVariable()}; padding-bottom: {SizeBottom.GetSizeCssVariable()}; padding-left: {SizeLeft.GetSizeCssVariable()}; padding-right: {SizeRight.GetSizeCssVariable()};";
 
     }
-
-    private static string GetSizeCssVariable(SpacerSize size) => size switch
-    {
-        SpacerSize.None => "0px",
-        SpacerSize.Small => "var(--space-small)",
-        SpacerSize.Medium => "var(--space-medium)",
-        SpacerSize.Big => "var(--space-big)",
-        _ => throw new ArgumentException()
-    };
 }

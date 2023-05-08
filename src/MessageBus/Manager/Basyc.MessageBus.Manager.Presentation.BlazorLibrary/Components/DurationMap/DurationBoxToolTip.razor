@@ -9,7 +9,7 @@
 @inherits BasycReactiveBlazorComponentBase<DurationBoxToolTipViewModel>
 
 <durationBoxToolTipView>
-    <BasycSpaceBorder Size="SpacerSize.Medium" StretchHeight="true">
+    <BasycSpaceBorder Size="SpaceSize.Big" StretchHeight="true">
         <layout>
             @*<activityName>
                 <BasycHeading Size="HeadingSize.H3">
@@ -31,7 +31,6 @@
                         started
                     </div>
                     <div>
-                        @*@Html.Time(StartTime.Value - default(DateTimeOffset))*@
                         @Html.DiagnosticTime(StartTime)
                     </div>
                 </infoItem>
@@ -71,10 +70,10 @@
                 </logHeading>
             </BasycHeading>
             <logs>
-                <BasycList Items="@ActivityContext.Logs" Context="log">
+                <BasycList Items="@ActivityContext.Logs" Context="log" RowGap="SpaceSize.Smaller">
                     <ItemTemplate>
                         <log>
-                            <BasycSpaceBorder Size="SpacerSize.Small">
+                            <BasycSpaceBorder Size="SpaceSize.Small">
                                 <logLayout>
                                     <LogIconView LogLevel="log.LogLevel" />
                                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
