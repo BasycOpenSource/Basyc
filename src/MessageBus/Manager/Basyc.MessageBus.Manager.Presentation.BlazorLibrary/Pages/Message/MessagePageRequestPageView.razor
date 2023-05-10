@@ -5,7 +5,7 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers;
 @inherits BasycReactiveBlazorComponentBase<MessagePageRequestPageViewModel, MessageRequest>
 <messagePageRequestPageView>
-    <BasycSpaceBorder Size="SpaceSize.Bigger" StretchHeight="true">
+    <BasycSpaceBorder Size="SpaceSize.Bigger" SizeTop="SpaceSize.Big" StretchHeight="true">
         <infoRow>
             <infoSection>
                 <infoTable>
@@ -27,7 +27,7 @@
                 </infoTable>
             </infoSection>
         </infoRow>
-        <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Medium" />
+        <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Big" />
 
         <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="false" PanelClass="panelClass">
             <ChildContent>
