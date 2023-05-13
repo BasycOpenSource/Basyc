@@ -1,5 +1,8 @@
 using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Receiving.Abstractions;
+using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Helpers;
+using Basyc.Diagnostics.Shared.Logging;
 using Basyc.DomainDrivenDesign.Domain;
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.Manager;
@@ -86,7 +89,7 @@ busManagerBuilder.AddRequestHandler()
 //  .HasResponse<int>()
 //  .SetResponseDisplayName("asddas")
 //  .HandledByDefaultHandler();
-
+IDiagnosticsExporter? diagnsoticExporter = null;
 busManagerBuilder.RegisterMessages()
     .FromAssemblyScan(assembliesToScan)
     .WhereImplements<ICommand>()
@@ -176,6 +179,18 @@ busManagerBuilder.RegisterMessages()
             logger.LogError(message);
         }
     })
+    .AddMessage("Multiple Services")
+    .NoReturn()
+    .HandledBy((logger) =>
+    {
+        var serviceIdentity = new ServiceIdentity("TempService");
+        var traceId = DiagnosticHelper.GetCurrentTraceId();
+        var activityStart = new ActivityStart(serviceIdentity, traceId, null, IdGeneratorHelper.GenerateNewSpanId(), "TempService Act1", DateTimeOffset.UtcNow);
+        diagnsoticExporter.Value().StartActivity(activityStart);
+        diagnsoticExporter.Value().EndActivity(activityStart);
+        var logEntry = new LogEntry(serviceIdentity, traceId, DateTimeOffset.UtcNow, LogLevel.Information, "Message", null);
+        diagnsoticExporter.Value().ProduceLog(logEntry);
+    })
     .AddMessage("Log")
     .WithParameter<int>("logCount")
     .NoReturn()
@@ -193,7 +208,7 @@ busManagerBuilder.RegisterMessages()
     });
 builder.Services.AddBasycBusManagerBlazorUi();
 var blazorApp = builder.Build();
-
+diagnsoticExporter = blazorApp.Services.GetRequiredService<IDiagnosticsExporter>();
 WireUpInMemoryDiagnostics(blazorApp);
 await blazorApp.Services.StartBasycDiagnosticsReceivers();
 await blazorApp.Services.StartBasycDiagnosticExporters();

@@ -1,5 +1,6 @@
 ﻿namespace Basyc.MessageBus.Manager.Application.ResultDiagnostics;
-public readonly struct DiagnosticTime
+#pragma warning disable CA1036 // Override methods on comparable types
+public readonly struct DiagnosticTime : IComparable<DiagnosticTime>
 {
     public DiagnosticTime(DateTimeOffset time, DateTimeOffset baseTime)
     {
@@ -13,6 +14,8 @@ public readonly struct DiagnosticTime
     public DateTimeOffset AbsoluteTime { get; init; }
 
     public DateTimeOffset BaseTime { get; init; }
+
+    public int CompareTo(DiagnosticTime other) => AbsoluteTime.CompareTo(other.AbsoluteTime);
 
     private static DateTimeOffset GetRelativeTime(DateTimeOffset toConvertTime, DateTimeOffset baseTime)
     {

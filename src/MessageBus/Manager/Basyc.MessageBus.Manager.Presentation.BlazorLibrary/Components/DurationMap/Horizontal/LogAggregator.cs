@@ -9,8 +9,7 @@ public static partial class LogAggregator
 {
     public static ReadOnlyCollection<AggregatedLog> AggregateLogs(IEnumerable<LogEntry> logEntries, double pixelsPerMs, double logMinWidth, double logMaxWidth, double logWidthMultiplier)
     {
-        //double boundingTimeDiffLimitMs = 4 / pixelsPerMs;
-        double boundingTimeDiffLimitMs = 10 / pixelsPerMs;
+        double boundingTimeDiffLimitMs = 15 / pixelsPerMs;
         List<AggregatedLogInProgress> aggregatedLogsInProgress = new();
         foreach (var logEntry in logEntries)
         {

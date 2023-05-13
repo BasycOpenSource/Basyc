@@ -1,6 +1,7 @@
 ﻿using Basyc.MessageBus.Manager.Application.Building;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace Basyc.MessageBus.Manager.Application.Requesting;
 
@@ -59,7 +60,7 @@ public class InMemoryRequestHandler : IRequestHandler
         {
             if (x.Status is TaskStatus.Faulted)
             {
-                logger.LogError("Handler failed. {Message}", x.Exception.Value().Message);
+                logger.LogError("Handler failed. {Message}", ExceptionToMessage(x.Exception.Value()));
                 requestResult.Fail(x.Exception.Value().Message);
                 //inMemoryRequesterAct.Stop();
             }
@@ -68,4 +69,22 @@ public class InMemoryRequestHandler : IRequestHandler
     }
 
     public void AddHandler(MessageInfo requestInfo, RequestHandler handler) => handlersMap.Add(requestInfo, handler);
+
+    private static string ExceptionToMessage(Exception exception)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("Exception message:");
+        sb.AppendLine(exception.Message);
+        sb.AppendLine("Exception stack trace:");
+        sb.AppendLine(exception.StackTrace);
+        if (exception.InnerException != null)
+        {
+            sb.AppendLine(string.Empty);
+            sb.AppendLine(string.Empty);
+            sb.AppendLine("Inner exception");
+            sb.Append(ExceptionToMessage(exception.InnerException));
+        }
+
+        return sb.ToString();
+    }
 }

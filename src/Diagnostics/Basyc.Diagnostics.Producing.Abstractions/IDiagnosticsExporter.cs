@@ -15,9 +15,6 @@ public interface IDiagnosticsExporter
 
     Task<bool> StartAsync();
 
-    /// <summary>
-    ///     When app represents only one identity (in most sc).
-    /// </summary>
     public ActivityStartDisposer StartActivity(ServiceIdentity serviceIdentity, string traceId, string? parentId, string name, DateTimeOffset startTime = default)
     {
         if (startTime == default)

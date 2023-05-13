@@ -3,7 +3,7 @@
     flex-direction: column;
     flex: 1;
     font-family: Consolas;
-    height: 40rem;
+    min-height: 0px;
 }
 
 logs {
@@ -11,7 +11,10 @@ logs {
     display: flex;
     flex-direction: column;
     row-gap: 3px;
+    min-height: 0px;
     overflow-y: auto;
+    overflow: hidden;
+    flex: 1;
 }
 toolBar{
     display: flex;

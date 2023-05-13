@@ -12,15 +12,10 @@
     {
         SetKnownWidth();
     }
-    //var opacity = Color.Opacity - (((double)NestingLevel / 5) * Color.Opacity);
-    //string durationBoxStyle = $"min-width: {width}; background-color: {Color.Edit(opacity: opacity)};";
     var darkPercentage = (double)NestingLevel / 5;
     if (darkPercentage > 1)
         darkPercentage = 1;
-    //string durationBoxStyle = $"min-width: {width}; background-color: {Color.Darker(darkPercentage)};";
-    //var durationBoxStyle = $"width: {width}; background-color: {Color.Darker()};";
     var durationBoxStyle = $"width: {width};";
-    //var mudTooltipBoxStyle = "display: block; width: 100%; height: 100%; grid-row: 1; grid-column: 1;";
     var activityNameStyle = $"max-width: {width};"; //enabled overflow elipsis
 }
 
@@ -216,7 +211,7 @@
 
     protected override void OnInitialized()
     {
-        RunTimer();
+        StartTimer();
         base.OnInitialized();
     }
 
@@ -242,7 +237,7 @@
         }
     }
 
-    private async void RunTimer()
+    private async void StartTimer()
     {
         while (await updateUnfinishedTimer.WaitForNextTickAsync())
         {

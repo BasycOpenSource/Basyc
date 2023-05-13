@@ -9,7 +9,7 @@ namespace Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.Diagnostics;
 
 public class BasycDiagnosticsReceiversRequestDiagnosticsSource : IRequestDiagnosticsSource
 {
-    private readonly IBasycDiagnosticsReceiverTraceIdMapper sessionMapper;
+    //private readonly IBasycDiagnosticsReceiverTraceIdMapper sessionMapper;
 
     public BasycDiagnosticsReceiversRequestDiagnosticsSource(IEnumerable<IDiagnosticReceiver> logReceivers,
         IBasycDiagnosticsReceiverTraceIdMapper sessionMapper)
@@ -21,7 +21,7 @@ public class BasycDiagnosticsReceiversRequestDiagnosticsSource : IRequestDiagnos
             logReceiver.ActivityStartsReceived += LogReceiver_ActivityStartsReceived;
         }
 
-        this.sessionMapper = sessionMapper;
+        //this.sessionMapper = sessionMapper;
     }
 
     public event EventHandler<LogsUpdatedArgs>? LogsReceived;
@@ -32,7 +32,8 @@ public class BasycDiagnosticsReceiversRequestDiagnosticsSource : IRequestDiagnos
 
     private void LogReceiver_LogsReceived(object? sender, LogsReceivedArgs e)
     {
-        var mappedSessions = e.LogEntries.Select(x => new LogEntry(x.Service, sessionMapper.GetTraceId(x.TraceId), x.Time, x.LogLevel, x.Message, x.SpanId))
+        //var mappedSessions = e.LogEntries.Select(x => new LogEntry(x.Service, sessionMapper.GetTraceId(x.TraceId), x.Time, x.LogLevel, x.Message, x.SpanId))
+        var mappedSessions = e.LogEntries.Select(x => new LogEntry(x.Service, x.TraceId, x.Time, x.LogLevel, x.Message, x.SpanId))
             .ToArray();
         LogsReceived?.Invoke(this, new LogsUpdatedArgs(mappedSessions));
     }

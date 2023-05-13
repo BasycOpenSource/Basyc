@@ -64,7 +64,8 @@ public class BasycTypedMessageBusRequestHandler : IRequestHandler
             var busTask = typedMessageBusClient.RequestAsync(requestType, requestObject, requestResult.RequestInput.MessageInfo.ResponseType, busRequestContext);
             messageBusClientRequestActivity.Stop();
 
-            inMemorySessionMapper.AddMapping(requestResult.TraceId, busTask.TraceId);
+            //Not needed?
+            //inMemorySessionMapper.AddMapping(requestResult.TraceId, busTask.TraceId);
             busTask.Task.ContinueWith(x =>
             {
                 //await busRequestActivity.Log("MessageBusClient Response received", LogLevel.Information);

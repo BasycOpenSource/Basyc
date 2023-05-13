@@ -23,8 +23,16 @@ sidebarHistoryItemView {
     border-radius: 4px;
 }
 
+sidebarHistoryItemView:hover {
+    background-color: #161B2A;
+}
+
 .sidebarHistoryItemView--selected {
     background-color: #20091A;
+}
+
+.sidebarHistoryItemView--selected:hover {
+    background-color: #1B1122;
 }
 
 ::deep logIcon {

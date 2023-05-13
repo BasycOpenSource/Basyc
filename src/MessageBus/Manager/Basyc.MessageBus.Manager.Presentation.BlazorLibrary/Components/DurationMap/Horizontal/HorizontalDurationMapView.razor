@@ -67,6 +67,8 @@
 @code {
     [Inject] private BusManagerJsInterop BusManagerJsInterop { get; set; } = null!;
     [Inject] private ScrollJsInterop ScrollJsInterop { get; set; } = null!;
+    private readonly PeriodicTimer zoomFitTimer = new PeriodicTimer(TimeSpan.FromSeconds(0.5));
+    private bool zoomManuallyChanged;
 
 
     [Parameter]
@@ -81,7 +83,11 @@
 #pragma warning restore CA5394
 
 
-    protected override void OnInitialized() => base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        StartTimer();
+        base.OnInitialized();
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -95,6 +101,7 @@
         RequestContext.Diagnostics.ActivityStartAdded += OnActivityStartAdded;
         RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
         RequestContext.Diagnostics.ActivityEndAdded += OnActivityEneAdded;
+        ZoomFit();
         base.OnParametersSet();
     }
 
@@ -102,10 +109,15 @@
 
     private void OnActivityEneAdded(object? sender, ActivityEnd activityEnd) => StateHasChanged();
 
-    private void OnZoomInClick(MouseEventArgs args) => PixelsPerMs += 0.1 * PixelsPerMs * 3;
+    private void OnZoomInClick(MouseEventArgs args)
+    {
+        zoomManuallyChanged = true;
+        PixelsPerMs += 0.1 * PixelsPerMs * 3;
+    }
 
     private void OnZoomOutClick(MouseEventArgs args)
     {
+        zoomManuallyChanged = true;
         PixelsPerMs -= 0.1 * PixelsPerMs * 3;
         if (PixelsPerMs < 0)
             PixelsPerMs = 0;
@@ -113,10 +125,20 @@
 
     private void OnZoomFitClick(MouseEventArgs args)
     {
+        zoomManuallyChanged = false;
+        ZoomFit();
+    }
+
+    private void ZoomFit()
+    {
         double aviableWidthPx = 1000; //this can be dynamic value obtained from js
         DurationViewHelper.GetCssDurationValue(GetLatestEndTime(RequestContext.Diagnostics) - RequestContext.StartTime, 1, out var normalWidthPx);
         var newPixelsPerMs = aviableWidthPx / normalWidthPx;
-        PixelsPerMs = newPixelsPerMs;
+        if (newPixelsPerMs != PixelsPerMs)
+        {
+            PixelsPerMs = newPixelsPerMs;
+            StateHasChanged();
+        }
     }
 
     private static DateTimeOffset GetLatestEndTime(MessageDiagnostic requestDiagnostic)
@@ -152,6 +174,13 @@
         return latestEndTime;
     }
 
+    private async void StartTimer()
+    {
+        while (await zoomFitTimer.WaitForNextTickAsync())
+        {
+            if (zoomManuallyChanged is false)
+                ZoomFit();
 
-
+        }
+    }
 }
