@@ -162,5 +162,9 @@
   {
     "outputFile": "Components/LogIcon/LogIconView.razor.css",
     "inputFile": "Components/LogIcon/LogIconView.razor.scss"
+  },
+  {
+    "outputFile": "Pages/Message/Sidebar/SidebarMessageSelector.razor.css",
+    "inputFile": "Pages/Message/Sidebar/SidebarMessageSelector.razor.scss"
   }
 ]

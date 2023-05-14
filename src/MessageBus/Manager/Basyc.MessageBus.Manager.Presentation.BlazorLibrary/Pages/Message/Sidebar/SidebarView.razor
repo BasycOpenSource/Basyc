@@ -14,14 +14,20 @@
 
         <grid>
             @*<BasycSpaceBorder Size="SpacerSize.Medium">*@
+            <selectorRow>
+                <BasycSpaceBorder Size="SpaceSize.Big" SizeBottom="SpaceSize.None" StretchHeight="false">
+                    <SidebarMessageSelector />
+                </BasycSpaceBorder>
+            </selectorRow>
             <formRow>
 
                 <BasycSpaceBorder Size="SpaceSize.Big" SizeBottom="SpaceSize.Small" StretchHeight="false">
-                    <BasycHeading Size="HeadingSize.H4">
-                        Create request
+                    <BasycHeading Size="HeadingSize.H5">
+                        Parameters
                     </BasycHeading>
                 </BasycSpaceBorder>
                 <requestform>
+
                     @if (MessageInfo is null)
                     {
                         <ghostLabel>
@@ -67,7 +73,7 @@
                         </paramSection>
 
                         <buttonSection>
-                            <BasycSpaceBorder Size="SpaceSize.Big" StretchWidth="false">
+                            <BasycSpaceBorder Size="SpaceSize.Big" SizeTop="SpaceSize.Medium" StretchWidth="false">
                                 @if (hasInputError)
                                 {
                                     @:error when parsing

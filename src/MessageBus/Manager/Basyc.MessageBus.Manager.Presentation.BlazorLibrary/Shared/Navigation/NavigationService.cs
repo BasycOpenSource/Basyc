@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components.Rendering;
 using ReactiveUI.Fody.Helpers;
 
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
-public class NavigationService : BasycReactiveViewModelBase
+public class NavigationService : BasycReactiveViewModelBase, INavigationService
 {
     [Reactive] public RenderFragment? CurrentPage { get; private set; } = null;
 

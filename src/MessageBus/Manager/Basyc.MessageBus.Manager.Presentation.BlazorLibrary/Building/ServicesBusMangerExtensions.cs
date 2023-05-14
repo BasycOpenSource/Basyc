@@ -13,7 +13,7 @@ public static class ServicesBusMangerExtensions
         BasycReactiveUi.Fix();
         services.AddMudServices();
         services.AddSingleton<BusManagerJsInterop>();
-        services.AddSingleton<NavigationService>();
+        services.AddSingleton<INavigationService, NavigationService>();
         services.RegisterViewModels();
         services.AddBasycBlazorControls();
         services.AddScriptInjection();

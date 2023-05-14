@@ -12,6 +12,13 @@
     background-color: #0C0B10;
 }
 
+layout {
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+    height: 100%
+}
+
 sideBar {
     flex-shrink: 0;
     height: 100%;
@@ -91,7 +98,13 @@ messagePage {
     }
 
     button:hover {
-        background-color: rgba(254, 150, 189, 0.22) !important;
+        /*background-color: rgba(254, 150, 189, 0.22) !important;*/
+        background-color: rgba(254, 150, 189, 0.22);
+    }
+
+    .mud-popover {
+        background: #0c0e19a1;
+        backdrop-filter: blur(10px);
     }
 }
 
@@ -135,9 +148,3 @@ messagePage {
 }
 
 
-layout {
-    display: flex;
-    align-items: stretch;
-    flex-direction: row;
-    height: 100%
-}

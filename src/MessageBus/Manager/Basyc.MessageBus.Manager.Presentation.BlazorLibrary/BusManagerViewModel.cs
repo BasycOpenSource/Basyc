@@ -6,9 +6,9 @@ using ReactiveUI.Fody.Helpers;
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary;
 public class BusManagerViewModel : BasycReactiveViewModelBase
 {
-    private readonly NavigationService navigationService;
+    private readonly INavigationService navigationService;
 
-    public BusManagerViewModel(NavigationService navigationService)
+    public BusManagerViewModel(INavigationService navigationService)
     {
         this.navigationService = navigationService;
         CurrentPage = this.ReactiveProperty(x => x.CurrentPage, x => x.navigationService.CurrentPage);
