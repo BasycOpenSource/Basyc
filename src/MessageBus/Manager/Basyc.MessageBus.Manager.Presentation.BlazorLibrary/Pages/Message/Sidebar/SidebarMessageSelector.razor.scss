@@ -7,11 +7,11 @@
 .buttonClass {
     flex: 1;
     width: 100%;
-    background-color: transparent !important;
+    background-color: #130714 !important;
     justify-content: space-between;
     padding: 8px !important;
-    border-radius: 2px !important;
-    border-bottom: 2px solid #3B0D25;
+    border-radius: 4px 4px 4px 4px !important;
+    border-bottom: 2px solid #3b0d2596;
 }
 
 .buttonClass:hover {
@@ -19,6 +19,9 @@
 }
 
 ::deep .requestPanel {
+}
+
+::deep .mud-expansion-panels {
 }
 
 ::deep .groupPanel {
@@ -29,7 +32,7 @@
 }
 
 ::deep .mud-expand-panel-header {
-    padding: 16px 32px !important;
+    padding: 0px !important;
 }
 
 ::deep messages {

@@ -9,45 +9,91 @@
 <sidebarMessageSelectorView>
     <button onclick="@ToggleOpen" class="buttonClass">
         @SelectedMessageName
-        <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown"/>
+        <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" />
     </button>
     <MudPopover Open="@isOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Paper="false" RelativeWidth="true">
-        <BasycStyleSection SectionName="1">
-            <BasycSpaceBorder SizeLeft="SpaceSize.Medium" SizeRight="SpaceSize.Medium">
-                <BasycSpaceBorder Size="SpaceSize.Medium" SizeBottom="SpaceSize.None">
+        <popOverBody>
+            <BasycStyleSection SectionName="1">
+                <BasycSpaceBorder Size="SpaceSize.Big" SizeTop="SpaceSize.Medium">
                     <BasycHeading Size="HeadingSize.H4">
                         Endpoints
                     </BasycHeading>
-                </BasycSpaceBorder>
 
-                <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">
-                    @foreach (var messageGroup in messageGroups)
-                    {
-                        <MudExpansionPanel Class="groupPanel" Dense="true" DisableGutters="true" IsInitiallyExpanded="true">
-                            <TitleContent>
-                                <gutters>
-                                    <domainHeading>
-                                        @Html.Icon(IconsEnum.folder)
-                                        @messageGroup.Name
-                                    </domainHeading>
-                                </gutters>
-                            </TitleContent>
-                            <ChildContent>
-                                <messages>
-                                    @foreach (var message in messageGroup.Messages)
-                                    {
-                                        <messageItem @onclick="() => SelectMessage(message)">
-                                            @message.RequestDisplayName
-                                        </messageItem>
-                                    }
-                                </messages>
-                            </ChildContent>
-                        </MudExpansionPanel>
-                    }
-                </MudExpansionPanels>
-            </BasycSpaceBorder>
-        </BasycStyleSection>
+                    <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">
+                        @foreach (var messageGroup in messageGroups)
+                        {
+                            <MudExpansionPanel Class="groupPanel" Dense="true" DisableGutters="true" IsInitiallyExpanded="true">
+                                <TitleContent>
+                                    <gutters>
+                                        <domainHeading>
+                                            @Html.Icon(IconsEnum.folder)
+                                            @messageGroup.Name
+                                        </domainHeading>
+                                    </gutters>
+                                </TitleContent>
+                                <ChildContent>
+                                    <messages>
+                                        @foreach (var message in messageGroup.Messages)
+                                        {
+                                            <messageItem @onclick="() => SelectMessage(message)">
+                                                @message.RequestDisplayName
+                                            </messageItem>
+                                        }
+                                    </messages>
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+                    </MudExpansionPanels>
+                </BasycSpaceBorder>
+            </BasycStyleSection>
+        </popOverBody>
     </MudPopover>
+    @*    <BasycTooltip>
+    <ChildContent>
+    <button onclick="@ToggleOpen" class="buttonClass">
+    @SelectedMessageName
+    <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" />
+    </button>
+    </ChildContent>
+    <TooltipContent>
+    <BasycStyleSection SectionName="1">
+    <BasycSpaceBorder SizeLeft="SpaceSize.Medium" SizeRight="SpaceSize.Medium">
+    <BasycSpaceBorder Size="SpaceSize.Medium" SizeBottom="SpaceSize.None">
+    <BasycHeading Size="HeadingSize.H4">
+    Endpoints
+    </BasycHeading>
+    </BasycSpaceBorder>
+
+    <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">
+    @foreach (var messageGroup in messageGroups)
+    {
+    <MudExpansionPanel Class="groupPanel" Dense="true" DisableGutters="true" IsInitiallyExpanded="true">
+    <TitleContent>
+    <gutters>
+    <domainHeading>
+    @Html.Icon(IconsEnum.folder)
+    @messageGroup.Name
+    </domainHeading>
+    </gutters>
+    </TitleContent>
+    <ChildContent>
+    <messages>
+    @foreach (var message in messageGroup.Messages)
+    {
+    <messageItem @onclick="() => SelectMessage(message)">
+    @message.RequestDisplayName
+    </messageItem>
+    }
+    </messages>
+    </ChildContent>
+    </MudExpansionPanel>
+    }
+    </MudExpansionPanels>
+    </BasycSpaceBorder>
+    </BasycStyleSection>
+    </TooltipContent>
+
+    </BasycTooltip>*@
 </sidebarMessageSelectorView>
 
 @code {
