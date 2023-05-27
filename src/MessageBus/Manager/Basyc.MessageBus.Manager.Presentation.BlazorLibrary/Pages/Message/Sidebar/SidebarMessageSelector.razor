@@ -1,7 +1,7 @@
 ﻿@using System.Collections.ObjectModel;
+@using Basyc.Blazor.Controls.HtmlExtensions
 @using Basyc.MessageBus.Manager.Application;
 @using Basyc.MessageBus.Manager.Application.Building;
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 @using ReactiveUI.Fody.Helpers;
 @inherits BasycReactiveBlazorComponentBase
@@ -26,7 +26,7 @@
                                 <TitleContent>
                                     <gutters>
                                         <domainHeading>
-                                            @Html.Icon(IconsEnum.folder)
+                                            @Html.Methods.Icon(IconsEnum.folder)
                                             @messageGroup.Name
                                         </domainHeading>
                                     </gutters>

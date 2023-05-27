@@ -3,9 +3,9 @@
 @using Basyc.Diagnostics.Shared.Logging;
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls
 @using Microsoft.Extensions.Logging;
 @using ReactiveUI;
+@using Basyc.Blazor.Controls.HtmlExtensions;
 @inherits BasycReactiveBlazorComponentBase<DurationBoxToolTipViewModel>
 
 <durationBoxToolTipView>
@@ -31,7 +31,7 @@
                         started
                     </div>
                     <div>
-                        @Html.DiagnosticTime(StartTime)
+                        @Html.Methods.DiagnosticTime(StartTime)
                     </div>
                 </infoItem>
                 <infoItem>
@@ -39,7 +39,7 @@
                         lasted
                     </div>
                     <div>
-                        @Html.Time(Duration)
+                        @Html.Methods.Time(Duration)
                     </div>
                 </infoItem>
             </infoItems>
@@ -78,7 +78,7 @@
                                     <LogIconView LogLevel="log.LogLevel" />
                                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
                                     <time>
-                                        @Html.DiagnosticTime(new DiagnosticTime(log.Time, ActivityContext.StartTime.BaseTime))
+                                        @Html.Methods.DiagnosticTime(new DiagnosticTime(log.Time, ActivityContext.StartTime.BaseTime))
                                     </time>
                                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
                                     <message>

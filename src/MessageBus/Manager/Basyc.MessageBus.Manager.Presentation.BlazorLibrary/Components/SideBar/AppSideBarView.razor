@@ -1,5 +1,6 @@
-﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
-@using Excubo.Blazor.ScriptInjection
+﻿@using Excubo.Blazor.ScriptInjection
+@using Basyc.Blazor.Controls.HtmlExtensions
+@using Html = Basyc.Blazor.Controls.HtmlExtensions.Html
 
 @inherits BasycReactiveBlazorComponentBase<AppSideBarViewModel>
 <sideMenu>
@@ -17,7 +18,7 @@
                     <TitleContent>
                         <gutters>
                             <domainHeading>
-                                @Html.Icon(IconsEnum.folder)
+                                @Html.Methods.Icon(IconsEnum.folder)
                                 @messageGroup.Name
                             </domainHeading>
                         </gutters>

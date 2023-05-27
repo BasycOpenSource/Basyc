@@ -1,8 +1,8 @@
 ﻿@using Basyc.MessageBus.Manager.Application;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogWindow
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers;
+@using Basyc.Blazor.Controls.HtmlExtensions
 @inherits BasycReactiveBlazorComponentBase<MessagePageRequestPageViewModel, MessageRequest>
 <messagePageRequestPageView>
     <BasycSpaceBorder Size="SpaceSize.Bigger" SizeTop="SpaceSize.Big" SizeBottom="SpaceSize.Big">
@@ -21,7 +21,7 @@
                         @*<value>@MessageRequest.OrderIndex</value>*@
                         <value>@MessageRequest.CreationTime.ToString("hh:mm:ss")</value>
                         <value>@MessageRequest.State.ToString()</value>
-                        <value>@Html.Time(MessageRequest.Duration)</value>
+                        <value>@Html.Methods.Time(MessageRequest.Duration)</value>
                         <value>@MessageRequest.TraceId.ToString()</value>
                     </values>
                 </infoTable>

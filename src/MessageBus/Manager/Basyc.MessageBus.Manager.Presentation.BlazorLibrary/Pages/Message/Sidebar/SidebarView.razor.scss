@@ -129,24 +129,26 @@ ghostLabel {
 
 grid {
     display: grid;
-    grid-template-rows: min-content 50fr;
-    /*display: flex;
-    flex-direction: column;*/
+    grid-template-rows: auto min-content 50fr;
     height: 100%;
 }
 
-selectionGrid {
+logoSection {
     grid-row: 1;
+}
+
+selectionGrid {
+    grid-row: 2;
     min-height: 0px;
     display: grid;
     grid-template-rows: auto 100fr;
     margin: 16px;
     margin-top: 18px;
     margin-left: 18px;
-    padding: 4px;
+    padding: 0px;
     background-color: #0F0D17;
     border-radius: 4px;
-    border: 1px solid #ffffff0D;
+    /*border: 1px solid #ffffff0D;*/
     min-height: 0px;
     max-height: 480px;
 }
@@ -154,6 +156,7 @@ selectionGrid {
 selectorRow {
     grid-row: 1;
     display: block;
+    padding: 0px 4px;
 }
 
 formRow {
@@ -165,7 +168,7 @@ formRow {
 }
 
 historyRow {
-    grid-row: 2;
+    grid-row: 3;
     display: flex;
     overflow: hidden;
     flex-direction: column;
@@ -192,9 +195,11 @@ paramSection {
     display: block;
     grid-row: 1;
     overflow: auto;
+    padding: 0px 4px;
 }
 
 buttonSection {
     display: block;
     grid-row: 2;
+    padding: 0px 4px;
 }

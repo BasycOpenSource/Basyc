@@ -1,11 +1,11 @@
 ﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 @using BlazorComponentUtilities;
 @using Throw
 @using Basyc.Blazor.Controls.TooltippedText
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
 @using Microsoft.Extensions.Logging
+@using Basyc.Blazor.Controls.Colors
+@using Basyc.Blazor.Controls.HtmlExtensions
 @{
     var logEntryViewClass = AlternateColor ? "logEntryView--alternate" : "";
     ServiceName.ThrowIfNull();
@@ -18,7 +18,7 @@
     <LogIconView LogLevel="LogLevel" />
     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Small" Inline="true" />
     <time>
-        @Html.DiagnosticTime(new DiagnosticTime(LogTime, BaseTime))
+        @Html.Methods.DiagnosticTime(new DiagnosticTime(LogTime, BaseTime))
     </time>
     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium" Inline="true" />
     <serviceName style="@serviceNameStyle">

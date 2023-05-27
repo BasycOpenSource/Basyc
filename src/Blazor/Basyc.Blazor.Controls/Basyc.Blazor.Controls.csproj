@@ -24,4 +24,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\basycIcon.svg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

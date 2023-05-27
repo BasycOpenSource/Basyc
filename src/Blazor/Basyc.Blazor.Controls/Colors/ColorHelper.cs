@@ -1,4 +1,4 @@
-﻿namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors;
+﻿namespace Basyc.Blazor.Controls.Colors;
 
 public static class ColorHelper
 {
