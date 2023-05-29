@@ -1,9 +1,10 @@
-﻿@using Color = Basyc.Blazor.Controls.Colors.Color
+﻿@using Basyc.Blazor.Controls.HtmlExtensions;
+@using Basyc.Blazor.Controls.Interops;
+@using Color = Basyc.Blazor.Controls.Colors.Color
 @{
     var duration = EndTime - StartTime;
-    string unknownStyle = $"width: {DurationViewHelper.GetCssDurationValue(duration, PixelsPerMs)};";
 }
-<horizontalUnknownDurationBoxView style="@unknownStyle">
+<horizontalUnknownDurationBoxView @ref=horizontalUnknownDurationBoxViewref>
     <MudTooltip Arrow="true" RootStyle="height: 100%; width: 100%; display: block;">
         <ChildContent>
             <unknownDurationLineContainer>
@@ -26,11 +27,21 @@
 
 
 @code {
+    ElementReference horizontalUnknownDurationBoxViewref;
+    [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
+
     [Parameter, EditorRequired] public DateTimeOffset StartTime { get; init; }
     [Parameter, EditorRequired] public DateTimeOffset EndTime { get; init; }
-    [Parameter, EditorRequired] public double PixelsPerMs { get; set; }
+    //[Parameter, EditorRequired] public double PixelsPerMs { get; set; }
     /// <summary>
     ///Hexadecimal string
     /// </summary>
     [Parameter, EditorRequired] public Color Color { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var timeSpanMs = Html.Methods.Number(Math.Round((EndTime - StartTime).TotalMicroseconds));
+        //horizontalUnknownDurationBoxViewref.SetCssVariable(DurationMapConstants.TimeSpanCssVarName, timeSpanMs);
+        await ElementJsInterop.SetCssVariable(horizontalUnknownDurationBoxViewref, DurationMapConstants.TimeSpanCssVarName, timeSpanMs);
+    }
 }

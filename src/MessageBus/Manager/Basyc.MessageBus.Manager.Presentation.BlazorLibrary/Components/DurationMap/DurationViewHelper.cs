@@ -1,21 +1,14 @@
-﻿using System.Globalization;
+﻿using Basyc.Blazor.Controls.HtmlExtensions;
 
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap;
 
 public static class DurationViewHelper
 {
-    private static readonly NumberFormatInfo numberFormatter = (NumberFormatInfo)CultureInfo.CurrentCulture.NumberFormat.Clone();
-
-    static DurationViewHelper()
-    {
-        numberFormatter.NumberDecimalSeparator = ".";
-    }
-
     public static string GetCssDurationValue(TimeSpan duration, double scale, out double lenghtNumber, string unit = "px")
     {
-        var displayLenght = Math.Round(duration.TotalMilliseconds) * scale;
-        lenghtNumber = displayLenght;
-        return $"{displayLenght.ToString(numberFormatter)}{unit}";
+        lenghtNumber = Math.Round(duration.TotalMilliseconds) * scale;
+        var lenghtNumberText = HtmlNumbers.Number(null, lenghtNumber);
+        return $"{lenghtNumberText}{unit}";
     }
 
     public static string GetCssDurationValue(TimeSpan duration, double scale, string unit = "px") => GetCssDurationValue(duration, scale, out _, unit);

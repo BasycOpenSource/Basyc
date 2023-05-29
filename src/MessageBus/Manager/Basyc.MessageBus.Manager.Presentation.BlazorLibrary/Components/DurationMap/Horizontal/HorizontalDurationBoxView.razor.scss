@@ -10,22 +10,21 @@ horizontalDurationBoxView {
 durationBox {
     align-items: end;
     box-sizing: border-box;
-    /*height: 1.4rem;*/
     grid-row: 1;
     float: left;
     position: relative;
     border-radius: 2px;
-    /*display: flex;*/
     border: 1px solid #1A2D41;
     background-color: #2676D10D;
     display: grid;
     grid-auto-columns: 1fr;
     grid-auto-rows: 1fr;
-    /*    display: block;
-    width: 100%;*/
+
     /*overflow-x: scroll;*/
     /*contain: paint; //works but elipsis does not work*/
-    overflow: clip
+    overflow: clip;
+    width: calc(var(--timeSpanCss) * var(--pixelsPerMs) * 1px);
+    transition: width 150ms cubic-bezier(.4,0,.2,1) 0ms;
 }
 
 durationBox:hover {
@@ -80,6 +79,7 @@ acitvityName {
     padding: 0.3rem;
     line-height: 0.8rem;
     color: #c7c7c7bf;
+    width: calc(var(--timeSpanCss) * var(--pixelsPerMs) * 1px);
 }
 
 toolTipContent {
@@ -138,6 +138,9 @@ log {
     grid-column: 1;
     grid-row: 1;
     opacity: 0.25;
+    --logMaxWidthPixels: 4;
+    margin-left: calc(var(--logTimeStartCss) * var(--pixelsPerMs) * 1px);
+    width: calc(max(min(calc(var(--pixelsPerMs) * var(--logMaxWidthPixels)), var(--logMaxWidthPixels)), var(--logMaxWidthPixels)) * 1px);
 }
 
 ::deep .logContentToolTip {

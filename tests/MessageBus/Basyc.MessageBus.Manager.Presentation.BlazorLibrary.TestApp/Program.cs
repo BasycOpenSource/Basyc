@@ -23,6 +23,11 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var assembliesToScan = new[] { typeof(TestCommand).Assembly };
 
+builder.Services.AddLogging(x =>
+{
+    x.AddDebug();
+});
+
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddBasycDiagnosticsExporting()
@@ -161,16 +166,25 @@ busManagerBuilder.RegisterMessages()
     })
     .AddMessage("Create Customer")
     .WithParametersFrom<CustomerModel>()
-    .Returns<CustomerModel>("new cutomer")
+    .Returns<CustomerModel>("new customer")
     .HandeledBy((CustomerModel x) =>
     {
         return x;
     })
-    .AddMessage("Inifinite Logging")
+    .AddMessage("Infinite Logging")
+    .WithParameter<int>("log start count")
     .NoReturn()
-    .HandledBy(async (logger) =>
+    .HandledBy(async (s, logger) =>
     {
-        int counter = 0;
+        var initCount = (int)s.Parameters.First().Value.Value();
+        for (int i = 0; i < initCount; i++)
+        {
+            string message = $"Info: {i}";
+            logger.LogInformation(message);
+            logger.LogError(message);
+        }
+
+        int counter = initCount;
         while (true)
         {
             await Task.Delay(3500);
@@ -213,6 +227,9 @@ WireUpInMemoryDiagnostics(blazorApp);
 await blazorApp.Services.StartBasycDiagnosticsReceivers();
 await blazorApp.Services.StartBasycDiagnosticExporters();
 await blazorApp.Services.StartBasycMessageBusClient();
+
+//var jsRuntime = blazorApp.Services.GetRequiredService<IJSRuntime>();
+//await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Basyc.Blazor.Controls/elementJSInterop.js");
 await blazorApp.RunAsync();
 
 static void WireUpInMemoryDiagnostics(WebAssemblyHost app)

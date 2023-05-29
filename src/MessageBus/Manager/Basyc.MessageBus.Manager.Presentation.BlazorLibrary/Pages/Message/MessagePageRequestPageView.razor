@@ -3,6 +3,7 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogWindow
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers;
 @using Basyc.Blazor.Controls.HtmlExtensions
+@using Microsoft.Extensions.Logging;
 @inherits BasycReactiveBlazorComponentBase<MessagePageRequestPageViewModel, MessageRequest>
 <messagePageRequestPageView>
     <BasycSpaceBorder Size="SpaceSize.Bigger" SizeTop="SpaceSize.Big" SizeBottom="SpaceSize.Big">
@@ -92,6 +93,25 @@
 
 
 @code {
+    [Inject] private ILogger<MessagePageRequestPageView> Logger { get; init; } = null!;
     public MessageRequest MessageRequest { get; private set; } = null!;
     public override void OnVisit(MessageRequest queryParams) => MessageRequest = queryParams;
+
+    protected override void OnInitialized()
+    {
+        Logger.LogDebug("OnInitialized");
+        base.OnInitialized();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Logger.LogDebug("OnAfterRender");
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override void OnParametersSet()
+    {
+        Logger.LogDebug("OnParametersSet");
+        base.OnParametersSet();
+    }
 }

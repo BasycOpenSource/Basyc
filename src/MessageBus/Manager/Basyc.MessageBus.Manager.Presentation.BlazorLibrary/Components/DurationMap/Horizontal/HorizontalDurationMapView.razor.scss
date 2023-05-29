@@ -9,14 +9,16 @@
 
 services {
     display: block;
+    flex-direction: column;
     padding: 0px;
     overflow: auto;
 }
 
 service {
-    display: grid;
+    display: inline-grid;
     grid-auto-rows: 1fr;
     grid-auto-columns: 1fr;
+    flex: 1;
     margin-bottom: 0.2rem;
     border-radius: 2px;
     margin: 4px 0px 0px 0px;

@@ -1,6 +1,7 @@
 using Basyc.Blazor.Controls.Interops;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace Basyc.Blazor.Controls.Tooltip;
@@ -29,6 +30,9 @@ public partial class TooltipPopup
 
     [Parameter, EditorRequired]
     public string OwnerId { get; set; } = null!;
+
+    [Inject]
+    private ILogger<TooltipPopup> Logger { get; init; } = null!;
 
     [Inject]
     private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
@@ -66,7 +70,11 @@ public partial class TooltipPopup
 
     protected override bool ShouldRender() => shouldRender;
 
-    protected override void OnAfterRender(bool firstRender) => base.OnAfterRender(firstRender);
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Logger.LogInformation("TooltipPopup rendered");
+        base.OnAfterRender(firstRender);
+    }
 
     private void MouseMove(object? sender, MouseEventArgs e)
     {
@@ -105,6 +113,6 @@ public partial class TooltipPopup
     {
         string visibility = isMouseOver || freezeTooltip ? "visible" : "collapse";
         string cssText = $"left: {mousePositionX + 4}px; top: {mousePositionY + 4}px; visibility: {visibility}";
-        ElementJsInterop.ChangeStyle(tooltipPopupComponent, cssText);
+        ElementJsInterop.SetStyle(tooltipPopupComponent, cssText);
     }
 }

@@ -24,6 +24,8 @@ public record class ActivityContext(
 
     public event EventHandler? ParentAssigned;
 
+    public event EventHandler? LogAdded;
+
     public IReadOnlyList<ActivityContext> NestedActivities => nestedActivities;
 
     public IReadOnlyList<LogEntry> Logs => logs;
@@ -69,7 +71,11 @@ public record class ActivityContext(
         ParentAssigned?.Invoke(this, EventArgs.Empty);
     }
 
-    public void AddLog(LogEntry logEntry) => logs.Add(logEntry);
+    public void AddLog(LogEntry logEntry)
+    {
+        logs.Add(logEntry);
+        LogAdded?.Invoke(this, EventArgs.Empty);
+    }
 
     public void AddLogs(IEnumerable<LogEntry> logsEntries)
     {
