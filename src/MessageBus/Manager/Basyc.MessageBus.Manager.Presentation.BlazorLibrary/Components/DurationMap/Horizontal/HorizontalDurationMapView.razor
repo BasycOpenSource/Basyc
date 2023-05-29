@@ -30,7 +30,6 @@
                     var backgroundColor = serviceThemeColor.Edit(opacity: 0.05);
 
                     var serviceFirstActivity = service.Activities.First();
-                    //var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}";
                     var serviceStyle = $"background-color: {backgroundColor}";
                     var durationBoxesStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime.AbsoluteTime, PixelsPerMs)};";
                     var serviceNameStyle = $"color: {nameColor}";
@@ -65,9 +64,6 @@
             }
         }
     </services>
-
-
-
 </horizontalDurationMapView>
 
 @code {

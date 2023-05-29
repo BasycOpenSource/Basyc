@@ -40,21 +40,7 @@
                                 ItemSize="0.001F">
                         <ItemContent>
                             @{
-                                //var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var logStartPixels);
-                                //var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
-                                //var logStyle = $"margin-left: {logStartPosition}; width: {Html.Methods.Number(logWidth)}px";
                                 var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
-                                //var legMarginLeft = -(logWidth / 2);
-                                //if (logStartPixels < legMarginLeft)
-                                //{
-                                //    legMarginLeft = 0;
-                                //}
-                                //if (logStartPixels > logWidth)
-                                //{
-                                //    legMarginLeft = -logWidth;
-                                //}
-
-
                                 var logTimeStartCss = Math.Round((aggregatedLog.Time - Activity.StartTime.AbsoluteTime).TotalMilliseconds);
                                 var logStyle = $"--logTimeStartCss: {logTimeStartCss}";
                             }
@@ -202,9 +188,6 @@
         }
     }
 #pragma warning restore BL0007
-    /// <summary>
-    ///     Hexadecimal string
-    /// </summary>
     [Parameter]
     [EditorRequired]
     public Color Color { get; set; }
@@ -241,62 +224,15 @@
         {
             await UpdateTimeCssVar(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime);
         }
-
-        //if (firstRender)
-        //{
-        //    var pixelsPerMs = Html.Methods.DoubleFromHtml(await ElementJsInterop.GetCssVariable(horizontalDurationBoxView, DurationMapConstants.PixelsPerMs));
-        //    AggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, pixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
-        //    StateHasChanged();
-        //}
         await base.OnAfterRenderAsync(firstRender);
         isRendered = true;
     }
 
-    //private string CalculateWidth()
-    //{
-    //    var width = DurationViewHelper.GetCssDurationValue(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var widthNumber);
-
-    //    if (widthNumber < 0.2)
-    //        width = "0.1px";
-
-    //    if (widthNumber < 2)
-    //        width = "2px";
-
-    //    return width;
-    //}
-
     Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg) => callback.InvokeAsync(arg);
-
-    //private async void StartTimer()
-    //{
-    //    while (await updateUnfinishedTimer.WaitForNextTickAsync())
-    //    {
-    //        if (Activity.HasEnded)
-    //        {
-    //            updateUnfinishedTimer.Dispose();
-    //            //var setWidth = CalculateWidth();
-    //            //UpdateRenderWidth(setWidth);
-    //            UpdateTimeCssVar(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime);
-    //            updateUnfinishedTimer.Dispose();
-    //            break;
-    //        }
-    //        //var width = DurationViewHelper.GetCssDurationValue(DateTimeOffset.UtcNow - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var widthNumber);
-    //        //UpdateRenderWidth(width);
-    //        //StateHasChanged();
-    //        UpdateTimeCssVar(DateTimeOffset.UtcNow - Activity.StartTime.AbsoluteTime);
-    //    }
-    //}
-
-    //private void UpdateRenderWidth(string width)
-    //{
-    //    ElementJsInterop.ChangeStyle(durationBoxRef, $"width: {width};");
-    //    ElementJsInterop.ChangeStyle(activityNameRef, $"max-width: {width};");
-    //}
 
     private async Task UpdateTimeCssVar(TimeSpan timeSpan)
     {
         var timeSpanMs = Html.Methods.Number(Math.Round(timeSpan.TotalMilliseconds));
-        //horizontalDurationBoxView.SetCssVariable(DurationMapConstants.TimeSpanCssVarName, timeSpanMs);
         await ElementJsInterop.SetCssVariable(horizontalDurationBoxView, DurationMapConstants.TimeSpanCssVarName, timeSpanMs);
     }
 
@@ -330,8 +266,6 @@
         if (isRendered is false)
             return;
         //TODO: When log added, its forces to rerender all nested duration boxes -> move logging row to new blazor component.
-        //var pixelsPerMs = await horizontalDurationBoxView.GetCssVariable<double>(DurationMapConstants.PixelsPerMs);
-        //var pixelsPerMs = Html.Methods.DoubleFromHtml(await ElementJsInterop.GetCssVariable(horizontalDurationBoxView, DurationMapConstants.PixelsPerMs));
         AggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
         StateHasChanged();
     }
