@@ -201,38 +201,50 @@
     private const double logMaxWidthPixels = 10;
     private ReadOnlyCollection<AggregatedLog> AggragatedLogs = new ReadOnlyCollection<AggregatedLog>(new List<AggregatedLog>());
 
-    protected override async Task OnParametersSetAsync()
-    {
-        logger.LogDebug("OnParametersSetAsync");
+    //protected override async Task OnParametersSetAsync()
+    //{
+    //    logger.LogDebug("OnParametersSetAsync");
 
-        isRendered = false;
+    //    isRendered = false;
+    //    Activity.ActivityEnded += OnActivityEnded;
+    //    Activity.NestedActivityEnded += OnNestedActivityEnded;
+    //    Activity.LogAdded += OnLogAdded;
+    //    DurationMapRenderContext.FastTimer -= OnFastTimer;
+    //    DurationMapRenderContext.FastTimer += OnFastTimer;
+    //    AggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
+
+    //    await base.OnParametersSetAsync();
+    //}
+
+    protected override void OnParametersSet()
+    {
+        logger.LogDebug("OnParametersSet");
+        //isRendered = false;
         Activity.ActivityEnded += OnActivityEnded;
         Activity.NestedActivityEnded += OnNestedActivityEnded;
         Activity.LogAdded += OnLogAdded;
         DurationMapRenderContext.FastTimer -= OnFastTimer;
         DurationMapRenderContext.FastTimer += OnFastTimer;
-        AggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
+        DurationMapRenderContext.MediumTimer -= OnMediumTimer;
+        DurationMapRenderContext.MediumTimer += OnMediumTimer;
+        logger.LogDebug("OnFastTimer added");
 
-        await base.OnParametersSetAsync();
+        AggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
+        base.OnParametersSet();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
-        //logger.LogInformation("OnAfterRenderAsync DisplayName: {0}", Activity.DisplayName);
-        isRendered = false;
-        if (Activity.HasEnded)
-        {
-            await UpdateTimeCssVar(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime);
-        }
-        await base.OnAfterRenderAsync(firstRender);
-        isRendered = true;
+        if (firstRender)
+            isRendered = true;
+        base.OnAfterRender(firstRender);
     }
 
     Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg) => callback.InvokeAsync(arg);
 
-    private async Task UpdateTimeCssVar(TimeSpan timeSpan)
+    private async Task SetTimeCssVar(TimeSpan timeSpan)
     {
-        var timeSpanMs = Html.Methods.Number(Math.Round(timeSpan.TotalMilliseconds));
+        var timeSpanMs = Html.Methods.Number(timeSpan.TotalMilliseconds);
         await ElementJsInterop.SetCssVariable(horizontalDurationBoxView, DurationMapConstants.TimeSpanCssVarName, timeSpanMs);
     }
 
@@ -242,12 +254,15 @@
 
     public void Dispose()
     {
+        isRendered = false;
         logger.LogDebug("Dispose");
 
         Activity.ActivityEnded -= OnActivityEnded;
         Activity.NestedActivityEnded -= OnNestedActivityEnded;
         Activity.LogAdded -= OnLogAdded;
         DurationMapRenderContext.FastTimer -= OnFastTimer;
+        DurationMapRenderContext.MediumTimer -= OnMediumTimer;
+
     }
 
     private static DateTimeOffset GetRecursiveLatestEndTime(ActivityContext activity)
@@ -265,26 +280,54 @@
     {
         if (isRendered is false)
             return;
-        //TODO: When log added, its forces to rerender all nested duration boxes -> move logging row to new blazor component.
-        AggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
-        StateHasChanged();
+        UpdateAggregatedLogs();
     }
 
     private async void OnFastTimer(object? sender, EventArgs e)
     {
+        await UpdateTime();
+    }
+
+    private void OnMediumTimer(object? sender, EventArgs e)
+    {
+        if (isRendered is false)
+            return;
+        UpdateAggregatedLogs();
+    }
+
+    private void UpdateAggregatedLogs()
+    {
+        //TODO: When log added, its forces to rerender all nested duration boxes -> move logging row to new blazor component.
+        var newAggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
+        if (newAggragatedLogs.Count == AggragatedLogs.Count)
+            return;
+        AggragatedLogs = newAggragatedLogs;
+        StateHasChanged();
+
+    }
+
+    private async Task UpdateTime()
+    {
+        logger.LogDebug("UpdateTime");
+
         if (isRendered is false)
             return;
 
+        logger.LogDebug("UpdateTime isRendered true");
+
         if (Activity.HasEnded)
         {
-            await UpdateTimeCssVar(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime);
+            await SetTimeCssVar(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime);
             DurationMapRenderContext.FastTimer -= OnFastTimer;
+            DurationMapRenderContext.MediumTimer -= OnMediumTimer;
         }
         else
         {
-            await UpdateTimeCssVar(DateTimeOffset.UtcNow - Activity.StartTime.AbsoluteTime);
+            await SetTimeCssVar(DateTimeOffset.UtcNow - Activity.StartTime.AbsoluteTime);
         }
     }
+
+
 
     private class RowViewModel
     {

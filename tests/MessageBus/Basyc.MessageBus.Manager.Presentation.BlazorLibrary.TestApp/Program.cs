@@ -23,10 +23,14 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var assembliesToScan = new[] { typeof(TestCommand).Assembly };
 
-builder.Services.AddLogging(x =>
-{
-    x.AddDebug();
-});
+//builder.Services.AddLogging(x =>
+//{
+//    x.AddDebug();
+//});
+
+builder.Logging.AddDebug();
+builder.Logging.AddConfiguration(
+    builder.Configuration.GetSection("Logging"));
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
@@ -173,14 +177,17 @@ busManagerBuilder.RegisterMessages()
     })
     .AddMessage("Infinite Logging")
     .WithParameter<int>("log start count")
+    .WithParameter<bool>("only errors")
     .NoReturn()
     .HandledBy(async (s, logger) =>
     {
-        var initCount = (int)s.Parameters.First().Value.Value();
+        var initCount = (int)s.Parameters[0].Value.Value();
+        var onlyErrors = (bool)s.Parameters[1].Value.Value();
         for (int i = 0; i < initCount; i++)
         {
             string message = $"Info: {i}";
-            logger.LogInformation(message);
+            if (onlyErrors is false)
+                logger.LogInformation(message);
             logger.LogError(message);
         }
 
@@ -189,7 +196,8 @@ busManagerBuilder.RegisterMessages()
         {
             await Task.Delay(3500);
             string message = $"Info: {++counter}";
-            logger.LogInformation(message);
+            if (onlyErrors is false)
+                logger.LogInformation(message);
             logger.LogError(message);
         }
     })

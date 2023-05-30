@@ -47,11 +47,11 @@ public partial class ElementJsInterop : IAsyncDisposable
 
     public async ValueTask SetCssVariable(ElementReference elementReference, string name, string value)
     {
-        logger.LogDebug("SetCssVariable");
+        //logger.LogDebug("SetCssVariable");
         ArgumentNullException.ThrowIfNull(elementReference);
         var module = await moduleTask.Value;
         await module.InvokeVoidAsync("setCssVariable", elementReference, name, value);
-        logger.LogDebug("SetCssVariable done");
+        //logger.LogDebug("SetCssVariable done");
     }
 
     public async ValueTask SetCssProperty(ElementReference elementReference, string name, string value)

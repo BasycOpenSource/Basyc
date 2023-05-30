@@ -1,4 +1,5 @@
-﻿@using Basyc.Blazor.Controls.Interops;
+﻿@using Basyc.Blazor.Controls.HtmlExtensions;
+@using Basyc.Blazor.Controls.Interops;
 @using Basyc.Diagnostics.Shared.Logging
 @using Basyc.MessageBus.Manager.Application
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
@@ -70,7 +71,6 @@
     private bool isRendered = false;
 
     private ElementReference horizontalDurationMapViewRef;
-    private bool pixelsMsChangedInternally = false;
     private DurationMapRenderContext durationMapRenderContext = new();
     [Inject] private BusManagerJsInterop BusManagerJsInterop { get; set; } = null!;
     [Inject] private ScrollJsInterop ScrollJsInterop { get; set; } = null!;
@@ -94,33 +94,33 @@
 
     protected override void OnInitialized()
     {
-        durationMapRenderContext.FastTimer += async (s, a) =>
-        {
-            if (zoomManuallyChanged is false)
-                await ZoomFit();
-        };
+        durationMapRenderContext.FastTimer -= OnFastTimer;
+        durationMapRenderContext.FastTimer += OnFastTimer;
         base.OnInitialized();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        isRendered = true;
         Logger.LogDebug("OnAfterRenderAsync");
-        ScrollJsInterop.AddDragToScroll(scrollId);
-        if(PixelsPerMs != durationMapRenderContext.PixelsPerMs)
+        if (firstRender)
+        {
+            ScrollJsInterop.AddDragToScroll(scrollId);            
+        }
+        if (PixelsPerMs != durationMapRenderContext.PixelsPerMs)
         {
             durationMapRenderContext.PixelsPerMs = PixelsPerMs;
-            await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, PixelsPerMs.ToString());
+            await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
         }
-        StartTimer();
+        StartTimers();
         await base.OnAfterRenderAsync(firstRender);
-        isRendered = true;
     }
 
     protected override void OnParametersSet()
     {
-        Logger.LogDebug("OnParametersSet");
         isRendered = false;
-        StopTimer();
+        Logger.LogDebug("OnParametersSet");
+        StopTimers();
         RequestContext.Diagnostics.ActivityStartAdded -= OnActivityStartAdded;
         RequestContext.Diagnostics.ActivityStartAdded += OnActivityStartAdded;
         RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
@@ -128,21 +128,13 @@
         base.OnParametersSet();
     }
 
-    protected override bool ShouldRender()
-    {
-        if (pixelsMsChangedInternally)
-            return false;
-        return base.ShouldRender();
-    }
-
     public void Dispose()
     {
-        Logger.LogDebug("Dispose");
-
         isRendered = false;
+        Logger.LogDebug("Dispose");
         RequestContext.Diagnostics.ActivityStartAdded -= OnActivityStartAdded;
         RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
-        StopTimer();
+        StopTimers();
     }
 
     Task IHandleEvent.HandleEventAsync(
@@ -155,27 +147,19 @@
     private async Task OnZoomInClick(MouseEventArgs args)
     {
         zoomManuallyChanged = true;
-        pixelsMsChangedInternally = true;
         PixelsPerMs += 0.1 * PixelsPerMs * 3;
         durationMapRenderContext.PixelsPerMs = PixelsPerMs;
-        pixelsMsChangedInternally = false;
-        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, PixelsPerMs.ToString());
-
+        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
     }
 
     private async Task OnZoomOutClick(MouseEventArgs args)
     {
         zoomManuallyChanged = true;
-        pixelsMsChangedInternally = true;
-
         PixelsPerMs -= 0.1 * PixelsPerMs * 3;
         if (PixelsPerMs < 0)
             PixelsPerMs = 0;
         durationMapRenderContext.PixelsPerMs = PixelsPerMs;
-        pixelsMsChangedInternally = false;
-
-        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, PixelsPerMs.ToString());
-
+        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
     }
 
     private async Task OnZoomFitClick(MouseEventArgs args)
@@ -186,20 +170,20 @@
 
     private async Task ZoomFit()
     {
+        Logger.LogDebug("ZoomFit");
+
         double aviableWidthPx = 1000; //this can be dynamic value obtained from js
         DurationViewHelper.GetCssDurationValue(GetLatestEndTime(RequestContext.Diagnostics) - RequestContext.StartTime, 1, out var normalWidthPx);
         var newPixelsPerMs = aviableWidthPx / normalWidthPx;
         if (newPixelsPerMs != PixelsPerMs)
         {
-            pixelsMsChangedInternally = true;
             PixelsPerMs = newPixelsPerMs;
             durationMapRenderContext.PixelsPerMs = PixelsPerMs;
-            pixelsMsChangedInternally = false;
-
 
             if (isRendered is false)
                 return;
-            await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, "pixelsPerMs", PixelsPerMs.ToString());
+            Logger.LogDebug("ZoomFit SetCssVariable");
+            await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
         }
     }
 
@@ -236,27 +220,41 @@
         return latestEndTime;
     }
 
-    private async void StartTimer()
+    private async void OnFastTimer(object? sender, EventArgs args)
     {
-        Logger.LogDebug("StartTimer");
+        if (zoomManuallyChanged is false)
+            await ZoomFit();
+    }
+
+    private async void StartTimers()
+    {
+        Logger.LogDebug(nameof(StartTimers));
         durationMapRenderContext.OnFastTimer();
 
         if (fastTimer is not null)
-            StopTimer();
+            StopTimers();
 
-        fastTimer = new PeriodicTimer(TimeSpan.FromSeconds(0.5));
-
+        fastTimer = new PeriodicTimer(TimeSpan.FromSeconds(0.05));
+        int ticksInGroup = 0;
         while (await fastTimer.WaitForNextTickAsync())
         {
+            ticksInGroup++;
             if (isRendered is false)
                 continue;
             durationMapRenderContext.OnFastTimer();
+
+            if (ticksInGroup == 10)
+            {
+                durationMapRenderContext.OnMediumTimer();
+                ticksInGroup = 0;
+            }
+           
         }
     }
 
-    private void StopTimer()
+    private void StopTimers()
     {
-        Logger.LogDebug("StopTimer");
+        Logger.LogDebug(nameof(StopTimers));
 
         fastTimer?.Dispose();
         fastTimer = null;
