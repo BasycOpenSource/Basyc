@@ -185,20 +185,18 @@ busManagerBuilder.RegisterMessages()
         var onlyErrors = (bool)s.Parameters[1].Value.Value();
         for (int i = 0; i < initCount; i++)
         {
-            string message = $"Info: {i}";
             if (onlyErrors is false)
-                logger.LogInformation(message);
-            logger.LogError(message);
+                logger.LogInformation("Info: " + i++);
+            logger.LogError("Error: " + i++);
         }
 
-        int counter = initCount;
+        int logCounter = initCount;
         while (true)
         {
             await Task.Delay(3500);
-            string message = $"Info: {++counter}";
             if (onlyErrors is false)
-                logger.LogInformation(message);
-            logger.LogError(message);
+                logger.LogInformation("Info: " + logCounter++);
+            logger.LogError("Error: " + logCounter++);
         }
     })
     .AddMessage("Multiple Services")

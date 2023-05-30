@@ -50,9 +50,10 @@ nestedDurationBoxes {
 
 spinner {
     display: flex;
+    justify-content: start;
     align-items: center;
-    grid-row: 1;
-    grid-column: 1;
+    /*grid-row: 1;*/
+    grid-column: 2;
 
     ::deep .mud-progress-circular {
         height: 16px;
@@ -61,7 +62,9 @@ spinner {
 }
 
 acitvityName {
-    display: block;
+    display: grid;
+    min-width: 0px;
+    grid-auto-columns: 1fr auto;
     height: 100%;
     overflow: hidden;
     overflow-wrap: break-word;
@@ -70,7 +73,18 @@ acitvityName {
     padding: 0.3rem;
     line-height: 0.8rem;
     color: #c7c7c7bf;
+    //This makes elipsis working
     width: calc(var(--timeSpanCss) * var(--pixelsPerMs) * 1px);
+}
+
+acitvityDisplayName {
+    display: block;
+    grid-column: 1;
+    min-width: 0px;
+    overflow: hidden;
+    overflow-wrap: break-word;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 toolTipContent {
@@ -111,22 +125,28 @@ treeHorizontalLine {
 
 
 logs {
-    display: grid;
     grid-column: 1;
     grid-row: 1;
-    align-items: end;
+    /*    display: grid;
+    align-items: end;*/
+    display: flex;
+    flex-direction: row;
 }
 
-log {
+logCell {
+    width: 10px;
+}
+
+aggregatedLog {
     display: block;
-    grid-column: 1;
-    grid-row: 1;
+    /*    grid-column: 1;
+    grid-row: 1;*/
     opacity: 0.25;
     --logMaxWidthPixels: 4;
     /*transform supports fractional pixels*/
     /*margin-left: calc(var(--logTimeStartCss) * var(--pixelsPerMs) * 1px);*/
-    transform: translate(calc(var(--logTimeStartCss) * var(--pixelsPerMs) * 1px), 0px);
-    width: calc(max(min(calc(var(--pixelsPerMs) * var(--logMaxWidthPixels)), var(--logMaxWidthPixels)), var(--logMaxWidthPixels)) * 1px);
+    /*    transform: translate(calc(var(--logTimeStartCss) * var(--pixelsPerMs) * 1px), 0px);
+    width: calc(max(min(calc(var(--pixelsPerMs) * var(--logMaxWidthPixels)), var(--logMaxWidthPixels)), var(--logMaxWidthPixels)) * 1px);*/
 }
 
 ::deep .logContentToolTip {

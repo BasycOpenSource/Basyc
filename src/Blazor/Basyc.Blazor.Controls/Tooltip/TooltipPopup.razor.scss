@@ -27,4 +27,6 @@ tooltipPopupComponent {
     overflow: visible;
     position: absolute;
     pointer-events: none;
+    transition: left 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    transition: top 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 }

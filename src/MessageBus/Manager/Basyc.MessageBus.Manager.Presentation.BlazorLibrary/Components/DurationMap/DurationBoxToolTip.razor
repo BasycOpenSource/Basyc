@@ -95,6 +95,8 @@
 </durationBoxToolTipView>
 
 @code {
+    [Inject]
+    private ILogger<DurationBoxToolTip> Logger { get; init; } = null!;
 
     [Parameter, EditorRequired]
     public string? Name { get; set; }
@@ -111,9 +113,9 @@
     [Parameter, EditorRequired]
     public ActivityContext ActivityContext { get; set; } = null!;
 
-    public int LogsInformationCount => ActivityContext.Logs.Where(x => x.LogLevel == LogLevel.Information).Count();
-    public int LogsWarningCount { get; init; }
-    public int LogsErrorCount { get; init; }
+    public int LogsInformationCount => ActivityContext.Logs.Where(x => x.LogLevel <= LogLevel.Information || x.LogLevel == LogLevel.None).Count();
+    public int LogsWarningCount => ActivityContext.Logs.Where(x => x.LogLevel is LogLevel.Warning).Count();
+    public int LogsErrorCount => ActivityContext.Logs.Where(x => x.LogLevel is LogLevel.Error or LogLevel.Critical).Count();
 
 
 

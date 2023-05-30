@@ -78,7 +78,6 @@ zoomToolBar {
     position: sticky;
     left: 0px;
     bottom: 0px;
-    width: 5rem;
     column-gap: 2px;
 }
 
@@ -87,3 +86,20 @@ unknownAndKnowGroup {
     display: flex;
     flex-direction: row;
 }
+
+zoomToolBar {
+    .toolBarButton {
+        height: 32px !important;
+        width: 32px !important;
+        min-width: 0px !important;
+        min-height: 0px !important;
+        line-height: 0.5rem;
+        font-size: 16px;
+        padding: 0px !important;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden !important;
+    }
+}
+

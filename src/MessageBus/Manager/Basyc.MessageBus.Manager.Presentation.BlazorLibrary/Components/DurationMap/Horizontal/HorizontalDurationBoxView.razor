@@ -25,37 +25,53 @@
             <durationBox @ref=durationBoxRef>
                 <stickyContainer>
                     <acitvityName @ref=activityNameRef>
-                        @Activity.DisplayName
+                        <acitvityDisplayName>
+                            @Activity.DisplayName
+                        </acitvityDisplayName>
+                        @if (Activity.HasEnded is false)
+                        {
+                            <spinner>
+                                <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
+                            </spinner>
+                        }
                     </acitvityName>
-                    @if (Activity.HasEnded is false)
-                    {
-                        <spinner>
-                            <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
-                        </spinner>
-                    }
+
                 </stickyContainer>
                 <logs>
+                    @*TODO: the item size 0.001F and then setting margin is effectively not virtualazing anything
+                    Plan:
+                    Make fixed size grid (lets say 100 10px cells)
+                    When calculatting aggregated logs it will always assign logs to these predefines cells
+                    The ItemSize should be size of log icon in logs row
+
+                    *@
+
                     <Virtualize Items="@AggragatedLogs"
                                 Context="aggregatedLog"
-                                ItemSize="0.001F">
+                                ItemSize="(float)logIconSizePx">
                         <ItemContent>
                             @{
                                 var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
-                                var logTimeStartCss = Math.Round((aggregatedLog.Time - Activity.StartTime.AbsoluteTime).TotalMilliseconds);
+                                var logTimeStartCss = Math.Round((aggregatedLog.StartTime - Activity.StartTime.AbsoluteTime).TotalMilliseconds);
                                 var logStyle = $"--logTimeStartCss: {logTimeStartCss}";
                             }
-                            <log style="@logStyle">
-                                <MudTooltip RootClass="logContentToolTip">
-                                    <ChildContent>
-                                        <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
-                                    </ChildContent>
-                                    <TooltipContent>
-                                        <toolTipContent>
-                                            @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
-                                        </toolTipContent>
-                                    </TooltipContent>
-                                </MudTooltip>
-                            </log>
+                            <logCell>
+                                @if (aggregatedLog.Logs.Count > 0)
+                                {
+                                    <aggregatedLog style="@logStyle">
+                                        <MudTooltip RootClass="logContentToolTip">
+                                            <ChildContent>
+                                                <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
+                                            </ChildContent>
+                                            <TooltipContent>
+                                                <toolTipContent>
+                                                    @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
+                                                </toolTipContent>
+                                            </TooltipContent>
+                                        </MudTooltip>
+                                    </aggregatedLog>
+                                }
+                            </logCell>
                         </ItemContent>
                         <Placeholder>
                             <loading />
@@ -161,6 +177,7 @@
     private ElementReference durationBoxRef;
     private ElementReference activityNameRef;
     private bool isRendered = false;
+    private const double logIconSizePx = 10;
 
     [Inject] public ILogger<HorizontalDurationBoxView> logger { get; init; } = null!;
     [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
@@ -169,25 +186,29 @@
     [EditorRequired]
     public DurationMapRenderContext DurationMapRenderContext { get; set; } = null!;
 
-#pragma warning disable BL0007
-    private ActivityContext activity = null!;
+    //#pragma warning disable BL0007
+    //    private ActivityContext activity = null!;
+    //    [Parameter]
+    //    [EditorRequired]
+    //    public ActivityContext Activity
+    //    {
+    //        get => activity;
+    //        set
+    //        {
+    //            if (activity != null)
+    //            {
+    //                activity.ActivityEnded -= OnActivityEnded;
+    //                activity.NestedActivityEnded -= OnNestedActivityEnded;
+    //                activity.LogAdded -= OnLogAdded;
+    //            }
+    //            activity = value;
+    //        }
+    //    }
+    //#pragma warning restore BL0007
+
     [Parameter]
     [EditorRequired]
-    public ActivityContext Activity
-    {
-        get => activity;
-        set
-        {
-            if (activity != null)
-            {
-                activity.ActivityEnded -= OnActivityEnded;
-                activity.NestedActivityEnded -= OnNestedActivityEnded;
-                activity.LogAdded -= OnLogAdded;
-            }
-            activity = value;
-        }
-    }
-#pragma warning restore BL0007
+    public ActivityContext Activity { get; set; } = null!;
     [Parameter]
     [EditorRequired]
     public Color Color { get; set; }
@@ -196,30 +217,22 @@
     [EditorRequired]
     public int NestingLevel { get; set; }
 
-    private const double logWidthMultiplier = 4;
-    private const double logMinWidthPixels = 5;
-    private const double logMaxWidthPixels = 10;
     private ReadOnlyCollection<AggregatedLog> AggragatedLogs = new ReadOnlyCollection<AggregatedLog>(new List<AggregatedLog>());
 
-    //protected override async Task OnParametersSetAsync()
-    //{
-    //    logger.LogDebug("OnParametersSetAsync");
-
-    //    isRendered = false;
-    //    Activity.ActivityEnded += OnActivityEnded;
-    //    Activity.NestedActivityEnded += OnNestedActivityEnded;
-    //    Activity.LogAdded += OnLogAdded;
-    //    DurationMapRenderContext.FastTimer -= OnFastTimer;
-    //    DurationMapRenderContext.FastTimer += OnFastTimer;
-    //    AggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
-
-    //    await base.OnParametersSetAsync();
-    //}
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (Activity != null)
+        {
+            Activity.ActivityEnded -= OnActivityEnded;
+            Activity.NestedActivityEnded -= OnNestedActivityEnded;
+            Activity.LogAdded -= OnLogAdded;
+        }
+        return base.SetParametersAsync(parameters);
+    }
 
     protected override void OnParametersSet()
     {
         logger.LogDebug("OnParametersSet");
-        //isRendered = false;
         Activity.ActivityEnded += OnActivityEnded;
         Activity.NestedActivityEnded += OnNestedActivityEnded;
         Activity.LogAdded += OnLogAdded;
@@ -229,7 +242,7 @@
         DurationMapRenderContext.MediumTimer += OnMediumTimer;
         logger.LogDebug("OnFastTimer added");
 
-        AggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
+        AggragatedLogs = LogAggregator.AggregateLogs(Activity, DurationMapRenderContext.PixelsPerMs, logIconSizePx);
         base.OnParametersSet();
     }
 
@@ -298,7 +311,7 @@
     private void UpdateAggregatedLogs()
     {
         //TODO: When log added, its forces to rerender all nested duration boxes -> move logging row to new blazor component.
-        var newAggragatedLogs = LogAggregator.AggregateLogs(Activity.Logs, DurationMapRenderContext.PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
+        var newAggragatedLogs = LogAggregator.AggregateLogs(Activity, DurationMapRenderContext.PixelsPerMs, logIconSizePx);
         if (newAggragatedLogs.Count == AggragatedLogs.Count)
             return;
         AggragatedLogs = newAggragatedLogs;
@@ -308,12 +321,12 @@
 
     private async Task UpdateTime()
     {
-        logger.LogDebug("UpdateTime");
+        //logger.LogDebug("UpdateTime");
 
         if (isRendered is false)
             return;
 
-        logger.LogDebug("UpdateTime isRendered true");
+        //logger.LogDebug("UpdateTime isRendered true");
 
         if (Activity.HasEnded)
         {

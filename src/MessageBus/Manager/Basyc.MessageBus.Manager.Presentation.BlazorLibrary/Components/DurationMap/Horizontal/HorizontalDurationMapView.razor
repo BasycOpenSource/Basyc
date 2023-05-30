@@ -14,9 +14,9 @@
 <horizontalDurationMapView @ref=horizontalDurationMapViewRef>
     <zoomToolBar>
         @*<MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />*@
-        <button @onclick="@OnZoomInClick">+</button>
-        <button @onclick="@OnZoomOutClick">-</button>
-        <button @onclick="@OnZoomFitClick">fit</button>
+        <button class="toolBarButton" @onclick="@OnZoomInClick">+</button>
+        <button class="toolBarButton" @onclick="@OnZoomOutClick">-</button>
+        <button class="toolBarButton" @onclick="@OnZoomFitClick">fit</button>
     </zoomToolBar>
     <services id="@scrollId">
         @{
@@ -69,7 +69,7 @@
 
 @code {
     private bool isRendered = false;
-
+    private bool updatePixelsPerMsCssVarInOnAfterRender = false;
     private ElementReference horizontalDurationMapViewRef;
     private DurationMapRenderContext durationMapRenderContext = new();
     [Inject] private BusManagerJsInterop BusManagerJsInterop { get; set; } = null!;
@@ -107,10 +107,10 @@
         {
             ScrollJsInterop.AddDragToScroll(scrollId);            
         }
-        if (PixelsPerMs != durationMapRenderContext.PixelsPerMs)
+        if (updatePixelsPerMsCssVarInOnAfterRender)
         {
-            durationMapRenderContext.PixelsPerMs = PixelsPerMs;
             await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
+            updatePixelsPerMsCssVarInOnAfterRender = false;
         }
         StartTimers();
         await base.OnAfterRenderAsync(firstRender);
@@ -125,6 +125,13 @@
         RequestContext.Diagnostics.ActivityStartAdded += OnActivityStartAdded;
         RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
         RequestContext.Diagnostics.ActivityEndAdded += OnActivityEneAdded;
+        if (PixelsPerMs != durationMapRenderContext.PixelsPerMs)
+        {
+            updatePixelsPerMsCssVarInOnAfterRender = true;
+            durationMapRenderContext.PixelsPerMs = PixelsPerMs;
+
+        }
+
         base.OnParametersSet();
     }
 
@@ -170,7 +177,7 @@
 
     private async Task ZoomFit()
     {
-        Logger.LogDebug("ZoomFit");
+        //Logger.LogDebug("ZoomFit");
 
         double aviableWidthPx = 1000; //this can be dynamic value obtained from js
         DurationViewHelper.GetCssDurationValue(GetLatestEndTime(RequestContext.Diagnostics) - RequestContext.StartTime, 1, out var normalWidthPx);
@@ -182,7 +189,7 @@
 
             if (isRendered is false)
                 return;
-            Logger.LogDebug("ZoomFit SetCssVariable");
+            //Logger.LogDebug("ZoomFit SetCssVariable");
             await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
         }
     }
