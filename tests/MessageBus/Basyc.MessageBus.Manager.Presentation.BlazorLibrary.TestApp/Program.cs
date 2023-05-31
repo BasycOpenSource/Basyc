@@ -203,13 +203,30 @@ busManagerBuilder.RegisterMessages()
     .NoReturn()
     .HandledBy((logger) =>
     {
-        var serviceIdentity = new ServiceIdentity("TempService");
-        var traceId = DiagnosticHelper.GetCurrentTraceId();
-        var activityStart = new ActivityStart(serviceIdentity, traceId, null, IdGeneratorHelper.GenerateNewSpanId(), "TempService Act1", DateTimeOffset.UtcNow);
-        diagnsoticExporter.Value().StartActivity(activityStart);
-        diagnsoticExporter.Value().EndActivity(activityStart);
-        var logEntry = new LogEntry(serviceIdentity, traceId, DateTimeOffset.UtcNow, LogLevel.Information, "Message", null);
-        diagnsoticExporter.Value().ProduceLog(logEntry);
+        void SeedActivityData(ServiceIdentity serviceIdentity)
+        {
+            Random.Shared.Next(8, 20).Times(x =>
+            {
+                var traceId = DiagnosticHelper.GetCurrentTraceId();
+                var activityStart = new ActivityStart(serviceIdentity, traceId, null, IdGeneratorHelper.GenerateNewSpanId(), serviceIdentity.ServiceName, DateTimeOffset.UtcNow + TimeSpan.FromMilliseconds(x * 10));
+                diagnsoticExporter.Value().StartActivity(activityStart);
+                diagnsoticExporter.Value().EndActivity(activityStart, activityStart.StartTime + TimeSpan.FromMilliseconds(x * 1.2));
+                var logEntry = new LogEntry(serviceIdentity, traceId, DateTimeOffset.UtcNow, LogLevel.Information, "Message", null);
+                diagnsoticExporter.Value().ProduceLog(logEntry);
+            });
+        }
+
+        void SeedServiceData(string serviceName)
+        {
+            var serviceIdentity = new ServiceIdentity(serviceName);
+            SeedActivityData(serviceIdentity);
+        }
+
+        SeedServiceData("ServiceA");
+        SeedServiceData("ServiceB");
+        SeedServiceData("ServiceC");
+        SeedServiceData("ServiceD");
+        SeedServiceData("ServiceF");
     })
     .AddMessage("Log")
     .WithParameter<int>("logCount")

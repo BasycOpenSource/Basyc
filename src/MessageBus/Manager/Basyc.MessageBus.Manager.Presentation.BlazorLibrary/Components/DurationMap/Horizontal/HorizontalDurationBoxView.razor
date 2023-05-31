@@ -35,51 +35,8 @@
                             </spinner>
                         }
                     </acitvityName>
-
                 </stickyContainer>
-                <logs>
-                    @*TODO: the item size 0.001F and then setting margin is effectively not virtualazing anything
-                    Plan:
-                    Make fixed size grid (lets say 100 10px cells)
-                    When calculatting aggregated logs it will always assign logs to these predefines cells
-                    The ItemSize should be size of log icon in logs row
-
-                    *@
-
-                    <Virtualize Items="@AggragatedLogs"
-                                Context="aggregatedLog"
-                                ItemSize="(float)logIconSizePx">
-                        <ItemContent>
-                            @{
-                                var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
-                                var logTimeStartCss = Math.Round((aggregatedLog.StartTime - Activity.StartTime.AbsoluteTime).TotalMilliseconds);
-                                var logStyle = $"--logTimeStartCss: {logTimeStartCss}";
-                            }
-                            <logCell>
-                                @if (aggregatedLog.Logs.Count > 0)
-                                {
-                                    <aggregatedLog style="@logStyle">
-                                        <MudTooltip RootClass="logContentToolTip">
-                                            <ChildContent>
-                                                <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
-                                            </ChildContent>
-                                            <TooltipContent>
-                                                <toolTipContent>
-                                                    @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
-                                                </toolTipContent>
-                                            </TooltipContent>
-                                        </MudTooltip>
-                                    </aggregatedLog>
-                                }
-                            </logCell>
-                        </ItemContent>
-                        <Placeholder>
-                            <loading />
-                        </Placeholder>
-
-                    </Virtualize>
-                </logs>
-
+                <HorizontalDurationBoxLogRowView Activity="Activity" DurationMapRenderContext="DurationMapRenderContext"/>
             </durationBox>
         </ChildContent>
     </BasycTooltip>
@@ -147,7 +104,6 @@
                                     }
                                 }
 
-
                                 var isGapBetweenPreviousNested = previousRowActivity is not null && previousRowActivity.EndTime.Value != nestedActivity.StartTime.Value; ;
                                 if (isGapBetweenPreviousNested)
                                 {
@@ -155,16 +111,13 @@
                                     <HorizontalUnknownDurationBoxView StartTime="previousRowActivity.EndTime.AbsoluteTime" EndTime="nestedActivity.StartTime.AbsoluteTime" Color="@Color" />
                                 }
                                 <HorizontalDurationBoxView DurationMapRenderContext="DurationMapRenderContext" Activity="nestedActivity" Color="@Color" NestingLevel="NestingLevel+1" />
-
                                 previousRowActivity = nestedActivity;
-
                             }
                         </nestedRow>
                     }
                 </nestedRows>
                 previousRow = row;
             }
-
         }
     </nestedDurationBoxes>
 
@@ -177,7 +130,6 @@
     private ElementReference durationBoxRef;
     private ElementReference activityNameRef;
     private bool isRendered = false;
-    private const double logIconSizePx = 10;
 
     [Inject] public ILogger<HorizontalDurationBoxView> logger { get; init; } = null!;
     [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
@@ -185,26 +137,6 @@
     [Parameter]
     [EditorRequired]
     public DurationMapRenderContext DurationMapRenderContext { get; set; } = null!;
-
-    //#pragma warning disable BL0007
-    //    private ActivityContext activity = null!;
-    //    [Parameter]
-    //    [EditorRequired]
-    //    public ActivityContext Activity
-    //    {
-    //        get => activity;
-    //        set
-    //        {
-    //            if (activity != null)
-    //            {
-    //                activity.ActivityEnded -= OnActivityEnded;
-    //                activity.NestedActivityEnded -= OnNestedActivityEnded;
-    //                activity.LogAdded -= OnLogAdded;
-    //            }
-    //            activity = value;
-    //        }
-    //    }
-    //#pragma warning restore BL0007
 
     [Parameter]
     [EditorRequired]
@@ -217,7 +149,6 @@
     [EditorRequired]
     public int NestingLevel { get; set; }
 
-    private ReadOnlyCollection<AggregatedLog> AggragatedLogs = new ReadOnlyCollection<AggregatedLog>(new List<AggregatedLog>());
 
     public override Task SetParametersAsync(ParameterView parameters)
     {
@@ -225,24 +156,17 @@
         {
             Activity.ActivityEnded -= OnActivityEnded;
             Activity.NestedActivityEnded -= OnNestedActivityEnded;
-            Activity.LogAdded -= OnLogAdded;
         }
         return base.SetParametersAsync(parameters);
     }
 
     protected override void OnParametersSet()
     {
-        logger.LogDebug("OnParametersSet");
+        logger.LogDebug(nameof(OnParametersSet));
         Activity.ActivityEnded += OnActivityEnded;
         Activity.NestedActivityEnded += OnNestedActivityEnded;
-        Activity.LogAdded += OnLogAdded;
         DurationMapRenderContext.FastTimer -= OnFastTimer;
         DurationMapRenderContext.FastTimer += OnFastTimer;
-        DurationMapRenderContext.MediumTimer -= OnMediumTimer;
-        DurationMapRenderContext.MediumTimer += OnMediumTimer;
-        logger.LogDebug("OnFastTimer added");
-
-        AggragatedLogs = LogAggregator.AggregateLogs(Activity, DurationMapRenderContext.PixelsPerMs, logIconSizePx);
         base.OnParametersSet();
     }
 
@@ -250,6 +174,9 @@
     {
         if (firstRender)
             isRendered = true;
+
+        logger.LogDebug(nameof(OnAfterRender));
+
         base.OnAfterRender(firstRender);
     }
 
@@ -272,9 +199,7 @@
 
         Activity.ActivityEnded -= OnActivityEnded;
         Activity.NestedActivityEnded -= OnNestedActivityEnded;
-        Activity.LogAdded -= OnLogAdded;
         DurationMapRenderContext.FastTimer -= OnFastTimer;
-        DurationMapRenderContext.MediumTimer -= OnMediumTimer;
 
     }
 
@@ -289,50 +214,20 @@
         return latestEndTime;
     }
 
-    private void OnLogAdded(object? sender, EventArgs e)
-    {
-        if (isRendered is false)
-            return;
-        UpdateAggregatedLogs();
-    }
-
     private async void OnFastTimer(object? sender, EventArgs e)
     {
-        await UpdateTime();
+        await UpdateCssTimeVar();
     }
 
-    private void OnMediumTimer(object? sender, EventArgs e)
+    private async Task UpdateCssTimeVar()
     {
         if (isRendered is false)
             return;
-        UpdateAggregatedLogs();
-    }
-
-    private void UpdateAggregatedLogs()
-    {
-        //TODO: When log added, its forces to rerender all nested duration boxes -> move logging row to new blazor component.
-        var newAggragatedLogs = LogAggregator.AggregateLogs(Activity, DurationMapRenderContext.PixelsPerMs, logIconSizePx);
-        if (newAggragatedLogs.Count == AggragatedLogs.Count)
-            return;
-        AggragatedLogs = newAggragatedLogs;
-        StateHasChanged();
-
-    }
-
-    private async Task UpdateTime()
-    {
-        //logger.LogDebug("UpdateTime");
-
-        if (isRendered is false)
-            return;
-
-        //logger.LogDebug("UpdateTime isRendered true");
 
         if (Activity.HasEnded)
         {
             await SetTimeCssVar(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime);
             DurationMapRenderContext.FastTimer -= OnFastTimer;
-            DurationMapRenderContext.MediumTimer -= OnMediumTimer;
         }
         else
         {

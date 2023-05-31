@@ -30,7 +30,7 @@ public partial class ElementJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("changeStyleById", elementId, cssText);
     }
 
-    public async void SetStyle(ElementReference elementReference, string cssText)
+    public async ValueTask SetStyle(ElementReference elementReference, string cssText)
     {
         ArgumentNullException.ThrowIfNull(elementReference);
         var module = await moduleTask.Value;

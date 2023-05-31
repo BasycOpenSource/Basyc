@@ -12,13 +12,13 @@
 
 
 <horizontalDurationMapView @ref=horizontalDurationMapViewRef>
-    <zoomToolBar>
+    <zoomToolBarRow>
         @*<MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />*@
         <button class="toolBarButton" @onclick="@OnZoomInClick">+</button>
         <button class="toolBarButton" @onclick="@OnZoomOutClick">-</button>
         <button class="toolBarButton" @onclick="@OnZoomFitClick">fit</button>
-    </zoomToolBar>
-    <services id="@scrollId">
+    </zoomToolBarRow>
+    <servicesRow id="@scrollId">
         @{
             if (RequestContext.Diagnostics.Services.Any())
             {
@@ -64,7 +64,7 @@
                 }
             }
         }
-    </services>
+    </servicesRow>
 </horizontalDurationMapView>
 
 @code {

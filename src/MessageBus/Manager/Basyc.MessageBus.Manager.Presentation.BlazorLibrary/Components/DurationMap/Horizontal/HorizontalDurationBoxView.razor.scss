@@ -8,7 +8,6 @@ horizontalDurationBoxView {
 
 
 durationBox {
-    align-items: end;
     box-sizing: border-box;
     grid-row: 1;
     float: left;
@@ -17,9 +16,10 @@ durationBox {
     border: 1px solid #1A2D41;
     background-color: #2676D10D;
     display: grid;
+    /*align-items: end;*/
     grid-auto-columns: 1fr;
     grid-auto-rows: 1fr;
-    overflow: clip;
+    /*overflow: clip;*/
     width: calc(var(--timeSpanCss) * var(--pixelsPerMs) * 1px);
     transition: width 150ms cubic-bezier(.4,0,.2,1) 0ms;
 }
@@ -124,74 +124,29 @@ treeHorizontalLine {
 }
 
 
-logs {
+/*logs {
     grid-column: 1;
-    grid-row: 1;
-    /*    display: grid;
-    align-items: end;*/
-    display: flex;
-    flex-direction: row;
-}
-
-logCell {
-    width: 10px;
-}
-
-aggregatedLog {
-    display: block;
-    /*    grid-column: 1;
     grid-row: 1;*/
-    opacity: 0.25;
-    --logMaxWidthPixels: 4;
-    /*transform supports fractional pixels*/
-    /*margin-left: calc(var(--logTimeStartCss) * var(--pixelsPerMs) * 1px);*/
-    /*    transform: translate(calc(var(--logTimeStartCss) * var(--pixelsPerMs) * 1px), 0px);
-    width: calc(max(min(calc(var(--pixelsPerMs) * var(--logMaxWidthPixels)), var(--logMaxWidthPixels)), var(--logMaxWidthPixels)) * 1px);*/
-}
-
-::deep .logContentToolTip {
-    display: flex !important;
-    align-items: end;
-    height: 100%;
-    width: 100%;
-    overflow: visible;
-}
-
-logContent {
-    opacity: 0.5;
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.logContent--Debug {
-    background-color: $Log-Debug-Foreground;
-}
-
-.logContent--Information {
-    background-color: $Log-Information-Foreground;
-}
-
-.logContent--Warning {
-    background-color: $Log-Warning-Background;
-}
-
-.logContent--Error {
-    background-color: $Log-Error-Background;
-}
+/*    display: grid;
+    align-items: end;*/
+/*display: flex;
+    flex-direction: column;*/
+/*flex-direction: row;
+    max-width: 500px;*/
+/*position: absolute;*/
+/*max-height: 100px;*/
+/*rotate: 90deg;*/
+/*    transform: rotate(90deg);
+    width: 10px;
+    height: 250px;
+    background-color: #ff00008c;*/
+/*justify-content: end;*/
+/*height: 10px;
+}*/
 
 
-
-logContent:hover {
-    background-color: red;
-}
 
 rowSplitter {
     height: 0.5rem;
     width: 1rem;
-}
-
-loading {
-    height: 100%;
-    background-color: red;
 }

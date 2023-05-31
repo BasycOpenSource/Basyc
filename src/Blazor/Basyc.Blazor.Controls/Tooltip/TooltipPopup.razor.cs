@@ -8,19 +8,29 @@ namespace Basyc.Blazor.Controls.Tooltip;
 
 public partial class TooltipPopup
 {
+    private static readonly PeriodicTimer tooltipPopupTimer = new PeriodicTimer(TimeSpan.FromSeconds(0.05));
+
+    private readonly bool shouldRender;
     private readonly DotNetObjectReference<TooltipPopup> selfJsReference;
     private ElementReference tooltipPopupComponent;
-    private double mousePositionX;
-    private double mousePositionY;
+    private double lastMousePositionX;
+    private double lastMousePositionY;
     private bool isMouseOver;
+    private bool isToolTipShown;
     private bool freezeTooltip;
 
-    private bool shouldRender;
+    static TooltipPopup()
+    {
+        StartTimer();
+    }
 
     public TooltipPopup()
     {
         selfJsReference = DotNetObjectReference.Create(this);
+        shouldRender = true;
     }
+
+    private static event EventHandler? TooltipPopupTimerTick;
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; } = null;
@@ -46,10 +56,9 @@ public partial class TooltipPopup
     public void ChangeFreeze(bool value)
     {
         freezeTooltip = value;
+
         if (freezeTooltip is false)
-        {
             TooltipJsInterop.HideTooltip(selfJsReference, $"{TooltipPopupComponentId}", OwnerId);
-        }
     }
 
     public void Dispose()
@@ -58,61 +67,100 @@ public partial class TooltipPopup
         Messenger.MouseOver -= MouseOver;
         Messenger.MouseMove -= MouseMove;
         Messenger.MouseOut -= MouseOut;
+        TooltipPopupTimerTick -= OnTimerTick;
     }
 
     protected override void OnParametersSet()
     {
-        base.OnParametersSet();
+        Logger.LogDebug(nameof(OnParametersSet));
+
         Messenger.MouseOver += MouseOver;
         Messenger.MouseMove += MouseMove;
         Messenger.MouseOut += MouseOut;
+        base.OnParametersSet();
     }
 
     protected override bool ShouldRender() => shouldRender;
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Logger.LogInformation("TooltipPopup rendered");
+        Logger.LogDebug(nameof(OnAfterRender));
         base.OnAfterRender(firstRender);
     }
 
-    private void MouseMove(object? sender, MouseEventArgs e)
+    private static async void StartTimer()
+    {
+        while (await tooltipPopupTimer.WaitForNextTickAsync())
+        {
+            TooltipPopupTimerTick?.Invoke(null, EventArgs.Empty);
+        }
+    }
+
+    private async void MouseMove(object? sender, MouseEventArgs e)
     {
         if (freezeTooltip)
             return;
-        mousePositionX = e.PageX;
-        mousePositionY = e.PageY;
-        UpdateStyle();
+
+        var mouseNewPositionDifference = Math.Abs(lastMousePositionX - e.PageX) + Math.Abs(lastMousePositionY - e.PageY);
+        if (mouseNewPositionDifference < 5)
+            return;
+
+        lastMousePositionX = e.PageX;
+        lastMousePositionY = e.PageY;
+        await UpdateStyle(lastMousePositionX, lastMousePositionY);
     }
 
     private void MouseOver(object? sender, MouseEventArgs e)
     {
         if (isMouseOver)
             return;
-        TooltipJsInterop.ShowTooltip(selfJsReference, $"{TooltipPopupComponentId}");
+
+        if (isToolTipShown is false)
+        {
+            Logger.LogDebug("First MouseOver showing tooltip");
+            isToolTipShown = true;
+            TooltipJsInterop.ShowTooltip(selfJsReference, $"{TooltipPopupComponentId}");
+            TooltipPopupTimerTick += OnTimerTick;
+        }
+
         isMouseOver = true;
-        shouldRender = true;
-        InvokeAsync(StateHasChanged);
-        shouldRender = false;
     }
 
     private void MouseOut(object? sender, MouseEventArgs e)
     {
         if (isMouseOver is false)
             return;
-        if (freezeTooltip is false)
-        {
-            TooltipJsInterop.HideTooltip(selfJsReference, $"{TooltipPopupComponentId}", OwnerId);
-        }
 
-        InvokeAsync(StateHasChanged);
         isMouseOver = false;
     }
 
-    private void UpdateStyle()
+    private async Task UpdateStyle(double mousePositionX, double mousePositionY)
     {
+        const double mouseOffsetMs = 20;
         string visibility = isMouseOver || freezeTooltip ? "visible" : "collapse";
-        string cssText = $"left: {mousePositionX + 4}px; top: {mousePositionY + 4}px; visibility: {visibility}";
-        ElementJsInterop.SetStyle(tooltipPopupComponent, cssText);
+        string cssText = $"left: {mousePositionX + mouseOffsetMs}px; top: {mousePositionY + mouseOffsetMs}px; visibility: {visibility}";
+        await ElementJsInterop.SetStyle(tooltipPopupComponent, cssText);
+    }
+
+    private void OnTimerTick(object? sender, EventArgs args)
+    {
+        if (isMouseOver is true && isToolTipShown is false)
+        {
+            Logger.LogDebug("Timer showing tooltip");
+            isToolTipShown = true;
+            TooltipJsInterop.ShowTooltip(selfJsReference, $"{TooltipPopupComponentId}");
+            return;
+        }
+
+        if (isMouseOver is false && isToolTipShown is true)
+        {
+            if (freezeTooltip)
+                return;
+            Logger.LogDebug("Timer hiding tooltip");
+            isToolTipShown = false;
+            TooltipJsInterop.HideTooltip(selfJsReference, $"{TooltipPopupComponentId}", OwnerId);
+            TooltipPopupTimerTick -= OnTimerTick;
+            return;
+        }
     }
 }

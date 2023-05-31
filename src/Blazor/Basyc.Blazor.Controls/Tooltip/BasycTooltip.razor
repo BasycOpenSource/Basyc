@@ -1,7 +1,9 @@
 ﻿@namespace Basyc.Blazor.Controls
 @using Basyc.Blazor.Controls.Interops;
 @using Basyc.Blazor.Controls.Tooltip;
+@using Microsoft.Extensions.Logging;
 @using Microsoft.JSInterop;
+@inject ILogger<BasycTooltip> logger;
 
 <tooltipView>
     <childContent id="@ChildContentId">
@@ -16,4 +18,31 @@
 
 
 
+@code {
+    private readonly TooltipPartsMessenger messenger = new TooltipPartsMessenger();
 
+    [Parameter] public RenderFragment? ChildContent { get; set; } = null;
+
+    [Parameter] public RenderFragment? TooltipContent { get; set; } = null;
+#pragma warning disable CA5394
+    private string ChildContentId { get; init; } = Random.Shared.Next().ToString();
+#pragma warning restore CA5394
+
+    protected override void OnInitialized()
+    {
+        logger.LogDebug(nameof(OnInitialized));
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        logger.LogDebug(nameof(OnParametersSet));
+        base.OnParametersSet();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        logger.LogDebug(nameof(OnAfterRender));
+        base.OnAfterRender(firstRender);
+    }
+}
