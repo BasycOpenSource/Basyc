@@ -1,4 +1,5 @@
 ﻿@using System.Collections.ObjectModel;
+@using Basyc.Blazor.Controls.HtmlExtensions;
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 @implements IDisposable
 @implements IHandleEvent
@@ -7,7 +8,8 @@
     @foreach (var aggregatedLog in AggragatedLogs)
     {
         var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
-        var logTimeStartCss = Math.Round((aggregatedLog.StartTime - Activity.StartTime.AbsoluteTime).TotalMilliseconds);
+        @*var logTimeStartCss = Math.Round((aggregatedLog.StartTime - Activity.StartTime.AbsoluteTime).TotalMilliseconds);*@
+        var logTimeStartCss = Html.Methods.NumberToHtml((aggregatedLog.StartTime - Activity.StartTime.AbsoluteTime).TotalMilliseconds);
         var logStyle = $"--logTimeStartCss: {logTimeStartCss}";
         <aggregatedLog style="@logStyle">
             <logContent class="@logContentClass" />

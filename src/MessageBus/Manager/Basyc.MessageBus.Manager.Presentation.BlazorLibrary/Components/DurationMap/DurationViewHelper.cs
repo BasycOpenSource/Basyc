@@ -7,7 +7,7 @@ public static class DurationViewHelper
     public static string GetCssDurationValue(TimeSpan duration, double scale, out double lenghtNumber, string unit = "px")
     {
         lenghtNumber = Math.Round(duration.TotalMilliseconds) * scale;
-        var lenghtNumberText = HtmlNumbers.Number(null, lenghtNumber);
+        var lenghtNumberText = HtmlNumbers.NumberToHtml(null, lenghtNumber);
         return $"{lenghtNumberText}{unit}";
     }
 

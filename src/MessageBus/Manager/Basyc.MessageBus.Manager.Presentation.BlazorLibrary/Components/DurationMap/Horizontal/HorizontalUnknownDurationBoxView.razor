@@ -40,8 +40,8 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var timeSpanMs = Html.Methods.Number(Math.Round((EndTime - StartTime).TotalMicroseconds));
+        var timeSpanMs = Html.Methods.NumberToHtml(Math.Round((EndTime - StartTime).TotalMicroseconds));
         //horizontalUnknownDurationBoxViewref.SetCssVariable(DurationMapConstants.TimeSpanCssVarName, timeSpanMs);
-        await ElementJsInterop.SetCssVariable(horizontalUnknownDurationBoxViewref, DurationMapConstants.TimeSpanCssVarName, timeSpanMs);
+        await ElementJsInterop.SetCssVariable(horizontalUnknownDurationBoxViewref, DurationMapConstants.ActivityDurationMsCssVar, timeSpanMs);
     }
 }

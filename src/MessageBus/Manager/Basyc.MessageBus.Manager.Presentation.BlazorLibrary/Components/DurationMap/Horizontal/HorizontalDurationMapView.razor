@@ -19,20 +19,14 @@
         <button class="toolBarButton" @onclick="@OnZoomFitClick">fit</button>
     </zoomToolBarRow>
     <servicesRow id="@scrollId">
-        @{
-            if (RequestContext.Diagnostics.Services.Any())
+            @if (RequestContext.Diagnostics.Services.Any())
             {
                 foreach (var service in RequestContext.Diagnostics.Services.Where(x => x.Activities.Any()).OrderBy(x => x.Activities.Min(y => y.StartTime)))
                 {
                     var serviceThemeColor = ServiceColorHelper.GetBackground(service.ServiceIdentity.ServiceName);
-
                     var nameColor = serviceThemeColor.Edit(opacity: 0.3);
-                    var borderColor = serviceThemeColor.Edit(opacity: 0.25);
                     var backgroundColor = serviceThemeColor.Edit(opacity: 0.05);
-
-                    var serviceFirstActivity = service.Activities.First();
                     var serviceStyle = $"background-color: {backgroundColor}";
-                    var durationBoxesStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime.AbsoluteTime, PixelsPerMs)};";
                     var serviceNameStyle = $"color: {nameColor}";
                     <service style="@serviceStyle">
                         <serviceNameContainer>
@@ -40,22 +34,18 @@
                                 @service.ServiceIdentity.ServiceName
                             </serviceName>
                         </serviceNameContainer>
-                        <durationBoxes style="@durationBoxesStyle">
+                        <durationBoxes>
                             @{
                                 ActivityContext? previousActivity = null;
                                 foreach (var activity in service.Activities)
                                 {
-                                    <unknownAndKnowGroup>
-                                        @{
-                                            var leftMargin = previousActivity == null ? "0px" : DurationViewHelper.GetCssDurationValue(serviceFirstActivity.StartTime.Value, activity.StartTime.Value, PixelsPerMs);
-                                            <div style="display: flex; margin-left:@leftMargin;">
-                                                @{
-                                                    <HorizontalDurationBoxView DurationMapRenderContext="durationMapRenderContext" Activity="activity" Color="@serviceThemeColor" NestingLevel="0" />
-                                                    previousActivity = activity;
-                                                }
-                                            </div>
-                                        }
-                                    </unknownAndKnowGroup>
+                                    var activityStartTimeMsCssVar = Html.Methods.NumberToHtml((activity.StartTime.AbsoluteTime - RequestContext.StartTime).TotalMilliseconds);
+                                    <durationRow>
+                                        <activityPositioner style="--@DurationMapConstants.ActivityStartTimeMsCssVar: @activityStartTimeMsCssVar">
+                                            <HorizontalDurationBoxView DurationMapRenderContext="durationMapRenderContext" Activity="activity" Color="@serviceThemeColor" NestingLevel="0" />
+                                        </activityPositioner>
+                                    </durationRow>
+                                    previousActivity = activity;
                                 }
                             }
                         </durationBoxes>
@@ -63,7 +53,6 @@
                     <br>
                 }
             }
-        }
     </servicesRow>
 </horizontalDurationMapView>
 
@@ -99,21 +88,38 @@
         base.OnInitialized();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    isRendered = true;
+    //    Logger.LogDebug("OnAfterRenderAsync");
+    //    if (firstRender)
+    //    {
+    //        ScrollJsInterop.AddDragToScroll(scrollId);
+    //    }
+    //    if (updatePixelsPerMsCssVarInOnAfterRender)
+    //    {
+    //        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs));
+    //        updatePixelsPerMsCssVarInOnAfterRender = false;
+    //    }
+    //    StartTimers();
+    //    await base.OnAfterRenderAsync(firstRender);
+    //}
+
+    protected override void OnAfterRender(bool firstRender)
     {
         isRendered = true;
         Logger.LogDebug("OnAfterRenderAsync");
         if (firstRender)
         {
-            ScrollJsInterop.AddDragToScroll(scrollId);            
+            ScrollJsInterop.AddDragToScroll(scrollId);
         }
         if (updatePixelsPerMsCssVarInOnAfterRender)
         {
-            await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
+            ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs)).AndForget();
             updatePixelsPerMsCssVarInOnAfterRender = false;
         }
         StartTimers();
-        await base.OnAfterRenderAsync(firstRender);
+        base.OnAfterRender(firstRender);
     }
 
     protected override void OnParametersSet()
@@ -156,7 +162,7 @@
         zoomManuallyChanged = true;
         PixelsPerMs += 0.1 * PixelsPerMs * 3;
         durationMapRenderContext.PixelsPerMs = PixelsPerMs;
-        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
+        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs));
     }
 
     private async Task OnZoomOutClick(MouseEventArgs args)
@@ -166,7 +172,7 @@
         if (PixelsPerMs < 0)
             PixelsPerMs = 0;
         durationMapRenderContext.PixelsPerMs = PixelsPerMs;
-        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
+        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs));
     }
 
     private async Task OnZoomFitClick(MouseEventArgs args)
@@ -190,7 +196,7 @@
             if (isRendered is false)
                 return;
             //Logger.LogDebug("ZoomFit SetCssVariable");
-            await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.Number(PixelsPerMs));
+            await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs));
         }
     }
 
@@ -255,7 +261,7 @@
                 durationMapRenderContext.OnMediumTimer();
                 ticksInGroup = 0;
             }
-           
+
         }
     }
 

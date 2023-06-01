@@ -74,7 +74,8 @@ acitvityName {
     line-height: 0.8rem;
     color: #c7c7c7bf;
     //This makes elipsis working
-    width: calc(var(--timeSpanCss) * var(--pixelsPerMs) * 1px);
+    //This make sticky not working
+    /*width: calc(var(--timeSpanCss) * var(--pixelsPerMs) * 1px);*/
 }
 
 acitvityDisplayName {

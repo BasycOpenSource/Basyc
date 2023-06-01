@@ -31,63 +31,60 @@
     </BasycSpaceBorder>
 
     <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="true" PanelClass="panelClass">
-        <ChildContent>
-            <MudTabPanel Text="IO">
-                <ioGrid>
-                    <inputBox>
-                        <BasycHeading Size="HeadingSize.H4">
-                            Input
-                        </BasycHeading>
-                        <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Small" />
-                        @ResponseResultConverter.CreateInputOverview(MessageRequest.RequestInput.Parameters)
-                    </inputBox>
-                    <inputBox>
-                        <BasycHeading Size="HeadingSize.H4">
-                            Output
-                        </BasycHeading>
-                        <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Small" />
+        <MudTabPanel Text="IO">
+            <ioGrid>
+                <inputBox>
+                    <BasycHeading Size="HeadingSize.H4">
+                        Input
+                    </BasycHeading>
+                    <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Small" />
+                    @ResponseResultConverter.CreateInputOverview(MessageRequest.RequestInput.Parameters)
+                </inputBox>
+                <inputBox>
+                    <BasycHeading Size="HeadingSize.H4">
+                        Output
+                    </BasycHeading>
+                    <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Small" />
 
-                        @if (MessageRequest.State == RequestResultState.Started)
-                        {
-                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
-                        }
-                        else
-                        {
-                            <textValue>
-                                @if (MessageRequest.State == RequestResultState.Completed)
+                    @if (MessageRequest.State == RequestResultState.Started)
+                    {
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
+                    }
+                    else
+                    {
+                        <textValue>
+                            @if (MessageRequest.State == RequestResultState.Completed)
+                            {
+                                if (MessageRequest.RequestInput.MessageInfo.HasResponse)
                                 {
-                                    if (MessageRequest.RequestInput.MessageInfo.HasResponse)
-                                    {
-                                        if (MessageRequest.Response is Task responseTask)
-                                            @(((dynamic)responseTask).Result)
-                                        else
-                                            @MessageRequest.Response
-                                    }
+                                    if (MessageRequest.Response is Task responseTask)
+                                        @(((dynamic)responseTask).Result)
                                     else
-                                    {
-                                        <ghostLabel>
-                                            Result does not have an output
-                                        </ghostLabel>
-                                    }
+                                        @MessageRequest.Response
                                 }
-                                @if (MessageRequest.State == RequestResultState.Failed)
+                                else
                                 {
-                                    @MessageRequest.ErrorMessage
+                                    <ghostLabel>
+                                        Result does not have an output
+                                    </ghostLabel>
                                 }
-                            </textValue>
-                        }
-                    </inputBox>
-                </ioGrid>
+                            }
+                            @if (MessageRequest.State == RequestResultState.Failed)
+                            {
+                                @MessageRequest.ErrorMessage
+                            }
+                        </textValue>
+                    }
+                </inputBox>
+            </ioGrid>
 
-            </MudTabPanel>
-            <MudTabPanel Text="Traces">
-                <HorizontalDurationMapView RequestContext="MessageRequest" />
-            </MudTabPanel>
-            <MudTabPanel Text="Logs">
-                <LogWindowView DiagnosticsContext="MessageRequest.Diagnostics" />
-            </MudTabPanel>
-        </ChildContent>
-
+        </MudTabPanel>
+        <MudTabPanel Text="Traces">
+            <HorizontalDurationMapView RequestContext="MessageRequest" />
+        </MudTabPanel>
+        <MudTabPanel Text="Logs">
+            <LogWindowView DiagnosticsContext="MessageRequest.Diagnostics" />
+        </MudTabPanel>
     </MudTabs>
 </messagePageRequestPageView>
 

@@ -34,6 +34,15 @@
                                 <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
                             </spinner>
                         }
+@*                        <acitvityDisplayName>
+                            @Activity.DisplayName
+                        </acitvityDisplayName>
+                        @if (Activity.HasEnded is false)
+                        {
+                            <spinner>
+                                <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
+                            </spinner>
+                        }*@
                     </acitvityName>
                 </stickyContainer>
                 <HorizontalDurationBoxLogRowView Activity="Activity" DurationMapRenderContext="DurationMapRenderContext"/>
@@ -184,8 +193,8 @@
 
     private async Task SetTimeCssVar(TimeSpan timeSpan)
     {
-        var timeSpanMs = Html.Methods.Number(timeSpan.TotalMilliseconds);
-        await ElementJsInterop.SetCssVariable(horizontalDurationBoxView, DurationMapConstants.TimeSpanCssVarName, timeSpanMs);
+        var timeSpanMs = Html.Methods.NumberToHtml(timeSpan.TotalMilliseconds);
+        await ElementJsInterop.SetCssVariable(horizontalDurationBoxView, DurationMapConstants.ActivityDurationMsCssVar, timeSpanMs);
     }
 
     private void OnActivityEnded(object? sender, EventArgs e) => StateHasChanged();

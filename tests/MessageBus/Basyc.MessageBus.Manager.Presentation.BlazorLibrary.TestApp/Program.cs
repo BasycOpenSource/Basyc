@@ -208,7 +208,7 @@ busManagerBuilder.RegisterMessages()
             Random.Shared.Next(8, 20).Times(x =>
             {
                 var traceId = DiagnosticHelper.GetCurrentTraceId();
-                var activityStart = new ActivityStart(serviceIdentity, traceId, null, IdGeneratorHelper.GenerateNewSpanId(), serviceIdentity.ServiceName, DateTimeOffset.UtcNow + TimeSpan.FromMilliseconds(x * 10));
+                var activityStart = new ActivityStart(serviceIdentity, traceId, null, IdGeneratorHelper.GenerateNewSpanId(), serviceIdentity.ServiceName, DateTimeOffset.UtcNow + TimeSpan.FromMilliseconds((x * 10) + Random.Shared.Next(8, 20)));
                 diagnsoticExporter.Value().StartActivity(activityStart);
                 diagnsoticExporter.Value().EndActivity(activityStart, activityStart.StartTime + TimeSpan.FromMilliseconds(x * 1.2));
                 var logEntry = new LogEntry(serviceIdentity, traceId, DateTimeOffset.UtcNow, LogLevel.Information, "Message", null);
@@ -250,9 +250,6 @@ WireUpInMemoryDiagnostics(blazorApp);
 await blazorApp.Services.StartBasycDiagnosticsReceivers();
 await blazorApp.Services.StartBasycDiagnosticExporters();
 await blazorApp.Services.StartBasycMessageBusClient();
-
-//var jsRuntime = blazorApp.Services.GetRequiredService<IJSRuntime>();
-//await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/Basyc.Blazor.Controls/elementJSInterop.js");
 await blazorApp.RunAsync();
 
 static void WireUpInMemoryDiagnostics(WebAssemblyHost app)
