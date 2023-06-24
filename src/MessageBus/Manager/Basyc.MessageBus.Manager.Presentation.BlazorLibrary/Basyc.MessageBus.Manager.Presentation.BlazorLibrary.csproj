@@ -39,6 +39,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>-->
+		<PackageReference Include="Excubo.Blazor.ScriptInjection" Version="3.1.7" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
 		<PackageReference Include="LibSassBuilder" Version="3.0.0" />
 		<!--<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />-->

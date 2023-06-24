@@ -13,7 +13,7 @@ paramLabel {
 
 .inputBorder {
     border-radius: 3px;
-    background-color: #0C0E12;
+    background-color: #1C1C28;
     display: flex;
     color: #A5A5A5;
 }
@@ -31,6 +31,7 @@ paramType {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin-left: 8px;
 }
 
 .paramType-isPrimitive-False {
@@ -65,14 +66,12 @@ heading {
 }
 
 reqeustSideBarView {
-    background-color: rgba(4, 3, 4, 0.4);
+    background-color: #07050F;
     display: flex;
     width: 280px;
     flex: 1;
     height: 100%;
     flex-direction: column;
-    border: 0px solid rgba(255, 255, 255, 0.08);
-    border-right-width: 0.5px;
     overflow: hidden;
 }
 
@@ -87,6 +86,8 @@ headingDomain {
 .paramRow {
     display: block;
     width: 100%;
+    margin-bottom: 8px;
+    margin-top: 4px;
 }
 
 
@@ -128,29 +129,60 @@ ghostLabel {
 
 grid {
     display: grid;
-    grid-template-rows: 50fr 50fr;
-    /*display: flex;
-    flex-direction: column;*/
-    height: 100%
+    grid-template-rows: auto min-content 50fr;
+    height: 100%;
+}
+
+logoSection {
+    grid-row: 1;
+    margin: var(--space-medium);
+}
+
+selectionGrid {
+    grid-row: 2;
+    min-height: 0px;
+    display: grid;
+    grid-template-rows: auto 100fr;
+    margin: var(--space-medium);
+    margin-top: 18px;
+    margin-left: 18px;
+    padding: 0px;
+    background-color: #0F0D17;
+    border-radius: 4px;
+    /*border: 1px solid #ffffff0D;*/
+    min-height: 0px;
+    max-height: 480px;
+}
+
+selectorRow {
+    grid-row: 1;
+    display: block;
+    padding: 0px 4px;
 }
 
 formRow {
-    grid-row: 1;
+    grid-row: 2;
     display: grid;
     grid-auto-rows: auto 1fr;
+    min-height: 0;
+
 }
 
 historyRow {
-    grid-row: 2;
+    grid-row: 3;
     display: flex;
     overflow: hidden;
     flex-direction: column;
 }
 
+
+
 requestform {
+    grid-row: 2;
     overflow: hidden;
-    display: grid;
-    grid-auto-rows: 1fr auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0px;
 }
 
 .paramTable {
@@ -164,9 +196,17 @@ paramSection {
     display: block;
     grid-row: 1;
     overflow: auto;
+    padding: 0px 4px;
 }
 
 buttonSection {
     display: block;
     grid-row: 2;
+    padding: 0px 4px;
+}
+
+brandName {
+    font-size: 18px;
+    color: #6F679D;
+    font-weight: lighter;
 }

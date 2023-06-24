@@ -3,7 +3,6 @@
 @using System.Diagnostics;
 
 @implements IDisposable
-@*style="left: @(mousePositionX + 4)px; top: @(mousePositionY + 4)px; visibility: @(isMouseOver || freezeTooltip ? "visible" : "collapse")"*@
 <tooltipPopupComponent class="tooltip--hidden" id="@TooltipPopupComponentId" @ref=tooltipPopupComponent>
     <perspective>
         <transform>

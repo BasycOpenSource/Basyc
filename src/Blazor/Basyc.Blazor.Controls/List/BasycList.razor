@@ -5,7 +5,7 @@
 @namespace Basyc.Blazor.Controls
 @typeparam TItem
 
-<basycList id="@scrollId">
+<basycList id="@scrollId" style="@styleToRender">
     @if (Virtualize)
     {
         <Virtualize TItem="TItem" Context="item" Items="@ItemsCasted">

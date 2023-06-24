@@ -1,0 +1,132 @@
+﻿@using System.Collections.ObjectModel;
+@using Basyc.Blazor.Controls.HtmlExtensions
+@using Basyc.MessageBus.Manager.Application;
+@using Basyc.MessageBus.Manager.Application.Building;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
+@using ReactiveUI.Fody.Helpers;
+@inherits BasycReactiveBlazorComponentBase
+
+<sidebarMessageSelectorView>
+    <button onclick="@ToggleOpen" class="buttonClass">
+        @SelectedMessageName
+        <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" />
+    </button>
+    <MudPopover Open="@isOpen" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Paper="false" RelativeWidth="true">
+        <popOverBody>
+            <BasycStyleSection SectionName="1">
+                <BasycSpaceBorder Size="SpaceSize.Big" SizeTop="SpaceSize.Medium">
+                    <BasycHeading Size="HeadingSize.H4">
+                        Endpoints
+                    </BasycHeading>
+
+                    <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">
+                        @foreach (var messageGroup in messageGroups)
+                        {
+                            <MudExpansionPanel Class="groupPanel" Dense="true" DisableGutters="true" IsInitiallyExpanded="true">
+                                <TitleContent>
+                                    <gutters>
+                                        <domainHeading>
+                                            @Html.Methods.Icon(IconsEnum.folder)
+                                            @messageGroup.Name
+                                        </domainHeading>
+                                    </gutters>
+                                </TitleContent>
+                                <ChildContent>
+                                    <messages>
+                                        @foreach (var message in messageGroup.Messages)
+                                        {
+                                            <messageItem @onclick="() => SelectMessage(message)">
+                                                @message.RequestDisplayName
+                                            </messageItem>
+                                        }
+                                    </messages>
+                                </ChildContent>
+                            </MudExpansionPanel>
+                        }
+                    </MudExpansionPanels>
+                </BasycSpaceBorder>
+            </BasycStyleSection>
+        </popOverBody>
+    </MudPopover>
+    @*    <BasycTooltip>
+    <ChildContent>
+    <button onclick="@ToggleOpen" class="buttonClass">
+    @SelectedMessageName
+    <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" />
+    </button>
+    </ChildContent>
+    <TooltipContent>
+    <BasycStyleSection SectionName="1">
+    <BasycSpaceBorder SizeLeft="SpaceSize.Medium" SizeRight="SpaceSize.Medium">
+    <BasycSpaceBorder Size="SpaceSize.Medium" SizeBottom="SpaceSize.None">
+    <BasycHeading Size="HeadingSize.H4">
+    Endpoints
+    </BasycHeading>
+    </BasycSpaceBorder>
+
+    <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">
+    @foreach (var messageGroup in messageGroups)
+    {
+    <MudExpansionPanel Class="groupPanel" Dense="true" DisableGutters="true" IsInitiallyExpanded="true">
+    <TitleContent>
+    <gutters>
+    <domainHeading>
+    @Html.Icon(IconsEnum.folder)
+    @messageGroup.Name
+    </domainHeading>
+    </gutters>
+    </TitleContent>
+    <ChildContent>
+    <messages>
+    @foreach (var message in messageGroup.Messages)
+    {
+    <messageItem @onclick="() => SelectMessage(message)">
+    @message.RequestDisplayName
+    </messageItem>
+    }
+    </messages>
+    </ChildContent>
+    </MudExpansionPanel>
+    }
+    </MudExpansionPanels>
+    </BasycSpaceBorder>
+    </BasycStyleSection>
+    </TooltipContent>
+
+    </BasycTooltip>*@
+</sidebarMessageSelectorView>
+
+@code {
+    private ReadOnlyObservableCollection<MessageGroup> messageGroups = null!;
+
+    [Inject] private INavigationService navigationService { get; set; } = null!;
+    [Inject] private IMessagesInfoProvidersAggregator domainInfoInfoProvidersAggregatorManager { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        SelectedMessageName = this.ReactiveProperty(
+            x => x.SelectedMessageName,
+            x => x.navigationService.CurrentQueryParams,
+            x =>
+            {
+                var messageInfo = (MessageInfo)x.Value();
+                return messageInfo.RequestDisplayName;
+            });
+        messageGroups = new ReadOnlyObservableCollection<MessageGroup>(new ObservableCollection<MessageGroup>(domainInfoInfoProvidersAggregatorManager.GetMessageGroups()));
+        base.OnInitialized();
+    }
+
+    private void SelectMessage(MessageInfo messageInfo)
+    {
+        navigationService.GoTo<MessagePageView, MessagePageViewModel, MessageInfo>(messageInfo);
+        isOpen = false;
+    }
+
+
+    private bool isOpen = false;
+
+    private void ToggleOpen() => isOpen = !isOpen;
+
+    [Reactive] public string SelectedMessageName { get; private set; } = null!;
+
+}

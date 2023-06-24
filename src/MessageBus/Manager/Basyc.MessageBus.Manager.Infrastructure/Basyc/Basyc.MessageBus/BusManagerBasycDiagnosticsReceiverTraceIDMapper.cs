@@ -2,6 +2,7 @@
 
 namespace Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 
+//TODO: Might not be needed. Was created because of BusTask didnt support passing trace id.
 public class BusManagerBasycDiagnosticsReceiverTraceIdMapper : IBasycDiagnosticsReceiverTraceIdMapper
 {
     private readonly Dictionary<string, string> foreinfIdToSessionIdMap = new();

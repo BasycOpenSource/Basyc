@@ -45,6 +45,20 @@ public class FluentSetupNoReturnHandledByStage : BuilderStageBase
         return new FluentSetupDomainPostStage(Services, fluentApiGroup);
     }
 
+    public FluentSetupDomainPostStage HandledBy(Func<RequestInput, ILogger, Task> handler)
+    {
+        async Task<object?> HandlerWrapper(MessageRequest requestResult, ILogger logger)
+        {
+            using var act = logger.StartActivity("Invoking handler");
+            await handler.Invoke(requestResult.RequestInput, logger);
+            act.Stop();
+            return Task.FromResult<object?>(null);
+        }
+
+        ReturnStageHelper.RegisterMessageRegistration(Services, fluentApiGroup, fluentApiMessage, HandlerWrapper);
+        return new FluentSetupDomainPostStage(Services, fluentApiGroup);
+    }
+
     public FluentSetupDomainPostStage HandledBy(Func<ILogger, Task> handler)
     {
         async Task<object?> HandlerWrapper(MessageRequest requestResult, ILogger logger)

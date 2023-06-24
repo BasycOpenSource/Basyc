@@ -1,6 +1,7 @@
 ﻿index {
     display: flex;
     align-items: center;
+    justify-content: center;
     width: 30px;
 }
 
@@ -18,10 +19,20 @@ sidebarHistoryItemView {
     padding: 8px 0px;
     display: block;
     border: 0.5px solid transparent;
+    background-color: #0D0E1A;
+    border-radius: 4px;
+}
+
+sidebarHistoryItemView:hover {
+    background-color: #161B2A;
 }
 
 .sidebarHistoryItemView--selected {
     background-color: #20091A;
+}
+
+.sidebarHistoryItemView--selected:hover {
+    background-color: #1B1122;
 }
 
 ::deep logIcon {

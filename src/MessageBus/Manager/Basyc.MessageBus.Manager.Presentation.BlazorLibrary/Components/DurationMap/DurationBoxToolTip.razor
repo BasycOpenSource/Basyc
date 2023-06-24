@@ -3,20 +3,20 @@
 @using Basyc.Diagnostics.Shared.Logging;
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls
 @using Microsoft.Extensions.Logging;
 @using ReactiveUI;
+@using Basyc.Blazor.Controls.HtmlExtensions;
 @inherits BasycReactiveBlazorComponentBase<DurationBoxToolTipViewModel>
 
 <durationBoxToolTipView>
-    <BasycSpaceBorder Size="SpacerSize.Medium" StretchHeight="true">
+    <BasycSpaceBorder Size="SpaceSize.Big" StretchHeight="true">
         <layout>
-            <activityName>
+            @*<activityName>
                 <BasycHeading Size="HeadingSize.H3">
                     @Name
                 </BasycHeading>
             </activityName>
-            <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />
+            <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />*@
             <infoItems>
                 <infoItem>
                     <div>
@@ -31,8 +31,7 @@
                         started
                     </div>
                     <div>
-                        @*@Html.Time(StartTime.Value - default(DateTimeOffset))*@
-                        @Html.DiagnosticTime(StartTime)
+                        @Html.Methods.DiagnosticTime(StartTime)
                     </div>
                 </infoItem>
                 <infoItem>
@@ -40,36 +39,51 @@
                         lasted
                     </div>
                     <div>
-                        @Html.Time(Duration)
+                        @Html.Methods.Time(Duration)
                     </div>
                 </infoItem>
             </infoItems>
             <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />
             <BasycHeading Size="HeadingSize.H4">
                 <logHeading>
-                    Logs
-                    <BasycSpaceLine Start="SpaceLineSize.Medium" Direction="SpaceLineDirection.Vertical" Visible="false" />
-                    <LogIconView LogLevel="LogLevel.Information" />
-                    @LogsInformationCount
-                    <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
-                    <LogIconView LogLevel="LogLevel.Warning" />
-                    @LogsWarningCount
-                    <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
-                    <LogIconView LogLevel="LogLevel.Error" />
-                    @LogsErrorCount
+                    <logHeadingText>
+                        Logs
+                    </logHeadingText>
+                    <logHeadingCounters>
+                        <BasycSpaceLine Start="SpaceLineSize.Medium" Direction="SpaceLineDirection.Vertical" Visible="false" />
+                        <LogIconView LogLevel="LogLevel.Information" />
+                        <logCountNumber>
+                            @LogsInformationCount
+                        </logCountNumber>
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
+                        <LogIconView LogLevel="LogLevel.Warning" />
+                        <logCountNumber>
+                            @LogsWarningCount
+                        </logCountNumber>
+                        <BasycSpaceLine Start="SpaceLineSize.Small" End="SpaceLineSize.Small" Visible="false" Direction="SpaceLineDirection.Vertical" />
+                        <LogIconView LogLevel="LogLevel.Error" />
+                        <logCountNumber>
+                            @LogsErrorCount
+                        </logCountNumber>
+                    </logHeadingCounters>
+
                 </logHeading>
             </BasycHeading>
             <logs>
-                <BasycList Items="@ActivityContext.Logs" Context="log">
+                <BasycList Items="@ActivityContext.Logs" Context="log" RowGap="SpaceSize.Smaller">
                     <ItemTemplate>
                         <log>
-                            <BasycSpaceBorder Size="SpacerSize.Small">
+                            <BasycSpaceBorder Size="SpaceSize.Small">
                                 <logLayout>
                                     <LogIconView LogLevel="log.LogLevel" />
                                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
-                                    @log.Time.ToString("HH:mm:ss:fff")
-                                    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false"/>
-                                    @log.Message
+                                    <time>
+                                        @Html.Methods.DiagnosticTime(new DiagnosticTime(log.Time, ActivityContext.StartTime.BaseTime))
+                                    </time>
+                                    <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Start="SpaceLineSize.Small" Visible="false" />
+                                    <message>
+                                        @log.Message
+                                    </message>
                                 </logLayout>
                             </BasycSpaceBorder>
                         </log>
@@ -81,6 +95,8 @@
 </durationBoxToolTipView>
 
 @code {
+    [Inject]
+    private ILogger<DurationBoxToolTip> Logger { get; init; } = null!;
 
     [Parameter, EditorRequired]
     public string? Name { get; set; }
@@ -97,21 +113,19 @@
     [Parameter, EditorRequired]
     public ActivityContext ActivityContext { get; set; } = null!;
 
-    public int LogsInformationCount => ActivityContext.Logs.Where(x => x.LogLevel == LogLevel.Information).Count();
-    public int LogsWarningCount { get; init; }
-    public int LogsErrorCount { get; init; }
+    public int LogsInformationCount => ActivityContext.Logs.Where(x => x.LogLevel <= LogLevel.Information || x.LogLevel == LogLevel.None).Count();
+    public int LogsWarningCount => ActivityContext.Logs.Where(x => x.LogLevel is LogLevel.Warning).Count();
+    public int LogsErrorCount => ActivityContext.Logs.Where(x => x.LogLevel is LogLevel.Error or LogLevel.Critical).Count();
 
 
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Console.WriteLine("DurationBoxTooltip OnAfterRender");
         base.OnAfterRender(firstRender);
     }
 
     protected override void OnParametersSet()
     {
-        Console.WriteLine("DurationBoxTooltip OnParametersSet");
         base.OnParametersSet();
     }
 

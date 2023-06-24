@@ -1,5 +1,8 @@
 using Basyc.Diagnostics.Producing.Abstractions;
 using Basyc.Diagnostics.Receiving.Abstractions;
+using Basyc.Diagnostics.Shared;
+using Basyc.Diagnostics.Shared.Helpers;
+using Basyc.Diagnostics.Shared.Logging;
 using Basyc.DomainDrivenDesign.Domain;
 using Basyc.MessageBus.Client.Building;
 using Basyc.MessageBus.Manager;
@@ -7,7 +10,6 @@ using Basyc.MessageBus.Manager.Infrastructure.Basyc.Basyc.MessageBus;
 using Basyc.MessageBus.Manager.Infrastructure.Building.Diagnostics;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
 using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.TestApp;
-using Basyc.ReactiveUi;
 using Basyc.Shared.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Web;
@@ -20,6 +22,15 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 var assembliesToScan = new[] { typeof(TestCommand).Assembly };
+
+//builder.Services.AddLogging(x =>
+//{
+//    x.AddDebug();
+//});
+
+builder.Logging.AddDebug();
+builder.Logging.AddConfiguration(
+    builder.Configuration.GetSection("Logging"));
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
@@ -87,7 +98,7 @@ busManagerBuilder.AddRequestHandler()
 //  .HasResponse<int>()
 //  .SetResponseDisplayName("asddas")
 //  .HandledByDefaultHandler();
-
+IDiagnosticsExporter? diagnsoticExporter = null;
 busManagerBuilder.RegisterMessages()
     .FromAssemblyScan(assembliesToScan)
     .WhereImplements<ICommand>()
@@ -159,23 +170,63 @@ busManagerBuilder.RegisterMessages()
     })
     .AddMessage("Create Customer")
     .WithParametersFrom<CustomerModel>()
-    .Returns<CustomerModel>("new cutomer")
+    .Returns<CustomerModel>("new customer")
     .HandeledBy((CustomerModel x) =>
     {
         return x;
     })
-    .AddMessage("Inifinite Logging")
+    .AddMessage("Infinite Logging")
+    .WithParameter<int>("log start count")
+    .WithParameter<bool>("only errors")
     .NoReturn()
-    .HandledBy(async (logger) =>
+    .HandledBy(async (s, logger) =>
     {
-        int counter = 0;
+        var initCount = (int)s.Parameters[0].Value.Value();
+        var onlyErrors = (bool)s.Parameters[1].Value.Value();
+        for (int i = 0; i < initCount; i++)
+        {
+            if (onlyErrors is false)
+                logger.LogInformation("Info: " + i++);
+            logger.LogError("Error: " + i++);
+        }
+
+        int logCounter = initCount;
         while (true)
         {
             await Task.Delay(3500);
-            string message = $"Info: {++counter}";
-            logger.LogInformation(message);
-            logger.LogError(message);
+            if (onlyErrors is false)
+                logger.LogInformation("Info: " + logCounter++);
+            logger.LogError("Error: " + logCounter++);
         }
+    })
+    .AddMessage("Multiple Services")
+    .NoReturn()
+    .HandledBy((logger) =>
+    {
+        void SeedActivityData(ServiceIdentity serviceIdentity)
+        {
+            Random.Shared.Next(8, 20).Times(x =>
+            {
+                var traceId = DiagnosticHelper.GetCurrentTraceId();
+                var activityStart = new ActivityStart(serviceIdentity, traceId, null, IdGeneratorHelper.GenerateNewSpanId(), serviceIdentity.ServiceName, DateTimeOffset.UtcNow + TimeSpan.FromMilliseconds((x * 10) + Random.Shared.Next(8, 20)));
+                diagnsoticExporter.Value().StartActivity(activityStart);
+                diagnsoticExporter.Value().EndActivity(activityStart, activityStart.StartTime + TimeSpan.FromMilliseconds(x * 1.2));
+                var logEntry = new LogEntry(serviceIdentity, traceId, DateTimeOffset.UtcNow, LogLevel.Information, "Message", null);
+                diagnsoticExporter.Value().ProduceLog(logEntry);
+            });
+        }
+
+        void SeedServiceData(string serviceName)
+        {
+            var serviceIdentity = new ServiceIdentity(serviceName);
+            SeedActivityData(serviceIdentity);
+        }
+
+        SeedServiceData("ServiceA");
+        SeedServiceData("ServiceB");
+        SeedServiceData("ServiceC");
+        SeedServiceData("ServiceD");
+        SeedServiceData("ServiceF");
     })
     .AddMessage("Log")
     .WithParameter<int>("logCount")
@@ -191,21 +242,10 @@ busManagerBuilder.RegisterMessages()
             if (logCounter >= desiredCount)
                 break;
         }
-    })
-    ;
-
+    });
 builder.Services.AddBasycBusManagerBlazorUi();
-BasycReactiveUi.Fix();
-//builder.Services.UseMicrosoftDependencyResolver(); //Splat config
-//var resolver = Locator.CurrentMutable;
-//resolver.InitializeSplat();
-//resolver.InitializeReactiveUI();
-
-//Locator.CurrentMutable.Register(() => new SidebarHistory(), typeof(IViewFor<SidebarHistoryViewModel>)); //Splat!
-
-//CreateTestingMessages(busManagerBuilder);
-
 var blazorApp = builder.Build();
+diagnsoticExporter = blazorApp.Services.GetRequiredService<IDiagnosticsExporter>();
 WireUpInMemoryDiagnostics(blazorApp);
 await blazorApp.Services.StartBasycDiagnosticsReceivers();
 await blazorApp.Services.StartBasycDiagnosticExporters();

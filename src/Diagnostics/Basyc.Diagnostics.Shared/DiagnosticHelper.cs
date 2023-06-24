@@ -35,4 +35,6 @@ public static class DiagnosticHelper
         var activity = DefaultActivitySource.StartActivity(ActivityKind.Internal, name: name, parentContext: activityContext)!;
         return new ActivityDisposer(activity);
     }
+
+    public static string GetCurrentTraceId() => Activity.Current.Value().TraceId.ToString();
 }

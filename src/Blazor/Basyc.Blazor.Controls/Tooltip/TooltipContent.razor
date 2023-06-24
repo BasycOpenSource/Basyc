@@ -1,5 +1,6 @@
-﻿@implements IHandleEvent
-
+﻿@using Microsoft.Extensions.Logging;
+@implements IHandleEvent
+@inject ILogger<TooltipContent> logger;
 <tooltipContentComponent @onmousemove="MouseMove"
                          @onmouseout="MouseOut"
                          @onmouseover="MouseOver">
@@ -10,12 +11,25 @@
     [Parameter] public RenderFragment? ChildContent { get; set; } = null;
     [Parameter, EditorRequired] public TooltipPartsMessenger Messenger { get; set; } = null!;
 
+    protected override void OnInitialized()
+    {
+        logger.LogDebug(nameof(OnInitialized));
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        logger.LogDebug(nameof(OnParametersSet));
+        base.OnParametersSet();
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
-        Console.WriteLine("tooltip content render");
+        logger.LogDebug(nameof(OnAfterRender));
         base.OnAfterRender(firstRender);
     }
+
+
 
     private void MouseOver(MouseEventArgs e)
     {

@@ -13,17 +13,19 @@
     <reqeustSideBarView>
 
         <grid>
-            @*<BasycSpaceBorder Size="SpacerSize.Medium">*@
-            <formRow>
-
-                <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
-                    <BasycSpaceLine Visible="false" Start="SpaceLineSize.Medium" />
-                    <BasycHeading Size="HeadingSize.H3">
-                        Create request
-                    </BasycHeading>
-                    <BasycSpaceLine Visible="false" Start="SpaceLineSize.Medium" />
-                </BasycSpaceBorder>
-                <requestform>
+            <logoSection>
+                <MudImage Src="basycIcon.svg" />
+                <brandName>
+                    basyc.Observe
+                </brandName>
+            </logoSection>
+            <selectionGrid>
+                <selectorRow>
+                    <BasycSpaceBorder Size="SpaceSize.Medium" SizeBottom="SpaceSize.Medium" StretchHeight="false">
+                        <SidebarMessageSelector />
+                    </BasycSpaceBorder>
+                </selectorRow>
+                <formRow>
                     @if (MessageInfo is null)
                     {
                         <ghostLabel>
@@ -33,7 +35,7 @@
                     else
                     {
                         <paramSection>
-                            <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
+                            <BasycSpaceBorder Size="SpaceSize.Medium" SizeTop="SpaceSize.None" SizeBottom="SpaceSize.None">
                                 <table class="paramTable paddingContainer">
                                     @for (var i = 0; i < MessageInfo.Parameters.Count; i++)
                                     {
@@ -69,7 +71,7 @@
                         </paramSection>
 
                         <buttonSection>
-                            <BasycSpaceBorder Size="SpacerSize.Medium">
+                            <BasycSpaceBorder Size="SpaceSize.Medium" SizeTop="SpaceSize.Medium" SizeBottom="SpaceSize.Medium" StretchWidth="false">
                                 @if (hasInputError)
                                 {
                                     @:error when parsing
@@ -80,10 +82,9 @@
                             </BasycSpaceBorder>
                         </buttonSection>
                     }
-                </requestform>
-            </formRow>
+                </formRow>
+            </selectionGrid>
 
-            @*</BasycSpaceBorder>*@
             <historyRow>
                 <BasycSpaceLine Visible="false" />
                 <SidebarHistoryView MessageInfo="@MessageInfo" NavigationService="NavigationService" />

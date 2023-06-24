@@ -2,7 +2,7 @@
 
 @namespace Basyc.Blazor.Controls
 
-<basycSpaceBorder class="@classToRender">
+<basycSpaceBorder class="@classToRender" style="@styleToRender">
     @ChildContent
 </basycSpaceBorder>
 
@@ -12,30 +12,58 @@
     public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public SpacerSize Size { get; set; }
+    public SpaceSize Size { get; set; }
 
+    private SpaceSize? sizeTop;
     [Parameter]
-    public bool ShrinkTopBottom { get; set; }
+    public SpaceSize SizeTop
+    {
+        get => sizeTop ?? Size;
+        set => sizeTop = value;
+    }
 
+    private SpaceSize? sizeBottom;
     [Parameter]
-    public bool ShrinkLeftRight { get; set; }
+    public SpaceSize SizeBottom
+    {
+        get => sizeBottom ?? Size;
+        set => sizeBottom = value;
+    }
+
+    private SpaceSize? sizeLeft;
+    [Parameter]
+    public SpaceSize SizeLeft
+    {
+        get => sizeLeft ?? Size;
+        set => sizeLeft = value;
+    }
+
+    private SpaceSize? sizeRight;
+    [Parameter]
+    public SpaceSize SizeRight
+    {
+        get => sizeRight ?? Size;
+        set => sizeRight = value;
+    }
 
     [Parameter]
     public bool StretchHeight { get; set; }
 
+    [Parameter]
+    public bool StretchWidth { get; set; } = true;
+
 
     private string classToRender = "";
+    private string styleToRender = "";
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
         classToRender = new CssBuilder()
-            .AddClass("spacer-topBottom--small", Size == SpacerSize.Small && !ShrinkTopBottom)
-            .AddClass("spacer-topBottom--medium", Size == SpacerSize.Medium && !ShrinkTopBottom)
-            .AddClass("spacer-topBottom--big", Size == SpacerSize.Big && !ShrinkTopBottom)
-            .AddClass("spacer-leftRight--small", Size == SpacerSize.Small && !ShrinkLeftRight)
-            .AddClass("spacer-leftRight--medium", Size == SpacerSize.Medium && !ShrinkLeftRight)
-            .AddClass("spacer-leftRight--big", Size == SpacerSize.Big && !ShrinkLeftRight)
             .AddClass("basycSpaceBorder--strechHeight", StretchHeight)
+            .AddClass("basycSpaceBorder--strechWidth", StretchWidth)
             .Build();
+
+        styleToRender = $"padding-top: {SizeTop.GetSizeCssVariable()}; padding-bottom: {SizeBottom.GetSizeCssVariable()}; padding-left: {SizeLeft.GetSizeCssVariable()}; padding-right: {SizeRight.GetSizeCssVariable()};";
+
     }
 }

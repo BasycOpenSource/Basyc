@@ -3,7 +3,8 @@
     flex-direction: column;
     flex: 1;
     font-family: Consolas;
-    height: 40rem;
+    min-height: 0px;
+    min-width: 0px;
 }
 
 logs {
@@ -11,11 +12,15 @@ logs {
     display: flex;
     flex-direction: column;
     row-gap: 3px;
+    min-height: 0px;
     overflow-y: auto;
+    overflow: hidden;
+    flex: 1;
 }
 toolBar{
     display: flex;
     color: white;
+    margin-bottom: 4px;
 }
 
 filterBase {
@@ -26,11 +31,11 @@ filterBase {
 
 filterLogLevel {
     @extend filterBase;
-    width: 2.5rem;
-    margin-left: 0rem;
+    /*width: 2.5rem;*/
+    /*margin-left: 0rem;*/
 }
 
 filterService {
     @extend filterBase;
-    width: 5rem;
+    /*width: 5rem;*/
 }

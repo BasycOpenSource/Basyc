@@ -8,12 +8,10 @@ namespace Basyc.Diagnostics.Producing.Shared.Listening.SystemDiagnostics;
 
 public class SystemDiagnosticsListener : IDiagnosticListener, IDisposable
 {
-    private readonly ServiceIdentity service;
     private readonly ActivityListener listener;
 
     public SystemDiagnosticsListener(IOptions<SystemDiagnosticsListenerOptions> options)
     {
-        service = ServiceIdentity.ApplicationWideIdentity;
         Activity.DefaultIdFormat = ActivityIdFormat.W3C;
         Activity.ForceDefaultIdFormat = true;
         listener = new ActivityListener();
@@ -30,19 +28,22 @@ public class SystemDiagnosticsListener : IDiagnosticListener, IDisposable
             if (options.Value.Filter.Invoke(activity) is false)
                 return;
 
+            //TODO: Could try get the service identity from activity;
             string traceId = activity.TraceId.ToString();
             string? parentId = activity.ParentSpanId == default ? null : activity.ParentSpanId.ToString();
-            var actvityStart = new ActivityStart(service, traceId, parentId, activity.SpanId.ToString(), activity.OperationName, activity.StartTimeUtc);
+            var actvityStart = new ActivityStart(ServiceIdentity.ApplicationWideIdentity, traceId, parentId, activity.SpanId.ToString(), activity.OperationName, activity.StartTimeUtc);
             ActivityStartsReceived?.Invoke(this, actvityStart);
         };
         listener.ActivityStopped += activity =>
         {
             if (options.Value.Filter.Invoke(activity) is false)
                 return;
+
+            //TODO: Could try get the service identity from activity;
             string traceId = activity.TraceId.ToString();
             string? parentId = activity.ParentSpanId == default ? null : activity.ParentSpanId.ToString();
             var activityEnd = new ActivityEnd(
-                service,
+                ServiceIdentity.ApplicationWideIdentity,
                 traceId,
                 parentId,
                 activity.SpanId.ToString(),

@@ -1,15 +1,15 @@
 ﻿@using Basyc.MessageBus.Manager.Application;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 @using Basyc.ReactiveUi.Blazor;
 @using Microsoft.Extensions.Logging;
 @using MudBlazor.Utilities;
+@using Basyc.Blazor.Controls.HtmlExtensions
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryItemViewModel>
 
 <sidebarHistoryItemView class="@sidebarHistoryItemViewClass">
-    <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
+    <BasycSpaceBorder Size="SpaceSize.Small" SizeTop="SpaceSize.None" SizeBottom="SpaceSize.None">
         <MudStack Row="true" AlignItems="AlignItems.Stretch">
             <index>
                 #@Index
@@ -18,7 +18,7 @@
                 <MudStack Spacing="0">
                     <headingRow class="@headingRowClass">
                         @ViewModel.State
-                        @Html.Time(ViewModel.Duration)
+                        @Html.Methods.Time(ViewModel.Duration)
                     </headingRow>
                     <loggingRow>
                         <LogIconView LogLevel="LogLevel.Information" /> @ViewModel.LogsInformationCount

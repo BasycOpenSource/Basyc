@@ -1,30 +1,18 @@
-﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
+﻿@using Basyc.Blazor.Controls.Interops;
+@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogIcon
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using System.Collections.ObjectModel;
+@using Basyc.Blazor.Controls.HtmlExtensions
+@using Microsoft.Extensions.Logging;
 @using Throw
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls
-@using Color = Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors.Color
+@using Color = Basyc.Blazor.Controls.Colors.Color
 @using static Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal.LogAggregator;
 @implements IDisposable
-@{
-    if (Activity.HasEnded)
-    {
-        SetKnownWidth();
-    }
-    //var opacity = Color.Opacity - (((double)NestingLevel / 5) * Color.Opacity);
-    //string durationBoxStyle = $"min-width: {width}; background-color: {Color.Edit(opacity: opacity)};";
-    var darkPercentage = (double)NestingLevel / 5;
-    if (darkPercentage > 1)
-        darkPercentage = 1;
-    //string durationBoxStyle = $"min-width: {width}; background-color: {Color.Darker(darkPercentage)};";
-    //var durationBoxStyle = $"width: {width}; background-color: {Color.Darker()};";
-    var durationBoxStyle = $"width: {width};";
-    //var mudTooltipBoxStyle = "display: block; width: 100%; height: 100%; grid-row: 1; grid-column: 1;";
-    var activityNameStyle = $"max-width: {width};"; //enabled overflow elipsis
-}
+@implements IHandleEvent
 
-<horizontalDurationBoxView>
+
+<horizontalDurationBoxView @ref=horizontalDurationBoxView>
     <BasycTooltip>
         <TooltipContent>
             <DurationBoxToolTip Name="@Activity.DisplayName"
@@ -34,58 +22,30 @@
                                 ActivityContext="@Activity" />
         </TooltipContent>
         <ChildContent>
-            <durationBox style="@durationBoxStyle">
+            <durationBox @ref=durationBoxRef>
                 <stickyContainer>
-                    <acitvityName style="@activityNameStyle">
-                        @Activity.DisplayName
+                    <acitvityName @ref=activityNameRef>
+                        <acitvityDisplayName>
+                            @Activity.DisplayName
+                        </acitvityDisplayName>
+                        @if (Activity.HasEnded is false)
+                        {
+                            <spinner>
+                                <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
+                            </spinner>
+                        }
+@*                        <acitvityDisplayName>
+                            @Activity.DisplayName
+                        </acitvityDisplayName>
+                        @if (Activity.HasEnded is false)
+                        {
+                            <spinner>
+                                <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
+                            </spinner>
+                        }*@
                     </acitvityName>
-                    @if (Activity.HasEnded is false)
-                    {
-                        <spinner>
-                            <MudProgressCircular Color="MudBlazor.Color.Default" Indeterminate="true" Size="Size.Small" />
-                        </spinner>
-                    }
                 </stickyContainer>
-                <logs>
-                    <Virtualize Items="@AggragatedLogs"
-                                Context="aggregatedLog"
-                                ItemSize="0.001F">
-                        <ItemContent>
-                            @{
-                                var logStartPosition = DurationViewHelper.GetCssDurationValue(aggregatedLog.Time - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var logStartPixels);
-                                var logWidth = Math.Max(Math.Min(PixelsPerMs * logWidthMultiplier, logMaxWidthPixels), logMinWidthPixels);
-                                var logStyle = $"margin-left: {logStartPosition}; width: {Html.Number(logWidth)}px";
-                                var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
-                                var legMarginLeft = -(logWidth / 2);
-                                if (logStartPixels < legMarginLeft)
-                                {
-                                    legMarginLeft = 0;
-                                }
-                                if (logStartPixels > logWidth)
-                                {
-                                    legMarginLeft = -logWidth;
-                                }
-                            }
-                            <log style="@logStyle">
-                                <MudTooltip RootClass="logContentToolTip">
-                                    <ChildContent>
-                                        <LogIconView LogLevel="aggregatedLog.WorstLogLevel" />
-                                    </ChildContent>
-                                    <TooltipContent>
-                                        <toolTipContent>
-                                            @string.Join(", ", aggregatedLog.Logs.Select(x => x.Message))
-                                        </toolTipContent>
-                                    </TooltipContent>
-                                </MudTooltip>
-                            </log>
-                        </ItemContent>
-                        <Placeholder>
-                            <loading />
-                        </Placeholder>
-
-                    </Virtualize>
-                </logs>
-
+                <HorizontalDurationBoxLogRowView Activity="Activity" DurationMapRenderContext="DurationMapRenderContext"/>
             </durationBox>
         </ChildContent>
     </BasycTooltip>
@@ -97,7 +57,6 @@
             foreach (var nestedActivity in Activity.NestedActivities.OrderBy(x => x.StartTime))
             {
                 var nestedActivityLatestEndTime = GetRecursiveLatestEndTime(nestedActivity);
-                ;
                 var lastRow = rows.Last();
                 if (lastRow.LastEndTime == default)
                 {
@@ -150,28 +109,24 @@
                                     var lateStartDuration = nestedActivity.StartTime.AbsoluteTime - Activity.StartTime.AbsoluteTime;
                                     if (lateStartDuration > TimeSpan.FromMilliseconds(0))
                                     {
-                                        <HorizontalUnknownDurationBoxView StartTime="Activity.StartTime.AbsoluteTime" EndTime="nestedActivity.StartTime.AbsoluteTime" PixelsPerMs="PixelsPerMs" Color="@Color" />
+                                        <HorizontalUnknownDurationBoxView StartTime="Activity.StartTime.AbsoluteTime" EndTime="nestedActivity.StartTime.AbsoluteTime" Color="@Color" />
                                     }
                                 }
-
 
                                 var isGapBetweenPreviousNested = previousRowActivity is not null && previousRowActivity.EndTime.Value != nestedActivity.StartTime.Value; ;
                                 if (isGapBetweenPreviousNested)
                                 {
                                     previousRowActivity.ThrowIfNull();
-                                    <HorizontalUnknownDurationBoxView StartTime="previousRowActivity.EndTime.AbsoluteTime" EndTime="nestedActivity.StartTime.AbsoluteTime" PixelsPerMs="PixelsPerMs" Color="@Color" />
+                                    <HorizontalUnknownDurationBoxView StartTime="previousRowActivity.EndTime.AbsoluteTime" EndTime="nestedActivity.StartTime.AbsoluteTime" Color="@Color" />
                                 }
-                                <HorizontalDurationBoxView Activity="nestedActivity" PixelsPerMs="PixelsPerMs" Color="@Color" NestingLevel="NestingLevel+1" />
-
+                                <HorizontalDurationBoxView DurationMapRenderContext="DurationMapRenderContext" Activity="nestedActivity" Color="@Color" NestingLevel="NestingLevel+1" />
                                 previousRowActivity = nestedActivity;
-
                             }
                         </nestedRow>
                     }
                 </nestedRows>
                 previousRow = row;
             }
-
         }
     </nestedDurationBoxes>
 
@@ -180,25 +135,21 @@
 
 @code {
 
-    private class RowViewModel
-    {
-        public DateTimeOffset StartTime { get; set; } = default;
-        public DateTimeOffset LastEndTime { get; set; } = default;
-        public List<ActivityContext> Activities { get; } = new();
-    }
+    private ElementReference horizontalDurationBoxView;
+    private ElementReference durationBoxRef;
+    private ElementReference activityNameRef;
+    private bool isRendered = false;
 
+    [Inject] public ILogger<HorizontalDurationBoxView> logger { get; init; } = null!;
+    [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public DurationMapRenderContext DurationMapRenderContext { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]
     public ActivityContext Activity { get; set; } = null!;
-
-    [Parameter]
-    [EditorRequired]
-    public double PixelsPerMs { get; set; }
-
-    /// <summary>
-    ///     Hexadecimal string
-    /// </summary>
     [Parameter]
     [EditorRequired]
     public Color Color { get; set; }
@@ -207,57 +158,44 @@
     [EditorRequired]
     public int NestingLevel { get; set; }
 
-    private const double logWidthMultiplier = 4;
-    private const double logMinWidthPixels = 5;
-    private const double logMaxWidthPixels = 10;
-    private readonly PeriodicTimer updateUnfinishedTimer = new PeriodicTimer(TimeSpan.FromSeconds(1));
-    private string width = "0rem";
-    private ReadOnlyCollection<AggregatedLog> AggragatedLogs => LogAggregator.AggregateLogs(Activity.Logs, PixelsPerMs, logMinWidthPixels, logMaxWidthPixels, logWidthMultiplier);
 
-    protected override void OnInitialized()
+    public override Task SetParametersAsync(ParameterView parameters)
     {
-        RunTimer();
-        base.OnInitialized();
+        if (Activity != null)
+        {
+            Activity.ActivityEnded -= OnActivityEnded;
+            Activity.NestedActivityEnded -= OnNestedActivityEnded;
+        }
+        return base.SetParametersAsync(parameters);
     }
 
-    protected override Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        Activity.ActivityEnded -= OnActivityEnded;
+        logger.LogDebug(nameof(OnParametersSet));
         Activity.ActivityEnded += OnActivityEnded;
-        Activity.NestedActivityEnded -= OnNestedActivityEnded;
         Activity.NestedActivityEnded += OnNestedActivityEnded;
-        return base.OnParametersSetAsync();
+        DurationMapRenderContext.FastTimer -= OnFastTimer;
+        DurationMapRenderContext.FastTimer += OnFastTimer;
+        base.OnParametersSet();
     }
 
-    private void SetKnownWidth()
+    protected override void OnAfterRender(bool firstRender)
     {
-        width = DurationViewHelper.GetCssDurationValue(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var widthNumber);
-        if (widthNumber < 0.2)
-        {
-            width = "0.1px";
-        }
-        if (widthNumber < 2)
-        {
-            width = "2px";
-        }
+        if (firstRender)
+            isRendered = true;
+
+        logger.LogDebug(nameof(OnAfterRender));
+
+        base.OnAfterRender(firstRender);
     }
 
-    private async void RunTimer()
+    Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg) => callback.InvokeAsync(arg);
+
+    private async Task SetTimeCssVar(TimeSpan timeSpan)
     {
-        while (await updateUnfinishedTimer.WaitForNextTickAsync())
-        {
-            if (Activity.HasEnded)
-            {
-                updateUnfinishedTimer.Dispose();
-                SetKnownWidth();
-                break;
-            }
-            width = DurationViewHelper.GetCssDurationValue(DateTimeOffset.UtcNow - Activity.StartTime.AbsoluteTime, PixelsPerMs, out var widthNumber);
-            StateHasChanged();
-        }
+        var timeSpanMs = Html.Methods.NumberToHtml(timeSpan.TotalMilliseconds);
+        await ElementJsInterop.SetCssVariable(horizontalDurationBoxView, DurationMapConstants.ActivityDurationMsCssVar, timeSpanMs);
     }
-
-
 
     private void OnActivityEnded(object? sender, EventArgs e) => StateHasChanged();
 
@@ -265,9 +203,13 @@
 
     public void Dispose()
     {
+        isRendered = false;
+        logger.LogDebug("Dispose");
+
         Activity.ActivityEnded -= OnActivityEnded;
         Activity.NestedActivityEnded -= OnNestedActivityEnded;
-        updateUnfinishedTimer.Dispose();
+        DurationMapRenderContext.FastTimer -= OnFastTimer;
+
     }
 
     private static DateTimeOffset GetRecursiveLatestEndTime(ActivityContext activity)
@@ -279,6 +221,36 @@
             latestEndTime = latestEndTime > nestedLatestEndTime ? latestEndTime : nestedLatestEndTime;
         }
         return latestEndTime;
+    }
+
+    private async void OnFastTimer(object? sender, EventArgs e)
+    {
+        await UpdateCssTimeVar();
+    }
+
+    private async Task UpdateCssTimeVar()
+    {
+        if (isRendered is false)
+            return;
+
+        if (Activity.HasEnded)
+        {
+            await SetTimeCssVar(Activity.EndTime.AbsoluteTime - Activity.StartTime.AbsoluteTime);
+            DurationMapRenderContext.FastTimer -= OnFastTimer;
+        }
+        else
+        {
+            await SetTimeCssVar(DateTimeOffset.UtcNow - Activity.StartTime.AbsoluteTime);
+        }
+    }
+
+
+
+    private class RowViewModel
+    {
+        public DateTimeOffset StartTime { get; set; } = default;
+        public DateTimeOffset LastEndTime { get; set; } = default;
+        public List<ActivityContext> Activities { get; } = new();
     }
 
 }

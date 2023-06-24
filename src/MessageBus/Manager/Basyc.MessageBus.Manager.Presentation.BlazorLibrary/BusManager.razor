@@ -2,26 +2,38 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.Message
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.ResultDetail
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages.ResultHistory
+@using Excubo.Blazor.ScriptInjection
 @inherits BasycReactiveBlazorComponentBase<BusManagerViewModel>
 
 <HeadContent>
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 </HeadContent>
-
 <busManager>
-    <BasycStyleSection SectionName="1">
-        <layout>
-            <MudThemeProvider Theme="@MudTheme" IsDarkMode="true" />
-            <MudDialogProvider />
-            <MudSnackbarProvider />
-            <BasycControls />
-            <sideBar>
-                <AppSideBarView />
-            </sideBar>
+    @if (jsLoaded)
+    {
+        <BasycStyleSection SectionName="1">
+            <layout>
+                <MudThemeProvider Theme="@MudTheme" IsDarkMode="true" />
+                <MudDialogProvider />
+                <MudSnackbarProvider />
+                <BasycControls />
+                <sideBar>
+                    <AppSideBarView />
+                </sideBar>
 
-            <messagePage>
-                @ViewModel.CurrentPage
-            </messagePage>
-        </layout>
-    </BasycStyleSection>
+                <messagePage>
+                    @ViewModel.CurrentPage
+                </messagePage>
+            </layout>
+        </BasycStyleSection>
+    }
+    else
+    {
+        <p>Loading</p>
+    }
+    <AddScript Src="_content/MudBlazor/MudBlazor.min.js" Async="false" Defer="false" />
 </busManager>
+
+@code {
+    MarkupString mudBlazorScript = (MarkupString)"<script src=\"_content/MudBlazor/MudBlazor.min.js\">";
+}

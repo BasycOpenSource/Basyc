@@ -4,7 +4,8 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogWindow
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls
+@using Icons = MudBlazor.Icons
+@using Basyc.Blazor.Controls.HtmlExtensions
 <resultHistoryItemExpandedView>
 	<basicSection>
 		<basicTable>
@@ -20,7 +21,7 @@
 				<MudItem lg="6">
 					<MudStack Spacing="2">
 						<formValue>
-							@Html.Time(RequestContext.CreationTime)
+							@Html.Methods.Time(RequestContext.CreationTime)
 						</formValue>
 						<formValue>
 							@RequestContext.State.ToString()

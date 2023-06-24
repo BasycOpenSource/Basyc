@@ -1,0 +1,106 @@
+﻿@using System.Collections.ObjectModel;
+@using Basyc.Blazor.Controls.HtmlExtensions;
+@using Basyc.MessageBus.Manager.Application.ResultDiagnostics;
+@implements IDisposable
+@implements IHandleEvent
+@inject ILogger<HorizontalDurationBoxLogRowView> logger;
+<logs>
+    @foreach (var aggregatedLog in AggragatedLogs)
+    {
+        var logContentClass = $"logContent--{aggregatedLog.WorstLogLevel}";
+        @*var logTimeStartCss = Math.Round((aggregatedLog.StartTime - Activity.StartTime.AbsoluteTime).TotalMilliseconds);*@
+        var logTimeStartCss = Html.Methods.NumberToHtml((aggregatedLog.StartTime - Activity.StartTime.AbsoluteTime).TotalMilliseconds);
+        var logStyle = $"--logTimeStartCss: {logTimeStartCss}";
+        <aggregatedLog style="@logStyle">
+            <logContent class="@logContentClass" />
+        </aggregatedLog>
+    }
+</logs>
+
+@code {
+    private const double logIconSizePx = 10;
+    private bool isRendered = false;
+    private double lastPixelsPerMsUsed;
+
+    [Parameter]
+    [EditorRequired]
+    public DurationMapRenderContext DurationMapRenderContext { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public ActivityContext Activity { get; set; } = null!;
+
+    private ReadOnlyCollection<AggregatedLog> AggragatedLogs = new ReadOnlyCollection<AggregatedLog>(new List<AggregatedLog>());
+
+
+    public override Task SetParametersAsync(ParameterView parameters)
+    {
+        if (Activity != null)
+        {
+            Activity.LogAdded -= OnLogAdded;
+        }
+        return base.SetParametersAsync(parameters);
+    }
+
+    protected override void OnParametersSet()
+    {
+        logger.LogDebug(nameof(OnParametersSet));
+        Activity.LogAdded -= OnLogAdded;
+        Activity.LogAdded += OnLogAdded;
+        DurationMapRenderContext.MediumTimer -= OnMediumTimer;
+        DurationMapRenderContext.MediumTimer += OnMediumTimer;
+
+        AggragatedLogs = LogAggregator.AggregateLogs(Activity, DurationMapRenderContext.PixelsPerMs, logIconSizePx);
+        base.OnParametersSet();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            isRendered = true;
+
+        logger.LogDebug(nameof(OnAfterRender));
+
+        base.OnAfterRender(firstRender);
+    }
+
+    Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg) => callback.InvokeAsync(arg);
+
+
+    private void UpdateAggregatedLogs()
+    {
+        lastPixelsPerMsUsed = DurationMapRenderContext.PixelsPerMs;
+        var newAggragatedLogs = LogAggregator.AggregateLogs(Activity, DurationMapRenderContext.PixelsPerMs, logIconSizePx);
+        if (newAggragatedLogs.Count == AggragatedLogs.Count)
+            return;
+        AggragatedLogs = newAggragatedLogs;
+        StateHasChanged();
+
+    }
+
+    private void OnMediumTimer(object? sender, EventArgs e)
+    {
+        if (isRendered is false)
+            return;
+
+        if (lastPixelsPerMsUsed == DurationMapRenderContext.PixelsPerMs)
+            return;
+        //This should merge logs together
+        UpdateAggregatedLogs();
+    }
+
+    private void OnLogAdded(object? sender, EventArgs e)
+    {
+        if (isRendered is false)
+            return;
+        UpdateAggregatedLogs();
+    }
+
+    public void Dispose()
+    {
+        logger.LogDebug("Dispose");
+        Activity.LogAdded -= OnLogAdded;
+        DurationMapRenderContext.MediumTimer -= OnMediumTimer;
+        isRendered = false;
+    }
+}

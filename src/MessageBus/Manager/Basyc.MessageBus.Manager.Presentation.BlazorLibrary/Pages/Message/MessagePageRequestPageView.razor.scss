@@ -1,6 +1,9 @@
 ﻿messagePageRequestPageView {
-    display: block;
+    display: flex;
+    flex-direction: column;
     flex: 1;
+    min-height: 0px;
+    overflow: hidden;
 }
 
 infoRow {
@@ -11,6 +14,11 @@ infoRow {
 infoSection {
     display: flex;
     flex-direction: column;
+    background-color: #0B0B13;
+    padding: 24px 42px;
+    border: 1px solid #24242b84;
+    border-radius: 8px;
+    flex: 1;
 }
 
 infoTable {
@@ -27,7 +35,7 @@ labels {
 
 label {
     color: #55555E;
-    font-size: 16px
+    font-size: 14px
 }
 
 values {
@@ -39,14 +47,15 @@ values {
 value {
     display: block;
     color: #AFAFAF;
-    font-size: 16px
+    font-size: 14px
 }
 
 inputBox {
-    display: block;
+    display: flex;
+    flex-direction: column;
     flex: 1;
-    background-color: #0F0F15;
-    padding: 16px;
+    background-color: #0E0E1A;
+    padding: 16px 40px;
 }
 
 arrow {
@@ -57,12 +66,24 @@ arrow {
     color: #14161E;
     font-weight: bolder;
 }
-::deep .mud-tabs{
-    height: 100%;
+
+::deep .mud-tab {
+    color: #717BA7;
+    font-size: 14px;
+    min-width: 0px;
+    min-height: 0px;
+    padding: 8px 32px;
+    text-transform: none;
+    font-weight: normal;
+}
+
+::deep .mud-tabs {
+    flex: 1;
+    overflow: hidden;
+    min-height: 0px;
 }
 
 ::deep .mud-tabs-panels {
-    height: 100%;
 }
 
 ::deep .mud-tabs-toolbar {
@@ -71,7 +92,17 @@ arrow {
 }
 
 ::deep .mud-tabs-toolbar-wrapper {
-    border-bottom: 1px solid #1E2025;
+    /*border-bottom: 1px solid #1E2025;*/
+}
+
+::deep .mud-tabs-toolbar-inner {
+    border-bottom: 1px solid #2727337f;
+}
+
+::deep .mud-tabs-toolbar .mud-tabs-toolbar-inner {
+    min-height: 0px;
+    padding-left: var(--space-bigger);
+    padding-right: var(--space-bigger);
 }
 
 ::deep .mud-tab.mud-tab-active {
@@ -82,4 +113,26 @@ arrow {
 ::deep .mud-tab-slider.mud-tab-slider-horizontal {
     height: 1px;
     background-color: #5F1950;
+}
+
+::deep .panelClass {
+    /*padding-top: 16px;*/
+    padding-top: var(--space-big);
+    padding-left: var(--space-bigger);
+    padding-right: var(--space-bigger);
+    /*padding-bottom: var(--space-big);*/
+    background-color: #0B0B16;
+    /*height: 100%;*/
+    flex: 1;
+    overflow: hidden;
+    min-height: 0px;
+    display: flex;
+}
+
+ioGrid {
+    display: flex;
+    flex-direction: row;
+    column-gap: var(--space-medium);
+    height: 100%;
+    flex: 1;
 }

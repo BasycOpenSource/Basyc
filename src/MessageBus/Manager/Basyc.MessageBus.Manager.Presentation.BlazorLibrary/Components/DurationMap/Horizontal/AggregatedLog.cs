@@ -6,9 +6,10 @@ namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.Duratio
 
 public struct AggregatedLog
 {
-    public AggregatedLog(DateTimeOffset startTime, LogLevel worstLogLevel, ServiceIdentity service, IReadOnlyList<LogEntry> logs)
+    public AggregatedLog(DateTimeOffset startTime, DateTimeOffset endTime, LogLevel worstLogLevel, ServiceIdentity service, IReadOnlyList<LogEntry> logs)
     {
-        Time = startTime;
+        StartTime = startTime;
+        EndTime = endTime;
         WorstLogLevel = worstLogLevel;
         Service = service;
         Logs = logs;
@@ -16,7 +17,9 @@ public struct AggregatedLog
 
     public IReadOnlyList<LogEntry> Logs { get; init; }
 
-    public DateTimeOffset Time { get; init; }
+    public DateTimeOffset StartTime { get; init; }
+
+    public DateTimeOffset EndTime { get; }
 
     public LogLevel WorstLogLevel { get; set; }
 

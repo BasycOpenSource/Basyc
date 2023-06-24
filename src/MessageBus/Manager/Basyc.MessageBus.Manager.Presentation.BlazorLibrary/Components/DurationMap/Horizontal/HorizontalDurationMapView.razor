@@ -1,32 +1,32 @@
-﻿@using Basyc.Blazor.Controls.Interops;
+﻿@using Basyc.Blazor.Controls.HtmlExtensions;
+@using Basyc.Blazor.Controls.Interops;
 @using Basyc.Diagnostics.Shared.Logging
 @using Basyc.MessageBus.Manager.Application
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap;
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors
-<horizontalDurationMapView>
-    <zoomToolBar>
-        <MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />
-        <button @onclick="@OnZoomInClick">+</button>
-        <button @onclick="@OnZoomOutClick">-</button>
-        <button @onclick="@OnZoomFitClick">fit</button>
-    </zoomToolBar>
-    <services id="@scrollId">
-        @{
-            if (RequestContext.Diagnostics.Services.Any())
+@using Basyc.Blazor.Controls.Colors;
+@using Microsoft.Extensions.Logging;
+@implements IHandleEvent;
+@implements IDisposable;
+
+
+
+<horizontalDurationMapView @ref=horizontalDurationMapViewRef>
+    <zoomToolBarRow>
+        @*<MudNumericField Format="N2" T="double" @bind-Value="PixelsPerMs" FullWidth="false" Step="10" Style="color: white;" />*@
+        <button class="toolBarButton" @onclick="@OnZoomInClick">+</button>
+        <button class="toolBarButton" @onclick="@OnZoomOutClick">-</button>
+        <button class="toolBarButton" @onclick="@OnZoomFitClick">fit</button>
+    </zoomToolBarRow>
+    <servicesRow id="@scrollId">
+            @if (RequestContext.Diagnostics.Services.Any())
             {
                 foreach (var service in RequestContext.Diagnostics.Services.Where(x => x.Activities.Any()).OrderBy(x => x.Activities.Min(y => y.StartTime)))
                 {
                     var serviceThemeColor = ServiceColorHelper.GetBackground(service.ServiceIdentity.ServiceName);
-
                     var nameColor = serviceThemeColor.Edit(opacity: 0.3);
-                    var borderColor = serviceThemeColor.Edit(opacity: 0.25);
                     var backgroundColor = serviceThemeColor.Edit(opacity: 0.05);
-
-                    var serviceFirstActivity = service.Activities.First();
-                    //var serviceStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime, PixelsPerMs)}; background-color: {backgroundColor}";
                     var serviceStyle = $"background-color: {backgroundColor}";
-                    var durationBoxesStyle = $"margin-left: {DurationViewHelper.GetCssDurationValue(RequestContext.StartTime, serviceFirstActivity.StartTime.AbsoluteTime, PixelsPerMs)};";
                     var serviceNameStyle = $"color: {nameColor}";
                     <service style="@serviceStyle">
                         <serviceNameContainer>
@@ -34,22 +34,18 @@
                                 @service.ServiceIdentity.ServiceName
                             </serviceName>
                         </serviceNameContainer>
-                        <durationBoxes style="@durationBoxesStyle">
+                        <durationBoxes>
                             @{
                                 ActivityContext? previousActivity = null;
                                 foreach (var activity in service.Activities)
                                 {
-                                    <unknownAndKnowGroup>
-                                        @{
-                                            var leftMargin = previousActivity == null ? "0px" : DurationViewHelper.GetCssDurationValue(serviceFirstActivity.StartTime.Value, activity.StartTime.Value, PixelsPerMs);
-                                            <div style="display: flex; margin-left:@leftMargin;">
-                                                @{
-                                                    <HorizontalDurationBoxView Activity="activity" PixelsPerMs="PixelsPerMs" Color="@serviceThemeColor" NestingLevel="0" />
-                                                    previousActivity = activity;
-                                                }
-                                            </div>
-                                        }
-                                    </unknownAndKnowGroup>
+                                    var activityStartTimeMsCssVar = Html.Methods.NumberToHtml((activity.StartTime.AbsoluteTime - RequestContext.StartTime).TotalMilliseconds);
+                                    <durationRow>
+                                        <activityPositioner style="--@DurationMapConstants.ActivityStartTimeMsCssVar: @activityStartTimeMsCssVar">
+                                            <HorizontalDurationBoxView DurationMapRenderContext="durationMapRenderContext" Activity="activity" Color="@serviceThemeColor" NestingLevel="0" />
+                                        </activityPositioner>
+                                    </durationRow>
+                                    previousActivity = activity;
                                 }
                             }
                         </durationBoxes>
@@ -57,16 +53,21 @@
                     <br>
                 }
             }
-        }
-    </services>
-
-
-
+    </servicesRow>
 </horizontalDurationMapView>
 
 @code {
+    private bool isRendered = false;
+    private bool updatePixelsPerMsCssVarInOnAfterRender = false;
+    private ElementReference horizontalDurationMapViewRef;
+    private DurationMapRenderContext durationMapRenderContext = new();
     [Inject] private BusManagerJsInterop BusManagerJsInterop { get; set; } = null!;
     [Inject] private ScrollJsInterop ScrollJsInterop { get; set; } = null!;
+    [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
+    [Inject] private ILogger<HorizontalDurationMapView> Logger { get; init; } = null!;
+
+    private PeriodicTimer? fastTimer;
+    private bool zoomManuallyChanged;
 
 
     [Parameter]
@@ -80,43 +81,123 @@
     private string scrollId = Random.Shared.Next().ToString();
 #pragma warning restore CA5394
 
+    protected override void OnInitialized()
+    {
+        durationMapRenderContext.FastTimer -= OnFastTimer;
+        durationMapRenderContext.FastTimer += OnFastTimer;
+        base.OnInitialized();
+    }
 
-    protected override void OnInitialized() => base.OnInitialized();
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    isRendered = true;
+    //    Logger.LogDebug("OnAfterRenderAsync");
+    //    if (firstRender)
+    //    {
+    //        ScrollJsInterop.AddDragToScroll(scrollId);
+    //    }
+    //    if (updatePixelsPerMsCssVarInOnAfterRender)
+    //    {
+    //        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs));
+    //        updatePixelsPerMsCssVarInOnAfterRender = false;
+    //    }
+    //    StartTimers();
+    //    await base.OnAfterRenderAsync(firstRender);
+    //}
 
     protected override void OnAfterRender(bool firstRender)
     {
+        isRendered = true;
+        Logger.LogDebug("OnAfterRenderAsync");
+        if (firstRender)
+        {
+            ScrollJsInterop.AddDragToScroll(scrollId);
+        }
+        if (updatePixelsPerMsCssVarInOnAfterRender)
+        {
+            ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs)).AndForget();
+            updatePixelsPerMsCssVarInOnAfterRender = false;
+        }
+        StartTimers();
         base.OnAfterRender(firstRender);
-        ScrollJsInterop.AddDragToScroll(scrollId);
     }
 
     protected override void OnParametersSet()
     {
+        isRendered = false;
+        Logger.LogDebug("OnParametersSet");
+        StopTimers();
         RequestContext.Diagnostics.ActivityStartAdded -= OnActivityStartAdded;
         RequestContext.Diagnostics.ActivityStartAdded += OnActivityStartAdded;
         RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
         RequestContext.Diagnostics.ActivityEndAdded += OnActivityEneAdded;
+        if (PixelsPerMs != durationMapRenderContext.PixelsPerMs)
+        {
+            updatePixelsPerMsCssVarInOnAfterRender = true;
+            durationMapRenderContext.PixelsPerMs = PixelsPerMs;
+
+        }
+
         base.OnParametersSet();
     }
+
+    public void Dispose()
+    {
+        isRendered = false;
+        Logger.LogDebug("Dispose");
+        RequestContext.Diagnostics.ActivityStartAdded -= OnActivityStartAdded;
+        RequestContext.Diagnostics.ActivityEndAdded -= OnActivityEneAdded;
+        StopTimers();
+    }
+
+    Task IHandleEvent.HandleEventAsync(
+    EventCallbackWorkItem callback, object? arg) => callback.InvokeAsync(arg);
 
     private void OnActivityStartAdded(object? sender, ActivityStart activityStart) => StateHasChanged();
 
     private void OnActivityEneAdded(object? sender, ActivityEnd activityEnd) => StateHasChanged();
 
-    private void OnZoomInClick(MouseEventArgs args) => PixelsPerMs += 0.1 * PixelsPerMs * 3;
-
-    private void OnZoomOutClick(MouseEventArgs args)
+    private async Task OnZoomInClick(MouseEventArgs args)
     {
+        zoomManuallyChanged = true;
+        PixelsPerMs += 0.1 * PixelsPerMs * 3;
+        durationMapRenderContext.PixelsPerMs = PixelsPerMs;
+        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs));
+    }
+
+    private async Task OnZoomOutClick(MouseEventArgs args)
+    {
+        zoomManuallyChanged = true;
         PixelsPerMs -= 0.1 * PixelsPerMs * 3;
         if (PixelsPerMs < 0)
             PixelsPerMs = 0;
+        durationMapRenderContext.PixelsPerMs = PixelsPerMs;
+        await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs));
     }
 
-    private void OnZoomFitClick(MouseEventArgs args)
+    private async Task OnZoomFitClick(MouseEventArgs args)
     {
-        double aviableWidthPx = 1250; //this can be dynamic value obtained from js
+        zoomManuallyChanged = false;
+        await ZoomFit();
+    }
+
+    private async Task ZoomFit()
+    {
+        //Logger.LogDebug("ZoomFit");
+
+        double aviableWidthPx = 1000; //this can be dynamic value obtained from js
         DurationViewHelper.GetCssDurationValue(GetLatestEndTime(RequestContext.Diagnostics) - RequestContext.StartTime, 1, out var normalWidthPx);
         var newPixelsPerMs = aviableWidthPx / normalWidthPx;
-        PixelsPerMs = newPixelsPerMs;
+        if (newPixelsPerMs != PixelsPerMs)
+        {
+            PixelsPerMs = newPixelsPerMs;
+            durationMapRenderContext.PixelsPerMs = PixelsPerMs;
+
+            if (isRendered is false)
+                return;
+            //Logger.LogDebug("ZoomFit SetCssVariable");
+            await ElementJsInterop.SetCssVariable(horizontalDurationMapViewRef, DurationMapConstants.PixelsPerMs, Html.Methods.NumberToHtml(PixelsPerMs));
+        }
     }
 
     private static DateTimeOffset GetLatestEndTime(MessageDiagnostic requestDiagnostic)
@@ -152,6 +233,43 @@
         return latestEndTime;
     }
 
+    private async void OnFastTimer(object? sender, EventArgs args)
+    {
+        if (zoomManuallyChanged is false)
+            await ZoomFit();
+    }
 
+    private async void StartTimers()
+    {
+        Logger.LogDebug(nameof(StartTimers));
+        durationMapRenderContext.OnFastTimer();
 
+        if (fastTimer is not null)
+            StopTimers();
+
+        fastTimer = new PeriodicTimer(TimeSpan.FromSeconds(0.05));
+        int ticksInGroup = 0;
+        while (await fastTimer.WaitForNextTickAsync())
+        {
+            ticksInGroup++;
+            if (isRendered is false)
+                continue;
+            durationMapRenderContext.OnFastTimer();
+
+            if (ticksInGroup == 10)
+            {
+                durationMapRenderContext.OnMediumTimer();
+                ticksInGroup = 0;
+            }
+
+        }
+    }
+
+    private void StopTimers()
+    {
+        Logger.LogDebug(nameof(StopTimers));
+
+        fastTimer?.Dispose();
+        fastTimer = null;
+    }
 }

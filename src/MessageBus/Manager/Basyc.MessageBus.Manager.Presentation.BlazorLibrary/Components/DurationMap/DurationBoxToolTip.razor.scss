@@ -1,13 +1,13 @@
 ﻿durationBoxToolTipView {
     display: block;
     background: #000000bf;
-    width: 460px;
     backdrop-filter: blur(10px);
+    width: 460px;
     height: 400px;
-    overflow:hidden;
+    overflow: hidden;
 }
 
-layout{
+layout {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -16,7 +16,6 @@ layout{
 }
 
 activityName {
-
 }
 
 infoItems {
@@ -30,6 +29,7 @@ infoItem {
     column-gap: 10px;
     color: #3F4356;
 }
+
 logs {
     display: flex;
     height: 100%;
@@ -49,9 +49,34 @@ logLayout {
     align-items: center;
 }
 
+time {
+    color: #646B88;
+}
+
+message {
+    color: #C2BEC2;
+}
+
 logHeading {
+    /*    display: flex;
+    flex-direction: row;*/
+    display: grid;
+    grid-auto-columns: auto 1fr;
+}
+
+logHeadingText {
+    grid-column: 1;
+}
+
+logHeadingCounters {
+    grid-column: 2;
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: var(--space-small);
+    /*align-content: end;*/
+    justify-content: end;
+}
+
+logCountNumber {
+    margin-left: 4px;
 }

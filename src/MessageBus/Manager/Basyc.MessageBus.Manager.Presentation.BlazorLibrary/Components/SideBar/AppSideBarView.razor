@@ -1,47 +1,24 @@
-﻿@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
+﻿@using Excubo.Blazor.ScriptInjection
+@using Basyc.Blazor.Controls.HtmlExtensions
+@using Html = Basyc.Blazor.Controls.HtmlExtensions.Html
 
 @inherits BasycReactiveBlazorComponentBase<AppSideBarViewModel>
 <sideMenu>
     <BasycStyleSection SectionName="1">
-        <BasycSpaceBorder Size="SpacerSize.Medium" ShrinkTopBottom="true">
-            <BasycSpaceLine Start="SpaceLineSize.Medium" Visible="false" />
-            <BasycHeading Size="HeadingSize.H3">
+        <BasycSpaceBorder Size="SpaceSize.Medium" SizeBottom="SpaceSize.None">
+            <BasycHeading Size="HeadingSize.H4">
                 Endpoints
             </BasycHeading>
-            @*<BasycSpaceLine Start="SpaceLineSize.Small" Visible="false"/>*@
         </BasycSpaceBorder>
 
         <MudExpansionPanels Class="requestPanel" DisableBorders="true" Elevation="0" MultiExpansion="true">
             @foreach (var messageGroup in messageGroups)
             {
-                @* <MudList Clickable="true" Dense="true" DisablePadding="true" DisableGutters="true">
-            <MudListItem InitiallyExpanded="true" Dense="true" DisableGutters="true">
-            <ChildContent>
-            <gutters>
-            <domainHeading>
-            @Html.Icon(IconsEnum.folder)
-            @messageGroup.Name
-            </domainHeading>
-            </gutters>
-            </ChildContent>
-
-            <NestedList>
-            @foreach (var message in messageGroup.Messages)
-            {
-            <messageItem @onclick="() => ViewModel.SelectMessage(message)">
-            <AppSideBarMessageItemView MessageInfo="@message" />
-            </messageItem>
-            }
-            </NestedList>
-            </MudListItem>
-            </MudList>
-            *@
-
                 <MudExpansionPanel Class="groupPanel" Dense="true" DisableGutters="true" IsInitiallyExpanded="true">
                     <TitleContent>
                         <gutters>
                             <domainHeading>
-                                @Html.Icon(IconsEnum.folder)
+                                @Html.Methods.Icon(IconsEnum.folder)
                                 @messageGroup.Name
                             </domainHeading>
                         </gutters>
@@ -60,5 +37,4 @@
             }
         </MudExpansionPanels>
     </BasycStyleSection>
-
 </sideMenu>

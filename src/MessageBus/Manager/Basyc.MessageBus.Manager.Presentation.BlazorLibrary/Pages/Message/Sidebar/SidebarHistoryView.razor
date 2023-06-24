@@ -1,7 +1,6 @@
 ﻿@using Basyc.MessageBus.Manager.Application.Building;
 @using Basyc.MessageBus.Manager.Application.Requesting;
 @using Basyc.MessageBus.Manager.Application;
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 @using Basyc.ReactiveUi.Blazor;
 @using Microsoft.AspNetCore.Components.Web.Virtualization
@@ -12,10 +11,12 @@
 @inherits BasycReactiveBlazorComponentBase<SidebarHistoryViewModel>
 <sidebarHistoryView>
     <heading>
-        <BasycSpaceBorder Size="SpacerSize.Medium">
-            <BasycHeading Size="HeadingSize.H3">
-                History
-            </BasycHeading>
+        <BasycSpaceBorder Size="SpaceSize.Big" SizeBottom="SpaceSize.Small">
+            <BasycSpaceBorder SizeLeft="SpaceSize.Small">
+                <BasycHeading Size="HeadingSize.H4">
+                    History
+                </BasycHeading>
+            </BasycSpaceBorder>
         </BasycSpaceBorder>
     </heading>
     <requests>

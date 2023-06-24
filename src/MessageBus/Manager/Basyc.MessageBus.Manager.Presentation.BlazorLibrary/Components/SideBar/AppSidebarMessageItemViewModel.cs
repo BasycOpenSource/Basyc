@@ -6,9 +6,9 @@ using ReactiveUI.Fody.Helpers;
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.SideBar;
 public class AppSidebarMessageItemViewModel : BasycReactiveViewModelBase
 {
-    private readonly NavigationService navigationService;
+    private readonly INavigationService navigationService;
 
-    public AppSidebarMessageItemViewModel(NavigationService navigationService)
+    public AppSidebarMessageItemViewModel(INavigationService navigationService)
     {
         this.navigationService = navigationService;
 

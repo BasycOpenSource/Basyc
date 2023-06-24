@@ -1,5 +1,6 @@
 ﻿using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 using Basyc.ReactiveUi;
+using Excubo.Blazor.ScriptInjection;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 
@@ -12,9 +13,10 @@ public static class ServicesBusMangerExtensions
         BasycReactiveUi.Fix();
         services.AddMudServices();
         services.AddSingleton<BusManagerJsInterop>();
-        services.AddSingleton<NavigationService>();
+        services.AddSingleton<INavigationService, NavigationService>();
         services.RegisterViewModels();
         services.AddBasycBlazorControls();
+        services.AddScriptInjection();
     }
 
     private static void RegisterViewModels(this IServiceCollection services)

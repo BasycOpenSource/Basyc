@@ -1,7 +1,10 @@
 ﻿namespace Basyc.Blazor.Controls;
-public enum SpacerSize
+public enum SpaceSize
 {
+    None,
+    Smaller,
     Small,
     Medium,
     Big,
+    Bigger
 }

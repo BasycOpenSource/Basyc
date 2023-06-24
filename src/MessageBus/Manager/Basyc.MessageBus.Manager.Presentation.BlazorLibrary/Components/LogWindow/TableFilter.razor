@@ -1,13 +1,8 @@
 ﻿@typeparam TItems
 <tableFilterView>
-    <MudTooltip Text="@Tooltip" Placement="Placement.Top">
-        @*<MudIconButton Icon="@Icons.Material.Filled.FilterList"
-                       Size="Size.Small"
-                       OnClick="a => ToggleSelection()" />*@
-        <icon @onclick="ToggleSelection">
-            <MudIcon Icon="@Icons.Material.Filled.FilterList" Size="Size.Small" />
-        </icon>
-    </MudTooltip>
+    <button @onclick="ToggleSelection">
+        <MudIcon Icon="@Icons.Material.Filled.FilterList" Size="Size.Small" />
+    </button>
     @{
         var display = showSelection ? "" : "none";
         var selectionStyle = $"display: {display};";

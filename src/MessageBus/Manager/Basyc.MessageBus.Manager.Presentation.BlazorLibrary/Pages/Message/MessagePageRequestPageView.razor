@@ -1,20 +1,17 @@
 ﻿@using Basyc.MessageBus.Manager.Application;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap.Horizontal
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.LogWindow
-@using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Htmls;
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers;
+@using Basyc.Blazor.Controls.HtmlExtensions
+@using Microsoft.Extensions.Logging;
 @inherits BasycReactiveBlazorComponentBase<MessagePageRequestPageViewModel, MessageRequest>
 <messagePageRequestPageView>
-    <BasycSpaceBorder Size="SpacerSize.Big" StretchHeight="true">
+    <BasycSpaceBorder Size="SpaceSize.Bigger" SizeTop="SpaceSize.Big" SizeBottom="SpaceSize.Big">
         <infoRow>
             <infoSection>
-                <BasycHeading Size="HeadingSize.H3">
-                    Results
-                </BasycHeading>
-                <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Small" />
                 <infoTable>
                     <labels>
-                        <label>Order Index</label>
+                        @*<label>Order Index</label>*@
                         <label>Started</label>
                         <label>State</label>
                         <label>Duration</label>
@@ -22,98 +19,96 @@
                     </labels>
                     <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Medium" />
                     <values>
-                        <value>@MessageRequest.OrderIndex</value>
+                        @*<value>@MessageRequest.OrderIndex</value>*@
                         <value>@MessageRequest.CreationTime.ToString("hh:mm:ss")</value>
                         <value>@MessageRequest.State.ToString()</value>
-                        <value>@Html.Time(MessageRequest.Duration)</value>
+                        <value>@Html.Methods.Time(MessageRequest.Duration)</value>
                         <value>@MessageRequest.TraceId.ToString()</value>
                     </values>
                 </infoTable>
             </infoSection>
-            <BasycSpaceLine Direction="SpaceLineDirection.Vertical" Visible="false" Start="SpaceLineSize.Big" />
-            <inputBox>
-                @ResponseResultConverter.CreateInputOverview(MessageRequest.RequestInput.Parameters)
-            </inputBox>
-            <arrow>
-                |>
-            </arrow>
-            <inputBox>
-                @if (MessageRequest.State == RequestResultState.Started)
-                {
-                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
-                }
-                else
-                {
-                    <textValue>
-                        @if (MessageRequest.State == RequestResultState.Completed)
-                        {
-                            if (MessageRequest.RequestInput.MessageInfo.HasResponse)
-                            {
-                                @MessageRequest.Response
-                            }
-                            else
-                            {
-                                <ghostLabel>
-                                    Result does not have an output
-                                </ghostLabel>
-                            }
-                        }
-                        @if (MessageRequest.State == RequestResultState.Failed)
-                        {
-                            @MessageRequest.ErrorMessage
-                        }
-                    </textValue>
-                }
-            </inputBox>
         </infoRow>
-        <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" Start="SpaceLineSize.Big" />
-
-        <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="false"  >
-            <ChildContent>
-                <MudTabPanel Text="Result">
-                    <inputBox>
-                        @if (MessageRequest.State == RequestResultState.Started)
-                        {
-                            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
-                        }
-                        else
-                        {
-                            <textValue>
-                                @if (MessageRequest.State == RequestResultState.Completed)
-                                {
-                                    if (MessageRequest.RequestInput.MessageInfo.HasResponse)
-                                    {
-                                        @MessageRequest.Response
-                                    }
-                                    else
-                                    {
-                                        <ghostLabel>
-                                            Result does not have an output
-                                        </ghostLabel>
-                                    }
-                                }
-                                @if (MessageRequest.State == RequestResultState.Failed)
-                                {
-                                    @MessageRequest.ErrorMessage
-                                }
-                            </textValue>
-                        }
-                    </inputBox>
-                </MudTabPanel>
-                <MudTabPanel Text="Traces">
-                    <HorizontalDurationMapView RequestContext="MessageRequest" />
-                </MudTabPanel>
-                <MudTabPanel Text="Logs" >
-                    <LogWindowView DiagnosticsContext="MessageRequest.Diagnostics" />
-                </MudTabPanel>
-            </ChildContent>
-
-        </MudTabs>
     </BasycSpaceBorder>
+
+    <MudTabs Elevation="2" TabPanelClass="mudTabs" KeepPanelsAlive="true" PanelClass="panelClass">
+        <MudTabPanel Text="IO">
+            <ioGrid>
+                <inputBox>
+                    <BasycHeading Size="HeadingSize.H4">
+                        Input
+                    </BasycHeading>
+                    <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Small" />
+                    @ResponseResultConverter.CreateInputOverview(MessageRequest.RequestInput.Parameters)
+                </inputBox>
+                <inputBox>
+                    <BasycHeading Size="HeadingSize.H4">
+                        Output
+                    </BasycHeading>
+                    <BasycSpaceLine Direction="SpaceLineDirection.Horizontal" Visible="false" End="SpaceLineSize.Small" />
+
+                    @if (MessageRequest.State == RequestResultState.Started)
+                    {
+                        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" Width="100%" />
+                    }
+                    else
+                    {
+                        <textValue>
+                            @if (MessageRequest.State == RequestResultState.Completed)
+                            {
+                                if (MessageRequest.RequestInput.MessageInfo.HasResponse)
+                                {
+                                    if (MessageRequest.Response is Task responseTask)
+                                        @(((dynamic)responseTask).Result)
+                                    else
+                                        @MessageRequest.Response
+                                }
+                                else
+                                {
+                                    <ghostLabel>
+                                        Result does not have an output
+                                    </ghostLabel>
+                                }
+                            }
+                            @if (MessageRequest.State == RequestResultState.Failed)
+                            {
+                                @MessageRequest.ErrorMessage
+                            }
+                        </textValue>
+                    }
+                </inputBox>
+            </ioGrid>
+
+        </MudTabPanel>
+        <MudTabPanel Text="Traces">
+            <HorizontalDurationMapView RequestContext="MessageRequest" />
+        </MudTabPanel>
+        <MudTabPanel Text="Logs">
+            <LogWindowView DiagnosticsContext="MessageRequest.Diagnostics" />
+        </MudTabPanel>
+    </MudTabs>
 </messagePageRequestPageView>
 
 
 @code {
+    [Inject] private ILogger<MessagePageRequestPageView> Logger { get; init; } = null!;
     public MessageRequest MessageRequest { get; private set; } = null!;
     public override void OnVisit(MessageRequest queryParams) => MessageRequest = queryParams;
+
+    protected override void OnInitialized()
+    {
+        Logger.LogDebug("OnInitialized");
+        base.OnInitialized();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Logger.LogDebug("OnAfterRender");
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override void OnParametersSet()
+    {
+        Logger.LogDebug("OnParametersSet");
+        base.OnParametersSet();
+    }
 }

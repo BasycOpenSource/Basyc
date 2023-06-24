@@ -36,7 +36,7 @@ public struct ActivityStartDisposer : IDisposable
         isEnded = true;
     }
 
-    public ActivityStartDisposer StartNested(string name, DateTimeOffset startTime = default)
+    public readonly ActivityStartDisposer StartNested(string name, DateTimeOffset startTime = default)
     {
         var nestedActivityDisposer = diagnosticsProducer.StartActivity(this, name, startTime);
         return nestedActivityDisposer;

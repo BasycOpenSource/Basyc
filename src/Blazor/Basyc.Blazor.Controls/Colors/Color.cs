@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Helpers.Colors;
+namespace Basyc.Blazor.Controls.Colors;
 
 public readonly struct Color
 {
