@@ -96,7 +96,7 @@ public static partial class LogAggregator
             Service = service;
         }
 
-        public IReadOnlyList<LogEntry> Logs => logs;
+        public readonly IReadOnlyList<LogEntry> Logs => logs;
 
         public DateTimeOffset BoundingTime { get; }
 
