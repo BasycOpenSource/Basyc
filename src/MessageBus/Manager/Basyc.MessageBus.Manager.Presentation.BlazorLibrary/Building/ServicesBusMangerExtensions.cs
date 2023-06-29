@@ -1,11 +1,12 @@
-﻿using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
+﻿using System.Runtime.Versioning;
+using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Shared.Navigation;
 using Basyc.ReactiveUi;
 using Excubo.Blazor.ScriptInjection;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
-
+[SupportedOSPlatform("browser")]
 public static class ServicesBusMangerExtensions
 {
     public static void AddBasycBusManagerBlazorUi(this IServiceCollection services)

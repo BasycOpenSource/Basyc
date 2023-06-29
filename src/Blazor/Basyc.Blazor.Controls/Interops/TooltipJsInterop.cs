@@ -5,12 +5,13 @@ namespace Basyc.Blazor.Controls.Interops;
 public class TooltipJsInterop : IAsyncDisposable
 {
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
+
     private readonly IJSRuntime jsRuntime;
 
     public TooltipJsInterop(IJSRuntime jsRuntime)
     {
         moduleTask = new Lazy<Task<IJSObjectReference>>(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Basyc.Blazor.Controls/tooltipJSInterop.js").AsTask());
+        "import", "./_content/Basyc.Blazor.Controls/tooltipJSInterop.js").AsTask());
         this.jsRuntime = jsRuntime;
     }
 

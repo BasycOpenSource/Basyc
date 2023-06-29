@@ -2,7 +2,9 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages
 @using ReactiveUI.Fody.Helpers;
 @using System.Reflection;
-
+@using Basyc.Blazor.Interops
+@using System.Runtime.InteropServices.JavaScript;
+@inject PromptInterop PromptInterop
 <BusManager />
 
 
@@ -15,4 +17,13 @@
         .Select(x => x.Name)
         .ToArray();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        //await JSHost.ImportAsync("PromptInterop", "../promptInterop.js");
+        await JSHost.ImportAsync("PromptInterop", "../_content/Basyc.Blazor.Interops/promptInterop.js");
+        var tt = PromptInterop.GetWelcomeMessage();
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
 }

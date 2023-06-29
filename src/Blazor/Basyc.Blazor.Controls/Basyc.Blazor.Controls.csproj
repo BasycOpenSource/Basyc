@@ -21,11 +21,12 @@
 
   <ItemGroup>
     <PackageReference Include="BlazorComponentUtilities" Version="1.8.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.8" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Extensions\Basyc.Extensions.System\Basyc.Extensions.System.csproj" />
+    <ProjectReference Include="..\Basyc.Blazor.Interops\Basyc.Blazor.Interops.csproj" />
   </ItemGroup>
 
   <ItemGroup>

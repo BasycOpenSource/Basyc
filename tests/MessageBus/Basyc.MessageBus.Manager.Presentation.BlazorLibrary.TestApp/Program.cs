@@ -243,7 +243,9 @@ busManagerBuilder.RegisterMessages()
                 break;
         }
     });
+#pragma warning disable CA1416 // Validate platform compatibility
 builder.Services.AddBasycBusManagerBlazorUi();
+#pragma warning restore CA1416 // Validate platform compatibility
 var blazorApp = builder.Build();
 diagnsoticExporter = blazorApp.Services.GetRequiredService<IDiagnosticsExporter>();
 WireUpInMemoryDiagnostics(blazorApp);
