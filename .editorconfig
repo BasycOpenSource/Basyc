@@ -30,6 +30,7 @@ dotnet_diagnostic.CA1040.severity = none # CA1040: Avoid empty interfaces
 dotnet_diagnostic.CA1032.severity = none # CA1032: Implement standard exception constructors
 dotnet_diagnostic.CA1815.severity = none # CA1815: Override equals and operator equals on value types
 dotnet_diagnostic.CA1303.severity = none # CA1303: Do not pass literals as localized parameters
+dotnet_diagnostic.CA1812.severity = none # CA1812: Avoid uninstantiated internal classes
 #dotnet_analyzer_diagnostic.category-Style.severity = none
 #dotnet_analyzer_diagnostic.category-CodeQuality.severity = error
 

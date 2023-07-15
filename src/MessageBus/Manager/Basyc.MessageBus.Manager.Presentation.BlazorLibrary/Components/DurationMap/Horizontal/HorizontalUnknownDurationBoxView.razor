@@ -29,7 +29,7 @@
 
 @code {
     ElementReference horizontalUnknownDurationBoxViewref;
-    [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
+    [Inject] public ElementInterop ElementJsInterop { get; init; } = null!;
 
     [Parameter, EditorRequired] public DateTimeOffset StartTime { get; init; }
     [Parameter, EditorRequired] public DateTimeOffset EndTime { get; init; }

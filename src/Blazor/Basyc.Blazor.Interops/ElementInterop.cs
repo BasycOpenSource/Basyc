@@ -3,15 +3,15 @@ using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
 namespace Basyc.Blazor.Interops;
-public partial class ElementJsInterop : IAsyncDisposable
+public partial class ElementInterop : IAsyncDisposable
 {
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
-    private readonly ILogger<ElementJsInterop> logger;
+    private readonly ILogger<ElementInterop> logger;
 
-    public ElementJsInterop(IJSRuntime jsRuntime, ILogger<ElementJsInterop> logger)
+    public ElementInterop(IJSRuntime jsRuntime, ILogger<ElementInterop> logger)
     {
         moduleTask = new Lazy<Task<IJSObjectReference>>(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Basyc.Blazor.Controls/elementJSInterop.js").AsTask());
+            "import", "./_content/Basyc.Blazor.Interops/elementInterop.js").AsTask());
         this.logger = logger;
     }
 
@@ -59,3 +59,22 @@ public partial class ElementJsInterop : IAsyncDisposable
         await module.InvokeVoidAsync("setCssProperty", elementReference, name, value);
     }
 }
+
+//[SuppressMessage("Design", "CA1052:Static holder types should be Static or NotInheritable", Justification = "Source generator.")]
+//public partial class ElementJsInterop
+//{
+//    [JSImport("setStyle", "elementJsInterop")]
+//    public static partial void SetStyle(string elementId, string cssText);
+
+//    [JSImport("setStyle", "elementJsInterop")]
+//    public static partial void SetStyle([JSMarshalAs<JSType.Any>] object elementReference, string cssText);
+
+//    [JSImport("getCssVariable", "elementJsInterop")]
+//    public static partial string GetCssVariable([JSMarshalAs<JSType.Any>] object elementReference, string name);
+
+//    [JSImport("setCssVariable", "elementJsInterop")]
+//    public static partial void SetCssVariable([JSMarshalAs<JSType.Any>] object elementReference, string name, string value);
+
+//    [JSImport("setCssProperty", "elementJsInterop")]
+//    public static partial void SetCssProperty([JSMarshalAs<JSType.Any>] object elementReference, string name, string value);
+//}

@@ -8,7 +8,7 @@ public static class ServiceCollectionBasycBlazorControlsExtensions
     public static IServiceCollection AddBasycBlazorControls(this IServiceCollection services)
     {
         services.AddSingleton<TooltipJsInterop>();
-        services.AddInterops();
+        services.AddBlazorJavaScriptInterop();
         return services;
     }
 }

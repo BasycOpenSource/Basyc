@@ -49,7 +49,7 @@ public partial class TooltipPopup
     private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
 
     [Inject]
-    private ElementJsInterop ElementJsInterop { get; init; } = null!;
+    private ElementInterop ElementJsInterop { get; init; } = null!;
 
     private string TooltipPopupComponentId { get; init; } = Random.Shared.Next().ToString();
 
