@@ -59,22 +59,3 @@ public partial class ElementInterop : IAsyncDisposable
         await module.InvokeVoidAsync("setCssProperty", elementReference, name, value);
     }
 }
-
-//[SuppressMessage("Design", "CA1052:Static holder types should be Static or NotInheritable", Justification = "Source generator.")]
-//public partial class ElementJsInterop
-//{
-//    [JSImport("setStyle", "elementJsInterop")]
-//    public static partial void SetStyle(string elementId, string cssText);
-
-//    [JSImport("setStyle", "elementJsInterop")]
-//    public static partial void SetStyle([JSMarshalAs<JSType.Any>] object elementReference, string cssText);
-
-//    [JSImport("getCssVariable", "elementJsInterop")]
-//    public static partial string GetCssVariable([JSMarshalAs<JSType.Any>] object elementReference, string name);
-
-//    [JSImport("setCssVariable", "elementJsInterop")]
-//    public static partial void SetCssVariable([JSMarshalAs<JSType.Any>] object elementReference, string name, string value);
-
-//    [JSImport("setCssProperty", "elementJsInterop")]
-//    public static partial void SetCssProperty([JSMarshalAs<JSType.Any>] object elementReference, string name, string value);
-//}
