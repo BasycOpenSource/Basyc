@@ -1,5 +1,6 @@
 ﻿@using Basyc.Blazor.Controls.HtmlExtensions;
 @using Basyc.Blazor.Controls.Interops;
+@using Basyc.Blazor.Interops
 @using Color = Basyc.Blazor.Controls.Colors.Color
 @{
     var duration = EndTime - StartTime;
@@ -28,7 +29,7 @@
 
 @code {
     ElementReference horizontalUnknownDurationBoxViewref;
-    [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
+    [Inject] public ElementInterop ElementJsInterop { get; init; } = null!;
 
     [Parameter, EditorRequired] public DateTimeOffset StartTime { get; init; }
     [Parameter, EditorRequired] public DateTimeOffset EndTime { get; init; }

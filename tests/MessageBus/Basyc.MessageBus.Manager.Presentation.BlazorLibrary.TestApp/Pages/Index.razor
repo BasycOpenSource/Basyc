@@ -2,7 +2,8 @@
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Pages
 @using ReactiveUI.Fody.Helpers;
 @using System.Reflection;
-
+@using Basyc.Blazor.Interops
+@using System.Runtime.InteropServices.JavaScript;
 <BusManager />
 
 
@@ -15,4 +16,12 @@
         .Select(x => x.Name)
         .ToArray();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
 }
+
+

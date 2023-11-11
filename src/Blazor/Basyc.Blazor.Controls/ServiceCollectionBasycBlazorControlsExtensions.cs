@@ -1,13 +1,14 @@
-﻿using Basyc.Blazor.Controls.Interops;
+﻿using System.Runtime.Versioning;
+using Basyc.Blazor.Controls.Interops;
 
 namespace Microsoft.Extensions.DependencyInjection;
+[SupportedOSPlatform("browser")]
 public static class ServiceCollectionBasycBlazorControlsExtensions
 {
     public static IServiceCollection AddBasycBlazorControls(this IServiceCollection services)
     {
         services.AddSingleton<TooltipJsInterop>();
-        services.AddSingleton<ScrollJsInterop>();
-        services.AddSingleton<ElementJsInterop>();
+        services.AddBlazorJavaScriptInterop();
         return services;
     }
 }

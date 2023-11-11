@@ -2,16 +2,16 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 
-namespace Basyc.Blazor.Controls.Interops;
-public partial class ElementJsInterop : IAsyncDisposable
+namespace Basyc.Blazor.Interops;
+public partial class ElementInterop : IAsyncDisposable
 {
     private readonly Lazy<Task<IJSObjectReference>> moduleTask;
-    private readonly ILogger<ElementJsInterop> logger;
+    private readonly ILogger<ElementInterop> logger;
 
-    public ElementJsInterop(IJSRuntime jsRuntime, ILogger<ElementJsInterop> logger)
+    public ElementInterop(IJSRuntime jsRuntime, ILogger<ElementInterop> logger)
     {
         moduleTask = new Lazy<Task<IJSObjectReference>>(() => jsRuntime.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Basyc.Blazor.Controls/elementJSInterop.js").AsTask());
+            "import", "./_content/Basyc.Blazor.Interops/elementInterop.js").AsTask());
         this.logger = logger;
     }
 
@@ -47,11 +47,9 @@ public partial class ElementJsInterop : IAsyncDisposable
 
     public async ValueTask SetCssVariable(ElementReference elementReference, string name, string value)
     {
-        //logger.LogDebug("SetCssVariable");
         ArgumentNullException.ThrowIfNull(elementReference);
         var module = await moduleTask.Value;
         await module.InvokeVoidAsync("setCssVariable", elementReference, name, value);
-        //logger.LogDebug("SetCssVariable done");
     }
 
     public async ValueTask SetCssProperty(ElementReference elementReference, string name, string value)

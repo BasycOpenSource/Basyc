@@ -5,6 +5,7 @@
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
 @using Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Components.DurationMap;
 @using Basyc.Blazor.Controls.Colors;
+@using Basyc.Blazor.Interops
 @using Microsoft.Extensions.Logging;
 @implements IHandleEvent;
 @implements IDisposable;
@@ -63,7 +64,7 @@
     private DurationMapRenderContext durationMapRenderContext = new();
     [Inject] private BusManagerJsInterop BusManagerJsInterop { get; set; } = null!;
     [Inject] private ScrollJsInterop ScrollJsInterop { get; set; } = null!;
-    [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
+    [Inject] public ElementInterop ElementJsInterop { get; init; } = null!;
     [Inject] private ILogger<HorizontalDurationMapView> Logger { get; init; } = null!;
 
     private PeriodicTimer? fastTimer;

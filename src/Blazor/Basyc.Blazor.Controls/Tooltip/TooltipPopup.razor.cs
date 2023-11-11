@@ -1,4 +1,5 @@
 using Basyc.Blazor.Controls.Interops;
+using Basyc.Blazor.Interops;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
@@ -48,7 +49,7 @@ public partial class TooltipPopup
     private TooltipJsInterop TooltipJsInterop { get; init; } = null!;
 
     [Inject]
-    private ElementJsInterop ElementJsInterop { get; init; } = null!;
+    private ElementInterop ElementJsInterop { get; init; } = null!;
 
     private string TooltipPopupComponentId { get; init; } = Random.Shared.Next().ToString();
 

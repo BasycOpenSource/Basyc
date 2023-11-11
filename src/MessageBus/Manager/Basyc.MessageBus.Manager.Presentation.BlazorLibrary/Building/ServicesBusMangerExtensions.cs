@@ -3,20 +3,22 @@ using Basyc.ReactiveUi;
 using Excubo.Blazor.ScriptInjection;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
+using System.Runtime.Versioning;
 
 namespace Basyc.MessageBus.Manager.Presentation.BlazorLibrary.Building;
-
+[SupportedOSPlatform("browser")]
 public static class ServicesBusMangerExtensions
 {
     public static void AddBasycBusManagerBlazorUi(this IServiceCollection services)
     {
         BasycReactiveUi.Fix();
         services.AddMudServices();
+        services.AddScriptInjection();
+        services.AddBasycBlazorControls();
+        services.AddBlazorJavaScriptInterop();
         services.AddSingleton<BusManagerJsInterop>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.RegisterViewModels();
-        services.AddBasycBlazorControls();
-        services.AddScriptInjection();
     }
 
     private static void RegisterViewModels(this IServiceCollection services)

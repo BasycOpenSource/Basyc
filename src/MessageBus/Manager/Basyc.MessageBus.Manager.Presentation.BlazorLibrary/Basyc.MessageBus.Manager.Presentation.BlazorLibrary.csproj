@@ -40,7 +40,7 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>-->
 		<PackageReference Include="Excubo.Blazor.ScriptInjection" Version="3.1.7" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.8" />
 		<PackageReference Include="LibSassBuilder" Version="3.0.0" />
 		<!--<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />-->
 		<PackageReference Include="MudBlazor" Version="6.0.10" />
@@ -53,6 +53,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\..\Blazor\Basyc.Blazor.Controls\Basyc.Blazor.Controls.csproj" />
+		<ProjectReference Include="..\..\..\Blazor\Basyc.Blazor.Interops\Basyc.Blazor.Interops.csproj" />
 		<ProjectReference Include="..\..\..\ReactiveUi\Basyc.ReactiveUi.Blazor\Basyc.ReactiveUi.Blazor.csproj" />
 		<ProjectReference Include="..\..\Basyc.MessageBus.Client\Basyc.MessageBus.Client.csproj" />
 		<ProjectReference Include="..\Basyc.MessageBus.Manager.Application\Basyc.MessageBus.Manager.Application.csproj" />

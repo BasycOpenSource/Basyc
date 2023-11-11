@@ -1,4 +1,5 @@
 ﻿using Basyc.Blazor.Controls;
+using Basyc.Blazor.Interops;
 using Basyc.MessageBus.Manager.Application.Building;
 using Excubo.Blazor.ScriptInjection;
 using Microsoft.AspNetCore.Components;
@@ -45,17 +46,12 @@ public partial class BusManager
             "style3"));
     }
 
-    //TODO: this might be enought for not using the nuget
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    await JSHost.ImportAsync("CallDotNet1",
-    //        "../Pages/CallDotNet1.razor.js");
-    //}
-
     protected override async Task OnInitializedAsync()
     {
         await Script_injection_tracker.LoadedAsync("_content/MudBlazor/MudBlazor.min.js");
+        await InteropImporter.ImportJavaScriptModules();
         jsLoaded = true;
+        //var tt = PromptInterop.GetWelcomeMessage();
         await base.OnInitializedAsync();
     }
 }

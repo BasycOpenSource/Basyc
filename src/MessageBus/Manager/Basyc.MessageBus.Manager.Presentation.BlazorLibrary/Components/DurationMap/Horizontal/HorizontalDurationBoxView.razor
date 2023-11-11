@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using System.Collections.ObjectModel;
 @using Basyc.Blazor.Controls.HtmlExtensions
+@using Basyc.Blazor.Interops
 @using Microsoft.Extensions.Logging;
 @using Throw
 @using Basyc.MessageBus.Manager.Application.ResultDiagnostics
@@ -141,7 +142,7 @@
     private bool isRendered = false;
 
     [Inject] public ILogger<HorizontalDurationBoxView> logger { get; init; } = null!;
-    [Inject] public ElementJsInterop ElementJsInterop { get; init; } = null!;
+    [Inject] public ElementInterop ElementJsInterop { get; init; } = null!;
 
     [Parameter]
     [EditorRequired]

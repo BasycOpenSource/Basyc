@@ -1,30 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-    <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.3" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Primitives" Version="7.0.0" />
-        <PackageReference Include="ReactiveUI.Fody" Version="18.4.26" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="7.0.0" />
+    <PackageReference Include="ReactiveUI.Fody" Version="18.4.26" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\src\Diagnostics\Basyc.Diagnostics.Producing.Abstractions\Basyc.Diagnostics.Producing.Abstractions.csproj" />
-      <ProjectReference Include="..\..\..\src\Diagnostics\Basyc.Diagnostics.Server.Abstractions\Basyc.Diagnostics.Server.Abstractions.csproj" />
-      <ProjectReference Include="..\..\..\src\Diagnostics\Providers\SignalR\Basyc.Diagnostics.Providers.SignalR.Producing\Basyc.Diagnostics.Providers.SignalR.Producing.csproj" />
-      <ProjectReference Include="..\..\..\src\Diagnostics\Providers\SignalR\Basyc.Diagnostics.Providers.SignalR.Receiving\Basyc.Diagnostics.Providers.SignalR.Receiving.csproj" />
-      <ProjectReference Include="..\..\..\src\DomainDrivenDesign\Basyc.DomainDrivenDesign.Domain\Basyc.DomainDrivenDesign.Domain.csproj" />
-      <ProjectReference Include="..\..\..\src\MessageBus\Basyc.MessageBus.Client\Basyc.MessageBus.Client.csproj" />
-      <ProjectReference Include="..\..\..\src\MessageBus\Manager\Basyc.MessageBus.Manager.Infrastructure\Basyc.MessageBus.Manager.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\..\src\MessageBus\Manager\Basyc.MessageBus.Manager.Presentation.BlazorLibrary\Basyc.MessageBus.Manager.Presentation.BlazorLibrary.csproj" />
-      <ProjectReference Include="..\..\..\src\MessageBus\Proxies\Http\Basyc.MessageBus.Proxies.Http.Client\Basyc.MessageBus.Proxies.Http.Client.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Diagnostics\Basyc.Diagnostics.Producing.Abstractions\Basyc.Diagnostics.Producing.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\src\Diagnostics\Basyc.Diagnostics.Server.Abstractions\Basyc.Diagnostics.Server.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\src\Diagnostics\Providers\SignalR\Basyc.Diagnostics.Providers.SignalR.Producing\Basyc.Diagnostics.Providers.SignalR.Producing.csproj" />
+    <ProjectReference Include="..\..\..\src\Diagnostics\Providers\SignalR\Basyc.Diagnostics.Providers.SignalR.Receiving\Basyc.Diagnostics.Providers.SignalR.Receiving.csproj" />
+    <ProjectReference Include="..\..\..\src\DomainDrivenDesign\Basyc.DomainDrivenDesign.Domain\Basyc.DomainDrivenDesign.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\MessageBus\Basyc.MessageBus.Client\Basyc.MessageBus.Client.csproj" />
+    <ProjectReference Include="..\..\..\src\MessageBus\Manager\Basyc.MessageBus.Manager.Infrastructure\Basyc.MessageBus.Manager.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\src\MessageBus\Manager\Basyc.MessageBus.Manager.Presentation.BlazorLibrary\Basyc.MessageBus.Manager.Presentation.BlazorLibrary.csproj" />
+    <ProjectReference Include="..\..\..\src\MessageBus\Proxies\Http\Basyc.MessageBus.Proxies.Http.Client\Basyc.MessageBus.Proxies.Http.Client.csproj" />
+  </ItemGroup>
 
 </Project>
