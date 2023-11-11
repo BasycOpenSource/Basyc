@@ -51,7 +51,7 @@ public partial class BusManager
         await Script_injection_tracker.LoadedAsync("_content/MudBlazor/MudBlazor.min.js");
         await InteropImporter.ImportJavaScriptModules();
         jsLoaded = true;
-        var tt = PromptInterop.GetWelcomeMessage();
+        //var tt = PromptInterop.GetWelcomeMessage();
         await base.OnInitializedAsync();
     }
 }

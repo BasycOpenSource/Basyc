@@ -7,7 +7,7 @@ public static class ServiceCollectionInteropExtensions
     {
         services.AddSingleton<ScrollJsInterop>();
         services.AddSingleton<ElementInterop>();
-        services.AddSingleton<PromptInterop>();
+        //services.AddSingleton<PromptInterop>();
         return services;
     }
 }
